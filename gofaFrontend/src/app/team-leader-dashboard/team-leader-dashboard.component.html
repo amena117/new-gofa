@@ -1,0 +1,91 @@
+<div class="dashboard-container">
+  <!-- Header with Role Filter -->
+  <div class="header">
+    <h1 class="title">Team Leader Dashboard / የቡድን መሪ ዳሽቦርድ</h1>
+    <div class="filter-controls">
+      <label for="roleFilter">Filter by Role(s): / በሚና ማጣሪያ</label>
+      <div class="custom-multiselect">
+        <div class="multiselect-header" (click)="toggleDropdown()" [attr.aria-expanded]="dropdownOpen">
+          {{ selectedRoles.length > 0 ? selectedRoles.join(', ') : 'Select Roles / ሚና ይምረጡ' }}
+          <span class="dropdown-arrow" [ngClass]="{'open': dropdownOpen}"></span>
+        </div>
+        <ul class="multiselect-options" *ngIf="dropdownOpen">
+          <li *ngFor="let role of availableRoles">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                [value]="role"
+                [checked]="selectedRoles.includes(role)"
+                (change)="onRoleCheckboxChange($event, role)"
+                [attr.aria-label]="'Filter by ' + role"
+              />
+              {{ role }}
+            </label>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading summary data... / የግምገማ መረጃ በመጫን ላይ...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="message error-message" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Stats Grid -->
+  <div *ngIf="!isLoading && summaryData" class="stats-grid">
+    <div class="stat-card">
+      <h3>Total Items / ጠቅላላ እቃዎች</h3>
+      <p>{{ summaryData.totalItems }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Total Quantity / ጠቅላላ ብዛት</h3>
+      <p>{{ summaryData.totalQuantity }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Low Stock Items / ዝቅተኛ ክምችት</h3>
+      <p>{{ summaryData.lowStockItems }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Categories / ምድቦች</h3>
+      <p>{{ summaryData.uniqueCategories }}</p>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div *ngIf="!isLoading && barChartConfig" class="chart-container">
+    <h2>Inventory Stats by Role / በሚና መሰረት የእቃ ስታቲስቲክስ</h2>
+    <canvas id="barChart" appChart [chartConfig]="barChartConfig"></canvas>
+  </div>
+
+  <!-- <div *ngIf="!isLoading && lineChartConfig" class="chart-container">
+    <h2>Monthly Trends / ወርሃዊ አዝማሚያዎች</h2>
+    <canvas id="lineChart" appChart [chartConfig]="lineChartConfig"></canvas>
+  </div> -->
+
+  <!-- Low Stock Items -->
+  <!-- ... existing header, loading, error, stats, charts ... -->
+
+<!-- Low Stock Items -->
+<!-- Low Stock Items -->
+<!-- Low Stock Items - NO PAGINATION -->
+<div *ngIf="!isLoading && lowStockItems.length > 0" class="low-stock-items">
+  <h2>Low Stock Items / ዝቅተኛ ክምችት እቃዎች</h2>
+  <ul>
+    <li *ngFor="let item of lowStockItems"> <!-- ✅ Directly iterate over all items -->
+      {{ item.name }} (Category: {{ item.category }}, Role: {{ item.role }}): {{ item.quantity }} units
+    </li>
+  </ul>
+</div><!-- ... rest unchanged ... -->
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !summaryData && !errorMessage" class="empty-state">
+    <h3>No summary data available for selected roles. / ለተመረጡት ሚናዎች ምንም የግምገማ መረጃ የለም።</h3>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<div class="dashboard-container">
+  <h1>Inventory Dashboard</h1>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Registered Items</h3>
+      <p>{{ stats.registeredItems }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Total Received</h3>
+      <p>{{ stats.totalReceived }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Total Issued</h3>
+      <p>{{ stats.totalIssued }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Total In Stock</h3>
+      <p>{{ stats.totalInStock }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Request Orders</h3>
+      <p>{{ stats.requestOrdersCount }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Total Requested Issued</h3>
+      <p>{{ stats.totalRequestedIssued }}</p>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <h2>Inventory Overview (Bar Graph)</h2>
+    <canvas id="barChart" width="400" height="200"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h2>Monthly Trends (Line Graph)</h2>
+    <canvas id="lineChart" width="400" height="200"></canvas>
+  </div>
+
+  <div class="top-items">
+    <h2>Top 5 Issued Items</h2>
+    <ul>
+      <li *ngFor="let item of topItems">
+        {{ item.model }} - Issued: {{ item.totalIssued }}
+      </li>
+    </ul>
+  </div>
+</div>

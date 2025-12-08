@@ -1,0 +1,54 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Give Maintenance Equipments for Clients / ጠጋኝ ንብረት ለደንበኞች መስጠት</h2>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Form -->
+  <form *ngIf="!isLoading && !errorMessage" (ngSubmit)="submitForm()" #requestForm="ngForm">
+    <!-- Works Order Number -->
+    <div class="form-group">
+      <label>Works Order Number / የስራ ትዕዛዝ ቁጥር:</label>
+      <input type="text" [(ngModel)]="maintenanceRequest.worksOrderNumber" name="worksOrderNumber" readonly />
+    </div>
+
+    <!-- Status -->
+    <div class="form-group">
+      <label>Status / ሁኔታ:</label>
+      <input type="text" [(ngModel)]="maintenanceRequest.status" name="status" readonly />
+    </div>
+
+    <!-- Given To -->
+    <div class="form-group">
+      <label>Given To / ለማን ተሰጠ:</label>
+      <input type="text" [(ngModel)]="deliveryDetails.givenTo" name="givenTo" required />
+    </div>
+
+    <!-- Approval -->
+    <div class="form-group">
+      <label>Approval / እሺ ተብሎ የተሰጠ:</label>
+      <input type="text" [(ngModel)]="deliveryDetails.approval" name="approval" required />
+    </div>
+
+    <!-- Receiver Remark -->
+    <div class="form-group">
+      <label>Receiver Remark / የተቀባይ አስተያየት:</label>
+      <input type="text" [(ngModel)]="deliveryDetails.recieverRemark" name="recieverRemark" required />
+    </div>
+
+    <!-- Received Date -->
+    <div class="form-group">
+      <label>Received Date / የተቀበለበት ቀን:</label>
+      <input type="date" [(ngModel)]="deliveryDetails.receivedDate" name="receivedDate" required />
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+      <button type="submit" class="submit-button" [disabled]="requestForm.invalid">Submit / አስገባ</button>
+      <button type="button" (click)="cancel()" class="cancel-button">Cancel / ተወው</button>
+    </div>
+  </form>
+</div>

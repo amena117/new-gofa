@@ -1,0 +1,248 @@
+/* General container styling */
+.report-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Card styling for summary, table, and grand total */
+.card {
+  background-color: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* Section title within cards */
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+/* Filter styling */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.filter-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Loading state styling */
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error message styling */
+.error-message {
+  color: #d32f2f;
+  text-align: center;
+  padding: 15px;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+/* Table container styling */
+.table-container {
+  overflow-x: auto;
+}
+
+/* Main table styling */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #e0e0e0;
+  font-weight: bold;
+  color: #333;
+}
+
+.data-table td {
+  background-color: #fff;
+}
+
+.data-table tr:nth-child(even) td {
+  background-color: #f9f9f9;
+}
+
+/* No data message */
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+/* Details row styling */
+.details-row {
+  background-color: #f5f5f5;
+}
+
+.details-table-container {
+  padding: 10px;
+}
+
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.details-table th,
+.details-table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.details-table th {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.details-table td {
+  background-color: #fff;
+}
+
+/* Toggle button styling */
+.toggle-details {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.toggle-details:hover {
+  background-color: #0056b3;
+}
+
+/* Grand total styling */
+.card p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.card p strong {
+  color: #333;
+}
+
+/* Responsive design */
+@media screen and (max-width: 600px) {
+  .report-container {
+    padding: 10px;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    min-width: 100%;
+  }
+
+  .data-table,
+  .details-table {
+    font-size: 12px;
+  }
+
+  .data-table th,
+  .data-table td,
+  .details-table th,
+  .details-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .data-table th::before,
+  .data-table td::before,
+  .details-table th::before,
+  .details-table td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    margin-right: 10px;
+    color: #333;
+  }
+
+  .data-table th,
+  .details-table th {
+    display: none;
+  }
+
+  .data-table td,
+  .details-table td {
+    text-align: right;
+    padding: 8px 10px;
+  }
+
+  .toggle-details {
+    width: 100%;
+    text-align: center;
+  }
+}

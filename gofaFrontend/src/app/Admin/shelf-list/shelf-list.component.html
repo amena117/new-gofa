@@ -1,0 +1,73 @@
+<div class="shelf-list-container">
+  <h2>Shelf List / የመጋዘን ስፍር ዝርዝር</h2>
+
+  <!-- Warehouse Filter Dropdown -->
+  <div class="filter-section">
+    <label for="warehouseFilter">Warehouse Name / መዋቅር ስም:</label>
+    <select
+      id="warehouseFilter"
+      [(ngModel)]="selectedWarehouseId"
+      (change)="onWarehouseChange(selectedWarehouseId)"
+    >
+      <option value="">--- All Warehouses / ሁሉንም መዋቅሮች ---</option>
+      <option *ngFor="let warehouse of warehouses" [value]="warehouse.warehouseId">
+        {{ warehouse.name }} ({{ warehouse.location }})
+      </option>
+    </select>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    Loading shelves... / ስፍርን በመጫን ላይ...
+  </div>
+
+  <!-- Shelves List -->
+  <div *ngIf="!isLoading">
+    <table *ngIf="filteredShelves.length > 0; else noShelves">
+      <thead>
+        <tr>
+          <th>Shelf Name / ስፍር ስም</th>
+          <th>Column / አምድ</th>
+          <th>Row / ሰራ</th>
+          <th>Warehouse / መዋቅር</th>
+          <th>Actions / ድርጊቶች</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let shelf of filteredShelves">
+          <td>
+            <span *ngIf="!shelf.isEditing">{{ shelf.name }}</span>
+            <input *ngIf="shelf.isEditing" [(ngModel)]="shelf.name" name="name_{{shelf.shelfId}}" required>
+          </td>
+          <td>
+            <span *ngIf="!shelf.isEditing">{{ shelf.column }}</span>
+            <input *ngIf="shelf.isEditing" [(ngModel)]="shelf.column" name="column_{{shelf.shelfId}}" required>
+          </td>
+          <td>
+            <span *ngIf="!shelf.isEditing">{{ shelf.row }}</span>
+            <input *ngIf="shelf.isEditing" [(ngModel)]="shelf.row" name="row_{{shelf.shelfId}}" required>
+          </td>
+          <td>
+            <span *ngIf="!shelf.isEditing">{{ getWarehouseName(shelf.warehouseId) }}</span>
+            <select *ngIf="shelf.isEditing" [(ngModel)]="shelf.warehouseId" name="warehouseId_{{shelf.shelfId}}" required>
+              <option *ngFor="let warehouse of warehouses" [value]="warehouse.warehouseId">
+                {{ warehouse.name }}
+              </option>
+            </select>
+          </td>
+          <td>
+            <button *ngIf="!shelf.isEditing" (click)="startEditing(shelf)">Edit / አስተካክል</button>
+            <button *ngIf="shelf.isEditing" (click)="saveShelf(shelf)">Save / አስቀምጥ</button>
+            <button *ngIf="shelf.isEditing" (click)="cancelEditing(shelf)">Cancel / ሰርዝ</button>
+            <button *ngIf="!shelf.isEditing" (click)="deleteShelf(shelf)">Delete / ሰርዝ</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- No Shelves Message -->
+    <ng-template #noShelves>
+      <p>No shelves found. / ምንም ስፍር አልተገኘም።</p>
+    </ng-template>
+  </div>
+</div>

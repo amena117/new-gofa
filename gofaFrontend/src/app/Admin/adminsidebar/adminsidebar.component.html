@@ -1,0 +1,19 @@
+<div *ngIf="showSidebar" class="sidebar">
+    <h2>Admin Dashboard</h2>
+    <div class="user-info">
+      <p>Welcome, {{ firstName || 'User' }}</p>
+      <p>Role: {{ role || 'Unknown' }}</p>
+    </div>
+    <ul>
+      <li><a routerLink="/register">Register Users / ተጠቃሚዎችን ይመዝገቡ</a></li> <!-- Assuming this exists -->
+      <li><a routerLink="/users">Users List / የተጠቃሚዎች ዝርዝር</a></li> <!-- Assuming this exists -->
+      <li><a routerLink="/warehouse">Register Warehouse / መጋዘን ይመዝገቡ</a></li>
+      <li><a routerLink="/warehouses">Warehouses / መጋዘኖች</a></li>
+      <li><a routerLink="/shelf"> Register Shelf/መደርደሪያን ይመዝገቡ</a></li>
+      <li><a routerLink="/shelves">Shelves / መደርደሪያዎች</a></li>
+      
+      <!-- <li><a routerLink="/admin-dashboard">Admin Dashboard / የአስተዳዳሪ ዳሽቦርድ</a></li> -->
+      
+    </ul>
+    <button class="logout-button" (click)="onLogout()">Logout / ውጣ</button>
+  </div>

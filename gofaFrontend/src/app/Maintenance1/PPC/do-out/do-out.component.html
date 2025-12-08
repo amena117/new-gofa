@@ -1,0 +1,28 @@
+<h2>የ Do Out ዝርዝር </h2>
+
+<table *ngIf="doOutRequests.length > 0; else noData">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Works Order Number</th>
+      <th>Serial No</th>
+      <th>Model</th>
+      <th>Status</th>
+      <th>Request Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let request of doOutRequests">
+      <td>{{ request.id }}</td>
+      <td>{{ request.worksOrderNumber }}</td>
+      <td>{{ request.serialNoOfEquip }}</td>
+      <td>{{ request.model }}</td>
+      <td>{{ request.status }}</td>
+      <td>{{ request.dateWorkOrderReceived | date }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #noData>
+  <p>No 'do out' requests found.</p>
+</ng-template>

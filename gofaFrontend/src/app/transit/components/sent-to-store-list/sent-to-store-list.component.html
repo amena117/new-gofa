@@ -1,0 +1,29 @@
+<div class="card shadow-sm mt-4">
+  <div class="card-header bg-info text-white">
+    <h5 class="mb-0">Sent to Store List</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Supplier</th>
+            <th>Item Type</th>
+            <th>Serial Number</th>
+            <th>Date Sent</th>
+            <th>Store</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of sentToStoreItems">
+            <td>{{ item.supplier }}</td>
+            <td>{{ item.itemType }}</td>
+            <td>{{ item.serialNumber }}</td>
+            <td>{{ item.DateSentToStore | date:'mediumDate' }}</td>
+            <td>{{ item.Store }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

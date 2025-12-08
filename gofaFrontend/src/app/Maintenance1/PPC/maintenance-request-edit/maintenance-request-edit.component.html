@@ -1,0 +1,134 @@
+<div class="container">
+    <h2>Edit Maintenance Requests / የጥገና መጠየቂያዎችን አርም</h2>
+  
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="text-center">
+      <p>Loading... / በመጫን ላይ...</p>
+    </div>
+  
+    <!-- Error Message -->
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+  
+    <!-- Maintenance Request List -->
+    <table *ngIf="!isLoading && maintenanceRequests.length > 0" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Works Order Number / የስራ ትዕዛዝ ቁጥር</th>
+          <th>Nomenclature / ስም</th>
+          <th>Quantity / ብዛት</th>
+          <th>Requested By / የጠየቀው</th>
+          <th>Serial No / የተለየ ቁጥር</th>
+          <th>Date Received / የተቀበለበት ቀን</th>
+          <th>Actions / እርምጃዎች</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of maintenanceRequests">
+          <td>{{ request.worksOrderNumber }}</td>
+          <td>{{ request.nomenclature }}</td>
+          <td>{{ request.quantity }}</td>
+          <td>{{ request.requestedBy }}</td>
+          <td>{{ request.serialNoOfEquip }}</td>
+          <td>{{ request.dateWorkOrderReceived | date }}</td>
+          <td>
+            <button class="btn btn-sm btn-warning" (click)="openEditModal(request)">
+              Edit / አርም
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- No Requests Message -->
+    <div *ngIf="!isLoading && maintenanceRequests.length === 0" class="text-center">
+      <p>No maintenance requests found. / ምንም የጥገና መጠየቂያ አልተገኘም።</p>
+    </div>
+  
+    <!-- Modal for Editing Maintenance Request -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel">Edit Maintenance Request / የጥገና መጠየቂያ አርም</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form (ngSubmit)="onEditSubmit()" #editForm="ngForm">
+              <!-- Works Order Number -->
+              <div class="form-group">
+                <label for="editWorksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
+                <input
+                  type="text"
+                  id="editWorksOrderNumber"
+                  class="form-control"
+                  [(ngModel)]="editRequest.worksOrderNumber"
+                  name="worksOrderNumber"
+                  readonly
+                />
+              </div>
+  
+              <!-- Nomenclature -->
+              <div class="form-group">
+                <label for="editNomenclature">Nomenclature / ስም</label>
+                <input
+                  type="text"
+                  id="editNomenclature"
+                  class="form-control"
+                  [(ngModel)]="editRequest.nomenclature"
+                  name="nomenclature"
+                  required
+                />
+              </div>
+  
+              <!-- Quantity -->
+              <div class="form-group">
+                <label for="editQuantity">Quantity / ብዛት</label>
+                <input
+                  type="number"
+                  id="editQuantity"
+                  class="form-control"
+                  [(ngModel)]="editRequest.quantity"
+                  name="quantity"
+                  required
+                />
+              </div>
+  
+              <!-- Requested By -->
+              <div class="form-group">
+                <label for="editRequestedBy">Requested By / የጠየቀው</label>
+                <input
+                  type="text"
+                  id="editRequestedBy"
+                  class="form-control"
+                  [(ngModel)]="editRequest.requestedBy"
+                  name="requestedBy"
+                  required
+                />
+              </div>
+  
+              <!-- Serial No -->
+              <div class="form-group">
+                <label for="editSerialNo">Serial No / የተለየ ቁጥር</label>
+                <input
+                  type="text"
+                  id="editSerialNo"
+                  class="form-control"
+                  [(ngModel)]="editRequest.serialNoOfEquip"
+                  name="serialNoOfEquip"
+                  required
+                />
+              </div>
+  
+              <!-- Submit Button -->
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel / ሰርዝ</button>
+                <button type="submit" class="btn btn-primary">Save Changes / ለመቀየር ይቆዩ</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

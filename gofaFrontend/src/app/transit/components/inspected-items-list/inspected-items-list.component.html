@@ -1,0 +1,39 @@
+<div class="card shadow-sm mt-4">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0">Inspected Items / የተመረመሩ ዕቃዎች ዝርዝር</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Supplier / የአቅራቢው ስም</th>
+            <th>Item Type / የእቃው አይነት</th>
+            <th>Status </th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of inspectedItems">
+            <td>{{ item.supplier }}</td>
+            <td>{{ item.itemType }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'bg-success': item.status === 'Approved',
+                'bg-warning': item.status === 'Pending',
+                'bg-danger': item.status === 'Rejected'
+              }">
+                {{ item.status }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-primary btn-sm" (click)="receiveItem(item.model1Id)">
+                Receive
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    color: #000; /* White text for better contrast */
+    margin-bottom: 20px;
+    padding: 20px;
+    background: linear-gradient(45deg, #ea210b, #04e763); /* Red and Green gradient to mimic the flag */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+    font-size: 1.8rem; /* Larger text size for prominence */
+    letter-spacing: 2px; /* Spacing between letters for a more elegant look */
+  }
+  
+  p {
+    margin: 10px 0;
+    font-size: 16px;
+  }
+  
+  strong {
+    font-weight: bold;
+  }
+  
+  button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #5a6268;
+  }

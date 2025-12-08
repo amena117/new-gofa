@@ -1,0 +1,115 @@
+<!-- src/app/Admin/user-list/user-list.component.html -->
+<div class="user-list-container">
+  <!-- Admin Info Display -->
+  
+
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading users... / ተጠቃሚዎችን በመጫን ላይ...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Search by name... / በስም ፈልግ..."
+        [(ngModel)]="searchName"
+        (input)="applyFilters()"
+      >
+      <select [(ngModel)]="selectedRole" (change)="applyFilters()">
+        <option value="">All Roles / ሁሉም ሚናዎች</option>
+        <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+      </select>
+    </div>
+
+    <table *ngIf="paginatedUsers.length > 0">
+      <thead>
+        <tr>
+          <th>First Name / የመጀመሪያ ስም</th>
+          <th>Last Name / የአባት ስም</th>
+          <th>Username / የተጠቃሚ ስም</th>
+          <th>Role / ሚና</th>
+          <th>Status / ሁኔታ</th>
+          <th>Actions / ተግባራት</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of paginatedUsers">
+          <td>
+            <span *ngIf="!user.isEditing">{{ user.firstName }}</span>
+            <input *ngIf="user.isEditing" [(ngModel)]="user.firstName" name="firstName_{{user.id}}">
+          </td>
+          <td>
+            <span *ngIf="!user.isEditing">{{ user.lastName }}</span>
+            <input *ngIf="user.isEditing" [(ngModel)]="user.lastName" name="lastName_{{user.id}}">
+          </td>
+          <td>{{ user.username }}</td>
+          <td>
+            <span *ngIf="!user.isEditing">{{ user.role }}</span>
+            <select *ngIf="user.isEditing" [(ngModel)]="user.role" name="role_{{user.id}}">
+              <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+            </select>
+          </td>
+          <td>
+            <span [class.text-danger]="user.isDisabled" [class.text-success]="!user.isDisabled">
+              {{ user.isDisabled ? 'Disabled' : 'Active' }}
+            </span>
+          </td>
+          <td>
+            <div *ngIf="user.isEditing" class="password-fields">
+              <input type="password" placeholder="New Password" [(ngModel)]="user.password" name="password_{{user.id}}">
+              <input type="password" placeholder="Confirm Password" [(ngModel)]="user.confirmPassword" name="confirmPassword_{{user.id}}">
+            </div>
+            
+            <div class="action-buttons">
+              <button *ngIf="!user.isEditing" (click)="startEditing(user)" [disabled]="!canManageUser(user.role)">
+                Edit / አርም
+              </button>
+              <button *ngIf="user.isEditing" (click)="saveUser(user)">Save / አስቀምጥ</button>
+              <button *ngIf="user.isEditing" (click)="cancelEditing(user)">Cancel / ሰርዝ</button>
+              
+              <button
+                *ngIf="!user.isEditing"
+                [class.btn-danger]="user.isDisabled"
+                [class.btn-warning]="!user.isDisabled"
+                class="btn-sm ml-2"
+                style="background-color: red; color: white; margin-left: 5px;"
+                (click)="toggleDisableUser(user)"
+                [disabled]="!canManageUser(user.role)"
+              >
+                {{ user.isDisabled ? 'Enable' : 'Disable' }} / {{ user.isDisabled ? 'ፍቀድ' : 'አግድ' }}
+              </button>
+              
+              <button
+                *ngIf="!user.isEditing"
+                class="btn-delete"
+                style="background-color: darkred; color: white; margin-left: 5px;"
+                (click)="deleteUser(user)"
+                [disabled]="!canManageUser(user.role)"
+              >
+                Delete / ሰርዝ
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">Previous / ቀዳሚ</button>
+      <span>Page / ገፅ {{ currentPage }} of / ከ {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next / ቀጣይ</button>
+    </div>
+
+    <div *ngIf="!isLoading && users.length === 0" class="no-users">
+      <p>No users found. / ተጠቃሚዎች አልተገኙም።</p>
+    </div>
+    
+    <div *ngIf="!isLoading && users.length > 0 && paginatedUsers.length === 0" class="no-users">
+      <p>No users match your filters. / በማጣሪያዎ የሚመጥኑ ተጠቃሚዎች የሉም።</p>
+    </div>
+  </div>
+</div>

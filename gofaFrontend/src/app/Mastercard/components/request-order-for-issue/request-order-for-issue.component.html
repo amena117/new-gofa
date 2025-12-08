@@ -1,0 +1,252 @@
+<div class="container mt-4">
+  <h2>Request Order For Issue / የጥያቄ ትዕዛዝ ለመልቀቅ</h2>
+  <form [formGroup]="requestOrderForm" (ngSubmit)="onSubmit()">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="date">Date / ቀን</label>
+        <div class="form-control readonly">{{ ethiopianDateString }}</div>
+        <div *ngIf="requestOrderForm.get('date')?.invalid" class="text-danger">
+          Date is required. / ቀን ያስፈልጋል።
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label for="issueVoucherNo">Issue Voucher No / የወጪ ቫውቸር ቁጥር</label>
+        <input type="text" id="issueVoucherNo" class="form-control" formControlName="issueVoucherNo" required>
+        <div *ngIf="requestOrderForm.get('issueVoucherNo')?.touched && requestOrderForm.get('issueVoucherNo')?.invalid" class="text-danger">
+          Issue Voucher No is required. / የወጪ ቫውቸር ቁጥር ያስፈልጋል።
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label for="voucherNo">Voucher No / ቫውቸር ቁጥር</label>
+        <input type="text" id="voucherNo" class="form-control" formControlName="voucherNo" required>
+        <div *ngIf="requestOrderForm.get('voucherNo')?.touched && requestOrderForm.get('voucherNo')?.invalid" class="text-danger">
+          Voucher No is required. / ቫውቸር ቁጥር ያስፈልጋል።
+        </div>
+      </div>
+    </div>
+
+    <!-- Added Currency Selection -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="currency">Currency / ምንዛሪ</label>
+        <select id="currency" class="form-control" formControlName="currency" required>
+          <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+        </select>
+        <div *ngIf="requestOrderForm.get('currency')?.touched && requestOrderForm.get('currency')?.invalid" class="text-danger">
+          Currency is required. / ምንዛሪ ያስፈልጋል።
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="requestingUnit">Requesting Unit / የጠየቀው ክፍል</label>
+        <input type="text" id="requestingUnit" class="form-control" formControlName="requestingUnit" required>
+        <div *ngIf="requestOrderForm.get('requestingUnit')?.touched && requestOrderForm.get('requestingUnit')?.invalid" class="text-danger">
+          Requesting Unit is required. / የጠየቀው ክፍል ያስፈልጋል።
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label for="issuingStore">Issuing Store / የሰጠው መጋዘን</label>
+        <input type="text" id="issuingStore" class="form-control" formControlName="issuingStore" required>
+        <div *ngIf="requestOrderForm.get('issuingStore')?.touched && requestOrderForm.get('issuingStore')?.invalid" class="text-danger">
+          Issuing Store is required. / የሰጠው መጋዘን ያስፈልጋል።
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label for="makeAndModel">Make and Model / የእቃው አይነት እና ሞዴል</label>
+        <input type="text" id="makeAndModel" class="form-control" formControlName="makeAndModel" required>
+        <div *ngIf="requestOrderForm.get('makeAndModel')?.touched && requestOrderForm.get('makeAndModel')?.invalid" class="text-danger">
+          Make and Model is required. / የእቃው አይነት እና ሞዴል ያስፈልጋል።
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="category">Category / መደብ</label>
+        <input type="text" id="category" class="form-control" formControlName="category" required>
+        <div *ngIf="requestOrderForm.get('category')?.touched && requestOrderForm.get('category')?.invalid" class="text-danger">
+          Category is required. / መደብ ያስፈልጋል።
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-check">
+          <input type="checkbox" id="isIssue" class="form-check-input" formControlName="isIssue">
+          <label for="isIssue" class="form-check-label">Issue / ወጪ</label>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-check">
+          <input type="checkbox" id="isServiceable" class="form-check-input" formControlName="isServiceable">
+          <label for="isServiceable" class="form-check-label">Serviceable / አገልግሎት የሚሰጥ</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issued Items -->
+    <h5>Issued Items / የተሰጡ እቃዎች</h5>
+    <div formArrayName="issuedItems">
+      <div *ngFor="let item of issuedItems.controls; let i = index" [formGroupName]="i" class="row mb-2">
+        <div class="col-md-2">
+          <label>Item No / የእቃ ቁጥር</label>
+          <input type="text" class="form-control" formControlName="itemNo" required>
+          <div *ngIf="item.get('itemNo')?.touched && item.get('itemNo')?.invalid" class="text-danger">
+            Item No is required. / የእቃ ቁጥር ያስፈልጋል።
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label>Stock Number / የክምችት ቁጥር</label>
+          <input type="text" class="form-control" formControlName="stockNumber" required>
+          <div *ngIf="item.get('stockNumber')?.touched && item.get('stockNumber')?.invalid" class="text-danger">
+            Stock Number is required. / የክምችት ቁጥር ያስፈልጋል።
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label>Description / መግለጫ</label>
+          <input type="text" class="form-control" formControlName="description" required>
+          <div *ngIf="item.get('description')?.touched && item.get('description')?.invalid" class="text-danger">
+            Description is required. / መግለጫ ያስፈልጋል።
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label>Issued / የተሰጠ</label>
+          <input type="number" class="form-control" formControlName="issued" required min="1">
+          <div *ngIf="item.get('issued')?.touched && item.get('issued')?.invalid" class="text-danger">
+            Issued quantity must be greater than 0. / የተሰጠው ብዛት ከ0 በላይ መሆን አለበት።
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label>Unit Price / የአንዱ ዋጋ</label>
+          <div class="input-group">
+            <span class="input-group-text">{{ getCurrencySymbol() }}</span>
+            <input type="number" class="form-control" formControlName="unitPrice" required min="0">
+          </div>
+          <div *ngIf="item.get('unitPrice')?.touched && item.get('unitPrice')?.invalid" class="text-danger">
+            Unit Price must be non-negative. / የአንዱ ዋጋ አሉታዊ መሆን የለበትም።
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label>Total Price / ጠቅላላ ዋጋ</label>
+          <div class="input-group">
+            <span class="input-group-text">{{ getCurrencySymbol() }}</span>
+            <input type="number" class="form-control" formControlName="totalPrice" readonly>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <button type="button" class="btn btn-danger mt-4" (click)="removeIssuedItem(i)">Remove / አስወግድ</button>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary mt-2" (click)="addIssuedItem()">Add Issued Item / የተሰጠ እቃ ጨምር</button>
+
+    <!-- Persons Involved -->
+    <h5 class="mt-4">Persons Involved / ተሳታፊ ሰዎች</h5>
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <h6>Prepared By / ያዘጋጀው</h6>
+        <div formGroupName="preparedBy">
+          <div class="mb-2">
+            <label for="preparedByName">Name / ስም</label>
+            <input type="text" id="preparedByName" class="form-control" formControlName="name" readonly required>
+            <div *ngIf="preparedBy.get('name')?.invalid" class="text-danger">
+              Name is required. / ስም ያስፈልጋል።
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="preparedByTitle">Title / ማዕረግ</label>
+            <input type="text" id="preparedByTitle" class="form-control" formControlName="title" required>
+            <div *ngIf="preparedBy.get('title')?.touched && preparedBy.get('title')?.invalid" class="text-danger">
+              Title is required. / ማዕረግ ያስፈልጋል።
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="preparedByJobResponsibility">Job Responsibility / የሥራ ኃላፊነት</label>
+            <input type="text" id="preparedByJobResponsibility" class="form-control" formControlName="jobResponsibility" required>
+            <div *ngIf="preparedBy.get('jobResponsibility')?.touched && preparedBy.get('jobResponsibility')?.invalid" class="text-danger">
+              Job Responsibility is required. / የሥራ ኃላፊነት ያስፈልጋል።
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="preparedByDate">Date / ቀን</label>
+            <div class="form-control readonly">{{ preparedByEthiopianDateString }}</div>
+            <div *ngIf="preparedBy.get('date')?.invalid" class="text-danger">
+              Date is required. / ቀን ያስፈልጋል።
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <h6>Verified By / ያረጋገጠው</h6>
+        <div formGroupName="verifiedBy">
+          <div class="mb-2">
+            <label for="verifiedByName">Name / ስም</label>
+            <input type="text" id="verifiedByName" class="form-control" formControlName="name" required>
+            <div *ngIf="verifiedBy.get('name')?.touched && verifiedBy.get('name')?.invalid" class="text-danger">
+              Name is required. / ስም ያስፈልጋል።
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="verifiedByTitle">Title / ማዕረግ</label>
+            <input type="text" id="verifiedByTitle" class="form-control" formControlName="title" required>
+            <div *ngIf="verifiedBy.get('title')?.touched && verifiedBy.get('title')?.invalid" class="text-danger">
+              Title is required. / ማዕረግ ያስፈልጋል።
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="verifiedByJobResponsibility">Job Responsibility / የሥራ ኃላፊነት</label>
+            <input type="text" id="verifiedByJobResponsibility" class="form-control" formControlName="jobResponsibility" required>
+            <div *ngIf="verifiedBy.get('jobResponsibility')?.touched && verifiedBy.get('jobResponsibility')?.invalid" class="text-danger">
+              Job Responsibility is required. / የሥራ ኃላፊነት ያስፈልጋል።
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="verifiedByDate">Date / ቀን</label>
+            <div class="form-control readonly">{{ verifiedByEthiopianDateString }}</div>
+            <div *ngIf="verifiedBy.get('date')?.invalid" class="text-danger">
+              Date is required. / ቀን ያስፈልጋል።
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <h6>Approved By / ያፀደቀው</h6>
+        <div formGroupName="approvedBy">
+          <div class="mb-2">
+            <label for="approvedByName">Name / ስም</label>
+            <input type="text" id="approvedByName" class="form-control" formControlName="name" required>
+            <div *ngIf="approvedBy.get('name')?.touched && approvedBy.get('name')?.invalid" class="text-danger">
+              Name is required. / ስም ያስፈልጋል።
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="approvedByTitle">Title / ማዕረግ</label>
+            <input type="text" id="approvedByTitle" class="form-control" formControlName="title" required>
+            <div *ngIf="approvedBy.get('title')?.touched && approvedBy.get('title')?.invalid" class="text-danger">
+              Title is required. / ማዕረግ ያስፈልጋል።
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="approvedByJobResponsibility">Job Responsibility / የሥራ ኃላፊነት</label>
+            <input type="text" id="approvedByJobResponsibility" class="form-control" formControlName="jobResponsibility" required>
+            <div *ngIf="approvedBy.get('jobResponsibility')?.touched && approvedBy.get('jobResponsibility')?.invalid" class="text-danger">
+              Job Responsibility is required. / የሥራ ኃላፊነት ያስፈልጋል።
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="approvedByDate">Date / ቀን</label>
+            <div class="form-control readonly">{{ approvedByEthiopianDateString }}</div>
+            <div *ngIf="approvedBy.get('date')?.invalid" class="text-danger">
+              Date is required. / ቀን ያስፈልጋል።
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button type="submit" class="btn btn-primary">Submit / ላክ</button>
+      <button type="button" class="btn btn-secondary ms-2" [routerLink]="['/MasterCard/request-order-list']">Cancel / ሰርዝ</button>
+    </div>
+  </form>
+</div>

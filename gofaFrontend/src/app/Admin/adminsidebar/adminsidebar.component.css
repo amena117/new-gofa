@@ -1,0 +1,201 @@
+/* Import Google Fonts for better typography */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* Sidebar Container */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(180deg, #03203c 0%, #02172a 100%); /* Gradient for depth */
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for separation */
+  transition: transform 0.3s ease, width 0.3s ease; /* Smooth transitions */
+  font-family: 'Roboto', sans-serif; /* Modern font */
+}
+
+/* Closed Sidebar State */
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+/* Profile Section */
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle divider */
+}
+
+.profile-info {
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.profile-info:hover {
+  transform: scale(1.05); /* Slight zoom on hover */
+}
+
+.username {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+  margin-bottom: 8px;
+  color: #ffffff;
+  letter-spacing: 0.5px; /* Improved readability */
+}
+
+.role {
+  font-size: 14px;
+  color: #f7dc6f; /* Soft yellow for contrast */
+  margin: 0;
+  font-style: italic; /* Adds elegance */
+  opacity: 0.9; /* Slightly muted */
+}
+
+/* Navigation Links */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  margin-bottom: 12px;
+}
+
+li a,
+li button { /* Style both links and logout button consistently */
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  display: block;
+  padding: 12px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.05); /* Subtle base color */
+  cursor: pointer;
+  border: none; /* For button */
+  width: 100%; /* Full width for consistency */
+  text-align: left; /* Align text */
+}
+
+.logout-button{
+    color: tomato;
+    text-decoration: none;
+ 
+  font-size: 16px;
+  display: block;
+  padding: 12px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.05); /* Subtle base color */
+  cursor: pointer;
+  border: none; /* For button */
+  width: 100%; /* Full width for consistency */
+  text-align: left; /* Align text */
+}
+
+li a:hover,
+li button:hover {
+  background-color: #02172a; /* Darker blue on hover */
+  transform: translateX(5px); /* Slight shift for interactivity */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+}
+
+/* Active Link Styling */
+li a.router-link-active {
+  background-color: #f7dc6f; /* Yellow to indicate active page */
+  color: #03203c; /* Dark text for contrast */
+  font-weight: bold;
+}
+
+/* Main Content Adjustment */
+.main-content {
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.sidebar-closed {
+  margin-left: 0;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+  .sidebar {
+    width: 200px; /* Slightly narrower for mid-sized screens */
+  }
+
+  .main-content {
+    margin-left: 200px;
+  }
+
+  .main-content.sidebar-closed {
+    margin-left: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    transform: none; /* Static on mobile */
+    padding: 15px;
+    box-shadow: none; /* Remove shadow for mobile */
+    background: #03203c; /* Solid color for simplicity */
+  }
+
+  .sidebar.closed {
+    display: none; /* Hide instead of translate */
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .profile-section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+
+  .username {
+    font-size: 18px;
+  }
+
+  .role {
+    font-size: 12px;
+  }
+
+  li a,
+  li button {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .profile-section {
+    margin-bottom: 15px;
+  }
+
+  .username {
+    font-size: 16px;
+  }
+
+  .role {
+    font-size: 11px;
+  }
+
+  li a,
+  li button {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+}

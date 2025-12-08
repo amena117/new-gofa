@@ -1,0 +1,118 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Bin Card Lists / የቢን ካርድ ዝርዝር</h2>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Enter search term"
+      aria-label="Search term"
+    />
+    <select [(ngModel)]="searchBy" aria-label="Search by">
+      <option value="id">ID</option>
+      <option value="stockNumber">Stock Number</option>
+      <option value="model">Model</option>
+      <option value="date">Date</option>
+    </select>
+    <button (click)="onSearch()">Search</button>
+  </div>
+
+  <!-- Data Table -->
+  <table
+    class="data-table"
+    role="grid"
+    aria-live="polite"
+    [attr.aria-rowcount]="totalItems"
+  >
+    <thead>
+      <tr>
+        <th scope="col">Stock Number</th>
+        <th scope="col">Description</th>
+        <th scope="col">Location</th>
+        <th scope="col">Category</th>
+        <th scope="col">Balance</th>
+        <th scope="col">Model</th>
+        <th scope="col">Date</th>
+        <th scope="col">Posted By</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let item of paginatedItems; let i = index"
+        [attr.aria-rowindex]="i + 2"
+      >
+        <td>{{ item.stockNumber }}</td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.location }}</td>
+        <td>{{ item.category }}</td>
+        <td>{{ item.balance }}</td>
+        <td>{{ item.model }}</td>
+        <td>{{ item.date | date: 'yyyy-MM-dd' }}</td>
+        <td>{{ item.postedBy }}</td>
+   <td>
+  <ng-container *ngIf="userRole === 'MINISTORE'; else noAction">
+    <button class="update" (click)="updateItem(item.id)">
+      Add By Part Number
+    </button>
+
+    <button class="delete" (click)="deleteItem(item.id)">
+      Delete
+    </button>
+  </ng-container>
+
+  <ng-template #noAction>
+    <button class="update" disabled>No action</button>
+  </ng-template>
+</td>
+
+
+      </tr>
+      <tr *ngIf="filteredItems.length === 0">
+        <td colspan="9" class="no-data">No records found.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Serial Numbers Modal -->
+  <div
+    *ngIf="serialNumbers.length > 0"
+    class="serial-numbers-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="serialNumbersTitle"
+  >
+    <h3 id="serialNumbersTitle">Serial Numbers</h3>
+    <ul>
+      <li *ngFor="let serial of serialNumbers">{{ serial }}</li>
+    </ul>
+    <button (click)="closeSerialNumbers()">Close</button>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div
+    class="pagination"
+    role="navigation"
+    aria-label="Pagination Navigation"
+  >
+    <button
+      (click)="changePage(currentPage - 1)"
+      [disabled]="currentPage === 1"
+      [attr.aria-disabled]="currentPage === 1"
+      aria-label="Previous Page"
+    >
+      Previous
+    </button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button
+      (click)="changePage(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+      [attr.aria-disabled]="currentPage === totalPages"
+      aria-label="Next Page"
+    >
+      Next
+    </button>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="card shadow-sm mt-4">
+  <div class="card-header bg-warning text-dark">
+    <h5 class="mb-0">Sent for Inspection List</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Supplier</th>
+            <th>Item Type</th>
+            <th>Serial Number</th>
+            <th>Date Sent</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of sentForInspectionItems">
+            <td>{{ item.supplier }}</td>
+            <td>{{ item.itemType }}</td>
+            <td>{{ item.serialNumber }}</td>
+            <td>{{ item.DateSentForInspection | date:'mediumDate' }}</td>
+            <td>
+              <span class="fw-bold" [ngClass]="{
+                'text-warning': item.status === 'Pending',
+                'text-success': item.status === 'Received by Inspection Unit'
+              }">
+                {{ item.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

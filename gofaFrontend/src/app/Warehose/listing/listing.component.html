@@ -1,0 +1,164 @@
+<div class="item-listing">
+  <div class="header">
+    <h1 class="title">Item Listing / የዕቃዎች ዝርዝር</h1>
+
+    <!-- Role Filter Dropdown - Only for Supply and Distribution Team Leader -->
+    <div *ngIf="isSupplyAndDistributionLeader()" class="filter-controls">
+      <label for="roleFilter">Filter by Role(s): </label>
+      <div class="custom-multiselect">
+        <div class="multiselect-header" (click)="toggleDropdown()" [attr.aria-expanded]="dropdownOpen">
+          {{ selectedRoles.length > 0 ? selectedRoles.join(', ') : 'Select Roles' }}
+          <span class="dropdown-arrow" [ngClass]="{'open': dropdownOpen}"></span>
+        </div>
+        <ul class="multiselect-options" *ngIf="dropdownOpen">
+          <li *ngFor="let role of availableRoles">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                [value]="role"
+                [checked]="selectedRoles.includes(role)"
+                (change)="onRoleCheckboxChange($event, role)"
+                [attr.aria-label]="'Filter by ' + role"
+              />
+              {{ role }}
+            </label>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Debug Button -->
+    <!-- <button 
+      class="action-btn secondary" 
+      (click)="debugUserCache()"
+      style="margin-left: auto;"
+      aria-label="Debug user cache">
+      Debug Cache
+    </button> -->
+
+    <!-- Register New Item Button - Hidden for Supply and Distribution Team Leader -->
+    <button 
+      *ngIf="!isSupplyAndDistributionLeader()"
+      class="action-btn primary" 
+      (click)="navigateToRegister()"
+      aria-label="Navigate to register new item">
+      Register New Item / አዲስ እቃ መዝግብ
+    </button>
+  </div>
+
+  <!-- Search Input -->
+  <div class="search-container">
+    <label for="searchInput" class="search-label">Search by Description: </label>
+    <input
+      id="searchInput"
+      type="text"
+      class="search-input"
+      placeholder="Search items..."
+      [value]="searchTerm"
+      (input)="onSearchChange($event)"
+      aria-label="Search items by description"
+    />
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading items...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="message error-message" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Table and Pagination -->
+  <div *ngIf="!isLoading && filteredItems.length > 0" class="content-section">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name (Description) / የእቃ ስም</th>
+            <th>Quantity / ብዛት</th>
+            <th>Category / ምድብ</th>
+            <th>Registered By / የመዘገበው</th>
+            <th>Registration Date / የምዝገባ ቀን</th>
+            <th>Actions / ተግባር</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of paginatedItems; trackBy: trackByItemId" class="table-row">
+            <td data-label="Name">
+              {{ item.description | slice:0:60 }}{{ item.description.length > 60 ? '...' : '' }}
+            </td>
+            <td data-label="Quantity / ብዛት">
+              {{ item.quantity !== null && item.quantity !== undefined ? item.quantity : 'N/A' }}
+              <span *ngIf="item.quantity === 0" class="warning-tooltip" title="Zero quantity detected"></span>
+            </td>
+            <td data-label="Category / ምድብ">{{ item.category || 'Unknown' }}</td>
+            <td data-label="Registered By / የመዘገበው">
+              {{ getRegisteredByDisplay(item.registeredBy) }}
+            </td>
+            <td data-label="Registration Date / የምዝገባ ቀን">{{ formatEthiopianDate(item.registrationDate) }}</td>
+            <td data-label="Actions / ተግባር">
+              <button
+                class="action-btn secondary small"
+                (click)="viewItemDetails(item.itemId!)"
+                *ngIf="item.itemId"
+                [attr.aria-label]="'View details for item ' + (item.description || 'Unknown')">
+                View Details
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls">
+      <div class="pagination-info">
+        Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to 
+        {{ Math.min(currentPage * itemsPerPage, filteredItems.length) }} of {{ filteredItems.length }} items
+      </div>
+
+      <div class="pagination-size">
+        <label for="pageSize">Items per page: </label>
+        <select id="pageSize" [value]="itemsPerPage" (change)="onItemsPerPageChange($event)">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+
+      <div class="pagination-buttons">
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage - 1)">
+          Previous
+        </button>
+
+        <span class="page-indicator">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(currentPage + 1)">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredItems.length === 0" class="empty-state">
+    <h3>{{ items.length === 0 ? 'No items found for your role.' : 'No items match your search.' }}</h3>
+    <p>
+      <a *ngIf="!isSupplyAndDistributionLeader()" (click)="navigateToRegister()" class="link-button" aria-label="Register a new item">
+        Register an item / አዲስ እቃ መዝግብ
+      </a>
+    </p>
+  </div>
+</div>

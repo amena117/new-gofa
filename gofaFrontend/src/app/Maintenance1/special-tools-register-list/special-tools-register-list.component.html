@@ -1,0 +1,79 @@
+<div class="container">
+  <h2>Special Tools Register List/ የ ትውስት ንብረቶች ዝርዝር</h2>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Tool Name</th>
+        <th>Received By</th>
+        <th>Quantity</th>
+        <th>Description</th>
+        <th>Received Date</th>
+        <th>Given By</th>
+        <th>Return Date</th>
+        <th>Returned date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let record of specialToolsRegisters">
+        <td>{{ record.toolName }}</td>
+        <td>{{ record.recievedBy }}</td>
+        <td>{{ record.quantity }}</td>
+        <td>{{ record.description }}</td>
+        <td>{{ record.recievedDate | date:'medium' }}</td>
+        <td>{{ record.givenBy }}</td>
+        <td>{{ record.returnDate | date:'medium' }}</td>
+        <td>{{ record.returnedDate | date:'medium' }}</td>
+        
+        <td>
+          <button 
+            *ngIf="!record.returnedDate" 
+            (click)="returnTool(record)" 
+            class="action-button return-button">
+            Return
+          </button>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-backdrop" *ngIf="editingRecord">
+  <div class="modal">
+    <h3>Edit Tool Record</h3>
+
+    <form (ngSubmit)="saveEdit()">
+      <label>Tool Name:</label>
+      <input [(ngModel)]="editingRecord.toolName" name="toolName" required />
+
+      <label>Received By:</label>
+      <input [(ngModel)]="editingRecord.recievedBy" name="recievedBy" required />
+
+      <label>Quantity:</label>
+      <input type="number" [(ngModel)]="editingRecord.quantity" name="quantity" required min="1" />
+
+      <label>Description:</label>
+      <textarea [(ngModel)]="editingRecord.description" name="description"></textarea>
+
+      <label>Received Date:</label>
+      <input type="date" [(ngModel)]="editingRecord.recievedDate" name="recievedDate" />
+
+      <label>Given By:</label>
+      <input [(ngModel)]="editingRecord.givenBy" name="givenBy" required />
+
+      <label>Return Date (Deadline):</label>
+      <input type="date" [(ngModel)]="editingRecord.returnDate" name="returnDate" />
+
+      <label>Returned Date:</label>
+      <input type="date" [(ngModel)]="editingRecord.returnedDate" name="returnedDate" />
+
+      <div class="modal-actions">
+        <button type="submit" class="save-btn">Save</button>
+        <button type="button" (click)="closeEditModal()" class="cancel-btn">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

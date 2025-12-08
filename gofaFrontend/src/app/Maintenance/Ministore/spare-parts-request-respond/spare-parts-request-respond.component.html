@@ -1,0 +1,67 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Spare Parts Requests</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    Loading spare parts requests...
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Table to display all spare parts requests -->
+  <table class="request-table" *ngIf="!isLoading && !errorMessage">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Stock Number</th>
+        <th>Works Order Number</th>
+        <th>Quantity Approved</th>
+        <th>Part Cost</th>
+        <th>Labour Cost</th>
+        <th>Total Cost</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let request of sparePartsRequests">
+        <td>{{ request.id }}</td>
+        <td>{{ request.stockNumber }}</td>
+        <td>{{ request.worksOrderNumber }}</td>
+        <td>{{ request.quantityApproved }}</td>
+        <td>{{ request.partCost | currency:'ETB':'symbol' }}</td>
+        <td>{{ request.labourCost | currency:'ETB':'symbol' }}</td>
+        <td>{{ request.totalCost | currency:'ETB':'symbol' }}</td>
+        <td>
+          <div *ngIf="request.partCost === 0; else noAction">
+            <button (click)="selectRequestForCost(request)">Add Cost</button>
+          </div>
+          <ng-template #noAction>
+            <span class="no-action-text">Cost Added</span>
+          </ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Add Part Cost Form -->
+  <div class="cost-form-container" *ngIf="selectedRequest">
+    <h3>Add Part Cost for Request ID: {{ selectedRequest.id }}</h3>
+    <div class="cost-form">
+      <label>
+        Part Cost:
+        <input type="number" [(ngModel)]="partCost" min="0" />
+      </label>
+
+      <!-- Show LabourCost and Total dynamically -->
+      <p><strong>Labour Cost:</strong> {{ selectedRequest.labourCost | currency:'ETB':'symbol' }}</p>
+      <p><strong>Total Cost:</strong> {{ partCost + selectedRequest.labourCost | currency:'ETB':'symbol' }}</p>
+
+      <button (click)="submitCost()">Submit</button>
+      <button (click)="cancelCost()">Cancel</button>
+    </div>
+  </div>
+</div>

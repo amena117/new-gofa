@@ -1,0 +1,45 @@
+<div class="container">
+    <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Spare Parts Requests</h2>
+    <button class="btn btn-primary mb-3" routerLink="/maintenance/spare-parts-requests/add">Add New Request</button>
+  
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Part Number</th>
+          <th>Technician Name</th>
+          <th>Amount Asked</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of sparePartsRequests">
+          <td>{{ request.id }}</td> <!-- Show 'N/A' if id is undefined -->
+          <td>{{ request.partNumber }}</td>
+          <td>{{ request.technicianName }}</td>
+          <td>{{ request.amountAsked }}</td>
+          <td>
+            <button
+              class="btn btn-info btn-sm"
+              [routerLink]="['/maintenance/spare-parts-requests/details', request.id]"
+              [disabled]="!request.id"> <!-- Disable button if id is undefined -->
+              View
+            </button>
+            <button
+              class="btn btn-warning btn-sm ms-2"
+              [routerLink]="['/maintenance/spare-parts-requests/edit', request.id]"
+              [disabled]="!request.id"> <!-- Disable button if id is undefined -->
+              Edit
+            </button>
+            <button
+              class="btn btn-danger btn-sm ms-2"
+              (click)="deleteRequest(request.id)"
+              [disabled]="!request.id"> <!-- Disable button if id is undefined -->
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

@@ -1,0 +1,15 @@
+<div class="reject-container">
+  <h2>Reject Spare Parts Request</h2>
+  
+  <form (ngSubmit)="submitRejection()">
+    <div class="form-group">
+      <label for="reason">Reason for Rejection:</label>
+      <textarea id="reason" [(ngModel)]="reason" name="reason" required></textarea>
+    </div>
+
+    <div class="button-group">
+      <button type="submit" class="btn reject">Submit</button>
+      <button type="button" (click)="cancel()" class="btn cancel">Cancel</button>
+    </div>
+  </form>
+</div>

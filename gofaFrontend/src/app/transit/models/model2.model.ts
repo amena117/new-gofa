@@ -1,0 +1,40 @@
+export interface Model2Item {
+  model1Id: number;
+  supplier: string;
+
+  model2Id : number;
+  date : Date;
+  issueVocNo : string;
+  voucherNumber : string;
+  transType : string;
+  requestingUnit : string;
+  issuingStore : string;
+  model : string;
+  registeredBy : string;
+  status : string;
+  category : string;
+  stockNumber : string;
+  description : string;
+  unitOfMeasurment : string;
+  onHand : number;
+  request : number;
+  issued : number;
+  // dO : number;
+  unitPrice : number;
+  totalPrice : number;
+  preparedBy : string;
+  approvedBy : string;
+  issuedTurnBy : string;
+  currency : string;
+  pTitle : string;
+  checkedBy : string;
+  cTitle : string;
+  aTitle : string;
+  iTitle : string;
+  issBy : string;
+  rTitle: string;
+  receivedBy : string;
+  isTitle : string;
+  do: number;
+
+}

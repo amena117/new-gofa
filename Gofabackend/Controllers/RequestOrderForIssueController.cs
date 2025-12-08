@@ -1,0 +1,382 @@
+using Gofabackend.Data;
+using Gofabackend.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace Gofabackend.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class RequestOrderForIssueController : ControllerBase
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly ILogger<RequestOrderForIssueController> _logger;
+
+        public RequestOrderForIssueController(ApplicationDbContext context, ILogger<RequestOrderForIssueController> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
+
+        // GET: api/RequestOrderForIssue
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<RequestOrderForIssue>>> GetRequestOrders()
+        {
+            _logger.LogInformation("Fetching all RequestOrdersForIssue");
+            return await _context.RequestOrdersForIssue
+                .Include(r => r.IssuedItems)
+                .ToListAsync();
+        }
+
+        // GET: api/RequestOrderForIssue/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<RequestOrderForIssue>> GetRequestOrder(int id)
+        {
+            _logger.LogInformation("Fetching RequestOrderForIssue with ID {Id}", id);
+            var requestOrder = await _context.RequestOrdersForIssue
+                .Include(r => r.IssuedItems)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (requestOrder == null)
+            {
+                _logger.LogWarning("RequestOrderForIssue with ID {Id} not found", id);
+                return NotFound();
+            }
+
+            return requestOrder;
+        }
+
+        // POST: api/RequestOrderForIssue
+        [HttpPost]
+        public async Task<ActionResult<RequestOrderForIssue>> CreateRequestOrder(RequestOrderForIssue requestOrder)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for CreateRequestOrder");
+                return BadRequest(ModelState);
+            }
+
+            // Convert DateTimes to UTC
+            requestOrder.Date = requestOrder.Date.ToUniversalTime();
+            if (requestOrder.PreparedBy != null)
+                requestOrder.PreparedBy.Date = requestOrder.PreparedBy.Date.ToUniversalTime();
+            if (requestOrder.VerifiedBy != null)
+                requestOrder.VerifiedBy.Date = requestOrder.VerifiedBy.Date.ToUniversalTime();
+            if (requestOrder.ApprovedBy != null)
+                requestOrder.ApprovedBy.Date = requestOrder.ApprovedBy.Date.ToUniversalTime();
+
+            // Ensure IssuedItems have the correct foreign key
+            foreach (var item in requestOrder.IssuedItems)
+            {
+                item.RequestOrderForIssueId = requestOrder.Id;
+            }
+
+            _context.RequestOrdersForIssue.Add(requestOrder);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Created RequestOrderForIssue with ID {Id}", requestOrder.Id);
+            return CreatedAtAction(nameof(GetRequestOrder), new { id = requestOrder.Id }, requestOrder);
+        }
+
+        // PUT: api/RequestOrderForIssue/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRequestOrder(int id, RequestOrderForIssue requestOrder)
+        {
+            // 1. Validate input
+            if (id != requestOrder.Id)
+            {
+                _logger.LogWarning("ID mismatch for RequestOrderForIssue ID {Id}", id);
+                return BadRequest("ID mismatch between URL and request body.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for UpdateRequestOrder ID {Id}", id);
+                return BadRequest(ModelState);
+            }
+
+            // 2. Check if the entity exists
+            var existingOrder = await _context.RequestOrdersForIssue
+                .Include(o => o.IssuedItems)
+                .FirstOrDefaultAsync(o => o.Id == id);
+            if (existingOrder == null)
+            {
+                _logger.LogWarning("RequestOrderForIssue with ID {Id} not found", id);
+                return NotFound($"RequestOrderForIssue with ID {id} not found.");
+            }
+
+            // 3. Update properties
+            existingOrder.Date = requestOrder.Date.ToUniversalTime();
+            existingOrder.IssueVoucherNo = requestOrder.IssueVoucherNo;
+            existingOrder.VoucherNo = requestOrder.VoucherNo;
+            existingOrder.RequestingUnit = requestOrder.RequestingUnit;
+            existingOrder.IssuingStore = requestOrder.IssuingStore;
+            existingOrder.MakeAndModel = requestOrder.MakeAndModel;
+            existingOrder.Category = requestOrder.Category;
+            existingOrder.Currency = requestOrder.Currency;
+            existingOrder.IsIssue = requestOrder.IsIssue;
+            existingOrder.IsServiceable = requestOrder.IsServiceable;
+
+            // Update owned entities
+            existingOrder.PreparedBy = requestOrder.PreparedBy;
+            existingOrder.VerifiedBy = requestOrder.VerifiedBy;
+            existingOrder.ApprovedBy = requestOrder.ApprovedBy;
+
+            // 4. Handle IssuedItems update
+            _logger.LogInformation("Removing {Count} existing IssuedItems for RequestOrderForIssue ID {Id}",
+                existingOrder.IssuedItems?.Count ?? 0, id);
+            if (existingOrder.IssuedItems != null && existingOrder.IssuedItems.Any())
+            {
+                _context.IssuedItems.RemoveRange(existingOrder.IssuedItems);
+            }
+            existingOrder.IssuedItems.Clear();
+
+            _logger.LogInformation("Adding {Count} new IssuedItems for RequestOrderForIssue ID {Id}",
+                requestOrder.IssuedItems.Count, id);
+            foreach (var item in requestOrder.IssuedItems)
+            {
+                var newItem = new IssuedItem
+                {
+                    RequestOrderForIssueId = id,
+                    ItemNo = item.ItemNo,
+                    StockNumber = item.StockNumber,
+                    Description = item.Description,
+                    Issued = item.Issued,
+                    UnitPrice = item.UnitPrice
+                    // TotalPrice is handled by getter or database
+                };
+                _context.IssuedItems.Add(newItem);
+                existingOrder.IssuedItems.Add(newItem);
+            }
+
+            // 5. Save changes
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Concurrency error updating RequestOrderForIssue with ID {Id}", id);
+                if (!RequestOrderForIssueExists(id))
+                {
+                    return NotFound();
+                }
+                throw;
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException?.Message.Contains("IDENTITY_INSERT") == true)
+                {
+                    _logger.LogError(ex, "Identity insert error for IssuedItems with RequestOrderForIssue ID {Id}", id);
+                    return BadRequest("Cannot insert explicit value for identity column in table 'IssuedItems'.");
+                }
+                _logger.LogError(ex, "Database update error for RequestOrderForIssue ID {Id}", id);
+                return StatusCode(500, $"An error occurred while updating the order: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error updating RequestOrderForIssue with ID {Id}", id);
+                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+            }
+
+            // 6. Return the updated entity
+            _logger.LogInformation("Successfully updated RequestOrderForIssue with ID {Id}", id);
+            return Ok(existingOrder);
+        }
+
+        private bool RequestOrderForIssueExists(int id)
+        {
+            return _context.RequestOrdersForIssue.Any(e => e.Id == id);
+        }
+        
+ [HttpGet("report")]
+public async Task<IActionResult> GetRequestOrdersReport([FromQuery] RequestOrderReportFilter filter)
+{
+    try
+    {
+        DateTime? startDate = string.IsNullOrEmpty(filter.StartDate) ? null : DateTime.TryParse(filter.StartDate, out var sd) ? sd : null;
+        DateTime? endDate = string.IsNullOrEmpty(filter.EndDate) ? null : DateTime.TryParse(filter.EndDate, out var ed) ? ed : null;
+
+        if (filter.StartDate != null && startDate == null)
+        {
+            _logger.LogWarning("Invalid startDate format: {StartDate}", filter.StartDate);
+            return BadRequest("Invalid startDate format. Use YYYY-MM-DD.");
+        }
+        if (filter.EndDate != null && endDate == null)
+        {
+            _logger.LogWarning("Invalid endDate format: {EndDate}", filter.EndDate);
+            return BadRequest("Invalid endDate format. Use YYYY-MM-DD.");
+        }
+        if (startDate.HasValue && endDate.HasValue && startDate > endDate)
+        {
+            _logger.LogWarning("startDate {StartDate} is later than endDate {EndDate}", filter.StartDate, filter.EndDate);
+            return BadRequest("startDate cannot be later than endDate.");
+        }
+
+        var query = _context.RequestOrdersForIssue
+            .Include(r => r.IssuedItems)
+            .Include(r => r.PreparedBy)
+            .Include(r => r.VerifiedBy)
+            .Include(r => r.ApprovedBy)
+            .AsQueryable();
+
+        if (startDate.HasValue)
+        {
+            query = query.Where(r => r.Date >= startDate.Value);
+        }
+        if (endDate.HasValue)
+        {
+            query = query.Where(r => r.Date <= endDate.Value);
+        }
+        if (!string.IsNullOrWhiteSpace(filter.RequestingUnit))
+        {
+            query = query.Where(r => r.RequestingUnit != null && r.RequestingUnit.Contains(filter.RequestingUnit, StringComparison.OrdinalIgnoreCase));
+        }
+        if (!string.IsNullOrWhiteSpace(filter.IssuingStore))
+        {
+            query = query.Where(r => r.IssuingStore != null && r.IssuingStore.Contains(filter.IssuingStore, StringComparison.OrdinalIgnoreCase));
+        }
+        if (!string.IsNullOrWhiteSpace(filter.Category))
+        {
+            query = query.Where(r => r.Category != null && r.Category.Contains(filter.Category, StringComparison.OrdinalIgnoreCase));
+        }
+        if (!string.IsNullOrWhiteSpace(filter.MakeAndModel))
+        {
+            query = query.Where(r => r.MakeAndModel != null && r.MakeAndModel.Contains(filter.MakeAndModel, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var orders = await query.ToListAsync();
+
+        var filteredOrders = orders.Select(order =>
+        {
+            var filteredIssuedItems = order.IssuedItems.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(filter.StockNumber))
+            {
+                filteredIssuedItems = filteredIssuedItems.Where(i => i.StockNumber != null && i.StockNumber.Contains(filter.StockNumber, StringComparison.OrdinalIgnoreCase));
+            }
+            if (!string.IsNullOrWhiteSpace(filter.Description))
+            {
+                filteredIssuedItems = filteredIssuedItems.Where(i => i.Description != null && i.Description.Contains(filter.Description, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return new
+            {
+                Order = new
+                {
+                    order.Id,
+                    order.Date,
+                    order.IssueVoucherNo,
+                    order.VoucherNo,
+                    order.RequestingUnit,
+                    order.IssuingStore,
+                    order.MakeAndModel,
+                    order.Category,
+                    order.Currency,
+                    order.IsIssue,
+                    order.IsServiceable,
+                    PreparedBy = order.PreparedBy != null ? new
+                    {
+                        order.PreparedBy.Name,
+                        order.PreparedBy.Date
+                    } : null,
+                    VerifiedBy = order.VerifiedBy != null ? new
+                    {
+                        order.VerifiedBy.Name,
+                        order.VerifiedBy.Date
+                    } : null,
+                    ApprovedBy = order.ApprovedBy != null ? new
+                    {
+                        order.ApprovedBy.Name,
+                        order.ApprovedBy.Date
+                    } : null
+                },
+                IssuedItems = filteredIssuedItems.Select(i => new
+                {
+                    i.Id,
+                    i.RequestOrderForIssueId,
+                    i.ItemNo,
+                    i.StockNumber,
+                    i.Description,
+                    i.Issued,
+                    i.UnitPrice,
+                    i.TotalPrice
+                }).ToList(),
+                Totals = new
+                {
+                    TotalItems = filteredIssuedItems.Count(),
+                    TotalQuantityIssued = filteredIssuedItems.Sum(i => i.Issued),
+                    TotalPrice = filteredIssuedItems.Sum(i => i.TotalPrice)
+                }
+            };
+        }).ToList();
+
+        if (!string.IsNullOrWhiteSpace(filter.StockNumber) || !string.IsNullOrWhiteSpace(filter.Description))
+        {
+            filteredOrders = filteredOrders.Where(o => o.IssuedItems.Any()).ToList();
+        }
+
+        if (startDate.HasValue || endDate.HasValue || !string.IsNullOrWhiteSpace(filter.RequestingUnit) || !string.IsNullOrWhiteSpace(filter.IssuingStore) || !string.IsNullOrWhiteSpace(filter.Category) || !string.IsNullOrWhiteSpace(filter.MakeAndModel))
+        {
+            filteredOrders = filteredOrders.Where(o => o.IssuedItems.Any()).ToList();
+        }
+
+        _logger.LogInformation("Generated report with {Count} orders", filteredOrders.Count);
+        return Ok(new
+        {
+            Orders = filteredOrders,
+            Summary = new
+            {
+                TotalOrders = filteredOrders.Count,
+                TotalItems = filteredOrders.Sum(o => o.Totals.TotalItems),
+                TotalQuantityIssued = filteredOrders.Sum(o => o.Totals.TotalQuantityIssued),
+                TotalPrice = filteredOrders.Sum(o => o.Totals.TotalPrice)
+            }
+        });
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error generating report for RequestOrdersForIssue");
+        return StatusCode(500, new { error = $"An error occurred while generating the report: {ex.Message}" });
+    }
+}
+
+[HttpGet("categories")]
+public async Task<IActionResult> GetCategories()
+{
+    try
+    {
+        var categories = await _context.RequestOrdersForIssue
+            .Select(r => r.Category)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToListAsync();
+        return Ok(categories);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error fetching categories");
+        return BadRequest($"Error fetching categories: {ex.Message}");
+    }
+}
+
+[HttpGet("makeAndModels")]
+public async Task<IActionResult> GetMakeAndModels()
+{
+    try
+    {
+        var makeAndModels = await _context.RequestOrdersForIssue
+            .Select(r => r.MakeAndModel)
+            .Distinct()
+            .OrderBy(m => m)
+            .ToListAsync();
+        return Ok(makeAndModels);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error fetching make and models");
+        return BadRequest($"Error fetching make and models: {ex.Message}");
+    }
+}
+    }
+}

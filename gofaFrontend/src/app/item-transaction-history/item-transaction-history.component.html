@@ -1,0 +1,130 @@
+<div class="item-listing" #contentToDownload>
+  <!-- Header -->
+  <div class="header">
+    <h1 class="title">Transaction History / የገቢ ታሪኮች</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading transactions... / ግብይቶችን በመጫን ላይ...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage && !isLoading" class="message error-message">
+    <strong>Error:</strong> {{ errorMessage }}
+  </div>
+
+  <!-- Search and Table -->
+  <ng-container *ngIf="!isLoading && !errorMessage">
+    <!-- Search Bar -->
+    <div class="search-container">
+      <label class="search-label" for="searchInput">Search / ፈልግ:</label>
+      <input
+        id="searchInput"
+        type="text"
+        class="search-input"
+        [(ngModel)]="searchQuery"
+        (input)="applyFilter()"
+        placeholder="Item name, voucher, person, date..." />
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th (click)="sortTable('itemName')" style="cursor: pointer;">
+              Item Name / የእቃ ስም
+              <span *ngIf="sortColumn === 'itemName'">
+                {{ sortDirection === 'asc' ? ' 🔼' : ' 🔽' }}
+              </span>
+            </th>
+            <th (click)="sortTable('id')" style="cursor: pointer;">
+              ID / መለያ
+              <span *ngIf="sortColumn === 'id'">
+                {{ sortDirection === 'asc' ? ' 🔼' : ' 🔽' }}
+              </span>
+            </th>
+            <th (click)="sortTable('action')" style="cursor: pointer;">
+              Action / ተግባር
+              <span *ngIf="sortColumn === 'action'">
+                {{ sortDirection === 'asc' ? ' 🔼' : ' 🔽' }}
+              </span>
+            </th>
+            <th (click)="sortTable('quantity')" style="cursor: pointer;">
+              Quantity / ብዛት
+              <span *ngIf="sortColumn === 'quantity'">
+                {{ sortDirection === 'asc' ? ' 🔼' : ' 🔽' }}
+              </span>
+            </th>
+            <th (click)="sortTable('voucherNumber')" style="cursor: pointer;">
+              Voucher Number / ሰነድ ቁጥር
+              <span *ngIf="sortColumn === 'voucherNumber'">
+                {{ sortDirection === 'asc' ? ' 🔼' : ' 🔽' }}
+              </span>
+            </th>
+            <th (click)="sortTable('recipient')" style="cursor: pointer;">
+              Recipient / ተቀባይ
+              <span *ngIf="sortColumn === 'recipient'">
+                {{ sortDirection === 'asc' ? ' 🔼' : ' 🔽' }}
+              </span>
+            </th>
+            <th (click)="sortTable('registeredBy')" style="cursor: pointer;">
+              Registered By / ያስመዘገበው
+              <span *ngIf="sortColumn === 'registeredBy'">
+                {{ sortDirection === 'asc' ? ' 🔼' : ' 🔽' }}
+              </span>
+            </th>
+            <th (click)="sortTable('date')" style="cursor: pointer;">
+              Date / ቀን
+              <span *ngIf="sortColumn === 'date'">
+                {{ sortDirection === 'asc' ? ' 🔼' : ' 🔽' }}
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- No Results -->
+          <tr *ngIf="pagedTransactions.length === 0">
+            <td colspan="8" class="empty-state">
+              <h3>No transactions found.</h3>
+              <p>Try adjusting your search query.</p>
+            </td>
+          </tr>
+
+          <!-- Data Rows -->
+          <tr *ngFor="let transaction of pagedTransactions">
+            <td data-label="Item Name / የእቃ ስም">{{ transaction.itemName || 'Unknown / ያልታወቀ' }}</td>
+            <td data-label="ID / መለያ">{{ transaction.id }}</td>
+            <td data-label="Action / ተግባር">Received / ተቀበለ</td>
+            <td data-label="Quantity / ብዛት">{{ transaction.quantity }}</td>
+            <td data-label="Voucher Number / ሰነድ ቁጥር">{{ transaction.voucherNumber || ' ' }}</td>
+            <td data-label="Recipient / ተቀባይ">{{ transaction.recipient }}</td>
+            <td data-label="Registered By / ያስመዘገበው">{{ transaction.registeredBy }}</td>
+            <td data-label="Date / ቀን">{{ formatEthiopianDate(transaction.date) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-controls" *ngIf="getTotalPages() > 1">
+      <button
+        class="action-btn secondary small"
+        [disabled]="currentPage === 0"
+        (click)="previousPage($event)">
+        Previous
+      </button>
+      <span class="pagination-info">
+        Page {{ currentPage + 1 }} of {{ getTotalPages() }}
+      </span>
+      <button
+        class="action-btn secondary small"
+        [disabled]="currentPage >= getTotalPages() - 1"
+        (click)="nextPage($event)">
+        Next
+      </button>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,116 @@
+<div class="container mt-4">
+  <h2>Registered Maintenance Requests / የተመዘገቡ የጥገና መጠየቂያዎች</h2>
+
+  <!-- Search Input -->
+  <div class="mb-4 text-end">
+    <div class="d-flex justify-content-end">
+      <input
+        type="text"
+        class="form-control w-auto shadow-sm"
+        style="max-width: 300px;"
+        placeholder="Search by Serial No / በሴሪያል ቁጥር ፈልግ"
+        [(ngModel)]="searchSerialNo"
+        (input)="onSearchSerialNo()"
+      />
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading... / በመጫን ላይ...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Error:</strong> {{ error }}
+    <button type="button" class="btn-close" (click)="error = null"></button>
+  </div>
+
+  <!-- Responsive Table Wrapper -->
+  <div class="table-responsive shadow-sm rounded mb-3">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Nomenclature</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Requested By</th>
+          <th scope="col">Serial No</th>
+          <th scope="col">Date Received</th>
+          <th scope="col">Status</th>
+          <th scope="col" class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of paginatedRequests; let i = index">
+          <td><strong>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</strong></td>
+          <td>{{ request.nomenclature || 'N/A' }}</td>
+          <td>{{ request.quantity }}</td>
+          <td>{{ request.requestedBy || 'N/A' }}</td>
+          <td><code>{{ request.serialNoOfEquip || 'N/A' }}</code></td>
+          <td>{{ request.dateWorkOrderReceived | date:'shortDate' }}</td>
+          <td>
+            <span class="badge rounded-pill px-3 py-2" [class]="getStatusClass(request)">
+              {{ getStatusText(request) }}
+            </span>
+          </td>
+          <td class="text-center">
+            <div class="btn-group btn-group-sm" role="group">
+              <button class="btn btn-outline-info btn-sm" (click)="viewDetails(request)" title="View Details">
+                <i class="bi bi-eye"></i> View
+              </button>
+              <button
+                class="btn btn-outline-warning btn-sm"
+                (click)="openEditModal(request)"
+                [disabled]="isSendRequestDisabled(request.status)"
+                title="Edit Request"
+              >
+                <i class="bi bi-pencil"></i> Edit
+              </button>
+              <button
+                class="btn btn-outline-primary btn-sm"
+                (click)="sendRequest(request.worksOrderNumber)"
+                [disabled]="isSendRequestDisabled(request.status)"
+                title="Send Request"
+              >
+                <i class="bi bi-send"></i> Request
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!isLoading && filteredRequests.length === 0" class="text-center my-5 text-muted">
+    <i class="bi bi-tools" style="font-size: 3rem; opacity: 0.3;"></i>
+    <p class="mt-3 fs-5">No maintenance requests found. / ምንም የጥገና መጠየቂያ አልተገኘም።</p>
+  </div>
+
+  <!-- Pagination -->
+ <nav *ngIf="totalPages > 1" class="mt-4 d-flex justify-content-center">
+  <ul class="pagination pagination-lg">
+    <li class="page-item" [class.disabled]="currentPage === 1">
+      <a class="page-link" (click)="goToPage(currentPage - 1)" style="cursor: pointer;">Previous</a>
+    </li>
+
+    <li 
+      class="page-item" 
+      *ngFor="let page of [].constructor(totalPages); let i = index" 
+      [class.active]="currentPage === i + 1">
+      <a class="page-link" (click)="goToPage(i + 1)" style="cursor: pointer;">{{ i + 1 }}</a>
+    </li>
+
+    <li class="page-item" [class.disabled]="currentPage === totalPages">
+      <a class="page-link" (click)="goToPage(currentPage + 1)" style="cursor: pointer;">Next</a>
+    </li>
+  </ul>
+</nav>
+
+
+  <!-- Modals remain unchanged -->
+</div>

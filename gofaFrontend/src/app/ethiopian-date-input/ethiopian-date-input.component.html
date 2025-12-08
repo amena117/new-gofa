@@ -1,0 +1,22 @@
+<div>
+  <label>ዓመት (Year):</label>
+  <select [(ngModel)]="selectedYear" name="year" required>
+    <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+  </select>
+</div>
+
+<div>
+  <label>ወር (Month):</label>
+  <select [(ngModel)]="selectedMonth" name="month" required>
+    <option *ngFor="let month of amharicMonths; let i = index" [value]="i + 1">
+      {{ month }}
+    </option>
+  </select>
+</div>
+
+<div>
+  <label>ቀን (Day):</label>
+  <select [(ngModel)]="selectedDay" name="day" required>
+    <option *ngFor="let d of days" [value]="d">{{ d }}</option>
+  </select>
+</div>

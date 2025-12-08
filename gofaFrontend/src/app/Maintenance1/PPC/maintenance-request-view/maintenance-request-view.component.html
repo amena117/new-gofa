@@ -1,0 +1,99 @@
+<div class="container">
+  <h2>Maintenance Request Register / የተመዘገቡ የሜንቴናንስ ዝርዝር</h2>
+
+  <!-- Dropdown Filter -->
+  <div class="filter-container">
+    <label for="statusFilter">Filter by Status:</label>
+    <select id="statusFilter" [(ngModel)]="selectedStatus" (change)="applyFilter()">
+      <option value="">All</option>
+      <option value="Maintenance Finished">Maintenance Finished</option>
+      <option value="Client Received">Client Received</option>
+    </select>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+      <select [(ngModel)]="searchType">
+        <option value="worksOrderNumber">Works Order Number</option>
+        <option value="serialNoOfEquip">Serial Number</option>
+        <option value="id">ID</option>
+      </select>
+      <input
+        type="text"
+        placeholder="Enter search value"
+        [(ngModel)]="searchValue"
+        (keyup.enter)="applySearch()"
+      />
+      <button (click)="applySearch()" class="search-button">Search</button>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    Loading maintenance requests...
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Table to Display Paginated Maintenance Requests -->
+  <table class="request-table" *ngIf="!isLoading && !errorMessage && paginatedRequests.length > 0">
+    <thead>
+      <tr>
+        <th>WON</th>
+        <th>Serial Number</th>
+        <th>Brief Description of Work</th>
+        <th>Date Work Order Received</th>
+        <th>Maintenance Type</th>
+        <th>Repair Start Date</th>
+        <th>Repair Finish Date</th>
+        <th>Maintained By</th>
+        <th>Total Cost</th>
+        <th>Status</th>
+        <th>Solved Remark</th>
+        <th>Given To</th>
+        <th>Approval</th>
+        <th>Receiver Remark</th>
+        <th>Received Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let request of paginatedRequests">
+        <td>{{ request.worksOrderNumber }}</td>
+        <td>{{ request.serialNoOfEquip || 'N/A' }}</td>
+        <td>{{ request.briefDescriptionOfWork || 'N/A' }}</td>
+        <td>{{ request.dateWorkOrderReceived ? (request.dateWorkOrderReceived | date:'yyyy-MM-dd') : 'N/A' }}</td>
+        <td>{{ request.maintenanceType || 'N/A' }}</td>
+        <td>{{ request.repairStartDate ? (request.repairStartDate | date:'yyyy-MM-dd') : 'N/A' }}</td>
+        <td>{{ request.repairFinishDate ? (request.repairFinishDate | date:'yyyy-MM-dd') : 'N/A' }}</td>
+        <td>{{ request.maintainedBy || 'N/A'}}</td>
+        <td>{{ request.totalCost | currency:'ETB':'symbol':'1.2-2' }}</td>
+        <td>{{ request.status || 'N/A' }}</td>
+        <td>{{ request.remark || 'N/A' }}</td>
+        <td>{{ request.givenTo || 'N/A' }}</td>
+        <td>{{ request.approval || 'N/A' }}</td>
+        <td>{{ request.recieverRemark || 'N/A' }}</td>
+       <td>{{ request.recievedDate ? (request.recievedDate | date:'yyyy-MM-dd') : 'N/A' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- No Data Message -->
+  <div *ngIf="!isLoading && !errorMessage && maintenanceRequests.length === 0" class="no-data">
+    No maintenance requests found.
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Prev</button>
+
+    <button *ngFor="let page of pages"
+            (click)="goToPage(page)"
+            [class.active]="currentPage === page">
+      {{ page }}
+    </button>
+
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>

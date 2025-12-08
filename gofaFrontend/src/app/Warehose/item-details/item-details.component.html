@@ -1,0 +1,423 @@
+<div #itemDetails class="item-details">
+  <div class="header">
+    <h1 class="title">Item Details / የእቃ ዝርዝሮች</h1>
+    <div class="button-group">
+      <button class="action-btn secondary" (click)="navigateBack()" aria-label="Go back to items list">
+        Back / ተመለስ
+      </button>
+      
+      <!-- Edit/Save/Cancel Buttons -->
+      <div class="edit-buttons" *ngIf="!isEditing; else saveCancelButtons">
+        <button class="action-btn primary" (click)="enableEditing()" 
+                *ngIf="item" aria-label="Edit item details">
+          Edit / አርትዕ
+        </button>
+      </div>
+      
+      <ng-template #saveCancelButtons>
+        <div class="edit-buttons">
+          <button class="action-btn secondary" (click)="cancelEditing()" 
+                  [disabled]="isSubmitting" aria-label="Cancel editing">
+            Cancel / ሰርዝ
+          </button>
+          <button class="action-btn primary" (click)="onSubmit()" 
+                  [disabled]="isSubmitting || editForm.invalid" aria-label="Save changes">
+            <span *ngIf="!isSubmitting">Save / አስቀምጥ</span>
+            <span *ngIf="isSubmitting">Saving... / በማስቀመጥ ላይ...</span>
+          </button>
+        </div>
+      </ng-template>
+
+      <!-- <button class="action-btn primary" (click)="printPage()" aria-label="Print item details">
+        Print / አትም
+      </button>
+      <button class="action-btn primary" (click)="downloadAsPDF()" aria-label="Download as PDF">
+        Download PDF / እንደ PDF አውርድ
+      </button> -->
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="message error-message" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Success/Debug Message -->
+  <div *ngIf="debugInfo" class="message success-message" role="status">
+    {{ debugInfo }}
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <span>Loading item details... / የእቃ ዝርዝሮችን በመጫን ላይ...</span>
+  </div>
+
+  <!-- Edit Form -->
+  <form *ngIf="isEditing && item" [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form">
+    <!-- Item Information -->
+    <div class="form-section">
+      <h2 class="section-title">Edit Item Information / የእቃ መረጃ አርትዕ</h2>
+      <div class="form-grid">
+        <!-- Description -->
+        <div class="form-group" [class.invalid]="isFieldInvalid('description')">
+          <label class="form-label">Description / መግለጫ *</label>
+          <input type="text" formControlName="description" class="form-input">
+          <div class="error-message" *ngIf="isFieldInvalid('description')">
+            {{ getFieldError('description') }}
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="form-group" [class.invalid]="isFieldInvalid('category')">
+          <label class="form-label">Category / ምድብ *</label>
+          <select formControlName="category" class="form-select">
+            <option value="">Select Category / ምድብ ይምረጡ</option>
+            <option *ngFor="let category of availableCategories" [value]="category">
+              {{ category }}
+            </option>
+          </select>
+          <div class="error-message" *ngIf="isFieldInvalid('category')">
+            {{ getFieldError('category') }}
+          </div>
+        </div>
+
+        <!-- Model -->
+        <div class="form-group" [class.invalid]="isFieldInvalid('model')">
+          <label class="form-label">Model / ሞዴል *</label>
+          <input type="text" formControlName="model" class="form-input">
+          <div class="error-message" *ngIf="isFieldInvalid('model')">
+            {{ getFieldError('model') }}
+          </div>
+        </div>
+
+        <!-- Source -->
+        <div class="form-group">
+          <label class="form-label">Source / ምንጭ</label>
+          <select formControlName="source" class="form-select">
+            <option value="">Select Source / ምንጭ ይምረጡ</option>
+            <option *ngFor="let source of availableSources" [value]="source">
+              {{ source }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="form-section">
+      <h2 class="section-title">Location / ቦታ</h2>
+      <div class="form-grid">
+        <!-- Shelf -->
+        <div class="form-group">
+          <label class="form-label">Shelf / መደርደሪያ</label>
+          <input type="text" formControlName="shelf" class="form-input">
+        </div>
+
+        <!-- Column -->
+        <div class="form-group">
+          <label class="form-label">Column / አምድ</label>
+          <input type="text" formControlName="itemColumn" class="form-input">
+        </div>
+
+        <!-- Row -->
+        <div class="form-group">
+          <label class="form-label">Row / ረድፍ</label>
+          <input type="text" formControlName="itemRow" class="form-input">
+        </div>
+
+        <!-- Warehouse -->
+        <div class="form-group" [class.invalid]="isFieldInvalid('warehouseId')">
+          <label class="form-label">Warehouse / መጋዘን *</label>
+          <select formControlName="warehouseId" class="form-select" [disabled]="true">
+            <option value="">Select Warehouse / መጋዘን ይምረጡ</option>
+            <option *ngFor="let warehouse of availableWarehouses" [value]="warehouse.warehouseId">
+              {{ warehouse.name }}
+            </option>
+          </select>
+          <div class="error-message" *ngIf="isFieldInvalid('warehouseId')">
+            {{ getFieldError('warehouseId') }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration Details -->
+    <div class="form-section">
+      <h2 class="section-title">Registration Details / የመመዝገቢያ ዝርዝሮች</h2>
+      <div class="form-grid">
+        <!-- Voucher Number -->
+        <div class="form-group">
+          <label class="form-label">Voucher Number / የሰነድ ቁጥር</label>
+          <input type="text" formControlName="voucherNumber" class="form-input">
+        </div>
+
+        <!-- Received From -->
+        <div class="form-group">
+          <label class="form-label">Received From / ከማን ተቀበለ</label>
+          <input type="text" formControlName="receivedFrom" class="form-input">
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Details -->
+    <div class="form-section">
+      <h2 class="section-title">Inventory Details / የክምችት ዝርዝሮች</h2>
+      <div class="form-grid">
+        <!-- Condition -->
+        <div class="form-group">
+          <label class="form-label">Condition / ሁኔታ</label>
+          <input type="text" formControlName="condition" class="form-input">
+        </div>
+
+        <!-- Number of Boxes -->
+        <div class="form-group">
+          <label class="form-label">Number of Boxes / የሳጥኖች ብዛት</label>
+          <input type="number" formControlName="numOfBox" class="form-input" min="0">
+        </div>
+
+        <!-- Unit Price -->
+        <div class="form-group" [class.invalid]="isFieldInvalid('unitPrice')">
+          <label class="form-label">Unit Price / የነጠላ ዋጋ</label>
+          <input type="number" formControlName="unitPrice" class="form-input" step="0.01" min="0">
+          <div class="error-message" *ngIf="isFieldInvalid('unitPrice')">
+            {{ getFieldError('unitPrice') }}
+          </div>
+        </div>
+
+        <!-- Currency -->
+        <div class="form-group">
+          <label class="form-label">Currency / መገበያያ</label>
+          <select formControlName="currency" class="form-select">
+            <option *ngFor="let currency of availableCurrencies" [value]="currency">
+              {{ currency }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Role -->
+        <div class="form-group">
+          <label class="form-label">Role / ሚና</label>
+          <input type="text" formControlName="role" class="form-input" [disabled]="true">
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Item Details (Read-only View) -->
+  <div *ngIf="item && !isLoading && !isEditing" class="details-container">
+    <!-- Item Information -->
+    <div class="form-section">
+      <h2 class="section-title">Item Information / የእቃ መረጃ</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label">ID / መለያ:</label>
+          <span class="info-value">{{ item.itemId || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Description / መግለጫ:</label>
+          <span class="info-value">{{ item.description || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Category / ምድብ:</label>
+          <span class="info-value">{{ item.category || 'Uncategorized / ያልተመደበ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Model / ሞዴል:</label>
+          <span class="info-value">{{ item.model || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Source / ምንጭ:</label>
+          <span class="info-value">{{ item.source || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="form-section">
+      <h2 class="section-title">Location / ቦታ</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label">Shelf / መደርደሪያ:</label>
+          <span class="info-value">{{ item.shelf || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Column / አምድ:</label>
+          <span class="info-value">{{ item.itemColumn || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Row / ረድፍ:</label>
+          <span class="info-value">{{ item.itemRow || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration Details -->
+    <div class="form-section">
+      <h2 class="section-title">Registration Details / የመመዝገቢያ ዝርዝሮች</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label">Voucher Number / የሰነድ ቁጥር:</label>
+          <span class="info-value">{{ item.voucherNumber || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Received From / ከማን ተቀበለ:</label>
+          <span class="info-value">{{ item.receivedFrom || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Registration Date / የተመዘገበበት ቀን:</label>
+          <span class="info-value">{{ formatEthiopianDate(item.registrationDate) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Details -->
+    <div class="form-section">
+      <h2 class="section-title">Inventory Details / የክምችት ዝርዝሮች</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label">Condition / ሁኔታ:</label>
+          <span class="info-value">{{ item.condition || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Quantity / ብዛት:</label>
+          <span class="info-value">{{ item.quantity || 0 }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Number of Boxes / የሳጥኖች ብዛት:</label>
+          <span class="info-value">{{ item.numOfBox || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Unit Price / የነጠላ ዋጋ:</label>
+          <span class="info-value">{{ item.unitPrice ? (item.unitPrice | number:'1.2-2') : '0.00' }} {{ item.currency || 'ETB' }}</span>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- Accessories -->
+    
+<div class="form-section">
+  <h2 class="section-title">Accessories / ተያያዥ እቃዎች</h2>
+  <div class="table-container" *ngIf="item.accessories && item.accessories.length > 0; else noAccessories">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name / ስም</th>
+          <th>Model / ሞዴል</th>
+          <th>Quantity / ብዛት</th>
+          <th>Unit Price / የነጠላ ዋጋ</th>
+          <th>Currency / መገበያያ</th>
+          <th>Total Price / ጠቅላላ ዋጋ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let accessory of item.accessories">
+          <td data-label="Name / ስም">{{ accessory.name || 'Unknown / ያልታወቀ' }}</td>
+          <td data-label="Model / ሞዴል">{{ accessory.model || 'Unknown / ያልታወቀ' }}</td>
+          <td data-label="Quantity / ብዛት">{{ accessory.quantity || 0 }}</td>
+          <td data-label="Unit Price / የነጠላ ዋጋ">
+            {{ accessory.unitPrice ? (accessory.unitPrice | number:'1.2-2') : '0.00' }}
+          </td>
+          <td data-label="Currency / መገበያያ">{{ accessory.currency || 'ETB' }}</td>
+          <td data-label="Total Price / ጠቅላላ ዋጋ">
+            {{ formatAccessoryPrice(accessory.unitPrice, accessory.currency, accessory.quantity) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #noAccessories>
+    <div class="no-data">
+      No accessories available / ምንም መለዋወጫዎች የሉም
+    </div>
+  </ng-template>
+</div>
+
+
+
+
+
+    <!-- Received Transactions -->
+    <div class="form-section">
+      <h2 class="section-title">Received Transaction History / የተቀበሉ ግብይቶች ታሪክ</h2>
+      <div class="table-container" *ngIf="transactions.length > 0; else noReceiveTransactions">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Date / ቀን</th>
+              <th>Action / ተግባር</th>
+              <th>Quantity / ብዛት</th>
+              <th>Voucher Number / የሰነድ ቁጥር</th>
+              <th>Unit Price / የክፍል ዋጋ</th>
+              <th>Total Price / ጠቅላላ ዋጋ</th>
+              <th>Details / ዝርዝሮች</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of transactions">
+              <td data-label="Date">{{ formatEthiopianDate(transaction.date) }}</td>
+              <td data-label="Action">{{ transaction.action || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Quantity">{{ transaction.quantity || 0 }}</td>
+              <td data-label="Voucher Number">{{ transaction.voucherNumber || '-' }}</td>
+              <td data-label="Unit Price">{{ transaction.unitPrice ? (transaction.unitPrice | number:'1.2-2') : '0.00' }} {{ transaction.currency || 'ETB' }}</td>
+              <td data-label="Total Price">{{ formatPrice(transaction.unitPrice || 0, transaction.currency || 'ETB', transaction.quantity || 1) }}</td>
+              <td data-label="Details">{{ transaction.details || 'None / የለም' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noReceiveTransactions>
+        <div class="no-data">
+          No received transactions available / ምንም የተቀበሉ ግብይቶች የሉም
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Model 22 Withdrawals -->
+    <div class="form-section">
+      <h2 class="section-title">Model 22 Withdrawal History / የሞዴል 22 ታሪክ</h2>
+      <div *ngIf="isWithdrawalsLoading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <span>Loading withdrawals... / ማውጣቶችን በመጫን ላይ...</span>
+      </div>
+      <div class="table-container" *ngIf="!isWithdrawalsLoading && model22Withdrawals.length > 0; else noModel22Withdrawals">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID / መለያ</th>
+              <th>Description / መግለጫ</th>
+              <th>Date / ቀን</th>
+              <th>Department / ዲፓርትመንት</th>
+              <th>Recipient / ተቀባይ</th>
+              <th>Unit / የተሰጠው ክፍል</th>
+              <th>Quantity / ብዛት</th>
+              <th>Currency / መገበያያ</th>
+              <th>Serial Numbers / ተከታታይ ቁጥሮች</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let entry of model22Withdrawals">
+              <td data-label="ID">{{ entry.withdrawal.model22Id || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Description">{{ entry.description }}</td>
+              <td data-label="Date">{{ formatEthiopianDate(entry.withdrawal.ethiopianDate) }}</td>
+              <td data-label="Department">{{ entry.withdrawal.department || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Recipient">{{ entry.withdrawal.recipientName || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Unit">{{ entry.withdrawal.recipientOrganization || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Quantity">{{ entry.quantity || 0 }}</td>
+              <td data-label="Currency">{{ entry.currency }}</td>
+              <td data-label="Serial Numbers">{{ entry.serialNumbers.length > 0 ? entry.serialNumbers.join(', ') : 'None / የለም' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noModel22Withdrawals>
+        <div class="no-data" *ngIf="!isWithdrawalsLoading">
+          No Model 22 withdrawals found for this item / ለዚህ እቃ ምንም የሞዴል 22 ፎርም አልተገኙም
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

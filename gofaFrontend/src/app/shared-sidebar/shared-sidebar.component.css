@@ -1,0 +1,177 @@
+/* Sidebar container */
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    background-color: #03203c; /* Dark blue-gray background */
+    color: #ecf0f1; /* Light text color */
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s ease;
+    overflow-y: auto; /* Scroll if content overflows */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    z-index: 1000;
+    font-size: 0.9rem;
+    padding-right: 0;
+    transform: translateX(-100%); /* Start hidden by default */
+}
+
+/* Show sidebar when not closed */
+.sidebar:not(.closed) {
+    transform: translateX(0);
+}
+
+/* Toggle Button */
+.sidebar-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: #03203c;
+    border: none;
+    color: #ecf0f1;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.sidebar-toggle:hover {
+    background: #1abc9c;
+    transform: scale(1.1);
+}
+
+.sidebar-toggle i {
+    font-size: 20px;
+}
+
+/* Backdrop for mobile */
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar:not(.closed) + .sidebar-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Profile section */
+.profile-section {
+    margin-bottom: 30px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle divider */
+    padding-bottom: 15px;
+}
+
+.profile-info .username {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #ecf0f1;
+}
+
+.profile-info .role {
+    font-size: 0.8rem;
+    color: #bdc3c7; /* Slightly muted color for role */
+    margin: 5px 0 0;
+}
+
+/* Menu list */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin: 6px 0;
+}
+
+/* Links */
+a {
+    display: block; /* Full clickable area */
+    text-decoration: none;
+    color: #ecf0f1;
+    font-size: 0.9rem;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+a.active {
+    background-color: #1abc9c;
+    color: white;
+}
+
+/* Logout button */
+.logout-btn {
+    background: none;
+    border: none;
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    padding: 10px 15px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+    transform: translateX(5px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 260px;
+    }
+    
+    .sidebar-backdrop {
+        display: block;
+    }
+    
+    .sidebar-toggle {
+        display: flex;
+    }
+}
+
+/* Main content adjustment */
+:host {
+    display: block;
+}
+
+/* Add padding to main content when sidebar is open */
+:host-context(.sidebar-open) ::ng-deep .main-content {
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+    width: calc(100% - 280px);
+}
+
+@media (max-width: 768px) {
+    :host-context(.sidebar-open) ::ng-deep .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+}

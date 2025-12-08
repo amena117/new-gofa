@@ -1,0 +1,63 @@
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Equipment Registration Page / የጠጋኝ ንብረት ሞዴል ምዝገባ ገጽ</h2>
+
+  <form (ngSubmit)="onSubmit()" #equipmentForm="ngForm">
+    <!-- Equipment Type Field -->
+    <div class="mb-3">
+      <label for="equipmentTypeName" class="form-label">
+        Equipment Type / የመሳሪያ ዓይነት:
+      </label>
+      <input
+        type="text"
+        id="equipmentTypeName"
+        name="equipmentTypeName"
+        class="form-control"
+        [(ngModel)]="equipmentType.equipmentTypeName"
+        required
+        #equipmentTypeNameInput="ngModel"
+      />
+      <div *ngIf="equipmentForm.submitted && !equipmentTypeNameInput.valid" class="text-danger">
+        Equipment Type is required. / የመሳሪያ ዓይነት አስፈላጊ ነው።
+      </div>
+    </div>
+
+    <!-- Equipment Model Field -->
+    <div class="mb-3">
+      <label for="equipmentModel" class="form-label">
+        Equipment Model / የመሳሪያ ሞዴል:
+      </label>
+      <input
+        type="text"
+        id="equipmentModel"
+        name="equipmentModel"
+        class="form-control"
+        [(ngModel)]="equipmentType.equipmentModel"
+        required
+        #equipmentModelInput="ngModel"
+      />
+      <div *ngIf="equipmentForm.submitted && !equipmentModelInput.valid" class="text-danger">
+        Equipment Model is required. / የመሳሪያ ሞዴል አስፈላጊ ነው።
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="!equipmentForm.form.valid"
+    >
+      Submit / አስገባ
+    </button>
+  </form>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="alert alert-success mt-4">
+    {{ successMessage }}
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger mt-4">
+    {{ errorMessage }}
+  </div>
+</div>

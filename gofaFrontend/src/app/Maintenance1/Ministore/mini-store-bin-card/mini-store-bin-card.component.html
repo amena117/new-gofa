@@ -1,0 +1,59 @@
+<div class="form-container">
+  <h2>Create Bin Card / ቢን ካርድ ይፍጠሩ</h2>
+  <form #miniStoreForm="ngForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Stock Number -->
+    <div class="form-group">
+      <label for="stockNumber">Stock Number / የእቃ ቁጥር:</label>
+      <input type="number" id="stockNumber" name="stockNumber" [(ngModel)]="miniStoreBinCard.stockNumber" required />
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="description">Description / መግለጫ:</label>
+      <input type="text" id="description" name="description" [(ngModel)]="miniStoreBinCard.description" maxlength="255" required />
+    </div>
+
+    <!-- Location -->
+    <div class="form-group">
+      <label for="location">Location / አካባቢ:</label>
+      <input type="text" id="location" name="location" [(ngModel)]="miniStoreBinCard.location" maxlength="100" required />
+    </div>
+
+    <!-- Category -->
+    <div class="form-group">
+      <label for="category">Category / ምድብ:</label>
+      <input type="text" id="category" name="category" [(ngModel)]="miniStoreBinCard.category" maxlength="100" required />
+    </div>
+
+    <!-- Unit Measurement -->
+    <div class="form-group">
+      <label for="unitMeasurement">Unit Measurement / መለኪያ አሃድ:</label>
+      <input type="text" id="unitMeasurement" name="unitMeasurement" [(ngModel)]="miniStoreBinCard.unitMeasurement" maxlength="50" required />
+    </div>
+
+    <!-- Model -->
+    <div class="form-group">
+      <label for="model">Model / ሞዴል:</label>
+      <input type="text" id="model" name="model" [(ngModel)]="miniStoreBinCard.model" maxlength="100" required />
+    </div>
+
+    <!-- Date -->
+    <div class="form-group">
+      <label for="date">Date / ቀን:</label>
+      <input type="date" id="date" name="date" [(ngModel)]="miniStoreBinCard.date" required />
+    </div>
+
+    <!-- Posted By -->
+    <div class="form-group">
+      <label for="postedBy">Posted By / የገባሃቸው ሰው:</label>
+      <input type="text" id="postedBy" name="postedBy" [(ngModel)]="miniStoreBinCard.postedBy" maxlength="100" required />
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" [disabled]="miniStoreForm.invalid">Submit / አስገባ</button>
+  </form>
+
+  <!-- Message Display -->
+  <div *ngIf="message" class="message">{{ message }}</div>
+</div>

@@ -1,0 +1,85 @@
+<div class="report-container">
+  <h2 class="title">Model22 Report / ሞዴል 22 ሪፖርት</h2>
+
+  <!-- Summary Card -->
+  <div class="card" *ngIf="!loading && !error">
+    <h3 class="section-title">Report Summary / የሪፖርት ማጠቃለያ</h3>
+    <p><strong>Total Records / አጠቃላይ መዝገቦች:</strong> {{ totalItemCount }}</p>
+    <p><strong>Filtered Records / የተጣሩ መዝገቦች:</strong> {{ filteredItemCount }}</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-group">
+      <label for="department">Filter by Department / በዲፓርትመንት አጣራ</label>
+      <select id="department" [(ngModel)]="selectedDepartment" (ngModelChange)="onDepartmentChange()">
+        <option value="">All Departments / ሁሉም ዲፓርትመንቶች</option>
+        <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="period">Select Period / ጊዜ ምረጥ</label>
+      <select id="period" [(ngModel)]="selectedPeriod" (ngModelChange)="onPeriodChange()">
+        <option value="0">Show All / ሁሉንም አሳይ</option>
+        <option value="1">Last 1 Month / ያለፈው 1 ወር</option>
+        <option value="3">Last 3 Months / ያለፉት 3 ወሮች</option>
+        <option value="6">Last 6 Months / ያለፉት 6 ወሮች</option>
+        <option value="9">Last 9 Months / ያለፉት 9 ወሮች</option>
+        <option value="12">Last 12 Months / ያለፉት 12 ወሮች</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="card loading-state">
+    <div class="loading-spinner"></div>
+    <span>Loading report data... / የሪፖርት መረጃ በመጫን ላይ...</span>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="card error-message">
+    {{ error }}
+  </div>
+
+  <!-- Report Table -->
+  <div class="card report-table-card" *ngIf="!loading && !error">
+    <h3 class="section-title">Model22 Records / ሞዴል 22 መዝገቦች</h3>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th># / ቁጥር</th>
+            <th>Department / ዲፓርትመንት</th>
+            <th>Date / ቀን</th>
+            <th>Recipient / ተቀባይ</th>
+            <th>Organization / ድርጅት</th>
+            <th>Total Items / አጠቃላይ እቃዎች</th>
+            <th>Total Amount / አጠቃላይ መጠን</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let model22 of filteredData; let i = index">
+            <td data-label="#">{{ i + 1 }}</td>
+            <td data-label="Department">{{ model22.department || 'Unknown / ያልታወቀ' }}</td>
+            <td data-label="Date">{{ formatEthiopianDate(model22.ethiopianDate) }}</td>
+            <td data-label="Recipient">{{ model22.recipientName || 'Unknown / ያልታወቀ' }}</td>
+            <td data-label="Organization">{{ model22.recipientOrganization || 'Unknown / ያልታወቀ' }}</td>
+            <td data-label="Total Items">{{ model22.totalItems || 0 }}</td>
+            <td data-label="Total Amount">
+              {{ calculateModel22Total(model22).total | number:'1.2-2' }} {{ calculateModel22Total(model22).currency }}
+            </td>
+          </tr>
+          <tr *ngIf="filteredData.length === 0">
+            <td colspan="7" class="no-data">No records found / ምንም መዝገቦች አልተገኙም</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Grand Total -->
+  <div class="card" *ngIf="!loading && !error && filteredData.length > 0">
+    <h3 class="section-title">Grand Totals / አጠቃላይ መጠኖች</h3>
+    <p><strong>Total Amount / አጠቃላይ መጠን:</strong> {{ calculateGrandTotal().total | number:'1.2-2' }} {{ calculateGrandTotal().currency }}</p>
+  </div>
+</div>

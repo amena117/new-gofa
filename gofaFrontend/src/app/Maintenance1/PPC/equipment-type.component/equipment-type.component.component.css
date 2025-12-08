@@ -1,0 +1,20 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #fff; /* White text for better contrast */
+    margin-bottom: 20px;
+    padding: 20px;
+    background: linear-gradient(45deg, #e74c3c, #2ecc71); /* Red and Green gradient to mimic the flag */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+    font-size: 1.8rem; /* Larger text size for prominence */
+    letter-spacing: 2px; /* Spacing between letters for a more elegant look */
+  }
+  
+  .alert {
+    margin-top: 20px;
+  }

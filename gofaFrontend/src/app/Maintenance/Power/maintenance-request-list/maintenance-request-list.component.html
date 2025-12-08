@@ -1,0 +1,88 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Maintenance Request List</h2>
+  <p>
+    Filtered by Maintenance Type:
+    <strong>{{ getMaintenanceTypeByRole(userRole) }}</strong>
+    and Requested To:
+    <strong>{{ getRequestedToByRole(userRole) }}</strong>
+  </p>
+
+  <!-- Table Wrapper for Scroll -->
+  <div class="table-container">
+    <table class="maintenance-table">
+      <thead>
+        <tr>
+          <th>Works Order Number</th>
+          <th>Nomenclature</th>
+          <th>Quantity</th>
+          <th>Model</th>
+          <th>Serial Number</th>
+          <th>Maintenance Type</th>
+          <th>Requested To</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of maintenanceRequests">
+          <td>{{ request.worksOrderNumber }}</td>
+          <td>{{ request.nomenclature }}</td>
+          <td>{{ request.quantity }}</td>
+          <td>{{ request.model }}</td>
+          <td>{{ request.serialNoOfEquip }}</td>
+          <td>{{ request.maintenanceType }}</td>
+          <td>{{ request.requestedTo }}</td>
+          <td>{{ request.status }}</td>
+          <td class="actions-container">
+
+            <!-- Show ASSIGN dropdown for team leaders -->
+            <ng-container *ngIf="['RTEAM_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER'].includes(userRole); else normalActions">
+              <button (click)="assignRequest(request)" class="btn btn-assign">Assign</button>
+            </ng-container>
+
+            <!-- Standard actions for other roles -->
+            <ng-template #normalActions>
+              <ng-container *ngIf="
+                request.status !== 'Client Received' &&
+                request.status !== 'On Maintenance' &&
+                request.status !== 'Maintenance Finished' &&
+                request.status !== 'Quality Check' &&
+                request.status !== 'Do Out';
+                else noAction">
+                <button (click)="requestPart(request)" class="btn btn-request">Request Part</button>
+                <button (click)="goToMaintainForm(request)" class="btn btn-maintain">Maintain</button>
+              </ng-container>
+            </ng-template>
+
+            <ng-template #noAction>
+              <button disabled class="btn btn-noaction">No Action Needed</button>
+            </ng-template>
+
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Assignment Form (only shows when assignMode=true AND selectedRequest is defined) -->
+  <div *ngIf="isAssignMode && selectedRequest" class="assignment-form">
+    <h3>Assign Maintenance Task</h3>
+    <p><strong>Works Order:</strong> {{ selectedRequest.worksOrderNumber }}</p>
+    <p><strong>Maintenance Type:</strong> {{ selectedRequest.maintenanceType }}</p>
+
+    <label for="requestedTo">Assign To:</label>
+    <select
+      id="requestedTo"
+      [(ngModel)]="selectedRequest.requestedTo"
+      class="input-field"
+    >
+      <option *ngFor="let opt of assignOptions" [value]="opt">{{ opt }}</option>
+    </select>
+
+
+    <button (click)="submitAssignment()" class="btn btn-assign">
+      Submit Assignment
+    </button>
+  </div>
+</div>

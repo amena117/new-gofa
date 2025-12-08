@@ -1,0 +1,164 @@
+<div class="container">
+  <div class="header">
+    <h1 class="title">Manage Categories / የእቃ ምድብ መመዝገቢያ</h1>
+  </div>
+
+  <!-- Access Denied Message -->
+  <div *ngIf="!canManageCategories()" class="alert alert-error">
+    <mat-card>
+      <p>Access denied. You do not have permission to manage categories. / አስተዳደር ለመግባት ምንጭ የለዎትም።</p>
+    </mat-card>
+  </div>
+
+  <!-- Admin/Allowed Role View -->
+  <div *ngIf="canManageCategories()" class="form-container">
+
+    <!-- Create/Edit Form -->
+    <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+      <div class="form-section">
+        <h2 class="section-title">
+          {{ editMode ? 'Edit Category / ምድብ ማስተካከል' : 'Create New Category / አዲስ ምድብ መዝግብ' }}
+        </h2>
+        <mat-card class="form-card">
+          <!-- Category Name -->
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Category Name / የምድብ ስም</mat-label>
+            <input
+              matInput
+              formControlName="category"
+              placeholder="e.g., Radios, 3700, Spare Parts / ምሳሌ፥ ራዲዮዎች፣ 3700፣ ክፍሎች"
+            />
+            <mat-error *ngIf="categoryForm.get('category')?.hasError('required')">
+              Category name is required. / የምድብ ስም መግለጽ አስፈላጊ ነው።
+            </mat-error>
+            <mat-error *ngIf="categoryForm.get('category')?.hasError('minlength')">
+              Minimum 2 characters required. / ከሁለት ቁምፊዎች በላይ ያስፈልጡታል።
+            </mat-error>
+            <mat-error *ngIf="categoryForm.get('category')?.hasError('pattern')">
+              Only letters, numbers, spaces, hyphens, and underscores allowed. / ፊደላት፣ ቁጥሮች፣ ቦታ፣ የማይተነፍሱ ነጥቦች ብቻ ይፈቀዳሉ።
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Description -->
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Description / መግለጫ</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              placeholder="Optional description about this category / ምድቡን የሚገልጽ ማስተዋል (በማይፈልግ ከፍተኛ)"
+              rows="3"
+            ></textarea>
+          </mat-form-field>
+        </mat-card>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="categoryForm.invalid"
+        >
+          {{ editMode ? 'Update Category / ማስተካከል' : 'Create Category / ፍጠር' }}
+        </button>
+
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="resetForm()"
+          *ngIf="editMode"
+        >
+          Cancel / ሰርዝ
+        </button>
+      </div>
+    </form>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      <mat-card class="success-card">
+        <mat-icon>check_circle</mat-icon>
+        {{ successMessage }} / ተሳክቷል
+      </mat-card>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <mat-card class="error-card">
+        <mat-icon>error</mat-icon>
+        {{ errorMessage }} / ስህተት አጋጥሟል
+      </mat-card>
+    </div>
+
+    <!-- Existing Categories Table -->
+    <div class="form-section">
+  <h2 class="section-title">Your Categories / ያሉዎት ምድቦች</h2>
+  <mat-card>
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <!-- Existing table columns (name, description, createdAt, actions) -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef>Name / ስም</mat-header-cell>
+        <mat-cell *matCellDef="let category">
+          <strong>{{ category.name }}</strong>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef>Description / መግለጫ</mat-header-cell>
+        <mat-cell *matCellDef="let category">
+          {{ category.description || 'No description / ምንም መግለጫ የለም' }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="createdAt">
+        <mat-header-cell *matHeaderCellDef>Created At / ተፈጠረበት</mat-header-cell>
+        <mat-cell *matCellDef="let category">
+          {{ category.createdAt || 'Unknown / ያልታወቀ' }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Actions / ስራዎች</mat-header-cell>
+        <mat-cell *matCellDef="let category">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="editCategory(category)"
+            [disabled]="category.role !== currentUserRole && currentUserRole !== 'SUPER_ADMIN'"
+            aria-label="Edit category / ምድብ ማስተካከል"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="deleteCategory(category.id)"
+            [disabled]="category.role !== currentUserRole && currentUserRole !== 'SUPER_ADMIN'"
+            aria-label="Delete category / ምድብ ሰርዝ"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="['name', 'description', 'createdAt', 'actions']"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: ['name', 'description', 'createdAt', 'actions']"></mat-row>
+    </mat-table>
+
+    <!-- No Data -->
+    <div *ngIf="categories.length === 0" class="no-data">
+      <p>No categories found for your role. / ለዚህ ሚና ምንም ምድብ አልተገኘም።</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="categories.length > 0">
+      <span class="pagination-info">
+        Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ currentPage * pageSize > totalItems ? totalItems : currentPage * pageSize }} of {{ totalItems }} categories
+      </span>
+      <button class="pagination-button" (click)="previousPage()" [disabled]="currentPage === 1">
+        Previous / ቀዳሚ
+      </button>
+      <button class="pagination-button" (click)="nextPage()" [disabled]="currentPage * pageSize >= totalItems">
+        Next / ቀጣይ
+      </button>
+    </div>
+  </mat-card>
+</div>
+</div>

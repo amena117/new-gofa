@@ -1,0 +1,204 @@
+/* Report Table Container */
+.report-table {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  margin-top: 1.5rem;
+}
+.report-title {
+  text-align: center;
+  font-weight: bold;
+  margin: 20px 0;
+  line-height: 1.5;
+}
+
+.report-title span {
+  font-size: 1.1em;
+  color: #333;
+}
+
+ h2 {
+    text-align: center;
+    color: #fff; /* White text for better contrast */
+    margin-bottom: 20px;
+    padding: 20px;
+    background: linear-gradient(90deg, #1e3c72, #2a5298); /* Red and Green gradient to mimic the flag */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+    font-size: 1.8rem; /* Larger text size for prominence */
+    letter-spacing: 2px; /* Spacing between letters for a more elegant look */
+  }
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+th, td {
+  padding: 1.2rem 1.5rem;
+  text-align: left;
+  background-color: #fafafa;
+  border-radius: 12px;
+  vertical-align: top;
+}
+
+th {
+  background-color: #000;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+tbody tr:hover td {
+  background-color: #f5f8ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+/* List Styling inside table */
+ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  list-style-type: disc;
+}
+
+li {
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+li .serial {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+li .status {
+  color: #555;
+  margin-left: 5px;
+}
+
+li .dates {
+  color: #888;
+  font-size: 0.85rem;
+  margin-left: 8px;
+}
+
+/* Loading / Error Text */
+.loading, .error {
+  font-size: 1rem;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.loading {
+  background-color: #e0f7fa;
+  color: #006064;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Inner Table for Serial Information */
+.inner-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  background-color: #fefefe;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.inner-table th,
+.inner-table td {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.inner-table th {
+  background-color: #eaeaea;
+  color: #333;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inner-table td {
+  background-color: #fff;
+  color: #555;
+}
+
+/* Optional hover for inner table rows */
+.inner-table tbody tr:hover {
+  background-color: #f1f8ff;
+}
+
+.pagination {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #7a1717;
+}
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .report-table {
+    padding: 1rem;
+  }
+
+  table, th, td {
+    font-size: 0.85rem;
+    padding: 1rem;
+  }
+
+  li {
+    font-size: 0.85rem;
+  }
+
+  li .dates {
+    display: block;
+    margin-left: 0;
+  }
+}
+

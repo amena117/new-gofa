@@ -1,0 +1,216 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  background-color: #f8f9fc;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  padding: 20px;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Header - Solid Black Background */
+h2 {
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(90deg, #1e3c72, #2a5298);
+  padding: 1.3rem 1rem;
+  border-radius: 12px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1.8rem;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Optional: Shine animation on header */
+h2::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(35deg);
+  pointer-events: none;
+  animation: shine 3s infinite;
+  z-index: -1;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Table Styling */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  margin-top: 1rem;
+}
+
+.data-table th {
+  background-color: #000000; /* Black header */
+  color: white;
+  padding: 1rem 1.2rem;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.8px;
+  border-bottom: 2px solid #444;
+}
+
+.data-table td {
+  padding: 1rem 1.2rem;
+  background-color: #fff;
+  border-top: 1px solid #eee;
+  color: #444;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.data-table tbody tr:hover td {
+  background-color: #f1f8ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Alternate Row Background */
+.data-table tbody tr:nth-child(even) td {
+  background-color: #fafbfe;
+}
+
+/* Action Buttons */
+.action-button {
+  padding: 0.65rem 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: white;
+  background-color: #dc3545; /* Red for Delete */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-button:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.return-button {
+  background-color: #4caf50;
+  color: white;
+  margin-right: 5px;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.return-button:hover {
+  background-color: #45a049;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+}
+
+.modal-actions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #ccc;
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.8rem;
+    margin: 1rem auto;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    padding: 1rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .action-button {
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+}

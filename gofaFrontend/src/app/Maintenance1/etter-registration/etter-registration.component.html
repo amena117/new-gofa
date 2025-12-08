@@ -1,0 +1,28 @@
+<div class="letter-form">
+    <h2>Register a Letter</h2>
+    <form (ngSubmit)="onSubmit()" #etterForm="ngForm">
+  
+      <label for="from">From:</label>
+      <input
+        type="text"
+        id="from"
+        name="from"
+        [(ngModel)]="etter.from"
+        required
+      />
+  
+      <label for="recommendBy">Reason:</label>
+      <input
+        type="text"
+        id="recommendBy"
+        name="recommendBy"
+        [(ngModel)]="etter.recommendBy"
+        required
+      />
+  
+      <button type="submit" [disabled]="!etterForm.form.valid">Submit</button>
+    </form>
+  
+    <p *ngIf="successMessage" class="success">{{ successMessage }}</p>
+  </div>
+  

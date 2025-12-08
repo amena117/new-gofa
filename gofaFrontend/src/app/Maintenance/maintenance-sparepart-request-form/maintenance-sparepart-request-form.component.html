@@ -1,0 +1,39 @@
+<div class="container">
+    <h2>Maintenance Spare Part Request Form</h2>
+    <form [formGroup]="sparePartForm" (ngSubmit)="onSubmit()" class="spare-part-form">
+      <div class="form-group">
+        <label for="number">Number:</label>
+        <input id="number" type="text" formControlName="number" placeholder="Enter Number" />
+      </div>
+  
+      <div class="form-group">
+        <label for="partNumber">Part Number:</label>
+        <input id="partNumber" type="text" formControlName="partNumber" placeholder="Enter Part Number" />
+      </div>
+  
+      <div class="form-group">
+        <label for="equipmentType">Equipment Type:</label>
+        <input id="equipmentType" type="text" formControlName="equipmentType" placeholder="Enter Equipment Type" />
+      </div>
+  
+      <div class="form-group">
+        <label for="askedQuantity">Asked Quantity:</label>
+        <input id="askedQuantity" type="number" formControlName="askedQuantity" placeholder="Enter Quantity" />
+      </div>
+  
+      <div class="form-group">
+        <label for="askedUnit">Asked Unit:</label>
+        <input id="askedUnit" type="text" formControlName="askedUnit" placeholder="Enter Unit" />
+      </div>
+  
+      <div class="form-group">
+        <label for="technicianName">Technician Name:</label>
+        <input id="technicianName" type="text" formControlName="technicianName" placeholder="Enter Technician Name" />
+      </div>
+  
+      <div class="form-actions">
+        <button type="submit" [disabled]="sparePartForm.invalid">Submit</button>
+        <button type="button" (click)="resetForm()">Reset</button>
+      </div>
+    </form>
+  </div>

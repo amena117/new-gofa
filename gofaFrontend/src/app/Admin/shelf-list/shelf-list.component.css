@@ -1,0 +1,131 @@
+/* General container styling */
+.shelf-list-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #03203c;
+  margin-bottom: 20px;
+}
+
+/* Filter section styling */
+.filter-section {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.filter-section label {
+  margin-right: 10px;
+  font-weight: 600;
+  color: #03203c;
+}
+
+.filter-section select {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Loading and no-shelves messages */
+.loading-indicator, .no-shelves {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+}
+
+.loading-indicator {
+  color: #555;
+}
+
+.no-shelves {
+  color: #757575;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+thead th {
+  background-color: #03203c;
+  color: #fff;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+td {
+  padding: 12px;
+  vertical-align: middle;
+}
+
+td input, td select {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Button styling */
+button {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-right: 5px;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+button:nth-child(1) { /* Edit/Save */
+  background-color: #02172a;
+  color: #fff;
+}
+
+button:nth-child(2) { /* Cancel/Delete */
+  background-color: #d32f2f;
+  color: #fff;
+}
+
+button[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  table {
+    font-size: 14px;
+  }
+
+  td, th {
+    padding: 8px;
+  }
+
+  .filter-section select {
+    width: 100%;
+    margin-top: 10px;
+  }
+}

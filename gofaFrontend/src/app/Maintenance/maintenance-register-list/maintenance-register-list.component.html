@@ -1,0 +1,43 @@
+<div class="container">
+    <h2>Maintenance Register List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>File Number</th>
+          <th>Request Register</th>
+          <th>Nomenclature</th>
+          <th>Model</th>
+          <th>Serial No</th>
+          <th>Chassis No</th>
+          <th>Engine No</th>
+          <th>Quantity</th>
+          <th>Requested By</th>
+          <th>Day In</th>
+          <th>Type of Maintenance</th>
+          <th>Repair Start Date</th>
+          <th>Repair Finish Date</th>
+          <th>Maintain Hours</th>
+          <th>Works Order Number</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let register of registers">
+          <td>{{ register.fileNumber }}</td>
+          <td>{{ register.requestRegister }}</td>
+          <td>{{ register.nomenclature }}</td>
+          <td>{{ register.model }}</td>
+          <td>{{ register.serialNoOfEquip }}</td>
+          <td>{{ register.chasisNumber }}</td>
+          <td>{{ register.engineNumber }}</td>
+          <td>{{ register.quantity }}</td>
+          <td>{{ register.requestedBy }}</td>
+          <td>{{ register.dayIn }}</td>
+          <td>{{ register.typeofMaintenance }}</td>
+          <td>{{ register.repairStartDate }}</td>
+          <td>{{ register.repairFinishDate }}</td>
+          <td>{{ register.maintainHors }}</td>
+          <td>{{ register.worksOrderNumber }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

@@ -1,0 +1,1063 @@
+[2025-11-26 10:16:15 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - null null
+[2025-11-26 10:16:15 INF] CORS policy execution successful.
+[2025-11-26 10:16:15 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - 204 null null 35.6764ms
+[2025-11-26 10:16:15 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - "application/json" 44
+[2025-11-26 10:16:15 INF] CORS policy execution successful.
+[2025-11-26 10:16:15 INF] "Cookies" was not authenticated. Failure message: "Ticket expired"
+[2025-11-26 10:16:15 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2025-11-26 10:16:15 INF] Route matched with "{action = \"Login\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Gofabackend.Controllers.LoginRequestDto)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:15 INF] Executed DbCommand ("18"ms) [Parameters=["@__loginRequest_Username_0='Buze12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(2) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginRequest_Username_0"
+[2025-11-26 10:16:15 INF] Session created for user "Buze12" at 11/26/2025 07:16:15 +00:00, expires at 11/26/2025 07:26:15 +00:00
+[2025-11-26 10:16:15 INF] AuthenticationScheme: "Cookies" signed in.
+[2025-11-26 10:16:15 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType1`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:15 INF] Executed action "Gofabackend.Controllers.AuthController.Login (Gofabackend)" in 215.8455ms
+[2025-11-26 10:16:15 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2025-11-26 10:16:15 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - 200 null "application/json; charset=utf-8" 422.4262ms
+[2025-11-26 10:16:15 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2025-11-26 10:16:15 INF] CORS policy execution successful.
+[2025-11-26 10:16:15 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2025-11-26 10:16:15 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:15 INF] Cookies received in /api/auth/me: "csrftoken: xjq5ZutwgEhpscr3fvWxDktBCQVrTke3, sessionid: oy87kzpouj89xulwus8jyxu9yu8fz154, auth_token: CfDJ8Gzx4NkfqdBDuo8ThPub2Qvxx9hhR_XrvW6k8pLxZ21fTp43_vDRfg0-ggo2xD3GFnmeDr3o_UBbwu30cx4TiQqroGITzbJsnL_coqbY3MINLzk7iR5zyIBjVEdUNF4_-3zGYwOULe_lzth4L5R6yI-AWjw3lsZTsy9eoDsIouyUhz_Sj6yFtCxBJpsrahgPNWJJxTtkN6uDLUxX0n79HAiawTBZPNNgE7OQs-J5tbgYG2_SojII5qu8ZF-s5GiaOwDsPMtkXuy2IfbATIU7tapMToAlEgjEtvRu9R8oL388MwmNcmHXqoQsPf1sxhXq2ePitKDALNHcCEGEtUuZkTS5ODzH2fjiT9I875ly_mmEmWvg53XOj0AR-mvHOdZmqtSS7VXmNRSGyKZ1cw2IjnQtekMIin-Na-gIkZe0UcU60dUFolnjOkhlK0QLwsxiCHaDK7PFMR6DQVClaoPY4ma-iVPP5kCats8YPZjMBQiTH77WVD19W3V6KroRpvHxdspPZbe8Ft_Il62dk7vEI9o"
+[2025-11-26 10:16:15 INF] Executed DbCommand ("2"ms) [Parameters=["@__p_0='1002'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Id] = @__p_0"
+[2025-11-26 10:16:15 INF] Session validated for user "Buze12" at 11/26/2025 07:16:15 +00:00
+[2025-11-26 10:16:15 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:15 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 16.2065ms
+[2025-11-26 10:16:15 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2025-11-26 10:16:15 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 200 null "application/json; charset=utf-8" 26.6688ms
+[2025-11-26 10:16:15 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=SPAREPART" - null null
+[2025-11-26 10:16:15 INF] CORS policy execution successful.
+[2025-11-26 10:16:15 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=SPAREPART" - 204 null null 4.2964ms
+[2025-11-26 10:16:15 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=SPAREPART" - "application/json" null
+[2025-11-26 10:16:15 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=SPAREPART" - null null
+[2025-11-26 10:16:15 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/transactions""" - null null
+[2025-11-26 10:16:15 INF] CORS policy execution successful.
+[2025-11-26 10:16:15 INF] CORS policy execution successful.
+[2025-11-26 10:16:15 INF] CORS policy execution successful.
+[2025-11-26 10:16:15 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:16:15 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=SPAREPART" - 204 null null 15.4917ms
+[2025-11-26 10:16:15 INF] Route matched with "{action = \"GetItemsByRoles\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItemsByRoles(System.String[])" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:16:15 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/transactions""" - 204 null null 16.1403ms
+[2025-11-26 10:16:15 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=SPAREPART" - "application/json" null
+[2025-11-26 10:16:15 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/transactions""" - "application/json" null
+[2025-11-26 10:16:15 INF] CORS policy execution successful.
+[2025-11-26 10:16:15 INF] CORS policy execution successful.
+[2025-11-26 10:16:15 INF] Executing endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2025-11-26 10:16:15 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)"'
+[2025-11-26 10:16:15 INF] Route matched with "{action = \"GetModel22s\", controller = \"Model22\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Model22]]] GetModel22s(System.String)" on controller "Gofabackend.Controllers.Model22Controller" ("Gofabackend").
+[2025-11-26 10:16:15 INF] Route matched with "{action = \"GetAllTransactionHistories\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.TransactionEntryDto]]] GetAllTransactionHistories()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:16:15 INF] Executed DbCommand ("130"ms) [Parameters=["@__Select_0='[\"SPAREPART\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+WHERE EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__Select_0) WITH ([value] nvarchar(max) '$') AS [s]
+    WHERE [s].[value] = UPPER([i].[Role]))
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:16:16 INF] Executed DbCommand ("31"ms) [Parameters=["@__role_0='SPAREPART' (Size = 4000)"], CommandType='Text', CommandTimeout='180']"
+""SELECT [m].[Model22Id], [m].[Department], [m].[EthiopianDate], [m].[RecipientName], [m].[RecipientOrganization], [m].[RegisteredBy], [m].[Role], [m].[VoucherNumber], [m0].[Model22ItemId], [m0].[Currency], [m0].[Description], [m0].[Model], [m0].[Model22Id], [m0].[Quantity], [m0].[SerialNumber], [m0].[SerialNumbers], [m0].[UnitPrice]
+FROM [Model22s] AS [m]
+LEFT JOIN [Model22Items] AS [m0] ON [m].[Model22Id] = [m0].[Model22Id]
+WHERE [m].[Role] = @__role_0
+ORDER BY [m].[Model22Id]"
+[2025-11-26 10:16:16 INF] Executed DbCommand ("12"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [t].[Id], [t].[ItemId], [i].[Category], [i].[Description], [t].[Action], [t].[Quantity], [t].[VoucherNumber], [t].[Details], [t].[Date], [t].[Model22Id]
+FROM [TransactionEntries] AS [t]
+INNER JOIN [Items] AS [i] ON [t].[ItemId] = [i].[ItemId]"
+[2025-11-26 10:16:16 INF] Fetched 6 items for roles: "SPAREPART"
+[2025-11-26 10:16:16 INF] Fetched 11 Model22 records with role filter '"SPAREPART"'
+[2025-11-26 10:16:16 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:16 INF] Fetched 93 transaction entries
+[2025-11-26 10:16:16 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Model22, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:16 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)" in 340.3767ms
+[2025-11-26 10:16:16 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.TransactionEntryDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:16 INF] Executed action "Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)" in 274.9961ms
+[2025-11-26 10:16:16 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:16:16 INF] Executed action "Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)" in 301.7655ms
+[2025-11-26 10:16:16 INF] Executed endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2025-11-26 10:16:16 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=SPAREPART" - 200 null "application/json; charset=utf-8" 539.8925ms
+[2025-11-26 10:16:16 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)"'
+[2025-11-26 10:16:16 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=SPAREPART" - 200 null "application/json; charset=utf-8" 544.1205ms
+[2025-11-26 10:16:16 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/transactions""" - 200 null "application/json; charset=utf-8" 553.0122ms
+[2025-11-26 10:16:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=SPAREPART" - "application/json" null
+[2025-11-26 10:16:20 INF] CORS policy execution successful.
+[2025-11-26 10:16:20 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Route matched with "{action = \"GetItemsByRoles\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItemsByRoles(System.String[])" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:16:20 INF] Executed DbCommand ("9"ms) [Parameters=["@__Select_0='[\"SPAREPART\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+WHERE EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__Select_0) WITH ([value] nvarchar(max) '$') AS [s]
+    WHERE [s].[value] = UPPER([i].[Role]))
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:16:20 INF] Fetched 6 items for roles: "SPAREPART"
+[2025-11-26 10:16:20 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:20 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)" in 38.8086ms
+[2025-11-26 10:16:20 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=SPAREPART" - 200 null "application/json; charset=utf-8" 50.7189ms
+[2025-11-26 10:16:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:16:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Buze12""" - null null
+[2025-11-26 10:16:20 INF] CORS policy execution successful.
+[2025-11-26 10:16:20 INF] CORS policy execution successful.
+[2025-11-26 10:16:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - null null
+[2025-11-26 10:16:20 INF] CORS policy execution successful.
+[2025-11-26 10:16:20 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:20 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:20 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:20 INF] Executed DbCommand ("7"ms) [Parameters=["@__ToLower_0='buze12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:20 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:20 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='eyosiyas alemayehu' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:20 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:20 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:20 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:20 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 23.3906ms
+[2025-11-26 10:16:20 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 17.8232ms
+[2025-11-26 10:16:20 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 15.3393ms
+[2025-11-26 10:16:20 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Buze12""" - 200 null "application/json; charset=utf-8" 67.1157ms
+[2025-11-26 10:16:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 70.5479ms
+[2025-11-26 10:16:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - 404 null "application/json; charset=utf-8" 64.7003ms
+[2025-11-26 10:16:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:16:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - null null
+[2025-11-26 10:16:20 INF] CORS policy execution successful.
+[2025-11-26 10:16:20 INF] CORS policy execution successful.
+[2025-11-26 10:16:20 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:20 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:20 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:20 INF] Executed DbCommand ("0"ms) [Parameters=["@__ToLower_0='eyosiyas alemayehu' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:20 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:20 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:20 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 10.8283ms
+[2025-11-26 10:16:20 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 10.8148ms
+[2025-11-26 10:16:20 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 35.2327ms
+[2025-11-26 10:16:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - 404 null "application/json; charset=utf-8" 34.7172ms
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=SPAREPART" - null null
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""" - null null
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - null null
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/5100""" - null null
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=SPAREPART" - 204 null null 40.4285ms
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - null null
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/5100""" - "application/json" null
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=SPAREPART" - "application/json" null
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/sources""" - "application/json" null
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 52.0576ms
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/5100""" - 204 null null 29.2698ms
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - 204 null null 59.9025ms
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""" - 204 null null 73.7964ms
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - "application/json" null
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""" - "application/json" null
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - 204 null null 51.664ms
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItem (Gofabackend)"'
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetModel22s\", controller = \"Model22\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Model22]]] GetModel22s(System.String)" on controller "Gofabackend.Controllers.Model22Controller" ("Gofabackend").
+[2025-11-26 10:16:27 INF] Executing endpoint '"Fallback {*path:nonfile}"'
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetItem\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[Gofabackend.Models.Item]] GetItem(Int32)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executed endpoint '"Fallback {*path:nonfile}"'
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:16:27 INF] Executed DbCommand ("3"ms) [Parameters=["@__role_0='SPAREPART' (Size = 4000)"], CommandType='Text', CommandTimeout='180']"
+""SELECT [m].[Model22Id], [m].[Department], [m].[EthiopianDate], [m].[RecipientName], [m].[RecipientOrganization], [m].[RegisteredBy], [m].[Role], [m].[VoucherNumber], [m0].[Model22ItemId], [m0].[Currency], [m0].[Description], [m0].[Model], [m0].[Model22Id], [m0].[Quantity], [m0].[SerialNumber], [m0].[SerialNumbers], [m0].[UnitPrice]
+FROM [Model22s] AS [m]
+LEFT JOIN [Model22Items] AS [m0] ON [m].[Model22Id] = [m0].[Model22Id]
+WHERE [m].[Role] = @__role_0
+ORDER BY [m].[Model22Id]"
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetWarehouses\", controller = \"Warehouses\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.WarehouseDto]]] GetWarehouses()" on controller "Gofabackend.Controller.WarehousesController" ("Gofabackend").
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/index.html""" - 404 0 null 122.7647ms
+[2025-11-26 10:16:27 INF] Executed DbCommand ("16"ms) [Parameters=["@__id_0='5100'"], CommandType='Text', CommandTimeout='120']"
+""SELECT [t].[ItemId], [t].[Category], [t].[Condition], [t].[Currency], [t].[Description], [t].[GregorianDate], [t].[ItemColumn], [t].[ItemRow], [t].[Model], [t].[NumOfBox], [t].[Quantity], [t].[ReceivedFrom], [t].[RegisteredBy], [t].[RegistrationDate], [t].[Role], [t].[Shelf], [t].[Source], [t].[UnitPrice], [t].[VoucherNumber], [t].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t0].[Id], [t0].[Action], [t0].[Currency], [t0].[Date], [t0].[Details], [t0].[GregorianDate], [t0].[ItemId], [t0].[ItemUnitId], [t0].[Model22Id], [t0].[Quantity], [t0].[UnitPrice], [t0].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM (
+    SELECT TOP(1) [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId]
+    FROM [Items] AS [i]
+    WHERE [i].[ItemId] = @__id_0
+) AS [t]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [t].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t0] ON [t].[ItemId] = [t0].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [t].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [t].[ItemId] = [a].[ItemId]
+ORDER BY [t].[ItemId], [i0].[Id], [t0].[Id], [i1].[Id]"
+[2025-11-26 10:16:27 INF] Fetched 5 currencies
+[2025-11-26 10:16:27 INF] Fetched 11 Model22 records with role filter '"SPAREPART"'
+[2025-11-26 10:16:27 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Model22, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:27 INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: "GET" "http"://"localhost:5000""""/index.html", Response status code: 404
+[2025-11-26 10:16:27 INF] Executed DbCommand ("5"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]"
+[2025-11-26 10:16:27 INF] Executing "OkObjectResult", writing value of type '"Gofabackend.Models.Item"'.
+[2025-11-26 10:16:27 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:27 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 83.255ms
+[2025-11-26 10:16:27 INF] Executed action "Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)" in 101.0633ms
+[2025-11-26 10:16:27 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:27 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItem (Gofabackend)" in 101.3192ms
+[2025-11-26 10:16:27 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItem (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executed endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 59.9526ms
+[2025-11-26 10:16:27 INF] Executed DbCommand ("4"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [w].[WarehouseId], [w].[Location], [w].[Name]
+FROM [Warehouses] AS [w]"
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/5100""" - 200 null "application/json; charset=utf-8" 263.3296ms
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 247.0498ms
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=SPAREPART" - 200 null "application/json; charset=utf-8" 268.5139ms
+[2025-11-26 10:16:27 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.WarehouseDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Bizuayehu Zenebe""" - null null
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/ኢዮሲያስ አለማየሁ""" - null null
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""" - 200 null "application/json; charset=utf-8" 281.4999ms
+[2025-11-26 10:16:27 INF] Executed action "Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)" in 156.8587ms
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Executed endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - 200 null "application/json; charset=utf-8" 326.0571ms
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:27 INF] Executed DbCommand ("2"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:27 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='bizuayehu zenebe' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:27 INF] Executed DbCommand ("2"ms) [Parameters=["@__ToLower_0='ኢዮሲያስ አለማየሁ' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:27 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:27 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:27 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:27 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:27 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 34.9202ms
+[2025-11-26 10:16:27 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 30.7875ms
+[2025-11-26 10:16:27 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 118.9453ms
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:16:27 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 27.2203ms
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Bizuayehu Zenebe""" - 404 null "application/json; charset=utf-8" 144.3936ms
+[2025-11-26 10:16:27 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 35.9815ms
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Bizuayehu Zenebe""" - null null
+[2025-11-26 10:16:27 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/ኢዮሲያስ አለማየሁ""" - 404 null "application/json; charset=utf-8" 167.4819ms
+[2025-11-26 10:16:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/ኢዮሲያስ አለማየሁ""" - null null
+[2025-11-26 10:16:27 INF] CORS policy execution successful.
+[2025-11-26 10:16:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 179.4505ms
+[2025-11-26 10:16:27 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:28 INF] CORS policy execution successful.
+[2025-11-26 10:16:28 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:28 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:16:28 INF] Executed DbCommand ("3"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:28 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:28 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:28 INF] CORS policy execution successful.
+[2025-11-26 10:16:28 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:28 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:28 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:28 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='bizuayehu zenebe' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:28 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 50.708ms
+[2025-11-26 10:16:28 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:28 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='ኢዮሲያስ አለማየሁ' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:28 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:28 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:28 INF] Executed DbCommand ("3"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:28 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:28 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 84.5155ms
+[2025-11-26 10:16:28 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 269.9064ms
+[2025-11-26 10:16:28 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:28 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 99.385ms
+[2025-11-26 10:16:28 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:28 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 107.9932ms
+[2025-11-26 10:16:28 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:28 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Bizuayehu Zenebe""" - 404 null "application/json; charset=utf-8" 286.0762ms
+[2025-11-26 10:16:28 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:28 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/ኢዮሲያስ አለማየሁ""" - 404 null "application/json; charset=utf-8" 274.3841ms
+[2025-11-26 10:16:28 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 235.3931ms
+[2025-11-26 10:16:45 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/logout""" - null null
+[2025-11-26 10:16:45 INF] CORS policy execution successful.
+[2025-11-26 10:16:45 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/logout""" - 204 null null 3.5863ms
+[2025-11-26 10:16:45 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/logout""" - "application/json" 2
+[2025-11-26 10:16:45 INF] CORS policy execution successful.
+[2025-11-26 10:16:45 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Logout (Gofabackend)"'
+[2025-11-26 10:16:45 INF] Route matched with "{action = \"Logout\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Logout()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:45 INF] AuthenticationScheme: "Cookies" signed out.
+[2025-11-26 10:16:45 INF] User logged out at 11/26/2025 07:16:45 +00:00
+[2025-11-26 10:16:45 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:45 INF] Executed action "Gofabackend.Controllers.AuthController.Logout (Gofabackend)" in 7.8076ms
+[2025-11-26 10:16:45 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Logout (Gofabackend)"'
+[2025-11-26 10:16:45 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/logout""" - 200 null "application/json; charset=utf-8" 19.8816ms
+[2025-11-26 10:16:51 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - null null
+[2025-11-26 10:16:51 INF] CORS policy execution successful.
+[2025-11-26 10:16:51 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - 204 null null 3.1207ms
+[2025-11-26 10:16:51 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - "application/json" 45
+[2025-11-26 10:16:51 INF] CORS policy execution successful.
+[2025-11-26 10:16:51 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2025-11-26 10:16:51 INF] Route matched with "{action = \"Login\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Gofabackend.Controllers.LoginRequestDto)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:51 INF] Executed DbCommand ("0"ms) [Parameters=["@__loginRequest_Username_0='eyosi12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(2) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginRequest_Username_0"
+[2025-11-26 10:16:51 INF] Session created for user "eyosi12" at 11/26/2025 07:16:51 +00:00, expires at 11/26/2025 07:26:51 +00:00
+[2025-11-26 10:16:51 INF] AuthenticationScheme: "Cookies" signed in.
+[2025-11-26 10:16:51 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType1`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:51 INF] Executed action "Gofabackend.Controllers.AuthController.Login (Gofabackend)" in 150.228ms
+[2025-11-26 10:16:51 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2025-11-26 10:16:51 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - 200 null "application/json; charset=utf-8" 164.4888ms
+[2025-11-26 10:16:51 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2025-11-26 10:16:51 INF] CORS policy execution successful.
+[2025-11-26 10:16:51 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2025-11-26 10:16:51 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:52 INF] Cookies received in /api/auth/me: "csrftoken: xjq5ZutwgEhpscr3fvWxDktBCQVrTke3, sessionid: oy87kzpouj89xulwus8jyxu9yu8fz154, auth_token: CfDJ8Gzx4NkfqdBDuo8ThPub2Qs9w-9-zpxEN_ugmT2S4tPe5-naeIesOIxsR9N4CRH6nsJIkFuO6DNAZWGKox1yfsS6yc9J8fwen9J1g5YEbLJR8r8-gm-1l_4cj7c87CJyvq9CU7gT2HOuIescx4z5nScwVV4wSARA0xf6_7fftL1KBQHzt2PHGu4Yp0Oyd1Urmg1NktMzcqBimkWgi1-xVdSnxB-ob_0EMO9bt0eprTU9hjvfC_rBfJ0880-wiUauRayVT9mQ8pmKxDN37TXYmga1uB142ryO6SqNWfuBKWHPaiUfxlK7TscT5cZ-51OEtvweCxHCKGen5axfcsKr3AbZ4ZOy0PffrbFwL3oCujFhWd6Y21ybiC7Gt-6wwDAWXXFa4-I8JVY3YJtl6D_sHJJrc5ZzQ7YviR5RDtVTx1B0njduGB2FoGEftPDwK4JHqVKs2qCLIWNa_vn2pwNhrHCU4NTQa5eQe9y25gwLFPx4Lz3rqRhCGEvS8kwTp-AzC6zNd2cxcn8GPqQj00kO4Kw"
+[2025-11-26 10:16:52 INF] Executed DbCommand ("0"ms) [Parameters=["@__p_0='2'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Id] = @__p_0"
+[2025-11-26 10:16:52 INF] Session validated for user "eyosi12" at 11/26/2025 07:16:52 +00:00
+[2025-11-26 10:16:52 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:52 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 8.3141ms
+[2025-11-26 10:16:52 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2025-11-26 10:16:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 200 null "application/json; charset=utf-8" 19.0814ms
+[2025-11-26 10:16:52 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - null null
+[2025-11-26 10:16:52 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=VHF" - null null
+[2025-11-26 10:16:52 INF] CORS policy execution successful.
+[2025-11-26 10:16:52 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/transactions""" - null null
+[2025-11-26 10:16:52 INF] CORS policy execution successful.
+[2025-11-26 10:16:52 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 204 null null 6.6373ms
+[2025-11-26 10:16:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - "application/json" null
+[2025-11-26 10:16:52 INF] CORS policy execution successful.
+[2025-11-26 10:16:52 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=VHF" - 204 null null 9.4335ms
+[2025-11-26 10:16:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=VHF" - "application/json" null
+[2025-11-26 10:16:52 INF] CORS policy execution successful.
+[2025-11-26 10:16:52 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/transactions""" - 204 null null 13.9811ms
+[2025-11-26 10:16:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/transactions""" - "application/json" null
+[2025-11-26 10:16:52 INF] CORS policy execution successful.
+[2025-11-26 10:16:52 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:16:52 INF] CORS policy execution successful.
+[2025-11-26 10:16:52 INF] Executing endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2025-11-26 10:16:52 INF] Route matched with "{action = \"GetItemsByRoles\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItemsByRoles(System.String[])" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:16:52 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)"'
+[2025-11-26 10:16:52 INF] Route matched with "{action = \"GetModel22s\", controller = \"Model22\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Model22]]] GetModel22s(System.String)" on controller "Gofabackend.Controllers.Model22Controller" ("Gofabackend").
+[2025-11-26 10:16:52 INF] Route matched with "{action = \"GetAllTransactionHistories\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.TransactionEntryDto]]] GetAllTransactionHistories()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:16:52 INF] Executed DbCommand ("1"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='180']"
+""SELECT [m].[Model22Id], [m].[Department], [m].[EthiopianDate], [m].[RecipientName], [m].[RecipientOrganization], [m].[RegisteredBy], [m].[Role], [m].[VoucherNumber], [m0].[Model22ItemId], [m0].[Currency], [m0].[Description], [m0].[Model], [m0].[Model22Id], [m0].[Quantity], [m0].[SerialNumber], [m0].[SerialNumbers], [m0].[UnitPrice]
+FROM [Model22s] AS [m]
+LEFT JOIN [Model22Items] AS [m0] ON [m].[Model22Id] = [m0].[Model22Id]
+WHERE [m].[Role] = @__role_0
+ORDER BY [m].[Model22Id]"
+[2025-11-26 10:16:52 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [t].[Id], [t].[ItemId], [i].[Category], [i].[Description], [t].[Action], [t].[Quantity], [t].[VoucherNumber], [t].[Details], [t].[Date], [t].[Model22Id]
+FROM [TransactionEntries] AS [t]
+INNER JOIN [Items] AS [i] ON [t].[ItemId] = [i].[ItemId]"
+[2025-11-26 10:16:52 INF] Fetched 18 Model22 records with role filter '"VHF"'
+[2025-11-26 10:16:52 INF] Fetched 93 transaction entries
+[2025-11-26 10:16:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Model22, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.TransactionEntryDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:52 INF] Executed action "Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)" in 12.984ms
+[2025-11-26 10:16:52 INF] Executed action "Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)" in 11.0229ms
+[2025-11-26 10:16:52 INF] Executed endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2025-11-26 10:16:52 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)"'
+[2025-11-26 10:16:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=VHF" - 200 null "application/json; charset=utf-8" 47.3358ms
+[2025-11-26 10:16:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/transactions""" - 200 null "application/json; charset=utf-8" 42.2083ms
+[2025-11-26 10:16:52 INF] Executed DbCommand ("62"ms) [Parameters=["@__Select_0='[\"VHF\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+WHERE EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__Select_0) WITH ([value] nvarchar(max) '$') AS [s]
+    WHERE [s].[value] = UPPER([i].[Role]))
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:16:52 INF] Fetched 30 items for roles: "VHF"
+[2025-11-26 10:16:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:52 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)" in 122.1856ms
+[2025-11-26 10:16:52 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:16:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 200 null "application/json; charset=utf-8" 152.4124ms
+[2025-11-26 10:16:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - "application/json" null
+[2025-11-26 10:16:55 INF] CORS policy execution successful.
+[2025-11-26 10:16:55 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Route matched with "{action = \"GetItemsByRoles\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItemsByRoles(System.String[])" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:16:55 INF] Executed DbCommand ("39"ms) [Parameters=["@__Select_0='[\"VHF\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+WHERE EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__Select_0) WITH ([value] nvarchar(max) '$') AS [s]
+    WHERE [s].[value] = UPPER([i].[Role]))
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:16:55 INF] Fetched 30 items for roles: "VHF"
+[2025-11-26 10:16:55 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:16:55 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)" in 94.053ms
+[2025-11-26 10:16:55 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 200 null "application/json; charset=utf-8" 111.4001ms
+[2025-11-26 10:16:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - null null
+[2025-11-26 10:16:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:16:55 INF] CORS policy execution successful.
+[2025-11-26 10:16:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/eyosi12""" - null null
+[2025-11-26 10:16:55 INF] CORS policy execution successful.
+[2025-11-26 10:16:55 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] CORS policy execution successful.
+[2025-11-26 10:16:55 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:55 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:55 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:55 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='eyosiyas alemayehu' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:55 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:55 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='eyosi12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:55 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:55 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:55 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:55 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 14.4681ms
+[2025-11-26 10:16:55 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 12.8673ms
+[2025-11-26 10:16:55 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 12.3738ms
+[2025-11-26 10:16:55 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - 404 null "application/json; charset=utf-8" 38.9899ms
+[2025-11-26 10:16:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 38.2807ms
+[2025-11-26 10:16:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/eyosi12""" - 200 null "application/json; charset=utf-8" 43.5865ms
+[2025-11-26 10:16:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - null null
+[2025-11-26 10:16:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:16:55 INF] CORS policy execution successful.
+[2025-11-26 10:16:55 INF] CORS policy execution successful.
+[2025-11-26 10:16:55 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:55 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:16:55 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='eyosiyas alemayehu' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:55 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:55 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 5.8717ms
+[2025-11-26 10:16:55 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:16:55 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:16:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - 404 null "application/json; charset=utf-8" 29.4494ms
+[2025-11-26 10:16:55 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 10.5883ms
+[2025-11-26 10:16:55 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:16:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 33.2808ms
+[2025-11-26 10:17:06 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2025-11-26 10:17:06 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2025-11-26 10:17:06 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2025-11-26 10:17:06 INF] CORS policy execution successful.
+[2025-11-26 10:17:06 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - null null
+[2025-11-26 10:17:06 INF] CORS policy execution successful.
+[2025-11-26 10:17:06 INF] CORS policy execution successful.
+[2025-11-26 10:17:06 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 12.7849ms
+[2025-11-26 10:17:06 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2025-11-26 10:17:06 INF] CORS policy execution successful.
+[2025-11-26 10:17:06 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 14.6375ms
+[2025-11-26 10:17:06 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 14.1354ms
+[2025-11-26 10:17:06 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2025-11-26 10:17:06 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2025-11-26 10:17:06 INF] CORS policy execution successful.
+[2025-11-26 10:17:06 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - 204 null null 28.4488ms
+[2025-11-26 10:17:06 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - "application/json" null
+[2025-11-26 10:17:06 INF] CORS policy execution successful.
+[2025-11-26 10:17:06 INF] CORS policy execution successful.
+[2025-11-26 10:17:06 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:17:06 INF] CORS policy execution successful.
+[2025-11-26 10:17:06 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2025-11-26 10:17:06 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2025-11-26 10:17:06 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2025-11-26 10:17:06 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:17:06 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2025-11-26 10:17:06 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:17:06 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:17:06 INF] Fetched 5 currencies
+[2025-11-26 10:17:06 INF] Executed DbCommand ("7"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2025-11-26 10:17:06 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:17:06 INF] Executed DbCommand ("13"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2025-11-26 10:17:06 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:17:06 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 13.7756ms
+[2025-11-26 10:17:06 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:17:06 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 24.2229ms
+[2025-11-26 10:17:06 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2025-11-26 10:17:06 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 26.0384ms
+[2025-11-26 10:17:06 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:17:06 INF] Executed DbCommand ("18"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:17:06 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 91.0795ms
+[2025-11-26 10:17:06 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2025-11-26 10:17:06 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 99.1346ms
+[2025-11-26 10:17:06 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 102.6891ms
+[2025-11-26 10:17:06 INF] Fetched and sorted 38 items with search '"none"'
+[2025-11-26 10:17:06 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:17:06 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 125.1861ms
+[2025-11-26 10:17:06 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:17:06 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - 200 null "application/json; charset=utf-8" 182.1563ms
+[2025-11-26 10:17:18 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""?description=pio" - null null
+[2025-11-26 10:17:18 INF] CORS policy execution successful.
+[2025-11-26 10:17:18 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""?description=pio" - 204 null null 2.4094ms
+[2025-11-26 10:17:18 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""?description=pio" - "application/json" null
+[2025-11-26 10:17:18 INF] CORS policy execution successful.
+[2025-11-26 10:17:18 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:17:18 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:17:18 INF] Executed DbCommand ("8"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:17:18 INF] Fetched and sorted 38 items with search '"none"'
+[2025-11-26 10:17:18 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:17:18 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 70.5855ms
+[2025-11-26 10:17:18 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:17:18 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""?description=pio" - 200 null "application/json; charset=utf-8" 79.5762ms
+[2025-11-26 10:17:56 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - null null
+[2025-11-26 10:17:56 INF] CORS policy execution successful.
+[2025-11-26 10:17:56 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 204 null null 4.5973ms
+[2025-11-26 10:17:56 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - "application/json" null
+[2025-11-26 10:17:56 INF] CORS policy execution successful.
+[2025-11-26 10:17:56 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Route matched with "{action = \"GetItemsByRoles\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItemsByRoles(System.String[])" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:17:56 INF] Executed DbCommand ("41"ms) [Parameters=["@__Select_0='[\"VHF\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+WHERE EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__Select_0) WITH ([value] nvarchar(max) '$') AS [s]
+    WHERE [s].[value] = UPPER([i].[Role]))
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:17:56 INF] Fetched 30 items for roles: "VHF"
+[2025-11-26 10:17:56 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:17:56 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)" in 100.8355ms
+[2025-11-26 10:17:56 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 200 null "application/json; charset=utf-8" 114.6751ms
+[2025-11-26 10:17:56 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - null null
+[2025-11-26 10:17:56 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:17:56 INF] CORS policy execution successful.
+[2025-11-26 10:17:56 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/eyosi12""" - null null
+[2025-11-26 10:17:56 INF] CORS policy execution successful.
+[2025-11-26 10:17:56 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] CORS policy execution successful.
+[2025-11-26 10:17:56 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:17:56 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:17:56 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:17:56 INF] Executed DbCommand ("12"ms) [Parameters=["@__ToLower_0='eyosi12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:17:56 INF] Executed DbCommand ("20"ms) [Parameters=["@__ToLower_0='eyosiyas alemayehu' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:17:56 INF] Executed DbCommand ("15"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:17:56 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:17:56 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:17:56 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:17:56 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 23.1801ms
+[2025-11-26 10:17:56 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 32.5202ms
+[2025-11-26 10:17:56 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 29.4514ms
+[2025-11-26 10:17:56 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/eyosi12""" - 200 null "application/json; charset=utf-8" 57.7102ms
+[2025-11-26 10:17:56 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - 404 null "application/json; charset=utf-8" 62.7366ms
+[2025-11-26 10:17:56 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 62.0468ms
+[2025-11-26 10:17:56 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - null null
+[2025-11-26 10:17:56 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:17:56 INF] CORS policy execution successful.
+[2025-11-26 10:17:56 INF] CORS policy execution successful.
+[2025-11-26 10:17:56 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:17:56 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:17:56 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='eyosiyas alemayehu' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:17:56 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:17:56 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:17:56 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:17:56 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 10.7848ms
+[2025-11-26 10:17:56 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 9.7365ms
+[2025-11-26 10:17:56 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:17:56 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - 404 null "application/json; charset=utf-8" 32.2657ms
+[2025-11-26 10:17:56 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 28.4953ms
+[2025-11-26 10:18:03 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2025-11-26 10:18:03 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2025-11-26 10:18:03 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2025-11-26 10:18:03 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - null null
+[2025-11-26 10:18:03 INF] CORS policy execution successful.
+[2025-11-26 10:18:03 INF] CORS policy execution successful.
+[2025-11-26 10:18:03 INF] CORS policy execution successful.
+[2025-11-26 10:18:03 INF] CORS policy execution successful.
+[2025-11-26 10:18:03 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 15.3306ms
+[2025-11-26 10:18:03 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 12.0095ms
+[2025-11-26 10:18:03 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 12.0896ms
+[2025-11-26 10:18:03 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - 204 null null 13.6826ms
+[2025-11-26 10:18:03 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2025-11-26 10:18:03 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2025-11-26 10:18:03 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2025-11-26 10:18:03 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - "application/json" null
+[2025-11-26 10:18:03 INF] CORS policy execution successful.
+[2025-11-26 10:18:03 INF] CORS policy execution successful.
+[2025-11-26 10:18:03 INF] CORS policy execution successful.
+[2025-11-26 10:18:03 INF] CORS policy execution successful.
+[2025-11-26 10:18:03 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:18:03 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2025-11-26 10:18:03 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2025-11-26 10:18:03 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:18:03 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2025-11-26 10:18:03 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2025-11-26 10:18:03 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:18:03 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:18:03 INF] Executed DbCommand ("3"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2025-11-26 10:18:03 INF] Fetched 5 currencies
+[2025-11-26 10:18:03 INF] Executed DbCommand ("3"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2025-11-26 10:18:03 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:18:03 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:18:03 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:18:03 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:18:03 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 14.108ms
+[2025-11-26 10:18:03 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 13.7774ms
+[2025-11-26 10:18:03 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 17.3242ms
+[2025-11-26 10:18:03 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:18:03 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2025-11-26 10:18:03 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2025-11-26 10:18:03 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 62.0394ms
+[2025-11-26 10:18:03 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 61.3783ms
+[2025-11-26 10:18:03 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 67.97ms
+[2025-11-26 10:18:03 INF] Fetched and sorted 38 items with search '"none"'
+[2025-11-26 10:18:03 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:18:03 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 139.68ms
+[2025-11-26 10:18:03 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:18:03 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - 200 null "application/json; charset=utf-8" 181.6432ms
+[2025-11-26 10:18:14 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""?description=pio" - null null
+[2025-11-26 10:18:14 INF] CORS policy execution successful.
+[2025-11-26 10:18:14 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""?description=pio" - 204 null null 3.1536ms
+[2025-11-26 10:18:14 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""?description=pio" - "application/json" null
+[2025-11-26 10:18:14 INF] CORS policy execution successful.
+[2025-11-26 10:18:14 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:18:14 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:18:14 INF] Executed DbCommand ("9"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:18:14 INF] Fetched and sorted 38 items with search '"none"'
+[2025-11-26 10:18:14 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:18:14 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 79.959ms
+[2025-11-26 10:18:14 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:18:14 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""?description=pio" - 200 null "application/json; charset=utf-8" 92.5249ms
+[2025-11-26 10:18:57 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""?description=asd" - null null
+[2025-11-26 10:18:57 INF] CORS policy execution successful.
+[2025-11-26 10:18:57 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""?description=asd" - 204 null null 3.2634ms
+[2025-11-26 10:18:57 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""?description=asd" - "application/json" null
+[2025-11-26 10:18:57 INF] CORS policy execution successful.
+[2025-11-26 10:18:57 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:18:57 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:18:57 INF] Executed DbCommand ("8"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:18:57 INF] Fetched and sorted 38 items with search '"none"'
+[2025-11-26 10:18:57 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:18:57 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 72.754ms
+[2025-11-26 10:18:57 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2025-11-26 10:18:57 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""?description=asd" - 200 null "application/json; charset=utf-8" 84.6685ms
+[2025-11-26 10:19:11 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""" - null null
+[2025-11-26 10:19:11 INF] CORS policy execution successful.
+[2025-11-26 10:19:11 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""" - 204 null null 3.108ms
+[2025-11-26 10:19:11 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""" - "application/json" null
+[2025-11-26 10:19:11 INF] CORS policy execution successful.
+[2025-11-26 10:19:11 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:19:11 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2025-11-26 10:19:11 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]"
+[2025-11-26 10:19:11 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:19:11 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 7.6058ms
+[2025-11-26 10:19:11 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:19:11 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""" - 200 null "application/json; charset=utf-8" 20.9895ms
+[2025-11-26 10:19:11 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/bulk-receive""" - null null
+[2025-11-26 10:19:11 INF] CORS policy execution successful.
+[2025-11-26 10:19:11 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/bulk-receive""" - 204 null null 4.1363ms
+[2025-11-26 10:19:11 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/items/bulk-receive""" - "application/json" 956
+[2025-11-26 10:19:11 INF] CORS policy execution successful.
+[2025-11-26 10:19:11 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.BulkReceiveItems (Gofabackend)"'
+[2025-11-26 10:19:11 INF] Route matched with "{action = \"BulkReceiveItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] BulkReceiveItems(Gofabackend.Models.BulkReceiveRequest)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:19:11 INF] Raw request body: ""
+[2025-11-26 10:19:11 INF] Executed DbCommand ("14"ms) [Parameters=["@__itemRequest_WarehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='120']"
+""SELECT TOP(1) [w].[WarehouseId], [w].[Location], [w].[Name]
+FROM [Warehouses] AS [w]
+WHERE [w].[WarehouseId] = @__itemRequest_WarehouseId_0"
+[2025-11-26 10:19:11 INF] Executed DbCommand ("6"ms) [Parameters=["@__itemRequest_SerialNumbers_0='[\"d23ighk3\",\"hjbgihk123\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[SerialNumber]
+FROM [ItemSerialNumbers] AS [i]
+WHERE [i].[SerialNumber] IN (
+    SELECT [i0].[value]
+    FROM OPENJSON(@__itemRequest_SerialNumbers_0) WITH ([value] nvarchar(max) '$') AS [i0]
+)"
+[2025-11-26 10:19:11 INF] Executed DbCommand ("8"ms) [Parameters=["@__itemRequest_Description_0='pio' (Size = 4000), @__itemRequest_Model_1='hjghkg' (Size = 4000), @__itemRequest_WarehouseId_2='VHF' (Size = 450), @__itemRequest_Category_3='5678h' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [t].[ItemId], [t].[Category], [t].[Condition], [t].[Currency], [t].[Description], [t].[GregorianDate], [t].[ItemColumn], [t].[ItemRow], [t].[Model], [t].[NumOfBox], [t].[Quantity], [t].[ReceivedFrom], [t].[RegisteredBy], [t].[RegistrationDate], [t].[Role], [t].[Shelf], [t].[Source], [t].[UnitPrice], [t].[VoucherNumber], [t].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t0].[Id], [t0].[Action], [t0].[Currency], [t0].[Date], [t0].[Details], [t0].[GregorianDate], [t0].[ItemId], [t0].[ItemUnitId], [t0].[Model22Id], [t0].[Quantity], [t0].[UnitPrice], [t0].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM (
+    SELECT TOP(1) [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId]
+    FROM [Items] AS [i]
+    WHERE [i].[Description] = @__itemRequest_Description_0 AND [i].[Model] = @__itemRequest_Model_1 AND [i].[WarehouseId] = @__itemRequest_WarehouseId_2 AND [i].[Category] = @__itemRequest_Category_3
+) AS [t]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [t].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t0] ON [t].[ItemId] = [t0].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [t].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [t].[ItemId] = [a].[ItemId]
+ORDER BY [t].[ItemId], [i0].[Id], [t0].[Id], [i1].[Id]"
+[2025-11-26 10:19:11 INF] Executed DbCommand ("1"ms) [Parameters=["@__itemRequest_WarehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='120']"
+""SELECT TOP(1) [w].[WarehouseId], [w].[Location], [w].[Name]
+FROM [Warehouses] AS [w]
+WHERE [w].[WarehouseId] = @__itemRequest_WarehouseId_0"
+[2025-11-26 10:19:11 INF] Executed DbCommand ("1"ms) [Parameters=["@__itemRequest_SerialNumbers_0='[\"234eo23j4k\",\"234jkwef\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[SerialNumber]
+FROM [ItemSerialNumbers] AS [i]
+WHERE [i].[SerialNumber] IN (
+    SELECT [i0].[value]
+    FROM OPENJSON(@__itemRequest_SerialNumbers_0) WITH ([value] nvarchar(max) '$') AS [i0]
+)"
+[2025-11-26 10:19:11 INF] Executed DbCommand ("1"ms) [Parameters=["@__itemRequest_Description_0='asd' (Size = 4000), @__itemRequest_Model_1='adoiED' (Size = 4000), @__itemRequest_WarehouseId_2='VHF' (Size = 450), @__itemRequest_Category_3='3jkhl' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [t].[ItemId], [t].[Category], [t].[Condition], [t].[Currency], [t].[Description], [t].[GregorianDate], [t].[ItemColumn], [t].[ItemRow], [t].[Model], [t].[NumOfBox], [t].[Quantity], [t].[ReceivedFrom], [t].[RegisteredBy], [t].[RegistrationDate], [t].[Role], [t].[Shelf], [t].[Source], [t].[UnitPrice], [t].[VoucherNumber], [t].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t0].[Id], [t0].[Action], [t0].[Currency], [t0].[Date], [t0].[Details], [t0].[GregorianDate], [t0].[ItemId], [t0].[ItemUnitId], [t0].[Model22Id], [t0].[Quantity], [t0].[UnitPrice], [t0].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM (
+    SELECT TOP(1) [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId]
+    FROM [Items] AS [i]
+    WHERE [i].[Description] = @__itemRequest_Description_0 AND [i].[Model] = @__itemRequest_Model_1 AND [i].[WarehouseId] = @__itemRequest_WarehouseId_2 AND [i].[Category] = @__itemRequest_Category_3
+) AS [t]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [t].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t0] ON [t].[ItemId] = [t0].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [t].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [t].[ItemId] = [a].[ItemId]
+ORDER BY [t].[ItemId], [i0].[Id], [t0].[Id], [i1].[Id]"
+[2025-11-26 10:19:11 INF] Executed DbCommand ("35"ms) [Parameters=["@p0='ህዳር 17, 2018' (Nullable = false) (Size = 4000), @p1='5091', @p2='d23ighk3' (Nullable = false) (Size = 4000), @p3='ህዳር 17, 2018' (Nullable = false) (Size = 4000), @p4='5091', @p5='hjbgihk123' (Nullable = false) (Size = 4000), @p6='ህዳር 17, 2018' (Nullable = false) (Size = 4000), @p7='5098', @p8='234eo23j4k' (Nullable = false) (Size = 4000), @p9='ህዳር 17, 2018' (Nullable = false) (Size = 4000), @p10='5098', @p11='234jkwef' (Nullable = false) (Size = 4000), @p12='5091', @p13='d23ighk3' (Nullable = false) (Size = 4000), @p14='5091', @p15='hjbgihk123' (Nullable = false) (Size = 4000), @p16='5098', @p17='234eo23j4k' (Nullable = false) (Size = 4000), @p18='5098', @p19='234jkwef' (Nullable = false) (Size = 4000), @p39='5091', @p20='5678h' (Nullable = false) (Size = 4000), @p21='active' (Nullable = false) (Size = 4000), @p22='EURO' (Nullable = false) (Size = 4000), @p23='pio' (Nullable = false) (Size = 4000), @p24=NULL (DbType = DateTime2), @p25='2' (Nullable = false) (Size = 4000), @p26='5' (Nullable = false) (Size = 4000), @p27='hjghkg' (Nullable = false) (Size = 4000), @p28=NULL (DbType = Int32), @p29='15', @p30='asd' (Nullable = false) (Size = 4000), @p31='Eyosiyas Alemayehu' (Nullable = false) (Size = 4000), @p32='መስከረም 12, 2018' (Nullable = false) (Size = 4000), @p33='VHF' (Nullable = false) (Size = 4000), @p34='VHF warehouse' (Nullable = false) (Size = 4000), @p35='Purchase' (Nullable = false) (Size = 50), @p36='300' (Precision = 18) (Scale = 2), @p37=NULL (Size = 4000), @p38='VHF' (Nullable = false) (Size = 450), @p59='5098', @p40='3jkhl' (Nullable = false) (Size = 4000), @p41='active' (Nullable = false) (Size = 4000), @p42='ETB' (Nullable = false) (Size = 4000), @p43='asd' (Nullable = false) (Size = 4000), @p44=NULL (DbType = DateTime2), @p45='1' (Nullable = false) (Size = 4000), @p46='2' (Nullable = false) (Size = 4000), @p47='adoiED' (Nullable = false) (Size = 4000), @p48=NULL (DbType = Int32), @p49='6', @p50='asd' (Nullable = false) (Size = 4000), @p51='Eyosiyas Alemayehu' (Nullable = false) (Size = 4000), @p52='መስከረም 29, 2018' (Nullable = false) (Size = 4000), @p53='VHF' (Nullable = false) (Size = 4000), @p54='VHF warehouse' (Nullable = false) (Size = 4000), @p55='Purchase' (Nullable = false) (Size = 50), @p56='213' (Precision = 18) (Scale = 2), @p57=NULL (Size = 4000), @p58='VHF' (Nullable = false) (Size = 450), @p60='receive' (Nullable = false) (Size = 4000), @p61='EURO' (Nullable = false) (Size = 4000), @p62='ህዳር 17, 2018' (Nullable = false) (Size = 4000), @p63='Received From: asd, Registered By: Eyosiyas Alemayehu, Source: Purchase, Date: ህዳር 17, 2018' (Nullable = false) (Size = 4000), @p64='2025-11-26T10:19:11.7745201Z' (Nullable = true), @p65='5091', @p66=NULL (DbType = Int32), @p67=NULL (DbType = Int32), @p68='2', @p69='300' (Precision = 18) (Scale = 2), @p70='' (Nullable = false) (Size = 4000), @p71='receive' (Nullable = false) (Size = 4000), @p72='ETB' (Nullable = false) (Size = 4000), @p73='ህዳር 17, 2018' (Nullable = false) (Size = 4000), @p74='Received From: asd, Registered By: Eyosiyas Alemayehu, Source: Purchase, Date: ህዳር 17, 2018' (Nullable = false) (Size = 4000), @p75='2025-11-26T10:19:11.7745201Z' (Nullable = true), @p76='5098', @p77=NULL (DbType = Int32), @p78=NULL (DbType = Int32), @p79='2', @p80='213' (Precision = 18) (Scale = 2), @p81='' (Nullable = false) (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SET NOCOUNT ON;
+MERGE [ItemSerialNumbers] USING (
+VALUES (@p0, @p1, @p2, 0),
+(@p3, @p4, @p5, 1),
+(@p6, @p7, @p8, 2),
+(@p9, @p10, @p11, 3)) AS i ([AddedDate], [ItemId], [SerialNumber], _Position) ON 1=0
+WHEN NOT MATCHED THEN
+INSERT ([AddedDate], [ItemId], [SerialNumber])
+VALUES (i.[AddedDate], i.[ItemId], i.[SerialNumber])
+OUTPUT INSERTED.[Id], i._Position;
+MERGE [ItemUnits] USING (
+VALUES (@p12, @p13, 0),
+(@p14, @p15, 1),
+(@p16, @p17, 2),
+(@p18, @p19, 3)) AS i ([ItemId], [SerialNumber], _Position) ON 1=0
+WHEN NOT MATCHED THEN
+INSERT ([ItemId], [SerialNumber])
+VALUES (i.[ItemId], i.[SerialNumber])
+OUTPUT INSERTED.[Id], i._Position;
+UPDATE [Items] SET [Category] = @p20, [Condition] = @p21, [Currency] = @p22, [Description] = @p23, [GregorianDate] = @p24, [ItemColumn] = @p25, [ItemRow] = @p26, [Model] = @p27, [NumOfBox] = @p28, [Quantity] = @p29, [ReceivedFrom] = @p30, [RegisteredBy] = @p31, [RegistrationDate] = @p32, [Role] = @p33, [Shelf] = @p34, [Source] = @p35, [UnitPrice] = @p36, [VoucherNumber] = @p37, [WarehouseId] = @p38
+OUTPUT 1
+WHERE [ItemId] = @p39;
+UPDATE [Items] SET [Category] = @p40, [Condition] = @p41, [Currency] = @p42, [Description] = @p43, [GregorianDate] = @p44, [ItemColumn] = @p45, [ItemRow] = @p46, [Model] = @p47, [NumOfBox] = @p48, [Quantity] = @p49, [ReceivedFrom] = @p50, [RegisteredBy] = @p51, [RegistrationDate] = @p52, [Role] = @p53, [Shelf] = @p54, [Source] = @p55, [UnitPrice] = @p56, [VoucherNumber] = @p57, [WarehouseId] = @p58
+OUTPUT 1
+WHERE [ItemId] = @p59;
+MERGE [TransactionEntries] USING (
+VALUES (@p60, @p61, @p62, @p63, @p64, @p65, @p66, @p67, @p68, @p69, @p70, 0),
+(@p71, @p72, @p73, @p74, @p75, @p76, @p77, @p78, @p79, @p80, @p81, 1)) AS i ([Action], [Currency], [Date], [Details], [GregorianDate], [ItemId], [ItemUnitId], [Model22Id], [Quantity], [UnitPrice], [VoucherNumber], _Position) ON 1=0
+WHEN NOT MATCHED THEN
+INSERT ([Action], [Currency], [Date], [Details], [GregorianDate], [ItemId], [ItemUnitId], [Model22Id], [Quantity], [UnitPrice], [VoucherNumber])
+VALUES (i.[Action], i.[Currency], i.[Date], i.[Details], i.[GregorianDate], i.[ItemId], i.[ItemUnitId], i.[Model22Id], i.[Quantity], i.[UnitPrice], i.[VoucherNumber])
+OUTPUT INSERTED.[Id], i._Position;"
+[2025-11-26 10:19:11 INF] Bulk transaction committed. ItemIds: "5091, 5098"
+[2025-11-26 10:19:11 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType25`3[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:19:11 INF] Executed action "Gofabackend.Controllers.ItemsController.BulkReceiveItems (Gofabackend)" in 118.8727ms
+[2025-11-26 10:19:11 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.BulkReceiveItems (Gofabackend)"'
+[2025-11-26 10:19:11 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/items/bulk-receive""" - 200 null "application/json; charset=utf-8" 129.8596ms
+[2025-11-26 10:19:12 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - null null
+[2025-11-26 10:19:12 INF] CORS policy execution successful.
+[2025-11-26 10:19:12 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 204 null null 5.4508ms
+[2025-11-26 10:19:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - "application/json" null
+[2025-11-26 10:19:12 INF] CORS policy execution successful.
+[2025-11-26 10:19:12 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Route matched with "{action = \"GetItemsByRoles\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Item]]] GetItemsByRoles(System.String[])" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:19:12 INF] Executed DbCommand ("81"ms) [Parameters=["@__Select_0='[\"VHF\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Category], [i].[Condition], [i].[Currency], [i].[Description], [i].[GregorianDate], [i].[ItemColumn], [i].[ItemRow], [i].[Model], [i].[NumOfBox], [i].[Quantity], [i].[ReceivedFrom], [i].[RegisteredBy], [i].[RegistrationDate], [i].[Role], [i].[Shelf], [i].[Source], [i].[UnitPrice], [i].[VoucherNumber], [i].[WarehouseId], [i0].[Id], [i0].[AddedDate], [i0].[ItemId], [i0].[SerialNumber], [t].[Id], [t].[Action], [t].[Currency], [t].[Date], [t].[Details], [t].[GregorianDate], [t].[ItemId], [t].[ItemUnitId], [t].[Model22Id], [t].[Quantity], [t].[UnitPrice], [t].[VoucherNumber], [i1].[Id], [i1].[ItemId], [i1].[SerialNumber], [a].[Id], [a].[ItemId], [a].[Model], [a].[Name], [a].[Quantity]
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i0] ON [i].[ItemId] = [i0].[ItemId]
+LEFT JOIN [TransactionEntries] AS [t] ON [i].[ItemId] = [t].[ItemId]
+LEFT JOIN [ItemUnits] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN [Accessories] AS [a] ON [i].[ItemId] = [a].[ItemId]
+WHERE EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__Select_0) WITH ([value] nvarchar(max) '$') AS [s]
+    WHERE [s].[value] = UPPER([i].[Role]))
+ORDER BY [i].[ItemId], [i0].[Id], [t].[Id], [i1].[Id]"
+[2025-11-26 10:19:12 INF] Fetched 30 items for roles: "VHF"
+[2025-11-26 10:19:12 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Item, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:19:12 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)" in 150.6218ms
+[2025-11-26 10:19:12 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 200 null "application/json; charset=utf-8" 169.2147ms
+[2025-11-26 10:19:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - null null
+[2025-11-26 10:19:12 INF] CORS policy execution successful.
+[2025-11-26 10:19:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:19:12 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/eyosi12""" - null null
+[2025-11-26 10:19:12 INF] CORS policy execution successful.
+[2025-11-26 10:19:12 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:19:12 INF] CORS policy execution successful.
+[2025-11-26 10:19:12 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:19:12 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:19:12 INF] Executed DbCommand ("4"ms) [Parameters=["@__ToLower_0='eyosiyas alemayehu' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:19:12 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='eyosi12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:19:12 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:19:12 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:19:12 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:19:12 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:19:12 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 18.6802ms
+[2025-11-26 10:19:12 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 13.2607ms
+[2025-11-26 10:19:12 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 13.1305ms
+[2025-11-26 10:19:12 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - 404 null "application/json; charset=utf-8" 41.6891ms
+[2025-11-26 10:19:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/eyosi12""" - 200 null "application/json; charset=utf-8" 36.8371ms
+[2025-11-26 10:19:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 42.0246ms
+[2025-11-26 10:19:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - null null
+[2025-11-26 10:19:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - null null
+[2025-11-26 10:19:12 INF] CORS policy execution successful.
+[2025-11-26 10:19:12 INF] CORS policy execution successful.
+[2025-11-26 10:19:12 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:19:12 INF] Route matched with "{action = \"GetUserByUsername\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetUserByUsername(System.String)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 10:19:12 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='anonymous' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:19:12 INF] Executed DbCommand ("1"ms) [Parameters=["@__ToLower_0='eyosiyas alemayehu' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE LOWER([u].[Username]) = @__ToLower_0"
+[2025-11-26 10:19:12 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:19:12 INF] Executing "NotFoundObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:19:12 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 9.4838ms
+[2025-11-26 10:19:12 INF] Executed action "Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)" in 12.7863ms
+[2025-11-26 10:19:12 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetUserByUsername (Gofabackend)"'
+[2025-11-26 10:19:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Anonymous""" - 404 null "application/json; charset=utf-8" 27.1702ms
+[2025-11-26 10:19:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/user/username/Eyosiyas Alemayehu""" - 404 null "application/json; charset=utf-8" 35.1232ms
+[2025-11-26 10:19:23 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2025-11-26 10:19:23 INF] CORS policy execution successful.
+[2025-11-26 10:19:23 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 3.5251ms
+[2025-11-26 10:19:23 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2025-11-26 10:19:23 INF] CORS policy execution successful.
+[2025-11-26 10:19:23 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:19:23 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2025-11-26 10:19:23 INF] Executed DbCommand ("3"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2025-11-26 10:19:23 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2025-11-26 10:19:23 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 12.4782ms
+[2025-11-26 10:19:23 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2025-11-26 10:19:23 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 32.2092ms
+[2025-11-26 10:19:23 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/receive-history/filter""?roles=VHF&page=1&pageSize=10000" - null null
+[2025-11-26 10:19:23 INF] CORS policy execution successful.
+[2025-11-26 10:19:23 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/receive-history/filter""?roles=VHF&page=1&pageSize=10000" - 204 null null 5.2743ms
+[2025-11-26 10:19:23 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/receive-history/filter""?roles=VHF&page=1&pageSize=10000" - "application/json" null
+[2025-11-26 10:19:23 INF] CORS policy execution successful.
+[2025-11-26 10:19:23 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.FilterReceiveHistory (Gofabackend)"'
+[2025-11-26 10:19:23 INF] Route matched with "{action = \"FilterReceiveHistory\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Object]] FilterReceiveHistory(System.String, System.String, System.String[], System.String[], Int32, Int32)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2025-11-26 10:19:23 INF] Executed DbCommand ("16"ms) [Parameters=["@__Select_0='[\"VHF\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT COUNT(*)
+FROM [TransactionEntries] AS [t]
+INNER JOIN [Items] AS [i] ON [t].[ItemId] = [i].[ItemId]
+WHERE [t].[Action] = N'receive' AND EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__Select_0) WITH ([value] nvarchar(max) '$') AS [s]
+    WHERE [s].[value] = UPPER([i].[Role]))"
+[2025-11-26 10:19:23 INF] Executed DbCommand ("12"ms) [Parameters=["@__Select_0='[\"VHF\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [t].[Id] AS [TransactionId], [i].[Category], [i].[Description], [i].[Model], [t].[Quantity], [t].[VoucherNumber], [i].[ReceivedFrom], [i].[RegisteredBy], [t].[Date], [i].[Source], [t].[UnitPrice], [t].[Currency]
+FROM [TransactionEntries] AS [t]
+INNER JOIN [Items] AS [i] ON [t].[ItemId] = [i].[ItemId]
+WHERE [t].[Action] = N'receive' AND EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__Select_0) WITH ([value] nvarchar(max) '$') AS [s]
+    WHERE [s].[value] = UPPER([i].[Role]))"
+[2025-11-26 10:19:23 INF] Filtered ReceiveHistory: Search='"(none)"', Period='null', Roles=1, Categories=0, Page=1, PageSize=10000, Count=54, Total=54
+[2025-11-26 10:19:23 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType21`5[[System.Collections.Generic.IEnumerable`1[[ReceiveHistoryDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 10:19:23 INF] Executed action "Gofabackend.Controllers.ItemsController.FilterReceiveHistory (Gofabackend)" in 105.0386ms
+[2025-11-26 10:19:23 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.FilterReceiveHistory (Gofabackend)"'
+[2025-11-26 10:19:23 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/receive-history/filter""?roles=VHF&page=1&pageSize=10000" - 200 null "application/json; charset=utf-8" 133.6895ms
+[2025-11-26 12:12:41 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2025-11-26 12:12:41 INF] CORS policy execution successful.
+[2025-11-26 12:12:41 INF] "Cookies" was not authenticated. Failure message: "Ticket expired"
+[2025-11-26 12:12:41 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2025-11-26 12:12:41 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 12:12:41 INF] Cookies received in /api/auth/me: "csrftoken: xjq5ZutwgEhpscr3fvWxDktBCQVrTke3, sessionid: oy87kzpouj89xulwus8jyxu9yu8fz154, auth_token: CfDJ8Gzx4NkfqdBDuo8ThPub2Qs9w-9-zpxEN_ugmT2S4tPe5-naeIesOIxsR9N4CRH6nsJIkFuO6DNAZWGKox1yfsS6yc9J8fwen9J1g5YEbLJR8r8-gm-1l_4cj7c87CJyvq9CU7gT2HOuIescx4z5nScwVV4wSARA0xf6_7fftL1KBQHzt2PHGu4Yp0Oyd1Urmg1NktMzcqBimkWgi1-xVdSnxB-ob_0EMO9bt0eprTU9hjvfC_rBfJ0880-wiUauRayVT9mQ8pmKxDN37TXYmga1uB142ryO6SqNWfuBKWHPaiUfxlK7TscT5cZ-51OEtvweCxHCKGen5axfcsKr3AbZ4ZOy0PffrbFwL3oCujFhWd6Y21ybiC7Gt-6wwDAWXXFa4-I8JVY3YJtl6D_sHJJrc5ZzQ7YviR5RDtVTx1B0njduGB2FoGEftPDwK4JHqVKs2qCLIWNa_vn2pwNhrHCU4NTQa5eQe9y25gwLFPx4Lz3rqRhCGEvS8kwTp-AzC6zNd2cxcn8GPqQj00kO4Kw"
+[2025-11-26 12:12:41 WRN] No user ID found in claims
+[2025-11-26 12:12:41 INF] Executing "UnauthorizedObjectResult", writing value of type '"<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 12:12:41 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 17.2101ms
+[2025-11-26 12:12:41 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2025-11-26 12:12:41 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 401 null "application/json; charset=utf-8" 38.5285ms
+[2025-11-26 12:12:41 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2025-11-26 12:12:41 INF] CORS policy execution successful.
+[2025-11-26 12:12:41 INF] "Cookies" was not authenticated. Failure message: "Ticket expired"
+[2025-11-26 12:12:41 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2025-11-26 12:12:41 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2025-11-26 12:12:41 INF] Cookies received in /api/auth/me: "csrftoken: xjq5ZutwgEhpscr3fvWxDktBCQVrTke3, sessionid: oy87kzpouj89xulwus8jyxu9yu8fz154, auth_token: CfDJ8Gzx4NkfqdBDuo8ThPub2Qs9w-9-zpxEN_ugmT2S4tPe5-naeIesOIxsR9N4CRH6nsJIkFuO6DNAZWGKox1yfsS6yc9J8fwen9J1g5YEbLJR8r8-gm-1l_4cj7c87CJyvq9CU7gT2HOuIescx4z5nScwVV4wSARA0xf6_7fftL1KBQHzt2PHGu4Yp0Oyd1Urmg1NktMzcqBimkWgi1-xVdSnxB-ob_0EMO9bt0eprTU9hjvfC_rBfJ0880-wiUauRayVT9mQ8pmKxDN37TXYmga1uB142ryO6SqNWfuBKWHPaiUfxlK7TscT5cZ-51OEtvweCxHCKGen5axfcsKr3AbZ4ZOy0PffrbFwL3oCujFhWd6Y21ybiC7Gt-6wwDAWXXFa4-I8JVY3YJtl6D_sHJJrc5ZzQ7YviR5RDtVTx1B0njduGB2FoGEftPDwK4JHqVKs2qCLIWNa_vn2pwNhrHCU4NTQa5eQe9y25gwLFPx4Lz3rqRhCGEvS8kwTp-AzC6zNd2cxcn8GPqQj00kO4Kw"
+[2025-11-26 12:12:41 WRN] No user ID found in claims
+[2025-11-26 12:12:41 INF] Executing "UnauthorizedObjectResult", writing value of type '"<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2025-11-26 12:12:41 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 10.0066ms
+[2025-11-26 12:12:41 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2025-11-26 12:12:41 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 401 null "application/json; charset=utf-8" 60.7665ms

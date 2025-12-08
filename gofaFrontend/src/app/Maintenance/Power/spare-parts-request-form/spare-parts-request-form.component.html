@@ -1,0 +1,55 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Spare Parts Request Form</h2>
+
+  <form (ngSubmit)="submitRequest()" #requestForm="ngForm">
+
+    <div class="form-group">
+      <label for="worksOrderNumber">Works Order Number:</label>
+      <input type="text" id="worksOrderNumber" name="worksOrderNumber"
+             [(ngModel)]="formData.worksOrderNumber" readonly class="form-control"/>
+    </div>
+
+    <div class="form-group">
+      <label for="serialNumber">Serial Number:</label>
+      <input type="text" id="serialNumber" name="serialNumber"
+             [(ngModel)]="formData.serialNoOfEquip" required class="form-control"/>
+    </div>
+
+    <div class="form-group">
+      <label for="model">Model:</label>
+      <input type="text" id="model" name="model"
+             [(ngModel)]="formData.model" required class="form-control"/>
+    </div>
+
+    <div *ngFor="let part of formData.spareParts; let i = index" class="spare-part-row">
+      <h5>Part {{ i + 1 }}</h5>
+
+      <div class="form-group">
+        <label>Stock Number:</label>
+        <select [(ngModel)]="part.stockNumber" name="stockNumber{{i}}" required class="form-control">
+          <option value="" disabled>Select a stock number</option>
+          <option *ngFor="let sp of spareParts" [value]="sp.stockNumber">{{ sp.stockNumber }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Quantity:</label>
+        <input type="number" [(ngModel)]="part.quantityAsked" name="quantity{{i}}" min="1" required class="form-control"/>
+      </div>
+
+      <div class="form-group">
+        <label>Reason:</label>
+        <textarea [(ngModel)]="part.reason" name="reason{{i}}" required class="form-control"></textarea>
+      </div>
+
+      <button type="button" class="btn btn-danger" (click)="removePart(i)" *ngIf="formData.spareParts.length > 1">Remove Part</button>
+      <hr/>
+    </div>
+
+    <button type="button" class="btn btn-secondary" (click)="addPart()">Add Another Part</button>
+    <br/><br/>
+
+    <button type="submit" [disabled]="!requestForm.form.valid" class="btn btn-primary">Submit Request</button>
+  </form>
+</div>

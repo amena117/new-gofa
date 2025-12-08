@@ -1,0 +1,122 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Maintained Lists   /  (ጥገና ተጠናቀቀ )</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    Loading maintenance requests... / የጥገና ጥያቄዎችን በመጫን ላይ...
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Table -->
+  <!-- Table -->
+<table class="request-table" *ngIf="!isLoading && !errorMessage && maintenanceRequests.length > 0">
+  <thead>
+    <tr>
+      <th>Works Order Number</th>
+      <th>Maintenance Type</th>
+      <th>Serial Number</th>
+      <th>Repair Start Date</th>
+      <th>Repair Finish Date</th>
+      <th>Maintained By</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let request of maintenanceRequests">
+      <td data-label="Works Order Number">{{ request.worksOrderNumber }}</td>
+      <td data-label="Maintenance Type">{{ request.maintenanceType || 'N/A' }}</td>
+      <td data-label="Serial Number">{{ request.serialNoOfEquip || 'N/A' }}</td>
+      <td data-label="Repair Start Date">{{ request.repairStartDate ? (request.repairStartDate | date:'medium') : 'N/A' }}</td>
+      <td data-label="Repair Finish Date">{{ request.repairFinishDate ? (request.repairFinishDate | date:'medium') : 'N/A' }}</td>
+      <td data-label="Maintained By">{{ request.maintainedBy || 'N/A' }}</td>
+      <td data-label="Status">{{ request.status || 'N/A' }}</td>
+<td data-label="Actions" class="text-end">
+
+  <!-- PPC: Give for clients -->
+  <button 
+    *ngIf="userRole === 'PPC'" 
+    (click)="giveForClients(request)" 
+    class="action-button give-button">
+    Give for Clients / ለደንበኞች ስጥ
+  </button>
+
+  <!-- QUALITY: Qualify -->
+  <button 
+    *ngIf="userRole === 'QUALITY'" 
+    (click)="qualify(request)" 
+    class="action-button give-button">
+    Qualify / አረጋግጥ
+  </button>
+
+</td>
+
+    </tr>
+  </tbody>
+</table>
+
+  <!-- No Data -->
+  <div *ngIf="!isLoading && !errorMessage && maintenanceRequests.length === 0" class="no-data">
+    No maintenance requests found with Status: Maintenance Finished. <br>
+    ምንም የጠናቀቀ ጥገና ጥያቄ አልተገኘም።
+  </div>
+
+  <!-- Delivery Form -->
+  <div *ngIf="showDeliveryForm" class="delivery-form-container">
+    <h3>Deliver Maintenance Request / የጥገና ጥያቄን አስረክብ</h3>
+
+    <div *ngIf="isFormLoading" class="loading-indicator">
+      Loading delivery form... / የመስጠት ቅጽ በመጫን ላይ...
+    </div>
+
+    <div *ngIf="formErrorMessage" class="error-message">
+      {{ formErrorMessage }}
+    </div>
+
+    <form (ngSubmit)="submitDeliveryForm()" #deliveryForm="ngForm">
+      <div class="form-group">
+        <label for="worksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር:</label>
+        <input type="text" id="worksOrderNumber" name="worksOrderNumber" [(ngModel)]="deliveryFormData.worksOrderNumber" readonly />
+      </div>
+
+      <div class="form-group">
+        <label for="serialNoOfEquip">Serial Number / ተከታታይ ቁጥር:</label>
+        <input type="text" id="serialNoOfEquip" name="serialNoOfEquip" [(ngModel)]="deliveryFormData.serialNoOfEquip" readonly />
+      </div>
+
+      <div class="form-group">
+        <label for="givenTo">Given To / ለማን ተሰጠ:</label>
+        <input type="text" id="givenTo" name="givenTo" [(ngModel)]="deliveryFormData.givenTo" required />
+      </div>
+
+      <div class="form-group">
+        <label for="approval">Approval / እሺ ተብሎ የተሰጠ:</label>
+        <input type="text" id="approval" name="approval" [(ngModel)]="deliveryFormData.approval" required />
+      </div>
+
+      <div class="form-group">
+        <label for="recieverRemark">Receiver Remark / የተቀባይ አስተያየት:</label>
+        <input type="text" id="recieverRemark" name="recieverRemark" [(ngModel)]="deliveryFormData.recieverRemark" />
+      </div>
+
+      <div class="form-group">
+        <label for="recievedDate">Received Date / የተቀበለበት ቀን:</label>
+        <input type="date" id="recievedDate" name="recievedDate" [(ngModel)]="deliveryFormData.recievedDate" required />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="!deliveryForm.form.valid" class="action-button submit-button">
+          Submit / አስገባ
+        </button>
+        <button type="button" (click)="cancelDeliveryForm()" class="action-button cancel-button">
+          Cancel / ተወው
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

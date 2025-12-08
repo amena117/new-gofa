@@ -1,0 +1,49 @@
+<div class="container">
+  <h2>Maintenance Request List</h2>
+  <p>
+    Filtered by Maintenance Type:
+    <strong>{{ getMaintenanceTypeByRole(userRole) }}</strong>
+    and Requested To:
+    <strong>{{ getRequestedToByRole(userRole) }}</strong>
+  </p>
+
+  <!-- Table Wrapper for Scroll -->
+  <div class="table-container">
+    <table class="maintenance-table">
+      <thead>
+        <tr>
+          <th>Works Order Number</th>
+          <th>Nomenclature</th>
+          <th>Quantity</th>
+          <th>Model</th>
+          <th>Serial Number</th>
+          <th>Maintenance Type</th>
+          <th>Requested To</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of maintenanceRequests">
+          <td>{{ request.worksOrderNumber }}</td>
+          <td>{{ request.nomenclature }}</td>
+          <td>{{ request.quantity }}</td>
+          <td>{{ request.model }}</td>
+          <td>{{ request.serialNoOfEquip }}</td>
+          <td>{{ request.maintenanceType }}</td>
+          <td>{{ request.requestedTo }}</td>
+          <td>{{ request.status }}</td>
+          <td class="actions-container">
+            <ng-container *ngIf="request.status !== 'Client Received' && request.status !== 'On Maintenance' && request.status !== 'Maintenance Finished' && request.status !== 'Quality Check' && request.status !== 'Do Out'; else noAction">
+              <button (click)="requestPart(request)" class="btn btn-request">Request Part</button>
+              <button (click)="goToMaintainForm(request)" class="btn btn-maintain">Maintain</button>
+            </ng-container>
+            <ng-template #noAction>
+              <button disabled class="btn btn-noaction">No Action Needed</button>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

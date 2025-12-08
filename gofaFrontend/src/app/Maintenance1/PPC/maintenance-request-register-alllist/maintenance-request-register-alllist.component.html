@@ -1,0 +1,95 @@
+<div class="container">
+  <h2>Maintenance Request Register / የጥገና ጥያቄ መዝገብ</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading === true" class="loading-indicator">
+    Loading maintenance requests... / የጥገና ጥያቄዎችን በመጫን ላይ...
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage && errorMessage.trim() !== ''" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Table to display all maintenance requests -->
+  <table class="request-table" *ngIf="!isLoading && (!errorMessage || errorMessage.trim() === '') && maintenanceRequests.length > 0">
+    <thead>
+      <tr>
+        <th>ID / መለያ</th>
+        <th>Works Order Number / የስራ ትዕዛዝ ቁጥር</th>
+        <th>Nomenclature / መግለጫ</th>
+        <th>Quantity / ብዛት</th>
+        <th>Requested By / የጠየቀው</th>
+        <th>Actions / እርምጃዎች</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let request of maintenanceRequests">
+        <td>{{ request.id }}</td>
+        <td>{{ request.worksOrderNumber }}</td>
+        <td>{{ request.nomenclature || 'N/A' }}</td>
+        <td>{{ request.quantity }}</td>
+        <td>{{ request.requestedBy || 'N/A' }}</td>
+        <td>
+          <button class="btn btn-primary" (click)="viewDetails(request)">View Details / ዝርዝር አሳይ</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- No Data Message -->
+  <div *ngIf="!isLoading && (!errorMessage || errorMessage.trim() === '') && maintenanceRequests.length === 0" class="no-data">
+    No maintenance requests found. / ምንም የጥገና ጥያቄ አልተገኘም።
+  </div>
+
+  <!-- Modal for Viewing Full Details -->
+  <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewModalLabel">Maintenance Request Details / የጥገና ጥያቄ ዝርዝሮች</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="selectedRequest">
+            <!-- Initial View -->
+            <div *ngIf="!showFullDetails">
+              <p><strong>ID:</strong> {{ selectedRequest.id }}</p>
+              <p><strong>Works Order Number:</strong> {{ selectedRequest.worksOrderNumber }}</p>
+              <p><strong>Nomenclature:</strong> {{ selectedRequest.nomenclature || 'N/A' }}</p>
+              <p><strong>Quantity:</strong> {{ selectedRequest.quantity }}</p>
+              <p><strong>Requested By:</strong> {{ selectedRequest.requestedBy || 'N/A' }}</p>
+              <button class="btn btn-info mt-3" (click)="toggleFullDetails()">Show All Details / ሁሉንም ዝርዝር አሳይ</button>
+            </div>
+
+            <!-- Full Details View -->
+            <div *ngIf="showFullDetails">
+              <p><strong>ID / መለያ:</strong> {{ selectedRequest.id }}</p>
+              <p><strong>Works Order Number / የስራ ትዕዛዝ ቁጥር:</strong> {{ selectedRequest.worksOrderNumber }}</p>
+              <p><strong>Nomenclature / መግለጫ:</strong> {{ selectedRequest.nomenclature || 'N/A' }}</p>
+              <p><strong>Quantity / ብዛት:</strong> {{ selectedRequest.quantity }}</p>
+              <p><strong>Requested By / የጠየቀው:</strong> {{ selectedRequest.requestedBy || 'N/A' }}</p>
+              <p><strong>Serial No Of Equip / የመሳሪያ ተራ ቁጥር:</strong> {{ selectedRequest.serialNoOfEquip || 'N/A' }}</p>
+              <p><strong>Brief Description Of Work / የስራው አጭር መግለጫ:</strong> {{ selectedRequest.briefDescriptionOfWork || 'N/A' }}</p>
+              <p><strong>Date Work Order Received / የስራ ትዕዛዝ የተቀበለበት ቀን:</strong> {{ selectedRequest.dateWorkOrderReceived | date:'medium' }}</p>
+              <p><strong>Maintenance Type / የጥገና አይነት:</strong> {{ selectedRequest.maintenanceType || 'N/A' }}</p>
+              <p><strong>Model / ሞዴል:</strong> {{ selectedRequest.model || 'N/A' }}</p>
+              <p><strong>Requested To / የተጠየቀበት:</strong> {{ selectedRequest.requestedTo || 'N/A' }}</p>
+              <p><strong>Repair Start Date / የጥገና መጀመሪያ ቀን:</strong> {{ selectedRequest.repairStartDate ? (selectedRequest.repairStartDate | date:'medium') : 'N/A' }}</p>
+              <p><strong>Repair Finish Date / የጥገና መጨረሻ ቀን:</strong> {{ selectedRequest.repairFinishDate ? (selectedRequest.repairFinishDate | date:'medium') : 'N/A' }}</p>
+              <p><strong>Status / ሁኔታ:</strong> {{ selectedRequest.status || 'N/A' }}</p>
+              <p><strong>Man Hours / የሰራተኛ ሰዓታት:</strong> {{ selectedRequest.manHours || 'N/A' }}</p>
+              <p><strong>Parts Cost / የክፍል ዋጋ:</strong> {{ selectedRequest.partsCost != null ? (selectedRequest.partsCost | currency:'USD':'symbol':'1.2-2') : 'N/A' }}</p>
+              <p><strong>Remark / ማስታወሻ:</strong> {{ selectedRequest.remark || 'N/A' }}</p>
+              <p><strong>Equipment Type ID / የመሳሪያ አይነት መለያ:</strong> {{ selectedRequest.equipmentTypeId }}</p>
+              <button class="btn btn-secondary mt-3" (click)="toggleFullDetails()">Hide Full Details / ሁሉንም ዝርዝር ደብቅ</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close / ዝጋ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

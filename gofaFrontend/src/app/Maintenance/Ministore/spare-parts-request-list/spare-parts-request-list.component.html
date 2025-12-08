@@ -1,0 +1,151 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Spare Parts Requests / የተጠየቁ ስፔርፓርት ዝርዝር</h2>
+
+  <!-- Debug Info -->
+  <div class="debug-info" *ngIf="false"> <!-- Set to true to show debug info -->
+    <p><strong>User Role:</strong> {{ userRole }}</p>
+    
+    <pre>{{ sparePartsRequests | json }}</pre>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    Loading spare parts requests...
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Table -->
+  <table class="request-table" *ngIf="!isLoading && !errorMessage">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Stock number</th>
+        <th>Quantity Asked</th>
+        <th>Requested By</th>
+        <th>Reason</th>
+        <th>Works Order Number</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let request of sparePartsRequests">
+        <td>{{ request.id }}</td>
+        <td>{{ request.stockNumber }}</td>
+        <td>{{ request.quantityAsked }}</td>
+        <td>{{ request.requestedBy }}</td>
+        <td>{{ request.reason }}</td>
+        <td>{{ request.worksOrderNumber }}</td>
+       <td>
+  <!-- ✅ MINISTORE Actions -->
+  <ng-container *ngIf="isMinistore()">
+    <button 
+      (click)="goToRejectForm(request.worksOrderNumber)" 
+      [disabled]="request.isResponded">
+      Reject
+    </button>
+
+    <button 
+      (click)="openRespondForm(request)" 
+      [disabled]="request.isResponded">
+      Respond
+    </button>
+
+    <!-- Optional: Uncomment if MINISTORE should approve after responding -->
+    <!--
+    <button 
+      (click)="approveRequest(request)" 
+      *ngIf="request.currentStage === 'MINISTORE' && request.isResponded">
+      Approve (Complete)
+    </button>
+    -->
+  </ng-container>
+
+  <!-- ✅ Team Leader & Maintenance Leader Actions -->
+  <ng-container *ngIf="isTeamLeader() || userRole === 'MAINTENANCE_LEADER'">
+    <button 
+      (click)="goToRejectForm(request.worksOrderNumber)" 
+      [disabled]="request.isResponded">
+      Reject
+    </button>
+
+    <button 
+      (click)="approveRequest(request)" 
+      [disabled]="request.isResponded">
+      Approve
+    </button>
+  </ng-container>
+</td>
+
+      </tr>
+
+      <!-- No Data Found -->
+      <tr *ngIf="sparePartsRequests.length === 0">
+        <td colspan="7" style="text-align:center;">
+          No spare parts requests found for your role.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Response Form -->
+  <div *ngIf="selectedRequest" class="respond-form">
+    <!-- Prevent default form submission behavior if necessary, though ngSubmit should handle it -->
+    <form #responseForm="ngForm" (ngSubmit)="submitResponse(); responseForm.form.markAsPristine();"> <!-- Mark as pristine to help prevent accidental resubmission -->
+      <div>
+        <label>Works Order Number:</label>
+        <input type="text"
+               [(ngModel)]="selectedRequest.worksOrderNumber"
+               name="worksOrderNumber"
+               readonly />
+      </div>
+      <div>
+        <label>Stock Number:</label>
+        <input type="text"
+               [(ngModel)]="selectedRequest.stockNumber"
+               name="stockNumber"
+               readonly />
+      </div>
+      <div>
+        <label>Quantity Asked:</label>
+        <input type="number"
+               [(ngModel)]="selectedRequest.quantityAsked"
+               name="quantityAsked"
+               readonly />
+      </div>
+      <div>
+        <label>Serial Number:</label>
+        <select [(ngModel)]="response.serialNumber"
+                name="serialNumber"
+                required>
+          <option *ngFor="let serial of availableSerialNumbers"
+                  [value]="serial">
+            {{ serial }}
+          </option>
+        </select>
+      </div>
+      <div>
+        <label>Quantity Approved:</label>
+        <input type="number"
+               [(ngModel)]="response.quantityApproved"
+               name="quantityApproved"
+               required
+               min="1"
+               [max]="selectedRequest.quantityAsked" />
+      </div>
+      <div>
+        <label>Remark:</label>
+        <textarea [(ngModel)]="response.remark" name="remark"></textarea>
+      </div>
+      <!-- Add [disabled] to prevent double-clicking during submission -->
+      <button type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Submitting...' : 'Submit Response' }}
+      </button>
+      <button type="button" (click)="cancelResponse()">Cancel</button>
+    </form>
+  </div>
+</div>

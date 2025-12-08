@@ -1,0 +1,136 @@
+/* add-issued-item.component.css */
+
+/* General form container styling */
+.container.mt-4 {
+    max-width: 900px; /* Limit width for better readability on large screens */
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 30px; /* Add some space at the bottom */
+}
+
+/* Card specific styling */
+.card.shadow-sm {
+    border-radius: 12px; /* Slightly more rounded corners */
+    overflow: hidden; /* Ensures rounded corners apply to card-header */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Softer, more pronounced shadow */
+}
+
+.card-header.bg-primary {
+    background-color: #007bff !important; /* Ensure Bootstrap primary color */
+    border-bottom: none; /* Remove default border */
+    padding: 1.5rem 1rem; /* More vertical padding */
+}
+
+.card-title {
+    font-size: 1.75rem; /* Slightly larger title */
+    font-weight: 600; /* Bolder title */
+    letter-spacing: 0.5px;
+}
+
+/* Card body padding */
+.card-body.p-4 {
+    padding: 2rem !important; /* More padding inside the card */
+}
+
+/* Form group spacing */
+.form-group {
+    margin-bottom: 1.5rem; /* Increase space between form groups */
+}
+
+.form-group label {
+    font-weight: 500; /* Slightly bolder labels */
+    color: #343a40; /* Darker label color */
+    margin-bottom: 0.5rem; /* Space between label and input */
+    display: block; /* Ensures label takes its own line */
+}
+
+/* Input and select field styling */
+.form-control, .form-select {
+    border-radius: 8px; /* Slightly rounded inputs */
+    padding: 0.75rem 1rem; /* More padding inside inputs */
+    border: 1px solid #ced4da; /* Default border color */
+    transition: all 0.2s ease-in-out; /* Smooth transition for focus */
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #80bdff; /* Bootstrap's primary focus color */
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); /* Focus shadow */
+    outline: none; /* Remove default outline */
+}
+
+/* Alert messages */
+.alert {
+    border-radius: 8px; /* Rounded corners for alerts */
+    padding: 1rem 1.25rem; /* Consistent padding */
+    margin-bottom: 1.5rem; /* Space below alerts */
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+
+.alert .btn-close {
+    font-size: 0.9rem; /* Smaller close button */
+    padding: 0.5rem; /* More clickable area */
+}
+
+/* Button styling */
+.btn {
+    border-radius: 8px; /* Rounded buttons */
+    padding: 0.75rem 1.5rem; /* More padding for buttons */
+    font-weight: 600; /* Bolder button text */
+    transition: all 0.2s ease-in-out; /* Smooth transitions */
+}
+
+.btn-success {
+    background-color: #28a745; /* Bootstrap success color */
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* Bootstrap secondary color */
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Disabled button styling */
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body.p-4 {
+        padding: 1.5rem !important; /* Reduce padding on smaller screens */
+    }
+    .card-title {
+        font-size: 1.5rem; /* Adjust title size */
+    }
+    .form-group {
+        margin-bottom: 1rem; /* Reduce space between form groups */
+    }
+}

@@ -1,0 +1,27 @@
+<!-- Toggle Button -->
+<button class="sidebar-toggle" (click)="toggleSidebar()">
+  <i class="fas" [ngClass]="{'fa-bars': !showSidebar, 'fa-times': showSidebar}"></i>
+</button>
+
+<!-- Backdrop for mobile -->
+<div class="sidebar-backdrop" *ngIf="showSidebar" (click)="toggleSidebar()"></div>
+
+<div class="sidebar" [ngClass]="{ 'closed': !showSidebar }">
+    <div class="profile-section">
+      <div class="profile-info">
+        <p class="username">{{ firstname }} {{ lastname }}</p>
+        <p class="role">{{ role }}</p>
+      </div>
+    </div>
+  
+    <ul>
+      <li *ngFor="let item of filteredMenuItems">
+        <a [routerLink]="item.link" routerLinkActive="active">{{ item.label }}</a>
+      </li>
+      <li>
+        <button class="logout-btn" (click)="onLogout()">
+          Logout / ውጣ
+        </button>
+      </li>
+    </ul>
+  </div>

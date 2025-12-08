@@ -1,0 +1,10 @@
+<!-- Conditionally render sidebar only if not on login or similar pages -->
+<app-shared-sidebar *ngIf="!isLoginPage" (sidebarToggle)="onSidebarToggle($event)"></app-shared-sidebar>
+
+<!-- Main Content Wrapper -->
+<div class="main-content" [class.full-width]="isLoginPage">
+  <div class="content-container">
+    <!-- Router outlet for all pages -->
+    <router-outlet></router-outlet>
+  </div>
+</div>

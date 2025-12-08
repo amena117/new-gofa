@@ -1,0 +1,226 @@
+/* Global Reset & Font */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  background-color: #f8f9fc;
+  color: #333;
+  font-size: 16px;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* Container */
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Header - Solid Black Background */
+h2 {
+  text-align: center;
+  color: white;
+  background: linear-gradient(90deg, #1e3c72, #2a5298); /* Solid black */
+  padding: 1.3rem 1rem;
+  border-radius: 12px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1.8rem;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Optional: Shine animation on header */
+h2::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(35deg);
+  pointer-events: none;
+  animation: shine 3s infinite;
+  z-index: -1;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Error Message */
+.error {
+  text-align: center;
+  padding: 1.2rem;
+  background-color: #d32f2f;
+  color: white;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 1.8rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Label */
+label {
+  display: block;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+/* Dropdown Select */
+select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+select:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+/* Stock Info (p tags) */
+p {
+  font-size: 1.05rem;
+  margin: 0.8rem 0;
+  color: #444;
+}
+
+p strong {
+  color: #222;
+  min-width: 140px;
+  display: inline-block;
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  margin-top: 1.8rem;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  table-layout: auto;
+}
+
+table th,
+table td {
+  padding: 1rem 1.2rem;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+table th {
+  background-color: #000000; /* Black header */
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.8px;
+  border-bottom: 2px solid #444;
+}
+
+table td {
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  color: #444;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+table tbody tr:hover td {
+  background-color: #f1f8ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Alternate Row Background */
+table tbody tr:nth-child(even) td {
+  background-color: #fafbfe;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+    margin: 1rem auto;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    padding: 1rem;
+  }
+
+  table th,
+  table td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  select {
+    font-size: 0.95rem;
+  }
+}
+
+/* Pagination Controls */
+.pagination {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #7a1717;
+}

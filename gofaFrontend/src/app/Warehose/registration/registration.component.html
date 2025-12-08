@@ -1,0 +1,620 @@
+<div class="item-detail">
+  <h3 class="mb-4 text-center border-bottom pb-2">
+    የኢ.ፌ.ዲ.ሪ መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን መምሪያ 
+    <br />
+    የንብረት መመዝገብያ ቅጽ
+  </h3>
+  <div class="header">
+    <h1 class="title">{{ isBulkMode ? 'Bulk Item Registration' : 'Register New Item' }}</h1>
+    <button class="toggle-btn" (click)="toggleMode()" attr.aria-label="Toggle between single and bulk registration modes">
+      {{ isBulkMode ? 'Switch to Single Item / ነጠላ እቃ መዝግብ' : 'Switch to Bulk Registration / ጅምላ እቃ መዝግብ' }}
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="message error-message" role="alert">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="message success-message" role="alert">{{ successMessage }}</div>
+
+  <!-- Single Item Form -->
+  <div *ngIf="!isBulkMode" class="form-container">
+    <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" aria-labelledby="single-item-title">
+      <!-- Registration Info -->
+      <div class="form-section">
+        <h2 class="section-title">Registration Info / የምዝገባ መረጃ</h2>
+        <div class="table-container">
+          <div class="table-row">
+            <label class="table-label">Has Voucher Number / ሰነድ ቁጥር አለው</label>
+            <div class="table-input checkbox-container">
+              <label class="toggle-switch">
+                <input type="checkbox" class="toggle-switch-input" formControlName="hasVoucherNumber" id="hasVoucherNumber" />
+                <span class="toggle-switch-slider"></span>
+              </label>
+              <label for="hasVoucherNumber" class="toggle-label">Enable / ሰነድ ቁጥር መዝግብ</label>
+            </div>
+          </div>
+          <div class="table-row" *ngIf="itemForm.get('hasVoucherNumber')?.value">
+            <label class="table-label">Voucher Number / ሰነድ ቁጥር</label>
+            <div class="table-input">
+              <input formControlName="voucherNumber" placeholder="e.g., VN123" attr.aria-describedby="voucherNumber-error" />
+              <div *ngIf="itemForm.get('voucherNumber')?.invalid && itemForm.get('voucherNumber')?.touched" id="voucherNumber-error" class="error">
+                Voucher number is required when selected. / ሰነድ ቁጥር መመዝገብ ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Received From / ከማን እንደተቀበለ <span class="required">*</span></label>
+            <div class="table-input">
+              <input formControlName="receivedFrom" placeholder="e.g., Supplier Name" attr.aria-describedby="receivedFrom-error" />
+              <div *ngIf="itemForm.get('receivedFrom')?.invalid && itemForm.get('receivedFrom')?.touched" id="receivedFrom-error" class="error">
+                Received from is required. / ከማን እንደተቀበለ መመዝገብ ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Source / ምንጭ <span class="required">*</span></label>
+            <div class="table-input">
+              <select formControlName="source" *ngIf="!isLoadingSources; else loadingSources" attr.aria-describedby="source-error">
+                <option value="" disabled>Select source / ምንጭ ምረጥ</option>
+                <option *ngFor="let source of sources" [value]="source">{{ source }}</option>
+              </select>
+              <ng-template #loadingSources>
+                <p>Loading sources...</p>
+              </ng-template>
+              <div *ngIf="itemForm.get('source')?.invalid && itemForm.get('source')?.touched" id="source-error" class="error">
+                Source is required. / ምንጭ መመረጥ አለበት።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Registered By / የመዘገበው</label>
+            <div class="table-input">
+              <input formControlName="registeredBy" readonly aria-readonly="true" aria-label="Registered By (auto-filled)" />
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Transaction Date / የምዝገባ ቀን</label>
+            <div class="table-input">
+              <input formControlName="transactionDate" readonly aria-readonly="true" aria-label="Transaction Date (auto-filled)" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warehouse -->
+      <div class="form-section">
+        <h2 class="section-title">Warehouse / መጋዘን</h2>
+        <div class="table-container">
+          <div class="table-row">
+            <label class="table-label">Shelf / መደርደርያ <span class="required">*</span></label>
+            <div class="table-input">
+              <select formControlName="shelf" *ngIf="!isLoadingShelves; else loadingShelves" attr.aria-describedby="shelf-error">
+                <option value="" disabled>Select shelf / መደርደርያ ምረጥ</option>
+                <option *ngFor="let shelf of shelves" [value]="shelf.name">
+                  {{ shelf.name }} (Column: {{ shelf.column }}, Row: {{ shelf.row }})
+                </option>
+              </select>
+              <ng-template #loadingShelves>
+                <p>Loading shelves...</p>
+              </ng-template>
+              <div *ngIf="itemForm.get('shelf')?.invalid && itemForm.get('shelf')?.touched" id="shelf-error" class="error">
+                Shelf is required. / መደርደርያ መመረጥ አለበት።
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item Details -->
+      <div class="form-section">
+        <h2 class="section-title">Item Details / የእቃው ዝርዝር መረጃ</h2>
+        <div class="table-container">
+          <div class="table-row">
+            <label class="table-label">Description / መግለጫ <span class="required">*</span></label>
+            <div class="table-input">
+              <textarea formControlName="description" placeholder="Enter description / መግለጫ አስገባ" attr.aria-describedby="description-error"></textarea>
+              <div *ngIf="itemForm.get('description')?.invalid && itemForm.get('description')?.touched" id="description-error" class="error">
+                Description is required. / መግለጫ ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Category / የእቃው ምድብ <span class="required">*</span></label>
+            <div class="table-input">
+              <select formControlName="category" *ngIf="!isLoadingCategories; else loadingCategories" attr.aria-describedby="category-error">
+                <option value="" disabled>Select category / ምድብ ምረጥ</option>
+                <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+              </select>
+              <ng-template #loadingCategories>
+                <p>Loading categories...</p>
+              </ng-template>
+              <div *ngIf="itemForm.get('category')?.invalid && itemForm.get('category')?.touched" id="category-error" class="error">
+                Category is required. / ምድብ መመረጥ አለበት።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Model / ሞዴል <span class="required">*</span></label>
+            <div class="table-input">
+              <input formControlName="model" placeholder="e.g., Model X" attr.aria-describedby="model-error" />
+              <div *ngIf="itemForm.get('model')?.invalid && itemForm.get('model')?.touched" id="model-error" class="error">
+                Model is required. / ሞዴል ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Unit Price / ነጠላ ዋጋ <span class="required">*</span></label>
+            <div class="table-input">
+              <input type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="e.g., 150.50" attr.aria-describedby="unitPrice-error" />
+              <div *ngIf="itemForm.get('unitPrice')?.invalid && itemForm.get('unitPrice')?.touched" id="unitPrice-error" class="error">
+                Unit price must be a non-negative number. / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Currency / ገንዘብ አማራጭ <span class="required">*</span></label>
+            <div class="table-input">
+              <select formControlName="currency" *ngIf="!isLoadingCurrencies; else loadingCurrencies" attr.aria-describedby="currency-error">
+                <option value="" disabled>Select currency / ገንዘብ ምረጥ</option>
+                <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+              </select>
+              <ng-template #loadingCurrencies>
+                <p>Loading currencies...</p>
+              </ng-template>
+              <div *ngIf="itemForm.get('currency')?.invalid && itemForm.get('currency')?.touched" id="currency-error" class="error">
+                Currency is required. / ገንዘብ መመረጥ አለበት።
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="form-section">
+        <h2 class="section-title">Location / ቦታ</h2>
+        <div class="table-container">
+          <div class="table-row">
+            <label class="table-label">Column / አምድ <span class="required">*</span></label>
+            <div class="table-input">
+              <input formControlName="itemColumn" placeholder="e.g., C1" attr.aria-describedby="itemColumn-error" />
+              <div *ngIf="itemForm.get('itemColumn')?.invalid && itemForm.get('itemColumn')?.touched" id="itemColumn-error" class="error">
+                Column is required. / አምድ ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Row / ረድፍ <span class="required">*</span></label>
+            <div class="table-input">
+              <input formControlName="itemRow" placeholder="e.g., R1" attr.aria-describedby="itemRow-error" />
+              <div *ngIf="itemForm.get('itemRow')?.invalid && itemForm.get('itemRow')?.touched" id="itemRow-error" class="error">
+                Row is required. / ረድፍ ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Details -->
+      <div class="form-section">
+        <h2 class="section-title">Additional Details / ተጨማሪ ዝርዝር</h2>
+        <div class="table-container">
+          <div class="table-row">
+            <label class="table-label">Condition / ሁኔታ <span class="required">*</span></label>
+            <div class="table-input">
+              <input formControlName="condition" placeholder="e.g., New, Used" attr.aria-describedby="condition-error" />
+              <div *ngIf="itemForm.get('condition')?.invalid && itemForm.get('condition')?.touched" id="condition-error" class="error">
+                Condition is required. / ሁኔታ ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Quantity / ብዛት <span class="required">*</span></label>
+            <div class="table-input">
+              <input type="number" formControlName="quantity" (input)="updateSerialNumbers()" min="1" placeholder="e.g., 1" attr.aria-describedby="quantity-error" />
+              <div *ngIf="itemForm.get('quantity')?.invalid && itemForm.get('quantity')?.touched" id="quantity-error" class="error">
+                Quantity must be at least 1. / ብዛት ቢያንስ 1 መሆን አለበት።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Number of Boxes / በሳጥን ይዞታ</label>
+            <div class="table-input">
+              <input type="number" formControlName="numOfBox" min="0" placeholder="e.g., 1" attr.aria-describedby="numOfBox-error" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Serial Numbers -->
+      <div class="form-section" formArrayName="serialNumbers">
+        <h2 class="section-title">
+          Serial Numbers / መለያ ቁጥር
+          <span class="section-toggle">
+            <label class="toggle-switch">
+              <input type="checkbox" class="toggle-switch-input" [checked]="showSerialNumbers" (change)="toggleSerialNumbers()" aria-label="Show serial numbers" />
+              <span class="toggle-switch-slider"></span>
+            </label>
+            <span class="toggle-label">{{ showSerialNumbers ? 'Visible / አሳይ' : 'Hidden / ደብቅ' }}</span>
+          </span>
+        </h2>
+        <div class="table-container serial-numbers" *ngIf="showSerialNumbers">
+          <div *ngFor="let serial of serialNumbers.controls; let i=index" class="table-row serial-row">
+            <label class="table-label">Serial Number / መለያ ቁጥር {{ i + 1 }}</label>
+            <div class="input-group">
+              <input class="table-input serial-input" [formControlName]="i" placeholder="Serial {{ i + 1 }}" [attr.aria-describedby]="'serialNumber' + i + '-error'" />
+              <button class="action-btn secondary small" (click)="removeSerialNumber(i)" *ngIf="serialNumbers.length > 0 && itemForm.get('role')?.value === 'SPAREPART'" [attr.aria-label]="'Remove serial number ' + (i + 1)">Remove / አጥፋ</button>
+              <div *ngIf="serial.invalid && serial.touched" [id]="'serialNumber' + i + '-error'" class="error">
+                Serial number is required. / መለያ ቁጥር ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+          <div class="table-row" *ngIf="itemForm.get('role')?.value === 'SPAREPART' || itemForm.get('role')?.value === 'ELECTRONICS'">
+            <label class="table-label"></label>
+            <div class="table-input">
+              <button type="button" class="action-btn secondary small" (click)="addSerialNumber()" attr.aria-label="Add new serial number">
+                + Add Serial Number / መለያ ቁጥር ጨምር
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accessories -->
+      <!-- In the Single Item Accessories section -->
+<div class="form-section" formArrayName="accessories">
+  <h2 class="section-title">
+    Accessories / ተያያዥ እቃዎች
+    <span class="section-toggle">
+      <label class="toggle-switch">
+        <input type="checkbox" class="toggle-switch-input" [checked]="showAccessories" (change)="toggleAccessories()" aria-label="Show accessories" />
+        <span class="toggle-switch-slider"></span>
+      </label>
+      <span class="toggle-label">{{ showAccessories ? 'Visible / አሳይ' : 'Hidden / ደብቅ' }}</span>
+    </span>
+    <button *ngIf="showAccessories" type="button" class="action-btn secondary small" (click)="addAccessory()" attr.aria-label="Add new accessory">Add Accessory / ተያያዥ እቃ ጨምር</button>
+  </h2>
+  <div class="table-container" *ngIf="showAccessories">
+    <div *ngFor="let accessory of accessories.controls; let i=index" [formGroupName]="i" class="table-row accessory-row">
+      <label class="table-label">Accessory / ተያያዥ እቃዎች {{ i + 1 }}</label>
+      <div class="input-group accessory-input-group">
+        <input class="table-input" formControlName="name" placeholder="Accessory name" [attr.aria-describedby]="'accessoryName' + i + '-error'" />
+        <input class="table-input" formControlName="model" placeholder="Accessory model" [attr.aria-describedby]="'accessoryModel' + i + '-error'" />
+        <input class="table-input" type="number" formControlName="quantity" min="1" placeholder="Quantity" [attr.aria-describedby]="'accessoryQuantity' + i + '-error'" />
+        
+        <!-- New Unit Price and Currency Fields -->
+        <input class="table-input" type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="Unit Price" [attr.aria-describedby]="'accessoryUnitPrice' + i + '-error'" />
+        <select class="table-input" formControlName="currency" [attr.aria-describedby]="'accessoryCurrency' + i + '-error'">
+          <option value="" disabled>Currency</option>
+          <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+        </select>
+        
+        <button class="action-btn secondary small" (click)="removeAccessory(i)" *ngIf="accessories.length > 0" [attr.aria-label]="'Remove accessory ' + (i + 1)">Remove / አጥፋ</button>
+        
+        <!-- Error Messages -->
+        <div *ngIf="accessory.get('name')?.invalid && accessory.get('name')?.touched" [id]="'accessoryName' + i + '-error'" class="error">
+          Accessory name is required. / ተያያዥ እቃው ስም ግዴታ ነው።
+        </div>
+        <div *ngIf="accessory.get('model')?.invalid && accessory.get('model')?.touched" [id]="'accessoryModel' + i + '-error'" class="error">
+          Accessory model is required. / ተያያዥ እቃው ሞዴል ግዴታ ነው።
+        </div>
+        <div *ngIf="accessory.get('quantity')?.invalid && accessory.get('quantity')?.touched" [id]="'accessoryQuantity' + i + '-error'" class="error">
+          Quantity must be at least 1. / ብዛት ቢያንስ 1 መሆን አለበት።
+        </div>
+        <div *ngIf="accessory.get('unitPrice')?.invalid && accessory.get('unitPrice')?.touched" [id]="'accessoryUnitPrice' + i + '-error'" class="error">
+          Unit price must be non-negative. / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት።
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button type="submit" class="action-btn primary" [disabled]="itemForm.invalid" attr.aria-label="Register item">Register Item / እቃ መዝግብ</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Bulk Item Form -->
+  <div *ngIf="isBulkMode" class="form-container">
+    <form [formGroup]="bulkForm" (ngSubmit)="onBulkSubmit()" aria-labelledby="bulk-item-title">
+      <!-- Bulk Registration Info -->
+      <div class="form-section">
+        <h2 class="section-title">Bulk Registration Info / ጅምላ እቃ መመዝገቢያ</h2>
+        <div class="table-container">
+          <div class="table-row">
+            <label class="table-label">Has Voucher Number / ሰነድ ቁጥር አለው</label>
+            <div class="table-input checkbox-container">
+              <label class="toggle-switch">
+                <input type="checkbox" class="toggle-switch-input" formControlName="hasVoucherNumber" id="bulkHasVoucherNumber" />
+                <span class="toggle-switch-slider"></span>
+              </label>
+              <label for="bulkHasVoucherNumber" class="toggle-label">Enable Voucher / ሰነድ ቁጥር መዝግብ</label>
+            </div>
+          </div>
+          <div class="table-row" *ngIf="bulkForm.get('hasVoucherNumber')?.value">
+            <label class="table-label">Voucher Number / ሰነድ ቁጥር</label>
+            <div class="table-input">
+              <input formControlName="voucherNumber" placeholder="e.g., VN123" attr.aria-describedby="bulkVoucherNumber-error" />
+              <div *ngIf="bulkForm.get('voucherNumber')?.invalid && bulkForm.get('voucherNumber')?.touched" id="bulkVoucherNumber-error" class="error">
+                Voucher number is required when selected. / ሰነድ ቁጥር መመዝገብ ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Received From / ከማን ተረከበ <span class="required">*</span></label>
+            <div class="table-input">
+              <input formControlName="receivedFrom" placeholder="e.g., Supplier Name" attr.aria-describedby="bulkReceivedFrom-error" />
+              <div *ngIf="bulkForm.get('receivedFrom')?.invalid && bulkForm.get('receivedFrom')?.touched" id="bulkReceivedFrom-error" class="error">
+                Received from is required. / ከማን ተረከበ መመዝገብ ግዴታ ነው።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Apply to All Items / ለሁሉም እቃዎች ተግባራዊ አድርግ</label>
+            <div class="table-input checkbox-container">
+              <label class="toggle-switch">
+                <input type="checkbox" class="toggle-switch-input" [(ngModel)]="applyReceivedFromToAll" [ngModelOptions]="{standalone: true}" id="applyReceivedFromToAll" />
+                <span class="toggle-switch-slider"></span>
+              </label>
+              <label for="applyReceivedFromToAll" class="toggle-label">Apply to all items / ለሁሉም እቃዎች ተግባራዊ አድርግ</label>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Source / ምንጭ <span class="required">*</span></label>
+            <div class="table-input">
+              <select formControlName="source" *ngIf="!isLoadingSources; else loadingSources" attr.aria-describedby="bulkSource-error">
+                <option value="" disabled>Select source / ምንጭ ምረጥ</option>
+                <option *ngFor="let source of sources" [value]="source">{{ source }}</option>
+              </select>
+              <ng-template #loadingSources>
+                <p>Loading sources...</p>
+              </ng-template>
+              <div *ngIf="bulkForm.get('source')?.invalid && bulkForm.get('source')?.touched" id="bulkSource-error" class="error">
+                Source is required. / ምንጭ መመረጥ አለበት።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Registered By / የመዘገበው</label>
+            <div class="table-input">
+              <input formControlName="registeredBy" readonly aria-readonly="true" aria-label="Registered By (auto-filled)" />
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Transaction Date / የምዝገባ ቀን</label>
+            <div class="table-input">
+              <input formControlName="transactionDate" readonly aria-readonly="true" aria-label="Transaction Date (auto-filled)" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items List -->
+      <div class="form-section" formArrayName="items">
+        <h2 class="section-title">
+          Items / እቃዎች
+          <button type="button" class="action-btn secondary small" (click)="addBulkItem()" attr.aria-label="Add new item">Add Item / እቃ ጨምር</button>
+        </h2>
+        <div *ngFor="let item of items.controls; let i=index" [formGroupName]="i" class="item-section">
+          <h3>Item / እቃ {{ i + 1 }}</h3>
+          <button type="button" class="action-btn secondary small" (click)="removeBulkItem(i)" *ngIf="items.length > 0" [attr.aria-label]="'Remove item ' + (i + 1)">Remove Item / እቃ አጥፋ</button>
+          <div class="table-container">
+            <div class="table-row">
+              <label class="table-label">Received From / ከማን ተረከበ {{ applyReceivedFromToAll ? '' : '(required)' }}</label>
+              <div class="table-input">
+                <input formControlName="receivedFrom" placeholder="e.g., Supplier Name (optional if applying to all)" [attr.aria-describedby]="'bulkItemReceivedFrom' + i + '-error'" />
+                <div *ngIf="item.get('receivedFrom')?.invalid && item.get('receivedFrom')?.touched && !applyReceivedFromToAll" [id]="'bulkItemReceivedFrom' + i + '-error'" class="error">
+                  Received from is required if not using the global value. / ከማን ተረከበ ከግሎባል እሴት ጋር ግዴታ ነው።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Description / መግለጫ <span class="required">*</span></label>
+              <div class="table-input">
+                <textarea formControlName="description" placeholder="Enter description / መግለጫ አስገባ" [attr.aria-describedby]="'bulkDescription' + i + '-error'"></textarea>
+                <div *ngIf="item.get('description')?.invalid && item.get('description')?.touched" [id]="'bulkDescription' + i + '-error'" class="error">
+                  Description is required. / መግለጫ ግዴታ ነው።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Category / ምድብ <span class="required">*</span></label>
+              <div class="table-input">
+                <select formControlName="category" *ngIf="!isLoadingCategories; else loadingCategories" [attr.aria-describedby]="'bulkCategory' + i + '-error'">
+                  <option value="" disabled>Select category / ምድብ ምረጥ</option>
+                  <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+                </select>
+                <ng-template #loadingCategories>
+                  <p>Loading categories...</p>
+                </ng-template>
+                <div *ngIf="item.get('category')?.invalid && item.get('category')?.touched" [id]="'bulkCategory' + i + '-error'" class="error">
+                  Category is required. / ምድብ መመረጥ አለበት።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Model / ሞዴል <span class="required">*</span></label>
+              <div class="table-input">
+                <input formControlName="model" placeholder="e.g., Model X" [attr.aria-describedby]="'bulkModel' + i + '-error'" />
+                <div *ngIf="item.get('model')?.invalid && item.get('model')?.touched" [id]="'bulkModel' + i + '-error'" class="error">
+                  Model is required. / ሞዴል ግዴታ ነው።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Unit Price / ነጠላ ዋጋ <span class="required">*</span></label>
+              <div class="table-input">
+                <input type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="e.g., 150.50" [attr.aria-describedby]="'bulkUnitPrice' + i + '-error'" />
+                <div *ngIf="item.get('unitPrice')?.invalid && item.get('unitPrice')?.touched" [id]="'bulkUnitPrice' + i + '-error'" class="error">
+                  Unit price must be a non-negative number. / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Currency / ገንዘብ አማራጭ <span class="required">*</span></label>
+              <div class="table-input">
+                <select formControlName="currency" *ngIf="!isLoadingCurrencies; else loadingCurrencies" [attr.aria-describedby]="'bulkCurrency' + i + '-error'">
+                  <option value="" disabled>Select currency / ገንዘብ ምረጥ</option>
+                  <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+                </select>
+                <ng-template #loadingCurrencies>
+                  <p>Loading currencies...</p>
+                </ng-template>
+                <div *ngIf="item.get('currency')?.invalid && item.get('currency')?.touched" [id]="'bulkCurrency' + i + '-error'" class="error">
+                  Currency is required. / ገንዘብ መመረጥ አለበት።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Shelf / መደርደርያ <span class="required">*</span></label>
+              <div class="table-input">
+                <select formControlName="shelf" *ngIf="!isLoadingShelves; else loadingShelves" [attr.aria-describedby]="'bulkShelf' + i + '-error'">
+                  <option value="" disabled>Select shelf / መደርደርያ ምረጥ</option>
+                  <option *ngFor="let shelf of shelves" [value]="shelf.name">
+                    {{ shelf.name }} (Column: {{ shelf.column }}, Row: {{ shelf.row }})
+                  </option>
+                </select>
+                <ng-template #loadingShelves>
+                  <p>Loading shelves...</p>
+                </ng-template>
+                <div *ngIf="item.get('shelf')?.invalid && item.get('shelf')?.touched" [id]="'bulkShelf' + i + '-error'" class="error">
+                  Shelf is required. / መደርደርያ መመረጥ አለበት።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Column / አምድ <span class="required">*</span></label>
+              <div class="table-input">
+                <input formControlName="itemColumn" placeholder="e.g., C1" [attr.aria-describedby]="'bulkItemColumn' + i + '-error'" />
+                <div *ngIf="item.get('itemColumn')?.invalid && item.get('itemColumn')?.touched" [id]="'bulkItemColumn' + i + '-error'" class="error">
+                  Column is required. / አምድ ግዴታ ነው።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Row / ረድፍ <span class="required">*</span></label>
+              <div class="table-input">
+                <input formControlName="itemRow" placeholder="e.g., R1" [attr.aria-describedby]="'bulkItemRow' + i + '-error'" />
+                <div *ngIf="item.get('itemRow')?.invalid && item.get('itemRow')?.touched" [id]="'bulkItemRow' + i + '-error'" class="error">
+                  Row is required. / ረድፍ ግዴታ ነው።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Condition / ሁኔታ <span class="required">*</span></label>
+              <div class="table-input">
+                <input formControlName="condition" placeholder="e.g., New, Used" [attr.aria-describedby]="'bulkCondition' + i + '-error'" />
+                <div *ngIf="item.get('condition')?.invalid && item.get('condition')?.touched" [id]="'bulkCondition' + i + '-error'" class="error">
+                  Condition is required. / ሁኔታ ግዴታ ነው።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Quantity / ብዛት <span class="required">*</span></label>
+              <div class="table-input">
+                <input type="number" formControlName="quantity" (input)="updateBulkSerialNumbers(i)" min="1" placeholder="e.g., 1" [attr.aria-describedby]="'bulkQuantity' + i + '-error'" />
+                <div *ngIf="item.get('quantity')?.invalid && item.get('quantity')?.touched" [id]="'bulkQuantity' + i + '-error'" class="error">
+                  Quantity must be at least 1. / ብዛት ቢያንስ 1 መሆን አለበት።
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
+              <label class="table-label">Number of Boxes / በሳጥን ይዞታ</label>
+              <div class="table-input">
+                <input type="number" formControlName="numOfBox" min="0" placeholder="e.g., 1" [attr.aria-describedby]="'bulkNumOfBox' + i + '-error'" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Bulk Serial Numbers -->
+          <div class="form-section" formArrayName="serialNumbers">
+            <h2 class="section-title">
+              Serial Numbers / መለያ ቁጥር
+              <span class="section-toggle">
+                <label class="toggle-switch">
+                  <input type="checkbox" class="toggle-switch-input" [checked]="showBulkSerialNumbers[i]" (change)="toggleBulkSerialNumbers(i)" [attr.aria-label]="'Show serial numbers for item ' + (i + 1)" />
+                  <span class="toggle-switch-slider"></span>
+                </label>
+                <span class="toggle-label">{{ showBulkSerialNumbers[i] ? 'Visible / አሳይ' : 'Hidden / ደብቅ' }}</span>
+              </span>
+            </h2>
+            <div class="table-container serial-numbers" *ngIf="showBulkSerialNumbers[i]">
+              <div *ngFor="let serial of getSerialNumbersForItem(i).controls; let j=index" class="table-row serial-row">
+                <label class="table-label">Serial Number / መለያ ቁጥር {{ j + 1 }}</label>
+                <div class="input-group">
+                  <input class="table-input serial-input" [formControlName]="j" placeholder="Serial {{ j + 1 }}" [attr.aria-describedby]="'bulkSerialNumber' + i + j + '-error'" />
+                  <button class="action-btn secondary small" (click)="removeSerialNumberFromItem(i, j)" *ngIf="getSerialNumbersForItem(i).length > 0 && item.get('role')?.value === 'SPAREPART'" [attr.aria-label]="'Remove serial number ' + (j + 1) + ' for item ' + (i + 1)">Remove / አጥፋ</button>
+                  <div *ngIf="serial.invalid && serial.touched" [id]="'bulkSerialNumber' + i + j + '-error'" class="error">
+                    Serial number is required. / መለያ ቁጥር ግዴታ ነው።
+                  </div>
+                </div>
+              </div>
+              <div class="table-row" *ngIf="item.get('role')?.value === 'SPAREPART' || itemForm.get('role')?.value === 'ELECTRONICS'">
+                <label class="table-label"></label>
+                <div class="table-input">
+                  <button type="button" class="action-btn secondary small" (click)="addSerialNumberToItem(i)" [attr.aria-label]="'Add new serial number for item ' + (i + 1)">
+                    + Add Serial Number / መለያ ቁጥር ጨምር
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bulk Accessories -->
+          <!-- In the Bulk Item Accessories section -->
+<div class="form-section" formArrayName="accessories">
+  <h2 class="section-title">
+    Accessories / ተያያዥ እቃዎች
+    <span class="section-toggle">
+      <label class="toggle-switch">
+        <input type="checkbox" class="toggle-switch-input" [checked]="showBulkAccessories[i]" (change)="toggleBulkAccessories(i)" [attr.aria-label]="'Show accessories for item ' + (i + 1)" />
+        <span class="toggle-switch-slider"></span>
+      </label>
+      <span class="toggle-label">{{ showBulkAccessories[i] ? 'Visible / አሳይ' : 'Hidden / ደብቅ' }}</span>
+    </span>
+    <button *ngIf="showBulkAccessories[i]" type="button" class="action-btn secondary small" (click)="addAccessoryToItem(i)" [attr.aria-label]="'Add new accessory for item ' + (i + 1)">Add Accessory / ተያያዥ እቃ ጨምር</button>
+  </h2>
+  <div class="table-container" *ngIf="showBulkAccessories[i]">
+    <div *ngFor="let accessory of getAccessoriesForItem(i).controls; let j=index" [formGroupName]="j" class="table-row accessory-row">
+      <label class="table-label">Accessory / ተያያዥ እቃዎች {{ j + 1 }}</label>
+      <div class="input-group accessory-input-group">
+        <input class="table-input" formControlName="name" placeholder="Accessory name" [attr.aria-describedby]="'bulkAccessoryName' + i + j + '-error'" />
+        <input class="table-input" formControlName="model" placeholder="Accessory model" [attr.aria-describedby]="'bulkAccessoryModel' + i + j + '-error'" />
+        <input class="table-input" type="number" formControlName="quantity" min="1" placeholder="Quantity" [attr.aria-describedby]="'bulkAccessoryQuantity' + i + j + '-error'" />
+        
+        <!-- New Unit Price and Currency Fields -->
+        <input class="table-input" type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="Unit Price" [attr.aria-describedby]="'bulkAccessoryUnitPrice' + i + j + '-error'" />
+        <select class="table-input" formControlName="currency" [attr.aria-describedby]="'bulkAccessoryCurrency' + i + j + '-error'">
+          <option value="" disabled>Currency</option>
+          <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+        </select>
+        
+        <button class="action-btn secondary small" (click)="removeAccessoryFromItem(i, j)" *ngIf="getAccessoriesForItem(i).length > 0" [attr.aria-label]="'Remove accessory ' + (j + 1) + ' for item ' + (i + 1)">Remove / አጥፋ</button>
+        
+        <!-- Error Messages -->
+        <div *ngIf="accessory.get('name')?.invalid && accessory.get('name')?.touched" [id]="'bulkAccessoryName' + i + j + '-error'" class="error">
+          Accessory name is required. / ተያያዥ እቃው ስም ግዴታ ነው።
+        </div>
+        <div *ngIf="accessory.get('model')?.invalid && accessory.get('model')?.touched" [id]="'bulkAccessoryModel' + i + j + '-error'" class="error">
+          Accessory model is required. / ተያያዥ እቃው ሞዴል ግዴታ ነው።
+        </div>
+        <div *ngIf="accessory.get('quantity')?.invalid && accessory.get('quantity')?.touched" [id]="'bulkAccessoryQuantity' + i + j + '-error'" class="error">
+          Quantity must be at least 1. / ብዛት ቢያንስ 1 መሆን አለበት።
+        </div>
+        <div *ngIf="accessory.get('unitPrice')?.invalid && accessory.get('unitPrice')?.touched" [id]="'bulkAccessoryUnitPrice' + i + j + '-error'" class="error">
+          Unit price must be non-negative. / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት።
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button type="submit" class="action-btn primary" [disabled]="bulkForm.invalid" attr.aria-label="Register bulk items">Register Items / እቃዎች መዝግብ</button>
+        <button type="button" class="action-btn secondary" (click)="debugFormErrors()" attr.aria-label="Debug form errors">Debug Form</button>
+      </div>
+    </form>
+  </div>
+</div>

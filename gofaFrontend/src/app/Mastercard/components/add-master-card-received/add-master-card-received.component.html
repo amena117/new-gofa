@@ -1,0 +1,273 @@
+<div class="content-container">
+  <button class="btn btn-secondary mb-3" (click)="cancel()">Back to List / ወደ ዝርዝር ተመለስ</button>
+  <form (ngSubmit)="onSubmit()" class="container mt-4" *ngIf="receivedItem">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h4 class="card-title text-center mb-0">Add Received Item (አዲስ የተቀበለ ንጥል መዝግብ)</h4>
+      </div>
+      <div class="card-body p-4">
+        <!-- Display Ethiopian Date -->
+        <div class="mb-3">
+          <strong>የመዝገብ ቀን / Registration Date:</strong>
+          <p class="form-control-static">{{ ethiopianDateString }}</p>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ errorMessage }}
+          <button type="button" class="btn-close" (click)="errorMessage = null"></button>
+        </div>
+
+        <!-- Warning Message -->
+        <div *ngIf="warningMessage" class="alert alert-warning alert-dismissible fade show" role="alert">
+          {{ warningMessage }}
+          <button type="button" class="btn-close" (click)="warningMessage = null"></button>
+        </div>
+
+        <!-- Current Stock Display -->
+        <div class="alert alert-info" *ngIf="currentStock !== null">
+          በክምችት ውስጥ ያለው ብዛት (Current Stock): {{ currentStock }}
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="voucherNo">Voucher No (ቫውቸር ቁጥር)</label>
+              <input
+                id="voucherNo"
+                [(ngModel)]="receivedItem.voucherNo"
+                name="voucherNo"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="received">Received Quantity (የተቀበለ ብዛት)</label>
+              <input
+                id="received"
+                [(ngModel)]="receivedItem.received"
+                name="received"
+                type="number"
+                class="form-control"
+                required
+                min="1"
+                (input)="updateTotalPrice()"
+              />
+            </div>
+            <div class="form-group">
+              <label for="unitPrice">Unit Price (የአንዱ ዋጋ)</label>
+              <input
+                id="unitPrice"
+                [(ngModel)]="receivedItem.unitPrice"
+                name="unitPrice"
+                type="number"
+                class="form-control"
+                required
+                min="0"
+                step="0.01"
+                (input)="updateTotalPrice()"
+              />
+            </div>
+            <div class="form-group">
+              <label for="currencySelect">Currency (መገንዘብ)</label>
+              <select
+                id="currencySelect"
+                [(ngModel)]="receivedItem.currencyCode"
+                name="currencyCode"
+                class="form-select"
+              >
+                <option *ngFor="let option of currencyOptions" [value]="option.code">{{ option.label }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="organization">Organization (ድርጅት)</label>
+              <div class="input-group">
+                <select
+                  id="organization"
+                  [(ngModel)]="receivedItem.organization"
+                  name="organization"
+                  class="form-select"
+                  required
+                >
+                  <option value="">Select Organization / ድርጅት ይምረጡ</option>
+                  <option *ngFor="let org of organizations" [value]="org.name">{{ org.name }}</option>
+                </select>
+                <button type="button" class="btn btn-primary" (click)="openOrganizationModal()">Create / ፍጠር</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="postedBy">Posted By (ያስፈጸመው)</label>
+              <input
+                id="postedBy"
+                [(ngModel)]="receivedItem.postedBy"
+                name="postedBy"
+                class="form-control"
+                required
+                readonly
+                aria-readonly="true"
+              />
+            </div>
+            <div class="form-group">
+              <label for="location">Location (ቦታ)</label>
+              <div class="input-group">
+                <select
+                  id="location"
+                  [(ngModel)]="receivedItem.location"
+                  name="location"
+                  class="form-select"
+                  required
+                >
+                  <option value="">Select Location / ቦታ ይምረጡ</option>
+                  <option *ngFor="let loc of locations" [value]="loc.name">{{ loc.name }}</option>
+                </select>
+                <button type="button" class="btn btn-primary" (click)="openLocationModal()">Create / ፍጠር</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="totalPrice">Total Price (ጠቅላላ ዋጋ)</label>
+              <input
+                id="totalPrice"
+                [value]="receivedItem.totalPrice | currency:receivedItem.currencyCode:'symbol':'1.2-2'"
+                name="totalPrice"
+                class="form-control"
+                disabled
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Accessories Section -->
+        <div class="form-group mt-4">
+          <label>Accessories (ተጨማሪ እቃዎች)</label>
+          <div class="form-check">
+            <input
+              id="hasAccessories"
+              [(ngModel)]="receivedItem.hasAccessories"
+              name="hasAccessories"
+              type="checkbox"
+              class="form-check-input"
+              (change)="toggleAccessoriesSection()"
+            />
+            <label for="hasAccessories" class="form-check-label">Item has accessories (ንጥል ተጨማሪ እቃዎች አሉት)</label>
+          </div>
+        </div>
+
+        <div *ngIf="receivedItem.hasAccessories" class="mt-3">
+          <h5>Manage Accessories (ተጨማሪ እቃዎችን ያስተዳድሩ)</h5>
+          <div *ngFor="let accessory of receivedItem.receivedAccessories; let j = index" class="card mb-2">
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-5">
+                  <label [for]="'accessoryName' + j">Accessory Name (የተጨማሪ እቃ ስም)</label>
+                  <input
+                    [id]="'accessoryName' + j"
+                    [(ngModel)]="accessory.name"
+                    [name]="'accessoryName' + j"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="col-md-5">
+                  <label [for]="'accessoryQuantity' + j">Quantity (ብዛት)</label>
+                  <input
+                    [id]="'accessoryQuantity' + j"
+                    [(ngModel)]="accessory.quantity"
+                    [name]="'accessoryQuantity' + j"
+                    type="number"
+                    class="form-control"
+                    required
+                    min="1"
+                  />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                  <button type="button" class="btn btn-danger" (click)="removeAccessory(j)">Remove (አስወግድ)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary mt-2" (click)="addNewAccessory()">Add Accessory (ተጨማሪ እቃ ጨምር)</button>
+        </div>
+
+        <!-- Form Submission Buttons -->
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-success px-4 me-2" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Submitting... / በመመዝገብ ላይ...' : 'Submit (መዝግብ)' }}
+          </button>
+          <button type="button" class="btn btn-secondary px-4" (click)="cancel()" [disabled]="isSubmitting">
+            Cancel (መሰረዝ)
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Organization Modal -->
+  <div class="modal fade" [ngClass]="{'show d-block': showOrganizationModal}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create New Organization (አዲስ ድርጅት ፍጠር)</h5>
+          <button type="button" class="btn-close" (click)="closeOrganizationModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="organizationModalError" class="alert alert-danger">
+            {{ organizationModalError }}
+          </div>
+          <div class="form-group">
+            <label for="newOrganizationName">Organization Name (የድርጅት ስም)</label>
+            <input
+              id="newOrganizationName"
+              [(ngModel)]="newOrganizationName"
+              class="form-control"
+              placeholder="Enter organization name"
+              required
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeOrganizationModal()">Cancel (መሰረዝ)</button>
+          <button type="button" class="btn btn-primary" (click)="createOrganization()">Create (ፍጠር)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" *ngIf="showOrganizationModal"></div>
+
+  <!-- Location Modal -->
+  <div class="modal fade" [ngClass]="{'show d-block': showLocationModal}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create New Location (አዲስ ቦታ ፍጠር)</h5>
+          <button type="button" class="btn-close" (click)="closeLocationModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="locationModalError" class="alert alert-danger">
+            {{ locationModalError }}
+          </div>
+          <div class="form-group">
+            <label for="newLocationName">Location Name (የቦታ ስም)</label>
+            <input
+              id="newLocationName"
+              [(ngModel)]="newLocationName"
+              class="form-control"
+              placeholder="Enter location name"
+              required
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeLocationModal()">Cancel (መሰረዝ)</button>
+          <button type="button" class="btn btn-primary" (click)="createLocation()">Create (ፍጠር)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" *ngIf="showLocationModal"></div>
+
+  <div *ngIf="!receivedItem" class="alert alert-danger">
+    {{ errorMessage || 'እባክዎን ትክክለኛውን ንጥል መለያ ይግለጹ።' }}
+  </div>
+</div>

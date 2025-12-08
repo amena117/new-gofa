@@ -1,0 +1,65 @@
+.export-hidden {
+    display: none !important;
+  }
+  
+  @media print {
+    .export-hideable {
+      display: none; /* Hide buttons and search inputs in the PDF */
+    }
+  
+    .card {
+      page-break-inside: avoid; /* Prevent cards from breaking across pages */
+    }
+  
+    table {
+      width: 100%;
+      font-size: 12px; /* Adjust font size for better readability */
+    }
+  }
+
+
+/*  */
+
+/* .container {
+  max-width: 1200px;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+}
+
+.card-header {
+  font-weight: bold;
+}
+
+.form-control, .form-select {
+  width: 100%;
+}
+
+.input-group .btn {
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.modal-backdrop {
+  opacity: 0.5;
+}
+
+.modal.show {
+  display: block;
+}
+
+.export-hideable {
+  display: block;
+}
+
+.export-hidden {
+  display: none;
+}
+
+.d-flex.mb-1 .form-control {
+  flex: 1;
+}
+
+.d-flex.mb-1 .btn {
+  flex: 0 0 auto;
+} */

@@ -1,0 +1,205 @@
+<style>
+  .custom-bg {
+    background-color: #03203c;
+    color: white;
+  }
+
+  .custom-text {
+    color: #02172a;
+  }
+
+  .custom-btn {
+    background-color: #02172a;
+    border-color: #02172a;
+    color: white;
+    border-radius: 0.6rem;
+    padding: 0.4rem 1.2rem;
+    font-weight: 500;
+  }
+  .custom-btn:hover {
+    background-color: #033c73;
+    border-color: #033c73;
+  }
+
+  .card {
+    border-radius: 1rem;
+    border: none;
+    margin: auto;
+    max-width: 1200px;              /* keep card centered */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* stronger shadow */
+  }
+  .card-header {
+    border-radius: 1rem 1rem 0 0;
+    text-align: center;
+  }
+
+  .card-body{
+      font-size: 1.2rem !important;
+    }
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #02172a;
+    margin: 1rem 0 0.6rem;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.3rem;
+  }
+
+  .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.7rem;
+    gap: 0.6rem;
+  }
+
+  .form-group label {
+    flex: 0 0 40%;     /* label takes 40% */
+    font-weight: 600;
+    margin-bottom: 0;
+    color: #02172a;
+    white-space: nowrap;
+  }
+
+  .form-group input,
+  .form-group select {
+    flex: 1;           /* input expands */
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 0.5rem;
+  }
+  </style>
+
+  <div class="content-container">
+    <div class="container mt-4">
+      <div class="card">
+        <div class="card-header custom-bg text-white">
+          <h4 class="card-title mb-0">Edit Item / የእቃ ማስተካከያ ሰነድ</h4>
+        </div>
+
+        <div class="card-body p-4">
+          <form [formGroup]="editForm" (ngSubmit)="onSubmit(itemId)">
+            <div class="row">
+
+              <!-- Left Column -->
+              <div class="col-md-6">
+                <div class="form-group" *ngFor="let field of [
+                  { name: 'Supplier', label: 'Supplier / የአቅራቢው ስም' },
+                  { name: 'Category', label: 'Category / የእቃው ምድብ' },
+
+                  { name: 'PRNO', label: 'PRNO / ግ.መ.ቁ.' },
+
+                  { name: 'InvoiceNo', label: 'Invoice No / ኢንቮይስ ቁጥር' },
+                  { name: 'ItemType', label: 'Make and Model / የእቃው አይነት' },
+                  { name: 'ContactNumber', label: 'PO. (Contract) Number / አድራሻ' },
+                  { name: 'Number', label: 'Number / ቁ.' },
+                  { name: 'RegisteredBy', label: 'Registered By / የመዘገበው ሰው' },
+                  { name: 'SerialNumber', label: 'Model / መለያ ቁ.' },
+                  { name: 'Description', label: 'Description / የዕቃው ስም' },
+                  { name: 'UnitOfMeasurment', label: 'Unit of Measurement / መለኪያ' }
+                ]">
+                  <label>{{ field.label }}</label>
+                  <input [type]="field || 'text'" class="form-control"
+                         [formControlName]="field.name" [readonly]="!isFormEditable" />
+                </div>
+
+                <!-- Currency -->
+                <div class="form-group" *ngIf="isFormEditable">
+                  <label>Currency / ምንዛሬ</label>
+                  <select formControlName="Currency" class="form-select">
+                    <option value="Birr">BIRR</option>
+                    <option value="USD">USD</option>
+                    <option value="Euro">EURO</option>
+                  </select>
+                </div>
+
+                <!-- Accessories -->
+                <div formArrayName="Accessories" class="mt-4">
+                  <div class="section-title">Accessory Details</div>
+                  <div *ngFor="let accCtrl of accessories.controls; let i = index"
+                       [formGroupName]="i" class="input-group mb-2">
+                    <input formControlName="name" class="form-control" placeholder="Accessory Name" [readonly]="!isFormEditable"/>
+                    <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity" min="1" [readonly]="!isFormEditable"/>
+                    <button type="button" class="btn btn-danger" (click)="removeAccessory(i)" [disabled]="!isFormEditable">Remove</button>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-info" (click)="addAccessory()" [disabled]="!isFormEditable">+ Add Accessory</button>
+                </div>
+              </div>
+
+              <!-- Right Column -->
+              <div class="col-md-6">
+                <div class="form-group" *ngFor="let field of [
+                  { name: 'Ordered', label: 'Ordered / የታዘዘ' },
+                  { name: 'Received', label: 'Received / የገባ' },
+                  { name: 'UnitOfPrice', label: 'Unit Price / ያንዱ ዋጋ' },
+                  { name: 'Amount', label: 'Total price / ጠቅላላ ዋጋ', type: 'number' },
+                  { name: 'Location', label: 'Location / ከተማ, ቦታ' },
+                  { name: 'StoreType', label: 'Store Type / ግምጃ ቤት' },
+                  { name: 'Remark', label: 'Remark / መግለጫ' },
+                  { name: 'CheckedByName', label: 'Checked By / የፈተሸው ሰው ስም' },
+                  { name: 'CTitle', label: 'Checked By Title / የፈተሸው ማዕረግ' },
+                  { name: 'RecivedByName', label: 'Received By / የተረካቢው ስም' },
+                  { name: 'RTitle', label: 'Received By Title / የተረካቢው ማዕረግ' },
+                  { name: 'AuthorizedByName', label: 'Authorized By / ያጸደቀው ሰው ስም' },
+                  { name: 'ATitle', label: 'Authorized By Title / ያጸደቀው ማዕረግ' },
+                  { name: 'Model19Ref', label: 'Model19 Ref. / ሞዴል 19 ቁጥር' }
+                ]">
+                  <label>{{ field.label }}</label>
+                  <input [type]="field.type || 'text'" class="form-control"
+                         [formControlName]="field.name" [readonly]="!isFormEditable" />
+                </div>
+
+                <!-- Status -->
+                <div class="form-group" *ngIf="isFormEditable">
+                  <label>Status / እቃው ያለበት ሁኔታ</label>
+                  <select formControlName="Status" class="form-select">
+                    <option value="Waiting For Stores">Waiting For Stores</option>
+                    <option value="Stores Recieved">Stores Recieved</option>
+                  </select>
+                </div>
+
+                <!-- Extra Items -->
+                <div formArrayName="ExtraItems" class="mt-4">
+                  <div class="section-title">Extra Item Details</div>
+                  <div *ngFor="let extraCtrl of extraItems.controls; let i = index"
+                       [formGroupName]="i" class="input-group mb-2">
+                    <input formControlName="name" class="form-control" placeholder="Extra Item Name"
+                           [readonly]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'" />
+                    <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity" min="1"
+                           [readonly]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'" />
+                    <select formControlName="store" class="form-select"
+                            [disabled]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'">
+                      <option value="" disabled>Select Store</option>
+                      <option *ngFor="let type of storeTypes" [value]="type">{{ type }}</option>
+                    </select>
+                    <select formControlName="extraStatus" class="form-select"
+                            [disabled]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'">
+                      <option value="Waiting For Stores">Waiting For Stores</option>
+                      <option value="Stores Recieved">Stores Recieved</option>
+                    </select>
+                    <input formControlName="extraRecivedByName" class="form-control" placeholder="Received By"
+                           [readonly]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'" />
+                    <button type="button" class="btn btn-danger"
+                            (click)="removeExtraItem(i)"
+                            [disabled]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'">
+                      Remove
+                    </button>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-info" (click)="addExtraItem()">+ Add Extra Item</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center mt-4">
+              <button type="submit" class="btn custom-btn me-2" [disabled]="editForm.invalid">Update</button>
+              <button type="button" class="btn btn-secondary"
+                      (click)="router.navigate(['/transit/received-items'])">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

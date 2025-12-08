@@ -1,0 +1,106 @@
+.warehouse-list-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #03203c;
+  margin-bottom: 20px;
+}
+
+.loading-indicator, .error-message, .no-warehouses {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+}
+
+.loading-indicator {
+  color: #555;
+}
+
+.error-message {
+  color: #d32f2f;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+.no-warehouses {
+  color: #757575;
+}
+
+.warehouse-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+.warehouse-table thead th {
+  background-color: #03203c;
+  color: #fff;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.warehouse-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.warehouse-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.warehouse-table td {
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.warehouse-table input {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-right: 5px;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+button:nth-child(1) { /* Edit/Save */
+  background-color: #02172a;
+  color: #fff;
+}
+
+button:nth-child(2) { /* Cancel/Delete */
+  background-color: #d32f2f;
+  color: #fff;
+}
+
+button[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 14px;
+  }
+
+  td, th {
+    padding: 8px;
+  }
+}

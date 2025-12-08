@@ -1,0 +1,90 @@
+<div class="dashboard-container">
+  <h2>Dashboard Overview</h2>
+
+  <div *ngIf="isLoading" class="loading">Loading...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <!-- Summary Cards -->
+  <div *ngIf="!isLoading && !errorMessage" class="summary-grid">
+    
+    <!-- Maintenance Status Card -->
+    <div class="summary-card maintenance">
+      <h3><i class="fa fa-wrench"></i> Maintenance Status</h3>
+      <ul>
+        <li *ngFor="let item of summaryData.maintenanceStatus">
+          <span>{{ item.maintenanceType }}</span>
+          <span>{{ item.status }}</span>
+          <strong>{{ item.count }}</strong>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="item.percentage"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Mini Store Summary Card -->
+    <div class="summary-card mini-store">
+      <h3><i class="fa fa-boxes"></i> Spareparts in Store</h3>
+      <ul>
+        <li *ngFor="let item of summaryData.miniStoreSummary">
+          <span>{{ item.stockNumber }}</span>
+          <strong>{{ item.balance }}</strong>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Spare Parts Status Card -->
+    <div class="summary-card spare-parts">
+      <h3><i class="fa fa-cogs"></i> Spare Parts Status</h3>
+      <ul>
+        <li *ngFor="let item of summaryData.sparePartsStatus">
+          <span>{{ item.status }}</span>
+          <strong>{{ item.count }}</strong>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="item.percentage"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Bincards Summary Card -->
+    <div class="summary-card bincard">
+      <h3><i class="fa fa-list-alt"></i> Bincards Summary</h3>
+      <ul>
+        <li *ngFor="let item of summaryData.bincardsSummary">
+          <span>{{ item.name }}</span>
+          <strong>{{ item.totalSerials }}</strong>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Detailed Info Section -->
+  <div *ngIf="detailedInfo || serialDetails.length" class="details-section">
+    <div *ngIf="detailedInfo" class="detailed-info">
+      <h3>Selected: {{ detailedInfo.name }}</h3>
+      <p><strong>Type:</strong> {{ detailedInfo.chartType }}</p>
+      <p><strong>Total:</strong> {{ detailedInfo.value }}</p>
+    </div>
+
+    <div *ngIf="serialDetails.length > 0" class="serial-table">
+      <h4>Serial Numbers:</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Serial Number</th>
+            <th>Model</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let serial of serialDetails">
+            <td>{{ serial.serialNumber }}</td>
+            <td>{{ serial.model }}</td>
+            <td>{{ serial.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

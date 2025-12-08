@@ -1,0 +1,67 @@
+<div class="container">
+  <h2>Assign Maintenance / ጥገና መመደቢያ</h2>
+
+  <!-- Form for Maintenance Assignment -->
+  <form (ngSubmit)="onSubmit()">
+    <!-- Works Order Number -->
+    <div class="form-group">
+      <label for="worksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
+      <input
+        type="text"
+        id="worksOrderNumber"
+        class="form-control"
+        [(ngModel)]="worksOrderNumber"
+        name="worksOrderNumber"
+        readonly
+      />
+    </div>
+
+    <!-- Model Number -->
+    <div class="form-group">
+      <label for="modelNumber">Model Number / የሞዴል ቁጥር</label>
+      <input
+        type="text"
+        id="modelNumber"
+        class="form-control"
+        [(ngModel)]="modelNumber"
+        name="modelNumber"
+        required
+      />
+    </div>
+
+    <!-- Maintenance Type -->
+    <div class="form-group">
+      <label for="maintenanceType">Maintenance Type / የጥገና አይነት</label>
+      <select
+        id="maintenanceType"
+        class="form-control"
+        [(ngModel)]="maintenanceType"
+        name="maintenanceType"
+        (change)="updateRequestedTo()"
+        required
+      >
+        <option value="">-- Select Maintenance Type / የጥገና አይነት ይምረጡ --</option>
+        <option value="Office_machine">Office_machine</option>
+        <option value="POWER">POWER</option>
+        <option value="Vhf_radio">Vhf_radio</option>
+        <option value="HF_RADIO">HF_RADIO</option>
+      </select>
+    </div>
+
+    <!-- Requested To -->
+    <div class="form-group">
+      <label for="requestedTo">Requested To / የተጠየቀው ቦታ</label>
+      <input
+        type="text"
+        id="requestedTo"
+        class="form-control"
+        [(ngModel)]="requestedTo"
+        name="requestedTo"
+        readonly
+      />
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary">Submit / አስገባ</button>
+  </form>
+</div>

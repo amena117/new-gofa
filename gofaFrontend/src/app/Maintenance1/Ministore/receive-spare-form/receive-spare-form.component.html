@@ -1,0 +1,43 @@
+<div class="container">
+    <h2>Receive Spare Parts</h2>
+  
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="loading-indicator">
+      Loading...
+    </div>
+  
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+  
+    <!-- Form -->
+    <form (ngSubmit)="submitForm()" *ngIf="!isLoading && !errorMessage">
+      <div>
+        <label>Works Order Number:</label>
+        <input type="text" [(ngModel)]="formData.worksOrderNumber" name="worksOrderNumber" readonly />
+      </div>
+      <div>
+        <label>Stock Number:</label>
+        <input type="text" [(ngModel)]="formData.stockNumber" name="stockNumber" readonly />
+      </div>
+      <div>
+        <label>Model:</label>
+        <input type="text" [(ngModel)]="formData.model" name="model" required />
+      </div>
+      <div>
+        <label>Date:</label>
+        <input type="date" [(ngModel)]="formData.date" name="date" required />
+      </div>
+      <div>
+        <label>Received From:</label>
+        <input type="text" [(ngModel)]="formData.recievedFrom" name="recievedFrom" required />
+      </div>
+      <div>
+        <label>Quantity Received:</label>
+        <input type="number" [(ngModel)]="formData.quantityRecieved" name="quantityRecieved" required min="1" />
+      </div>
+      <button type="submit">Submit</button>
+      <button type="button" (click)="cancel()">Cancel</button>
+    </form>
+  </div>

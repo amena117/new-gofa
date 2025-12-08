@@ -1,0 +1,158 @@
+<div class="model22-listing">
+  <h3 class="mb-4 text-center border-bottom pb-2">
+    የኢ.ፌ.ዲ.ሪ መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን መምሪያ 
+    <br />
+    የእቃ ወይም የንብረት ወጪ ሪፖርት
+  </h3>
+
+  <!-- Info Banner for Team Leader -->
+  <div *ngIf="isSupplyAndDistributionLeader" class="info-banner">
+    <span>✅ የሁሉም ሚናዎች ሞዴል 22 መዝገቦችን ትመልከታለህ / Viewing all roles: VHF, HF, Electronics, Sparepart</span>
+  </div>
+
+  <!-- Error Message for Mixed Currencies -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <div class="header">
+    <h1 class="title">Model22 List / ሞዴል 22 ዝርዝር</h1>
+  </div>
+
+  <!-- Search and Date Filter -->
+  <div class="filter-container">
+    <div class="search-date-wrapper">
+      <div class="search-wrapper">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input 
+          type="text" 
+          placeholder="Search by voucher, dept, recipient, org, desc or item... / በቫውቸር፣ ዲፓርትመንት፣ ተቀባዩ፣ ድርጅት፣ መግለጫ ወይም እቃ ፈልግ..." 
+          [(ngModel)]="searchTerm" 
+          (ngModelChange)="onSearchChange()"
+          aria-label="Search Model22 records"
+        >
+      </div>
+      <div class="date-filter-wrapper">
+        <label for="dateFilter">Date Filter / በቀን ማጣሪያ:</label>
+        <select [(ngModel)]="dateFilter" (ngModelChange)="onDateFilterChange()" id="dateFilter" aria-label="Filter by date range">
+          <option value="">All Dates / ሁሉም ቀናት</option>
+          <option value="1week">Last 1 Week / ያለፈው 1 ሳምንት</option>
+          <option value="1month">Last 1 Month / ያለፈው 1 ወር</option>
+          <option value="3months">Last 3 Months / ያለፉት 3 ወሮች</option>
+          <option value="6months">Last 6 Months / ያለፉት 6 ወሮች</option>
+          <option value="9months">Last 9 Months / ያለፉት 9 ወሮች</option>
+          <option value="1year">Last 12 Months / ያለፉት 12 ወሮች</option>
+        </select>
+      </div>
+    </div>
+    <button class="action-btn primary" (click)="exportToCsv()" aria-label="Export to CSV">
+      Export to CSV / ወደ CSV ላክ
+    </button>
+  </div>
+
+  <!-- Role Dropdown Selector (Only shown for Team Leader) -->
+  <div *ngIf="isSupplyAndDistributionLeader" class="role-filter-container">
+    <button class="action-btn secondary small" (click)="toggleRoleDropdown()">
+      {{ selectedRoles.length === 0 ? 'Select Roles' : selectedRoles.join(', ') }}
+      <span class="arrow">{{ isRoleDropdownOpen ? '▲' : '▼' }}</span>
+    </button>
+
+    <div *ngIf="isRoleDropdownOpen" class="role-dropdown-menu">
+      <div class="role-item" *ngFor="let role of availableRoles">
+        <input 
+          type="checkbox" 
+          [id]="'role-' + role" 
+          [checked]="selectedRoles.includes(role)" 
+          (change)="onRoleChange($event, role)"
+        />
+        <label [for]="'role-' + role">{{ role }}</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container" *ngIf="filteredModel22List.length > 0; else noResults">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Voucher / ቫውቸር</th>
+          <th>Recipient / ተቀባዩ</th>
+          <th>Date / ቀን</th>
+          <th>Unit / ክፍል</th>
+          <th *ngIf="isSupplyAndDistributionLeader">Role / ሚና</th>
+          <th>Desc / መግለጫ</th>
+          <th>Total Price / ጠቅላላ ዋጋ</th>
+          <th>Action / ተግባር</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data Rows with trackBy for performance -->
+        <tr *ngFor="let model22 of paginatedList; trackBy: trackByModel22Id" class="table-row">
+          <td data-label="Voucher" class="voucher-cell">
+            <strong>{{ model22.voucherNumber || 'N/A' }}</strong>
+          </td>
+          <td data-label="Recipient">{{ model22.recipientName }}</td>
+          <td data-label="Date">{{ model22.ethiopianDate }}</td>
+          <td data-label="Organization">{{ model22.recipientOrganization }}</td>
+          <td data-label="Role" *ngIf="isSupplyAndDistributionLeader">{{ model22.role }}</td>
+          <td data-label="Description">{{ model22.description || 'No description / ምንም መግለጫ የለም' }}</td>
+          <td data-label="Total Price">{{ model22.totalPrice || '0.00 ETB' }}</td>
+          <td data-label="Action">
+            <button style="width: 110px;"
+              class="action-btn secondary small"
+              *ngIf="model22.model22Id !== undefined"
+              (click)="viewDetails(model22.model22Id!)"
+              [attr.aria-label]="'View details for ' + model22.recipientName"
+            >
+              Detail/ዝርዝር
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Grand Total Display -->
+  <div class="grand-total">
+    <strong>Grand Total / ግራንድ ጠቅላላ: {{ grandTotal }}</strong>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-controls" *ngIf="filteredModel22List.length > itemsPerPage">
+    <div class="page-info">
+      Page {{ currentPage }} of {{ totalPages }} / ገጽ {{ currentPage }} ለ {{ totalPages }}
+    </div>
+    <div class="page-size">
+      Items per page / በገጽ:
+      <select [(ngModel)]="itemsPerPage" (ngModelChange)="onPageSizeChange()">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="20">20</option>
+        <option [value]="50">50</option>
+      </select>
+    </div>
+    <div class="nav-buttons">
+      <button class="action-btn secondary small" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+        Prev / ቀዳሚ
+      </button>
+      <button class="action-btn primary small" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        Next / ቀጣይ
+      </button>
+    </div>
+  </div>
+
+  <!-- No Records or Search Results -->
+  <ng-template #noResults>
+    <div class="empty-state">
+      <div *ngIf="!searchTerm && !dateFilter && !selectedRoles.length" class="no-data">
+        No Model22 records available. / ሞዴል 22 መዝገቦች የሉም።
+      </div>
+      <div *ngIf="(searchTerm || dateFilter || selectedRoles.length) && filteredModel22List.length === 0" class="no-data">
+        No records found matching criteria. / መስፈርቶችን የሚያሟሉ መዝገቦች አልተገኙም።
+      </div>
+    </div>
+  </ng-template>
+</div>

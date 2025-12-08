@@ -1,0 +1,179 @@
+<div class="report-container">
+  <h1 class="report-title">Inventory Report / የእቃ መዝገብ ሪፖርት</h1>
+
+  <!-- Filter Form -->
+  <div class="card filter-card">
+    <div class="card-header">
+      <h4><span class="icon-placeholder">≡</span> Report Filters / ሪፖርት</h4>
+    </div>
+    <div class="card-body">
+      <form class="filter-form" (ngSubmit)="applyFilter()">
+        <div class="form-group">
+          <label for="startDate">Start Date / መነሻ ቀን</label>
+          <input type="date" class="form-control" id="startDate" [(ngModel)]="filter.startDate" name="startDate">
+        </div>
+        <div class="form-group">
+          <label for="endDate">End Date / መጨረሻ ቀን</label>
+          <input type="date" class="form-control" id="endDate" [(ngModel)]="filter.endDate" name="endDate">
+        </div>
+        <div class="form-group">
+          <label for="organization">Organization / ድርጅት</label>
+          <select class="form-control" id="organization" [(ngModel)]="filter.organization" name="organization">
+            <option value="">Select Organization</option>
+            <option *ngFor="let org of organizations" [value]="org.name">{{ org.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="location">Location / ቦታ</label>
+          <select class="form-control" id="location" [(ngModel)]="filter.location" name="location">
+            <option value="">Select Location</option>
+            <option *ngFor="let loc of locations" [value]="loc.name">{{ loc.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="model">Model / ሞዴል</label>
+          <select class="form-control" id="model" [(ngModel)]="filter.model" name="model">
+            <option value="">Select Model</option>
+            <option *ngFor="let model of models" [value]="model">{{ model }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="partNumber">Part Number / የእቃው መለያ ቁጥር</label>
+          <select class="form-control" id="partNumber" [(ngModel)]="filter.partNumber" name="partNumber">
+            <option value="">Select Part Number</option>
+            <option *ngFor="let partNumber of partNumbers" [value]="partNumber">{{ partNumber }}</option>
+          </select>
+        </div>
+        <!-- <div class="form-group">
+          <label for="status">Status</label>
+          <select class="form-control" id="status" [(ngModel)]="filter.status" name="status">
+            <option value="">Select Status</option>
+            <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+          </select>
+        </div> -->
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="includeAccessories" [(ngModel)]="filter.includeAccessories" name="includeAccessories">
+          <label class="form-check-label" for="includeAccessories">Include Accessories/ አክሰሰሪ ጨምር</label>
+        </div>
+        <div class="filter-actions">
+          <button type="submit" class="btn btn-primary">Apply Filters / ፈልግ</button>
+          <button type="button" class="btn btn-danger" (click)="resetFilter()">Reset/ አጥፋ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Report Results (unchanged) -->
+  <div class="card results-card">
+    <div class="card-header">
+      <h4><span class="icon-placeholder">📊</span> Report Results</h4>
+      <p class="card-subtitle">Filtered inventory details</p>
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Model / ሞዴል</th>
+            <th>Part Number / የእቃው መለያ ቁጥር</th>
+            <th>Total Received / አጠቃላይ ገቢ</th>
+            <th>Total Issued / አጠቃላይ ወጪ </th>
+            <th>In Stock / በመጋዘን ውስጥ</th>
+            <th>Details </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of reportItems">
+            <td>{{ item.item.model }}</td>
+            <td>{{ item.item.partNumber }}</td>
+            <td>{{ item.totals.totalReceived }}</td>
+            <td>{{ item.totals.totalIssued }}</td>
+            <td>{{ item.totals.inStock }}</td>
+            <td>
+              <button class="btn btn-link" (click)="toggleDetails(item)">
+                {{ item.showDetails ? '−' : '+' }}
+              </button>
+            </td>
+          </tr>
+          <tr *ngFor="let item of reportItems" [ngClass]="{'d-none': !item.showDetails}">
+            <td colspan="6">
+              <div class="detail-content">
+                <h4>Received Records</h4>
+                <table class="table table-sm inner-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Voucher No</th>
+                      <th>Received</th>
+                      <th>Organization</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let record of item.receivedRecords">
+                      <td>{{ record.date | date:'short' }}</td>
+                      <td>{{ record.voucherNo }}</td>
+                      <td>{{ record.received }}</td>
+                      <td>{{ record.organization }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div *ngIf="item.receivedRecords.length === 0">No received records.</div>
+                <div *ngIf="filter.includeAccessories && item.receivedRecords.length > 0">
+                  <h5>Received Accessories</h5>
+                  <div *ngFor="let record of item.receivedRecords">
+                    <div *ngIf="record.receivedAccessories && record.receivedAccessories.length > 0">
+                      <p>Voucher {{ record.voucherNo }}:</p>
+                      <ul>
+                        <li *ngFor="let accessory of record.receivedAccessories">{{ accessory.name }} (Qty: {{ accessory.quantity }})</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <h4>Issued Records</h4>
+                <table class="table table-sm inner-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Voucher No</th>
+                      <th>Issued</th>
+                      <th>Organization</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let record of item.issuedRecords">
+                      <td>{{ record.date }}</td>
+                      <td>{{ record.voucherNo }}</td>
+                      <td>{{ record.issued }}</td>
+                      <td>{{ record.organization }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div *ngIf="item.issuedRecords.length === 0">No issued records.</div>
+                <div *ngIf="filter.includeAccessories && item.issuedRecords.length > 0">
+                  <h5>Issued Accessories</h5>
+                  <div *ngFor="let record of item.issuedRecords">
+                    <div *ngIf="record.issuedAccessories && record.issuedAccessories.length > 0">
+                      <p>Voucher {{ record.voucherNo }}:</p>
+                      <ul>
+                        <li *ngFor="let accessory of record.issuedAccessories">{{ accessory.name }} (Qty: {{ accessory.quantity }})</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="reportItems.length === 0" class="no-data">
+        <span class="icon-placeholder">[Info]</span> No items match the selected filters.
+      </div>
+      <div class="report-summary">
+        <h3>Summary</h3>
+        <p>Total Items: {{ reportSummary.totalItems || 0 }}</p>
+        <p>Total Received: {{ reportSummary.totalReceived || 0 }}</p>
+        <p>Total Issued: {{ reportSummary.totalIssued || 0 }}</p>
+        <p>Total In Stock: {{ reportSummary.totalInStock || 0 }}</p>
+      </div>
+    </div>
+  </div>
+</div>

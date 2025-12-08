@@ -1,0 +1,110 @@
+<form (ngSubmit)="onRegister()" class="form-container">
+  <h2>Register / መመዝገቢያ</h2>
+
+  <!-- First Name -->
+  <div class="form-group">
+    <label for="register-firstName">First Name / የመጀመሪያ ስም</label>
+    <input
+      id="register-firstName"
+      type="text"
+      [(ngModel)]="registerModel.firstName"
+      name="firstName"
+      required
+    >
+  </div>
+
+  <!-- Last Name -->
+  <div class="form-group">
+    <label for="register-lastName">Last Name / የአባት ስም</label>
+    <input
+      id="register-lastName"
+      type="text"
+      [(ngModel)]="registerModel.lastName"
+      name="lastName"
+      required
+    >
+  </div>
+
+  <!-- Username -->
+  <div class="form-group">
+    <label for="register-username">Username / የተጠቃሚ ስም</label>
+    <input
+      id="register-username"
+      type="text"
+      [(ngModel)]="registerModel.username"
+      name="username"
+      required
+      minlength="4"
+      pattern="[a-zA-Z0-9_]+"
+      #usernameInput="ngModel"
+    >
+    <div *ngIf="usernameInput.touched && usernameInput.invalid" class="error-message">
+      <small *ngIf="usernameInput.errors?.['required']">Username is required.</small>
+      <small *ngIf="usernameInput.errors?.['minlength']">Username must be at least 4 characters.</small>
+      <small *ngIf="usernameInput.errors?.['pattern']">Username can only contain letters, numbers, and underscores.</small>
+    </div>
+  </div>
+
+  <!-- Password -->
+  <div class="form-group">
+    <label for="register-password">Password / የይለፍ ቃል</label>
+    <input
+      id="register-password"
+      type="password"
+      [(ngModel)]="registerModel.password"
+      name="password"
+      required
+      #passwordInput="ngModel"
+    >
+    <div *ngIf="passwordInput.touched && passwordInput.invalid" class="error-message">
+      <small *ngIf="passwordInput.errors?.['required']">Password is required.</small>
+    </div>
+    <div *ngIf="passwordInput.touched && hasPasswordError" class="error-message">
+      <small>Password must:
+        <ul>
+          <li>Be at least 6 characters</li>
+          <li>Contain at least one uppercase letter</li>
+          <li>Contain at least one lowercase letter</li>
+          <li>Contain at least one number</li>
+          <li>Contain at least one special character</li>
+        </ul>
+      </small>
+    </div>
+  </div>
+
+  <!-- Confirm Password -->
+  <div class="form-group">
+    <label for="register-confirmPassword">Confirm Password / የይለፍ ቃል ደግመህ አስገባ</label>
+    <input
+      id="register-confirmPassword"
+      type="password"
+      [(ngModel)]="registerModel.confirmPassword"
+      name="confirmPassword"
+      required
+      #confirmPasswordInput="ngModel"
+    >
+    <div *ngIf="confirmPasswordInput.touched && registerModel.password !== registerModel.confirmPassword" class="error-message">
+      <small>Passwords do not match.</small>
+    </div>
+  </div>
+
+  <!-- Role -->
+  <div class="form-group">
+    <label for="register-role">Role / ሚና</label>
+    <select
+      id="register-role"
+      [(ngModel)]="registerModel.role"
+      name="role"
+      required
+      #roleInput="ngModel"
+    >
+      <option value="">Select a role / ሚና ይምረጡ</option>
+      <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+    </select>
+    <div *ngIf="roleInput.touched && roleInput.errors?.['required']" class="error-message">
+      <small>Role is required.</small>
+    </div>
+  </div>
+
+  <button type="submit">Register / መዝግብ</button>
+</form>

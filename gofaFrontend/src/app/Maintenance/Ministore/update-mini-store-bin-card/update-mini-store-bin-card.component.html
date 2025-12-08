@@ -1,0 +1,59 @@
+<div class="form-container">
+    <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Receive Spare Part and Register Serial Numbers</h2>
+  
+    <form #receiveForm="ngForm" (ngSubmit)="onReceive()">
+    
+      <!-- Stock Number -->
+      <div class="form-group">
+        <label for="stockNumber">Stock Number:</label>
+        <input type="text" id="stockNumber" name="stockNumber" [(ngModel)]="miniStoreBinCard.stockNumber" required readonly />
+      </div>
+    
+      <!-- Model -->
+      <div class="form-group">
+        <label for="model">Model:</label>
+        <input type="text" id="model" name="model" [(ngModel)]="miniStoreBinCard.model" required readonly />
+      </div>
+    
+      <!-- Quantity -->
+      <div class="form-group">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" [(ngModel)]="quantity" required min="1" (change)="onQuantityChange()" />
+      </div>
+    
+      <!-- Received From -->
+      <div class="form-group">
+        <label for="receivedFrom">Received From:</label>
+        <input type="text" id="receivedFrom" name="receivedFrom" [(ngModel)]="miniStoreBinCard.recievedFrom" required />
+      </div>
+    
+      <!-- Date -->
+      <div class="form-group">
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" [(ngModel)]="miniStoreBinCard.date" readonly />
+      </div>
+    
+      <!-- Dynamic Serial Numbers -->
+      <div class="form-group" *ngIf="serialNumbers.length > 0">
+        <label>Part Number:</label>
+        <div *ngFor="let sn of serialNumbers; let i = index; trackBy: trackByIndex">
+          <input
+            type="text"
+            [ngModel]="serialNumbers[i]"
+            (ngModelChange)="updateSerialNumber(i, $event)"
+            name="serial{{i}}"
+            placeholder="Enter Part Number {{ i + 1 }}"
+            required
+            maxlength="255"
+            (input)="onSerialNumberChange(i)" />
+        </div>
+      </div>
+    
+      <!-- Submit -->
+      <button type="submit" [disabled]="receiveForm.invalid || !isAllSerialsFilled()">Receive and Register Serial Numbers</button>
+    </form>
+    
+    <!-- Message -->
+    <div *ngIf="message" class="message">{{ message }}</div>
+  </div>

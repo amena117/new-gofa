@@ -1,0 +1,46 @@
+<div class="warehouse-container">
+  <h2>Register Warehouse / የጋራ መጋዘን ምዝገባ</h2>
+  <form (ngSubmit)="onSubmit()" #warehouseForm="ngForm" class="form-container">
+    <div class="form-group">
+      <label for="warehouseId">Warehouse ID / የመጋዘን መታወቂያ:</label>
+      <input
+        id="warehouseId"
+        type="text"
+        class="form-control"
+        [(ngModel)]="warehouse.warehouseId"
+        name="warehouseId"
+        required
+        placeholder="Enter Warehouse ID / የመጋዘን መታወቂያ ያስገቡ"
+      />
+    </div>
+    <div class="form-group">
+      <label for="name">Name / ስም:</label>
+      <input
+        id="name"
+        type="text"
+        class="form-control"
+        [(ngModel)]="warehouse.name"
+        name="name"
+        required
+        placeholder="Enter Name / ስም ያስገቡ"
+      />
+    </div>
+    <div class="form-group">
+      <label for="location">Location / አካባቢ:</label>
+      <input
+        id="location"
+        type="text"
+        class="form-control"
+        [(ngModel)]="warehouse.location"
+        name="location"
+        required
+        placeholder="Enter Location / አካባቢ ያስገቡ"
+      />
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="!warehouseForm.valid || isSubmitting">
+        Submit / አስገባ
+      </button>
+    </div>
+  </form>
+</div>

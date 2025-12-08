@@ -1,0 +1,42 @@
+<div class="container">
+    <h2 class="text-center">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Maintenance Request Details</h2>
+  
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="text-center">
+      <p>Loading...</p>
+    </div>
+  
+    <!-- Error Message -->
+    <div *ngIf="error" class="alert alert-danger text-center">
+      {{ error }}
+    </div>
+  
+    <!-- Display Request Details -->
+    <div *ngIf="!isLoading && request" class="card">
+      <div class="card-body">
+        <h5 class="card-title">Works Order Number: {{ request.worksOrderNumber }}</h5>
+        <ul class="list-group">
+          <li class="list-group-item"><strong>Nomenclature:</strong> {{ request.nomenclature }}</li>
+          <li class="list-group-item"><strong>Quantity:</strong> {{ request.quantity }}</li>
+          <li class="list-group-item"><strong>Requested By:</strong> {{ request.requestedBy }}</li>
+          <li class="list-group-item"><strong>Serial No:</strong> {{ request.serialNoOfEquip }}</li>
+          <li class="list-group-item"><strong>Date Received:</strong> {{ request.dateWorkOrderReceived | date }}</li>
+          <li class="list-group-item"><strong>Repair Start Date:</strong> {{ request.repairStartDate | date }}</li>
+          <li class="list-group-item"><strong>Repair Finish Date:</strong> {{ request.repairFinishDate | date }}</li>
+          <li class="list-group-item"><strong>Man Hours:</strong> {{ request.manHours }}</li>
+          <li class="list-group-item"><strong>Parts Cost:</strong> {{ request.partsCost | currency }}</li>
+          <li class="list-group-item"><strong>Remark:</strong> {{ request.remark || 'N/A' }}</li>
+          <li class="list-group-item"><strong>Status:</strong>
+            <span *ngIf="request.repairFinishDate" class="badge badge-success">Completed</span>
+            <span *ngIf="!request.repairFinishDate" class="badge badge-warning">In Progress</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  
+    <!-- Back Button -->
+    <div class="text-center mt-3">
+      <button class="btn btn-secondary" (click)="goBack()">Back</button>
+    </div>
+  </div>

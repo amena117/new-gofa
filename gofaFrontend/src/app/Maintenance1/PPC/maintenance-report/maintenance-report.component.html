@@ -1,0 +1,105 @@
+<div class="container">
+  <h2>Maintenance Report / የጥገና ሪፖርት</h2>
+
+  <!-- Filter Form -->
+  <div class="filter-container">
+    <form (ngSubmit)="generateReport()" #reportForm="ngForm" class="form-group-inline">
+      <label for="startDate">የመጀመሪያ ቀን:</label>
+      <input 
+        type="date" 
+        id="startDate" 
+        name="startDate" 
+        [(ngModel)]="reportFilters.startDate" 
+        required 
+        (ngModelChange)="saveFiltersToLocalStorage()" />
+
+      <label for="endDate">የመጨረሻ ቀን:</label>
+      <input 
+        type="date" 
+        id="endDate" 
+        name="endDate" 
+        [(ngModel)]="reportFilters.endDate" 
+        required 
+        (ngModelChange)="saveFiltersToLocalStorage()" />
+
+      <label for="interval">Interval:</label>
+      <select 
+        id="interval" 
+        name="interval" 
+        [(ngModel)]="reportFilters.interval"
+        (ngModelChange)="saveFiltersToLocalStorage()">
+        <option value="">None / ምንም</option>
+        <option value="daily">Daily / ዕለታዊ</option>
+        <option value="weekly">Weekly / ሳምንታዊ</option>
+        <option value="monthly">Monthly / ወርሃዊ</option>
+      </select>
+
+      <button type="submit" [disabled]="!reportForm.form.valid" class="action-button submit-button">
+        ሪፖርት ፈጠር
+      </button>
+    </form>
+  </div>
+
+  <!-- Loading / Error -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    Generating report... / ሪፖርት እየተፈጠረ ነው...
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Grouped Table -->
+  <div *ngFor="let group of reportData">
+    <h3>{{ group.period }}</h3>
+    <table class="request-table">
+      <thead>
+        <tr>
+          <th>ቀን</th>
+          <th>ቁጥር</th>
+          <th>ተከታታይ ቁጥር</th>
+          <th>አጭር መግለጫ</th>
+          <th>ሁኔታ</th>
+          <th>Maintained By</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of group.requests">
+          <td>{{ formatDateForDisplay(request.dateWorkOrderReceived) }}</td>
+          <td>{{ request.worksOrderNumber }}</td>
+          <td>{{ request.serialNoOfEquip || 'N/A' }}</td>
+          <td>{{ request.briefDescriptionOfWork || 'N/A' }}</td>
+          <td>{{ request.status || 'N/A' }}</td>
+          <td>{{ request.maintainedBy || 'N/A' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary -->
+  <div *ngIf="!isLoading && !errorMessage && getMaintenanceTypes().length > 0" class="summary-passage">
+    <h3>Summary by Maintenance Type / የጥገና አይነት እና ሁኔታ</h3>
+
+    <div *ngFor="let type of getMaintenanceTypes()">
+      <h4>{{ type | titlecase }}</h4>
+      <p>ጠቅላላ ጥገናዎች: <strong>{{ reportSummary[type].total }}</strong></p>
+      <ul>
+        <li *ngFor="let status of getStatusesForType(type)">
+          {{ status | titlecase }}: <strong>{{ reportSummary[type][status] }}</strong>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Print Button -->
+  <div *ngIf="reportData.length > 0" class="print-button-container">
+    <button (click)="printReport()" class="action-button print-button">
+      Print / ማተም
+    </button>
+  </div>
+
+  <!-- No Data -->
+  <div *ngIf="!isLoading && !errorMessage && reportData.length === 0" class="no-data">
+    No data available for the selected criteria. / ለተመረጡት መስፈርቶች ዳታ የለም
+  </div>
+</div>

@@ -1,0 +1,122 @@
+/* Container Styling */
+.container {
+  background-color: #f5f7fa;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+}
+
+/* Form Header - Now with Black Background */
+h2 {
+  text-align: center;
+  color: #fff; /* White text for contrast */
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #000000; /* Solid black background */
+  /* Optional: Add a subtle gradient for depth */
+  /* background: linear-gradient(to right, #1a1a1a, #000000); */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+/* Label Styling */
+label {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+/* Form Controls (input, textarea, select) */
+.form-control {
+  border-radius: 10px;
+  border: 1px solid #dcdfe3;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-control:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 0.1rem rgba(0, 0, 0, 0.2);
+}
+
+/* Error Text */
+.text-danger {
+  font-size: 13px;
+  color: #e74c3c;
+  display: block;
+  margin-top: 5px;
+}
+
+/* Form Group Spacing */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* Button Container */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* Buttons - Updated to Black */
+button.btn {
+  padding: 10px 25px;
+  font-size: 16px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: none;
+  color: white;
+  font-weight: 500;
+}
+
+/* Primary Button - Black */
+button.btn-primary {
+  background-color: #000000;
+  /* Optional: Add hover effect */
+}
+
+button.btn-primary:hover {
+  background-color: #111;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Secondary Button - Also Black */
+button.btn-secondary {
+  background-color: #000000;
+}
+
+button.btn-secondary:hover {
+  background-color: #111;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    padding: 15px;
+  }
+
+  .button-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  button.btn {
+    width: 100%;
+    max-width: 200px;
+  }
+}

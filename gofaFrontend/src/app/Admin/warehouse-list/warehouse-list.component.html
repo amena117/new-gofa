@@ -1,0 +1,49 @@
+<div class="warehouse-list-container">
+  <h2>Warehouses</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Loading warehouses...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Warehouse List -->
+  <table *ngIf="!isLoading && warehouses.length > 0" class="warehouse-table">
+    <thead>
+      <tr>
+        <th>Warehouse ID</th>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let warehouse of warehouses">
+        <td>{{ warehouse.warehouseId }}</td>
+        <td>
+          <span *ngIf="!warehouse.isEditing">{{ warehouse.name }}</span>
+          <input *ngIf="warehouse.isEditing" [(ngModel)]="warehouse.name" name="name_{{warehouse.warehouseId}}" required>
+        </td>
+        <td>
+          <span *ngIf="!warehouse.isEditing">{{ warehouse.location }}</span>
+          <input *ngIf="warehouse.isEditing" [(ngModel)]="warehouse.location" name="location_{{warehouse.warehouseId}}" required>
+        </td>
+        <td>
+          <button *ngIf="!warehouse.isEditing" (click)="startEditing(warehouse)">Edit</button>
+          <button *ngIf="warehouse.isEditing" (click)="saveWarehouse(warehouse)">Save</button>
+          <button *ngIf="warehouse.isEditing" (click)="cancelEditing(warehouse)">Cancel</button>
+          <button *ngIf="!warehouse.isEditing" (click)="onDelete(warehouse.warehouseId)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- No Warehouses Message -->
+  <div *ngIf="!isLoading && warehouses.length === 0" class="no-warehouses">
+    <p>No warehouses found.</p>
+  </div>
+</div>

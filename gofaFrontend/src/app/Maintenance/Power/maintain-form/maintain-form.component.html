@@ -1,0 +1,78 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Maintain Request Form</h2>
+
+  <form (ngSubmit)="onSubmit()">
+    <!-- Works Order Number -->
+    <div class="form-group">
+      <label for="worksOrderNumber">Works Order Number</label>
+      <input
+        type="text"
+        id="worksOrderNumber"
+        class="form-control"
+        [(ngModel)]="formData.worksOrderNumber"
+        name="worksOrderNumber"
+        readonly
+      />
+    </div>
+
+    <!-- Status -->
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select
+        id="status"
+        class="form-control"
+        [(ngModel)]="formData.status"
+        name="status"
+        required
+      >
+        <option value="">-- Select Status --</option>
+        <option value="Quality Check">Quality Check</option>
+        <option value="Maintenance Finished">Maintenance Finished</option>
+        <option value="Do Out">Do Out</option>
+      </select>
+    </div>
+
+    <!-- Repair Finish Date -->
+    <div class="form-group">
+      <label for="repairFinishDate">Repair Finish Date</label>
+      <input
+        type="date"
+        id="repairFinishDate"
+        class="form-control"
+        [(ngModel)]="formData.repairFinishDate"
+        name="repairFinishDate"
+        required
+      />
+    </div>
+
+    <!-- Manhours -->
+    <div class="form-group">
+      <label for="manhours">Manhours</label>
+      <input
+        type="number"
+        id="manhours"
+        class="form-control"
+        [(ngModel)]="formData.manhours"
+        name="manhours"
+        min="0"
+        required
+      />
+    </div>
+
+    <!-- Remark -->
+    <div class="form-group">
+      <label for="remark">Remark</label>
+      <textarea
+        id="remark"
+        class="form-control"
+        [(ngModel)]="formData.remark"
+        name="remark"
+        rows="3"
+      ></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Update</button>
+    <button type="button" class="btn btn-secondary" (click)="goBack()">Cancel</button>
+  </form>
+</div>

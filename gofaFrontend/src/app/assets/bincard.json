@@ -1,0 +1,56 @@
+[
+  {
+    "itemCode": "ITM001",
+    "itemName": "CPU",
+    "itemCategory": "Electronics",
+    "serialNumber": "SN12345",
+    "modelNumber": "MDL123",
+    "boxQuantity": 10,
+    "itemType": "Appliance",
+    "condition": "New",
+    "measurement": "Unit",
+    "damagedBoxes": 0,
+    "quantity": 50,
+    "transactionHistory": [
+      {
+        "date": "2023-10-05T14:30:00Z",
+        "action": "add",
+        "quantity": 10,
+        "details": "comaAnedeTeqebale: mulualem, ymezegebew: eyosiyas"
+      },
+      {
+        "date": "2023-10-06T10:45:00Z",
+        "action": "withdraw",
+        "quantity": 5,
+        "details": "Recipient: amen, Boxes: 2"
+      }
+    ]
+  },
+  {
+    "itemCode": "ITM002",
+    "itemName": "Chair",
+    "itemCategory": "Furniture",
+    "serialNumber": "SN67890",
+    "modelNumber": "MDL456",
+    "boxQuantity": 20,
+    "itemType": "Furniture",
+    "condition": "Used",
+    "measurement": "Piece",
+    "damagedBoxes": 2,
+    "quantity": 100,
+    "transactionHistory": [
+      {
+        "date": "2023-10-07T09:15:00Z",
+        "action": "add",
+        "quantity": 20,
+        "details": "comaAnedeTeqebale: hayder, ymezegebew: Mintesnot"
+      },
+      {
+        "date": "2023-10-08T15:30:00Z",
+        "action": "withdraw",
+        "quantity": 10,
+        "details": "Recipient: amen, Boxes: 5"
+      }
+    ]
+  }
+]

@@ -1,0 +1,126 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+  Spare Parts Requests</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    Loading spare parts requests...
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Table Wrapper for Scroll -->
+  <div class="table-container">
+    <table class="request-table" *ngIf="!isLoading && !errorMessage">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Stock Number</th>
+          <th>Given Part Number</th>
+          <th>Requested By</th>
+          <th>Reason</th>
+          <th>Works Order Number</th>
+          <th>Quantity Approved</th>
+          <th>Approved By</th>
+          <th>Status</th>
+          <th>Remark</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of sparePartsRequests">
+          <td>{{ request.id }}</td>
+          <td>{{ request.stockNumber }}</td>
+          <td>{{ request.serialNumber }}</td>
+          <td>{{ request.requestedBy }}</td>
+          <td>{{ request.reason }}</td>
+          <td>{{ request.worksOrderNumber }}</td>
+          <td>{{ request.quantityApproved || 'N/A' }}</td>
+          <td>{{ request.approvedBy || 'N/A' }}</td>
+          <td>{{ request.status }}</td>
+          <td>{{ request.remark || 'N/A' }}</td>
+          <td>
+            <ng-container *ngIf="request.status === 'Maintenance Finished' || request.status === 'Client Received' || request.status === 'Quality Check'; else normalAction">
+              <button disabled style="background-color: #28a745; color: white; font-weight: bold;">
+                No Action Needed
+              </button>
+            </ng-container>
+            <ng-template #normalAction>
+              <button (click)="openForm(request)">
+                {{ getActionButtonLabel() }}
+              </button>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Maintenance Form -->
+  <div #formSection *ngIf="selectedRequest && isMaintenanceMode" class="maintenance-form">
+    <h3>Maintain Request</h3>
+    <form (ngSubmit)="submitMaintenance()">
+      <div>
+        <label>Stock Number:</label>
+        <input type="text" [(ngModel)]="selectedRequest.stockNumber" name="stockNumber" readonly />
+      </div>
+      <div>
+        <label>Works Order Number:</label>
+        <input type="text" [(ngModel)]="selectedRequest.worksOrderNumber" name="worksOrderNumber" readonly />
+      </div>
+      <div>
+        <label>Status:</label>
+        <select [(ngModel)]="maintenanceData.status" name="status" required>
+          <option value="" disabled>Select Status</option>
+          <option value="Maintenance Finished">Maintenance Finished</option>
+          <option value="Quality Check">Quality Check</option>
+          <option value="Do Out">Do Out</option>
+          <option value="Waiting Spareparts">Waiting Spareparts</option>
+        </select>
+      </div>
+      <div>
+        <label>Repair Finish Date:</label>
+        <input type="date" [(ngModel)]="maintenanceData.repairFinishDate" name="repairFinishDate" required />
+      </div>
+      <div>
+        <label>Man Hours:</label>
+        <input type="number" [(ngModel)]="maintenanceData.manHours" name="manHours" required min="0"
+               (input)="onManHoursChange()" />
+      </div>
+      <div>
+        <label>Labor Cost:</label>
+        <input type="number" [(ngModel)]="maintenanceData.laborCost" name="laborCost" readonly />
+      </div>
+      <div>
+        <label>Total Cost:</label>
+        <input type="number" [(ngModel)]="maintenanceData.totalCost" name="totalCost" readonly />
+      </div>
+      <div>
+        <label>Remark:</label>
+        <textarea [(ngModel)]="maintenanceData.remark" name="remark"></textarea>
+      </div>
+      <button type="submit">Save Changes</button>
+      <button type="button" (click)="cancel()">Cancel</button>
+    </form>
+  </div>
+
+  <!-- Approval Form -->
+  <div *ngIf="selectedRequest && !isMaintenanceMode" class="approval-form">
+    <h3>Approve Request</h3>
+    <form (ngSubmit)="submitApproval()">
+      <div>
+        <label>Quantity Approved:</label>
+        <input type="number" [(ngModel)]="approvalData.quantityApproved" name="quantityApproved" required min="1" />
+      </div>
+      <div>
+        <label>Remark:</label>
+        <textarea [(ngModel)]="approvalData.remark" name="remark"></textarea>
+      </div>
+      <button type="submit">Approve</button>
+      <button type="button" (click)="cancel()">Cancel</button>
+    </form>
+  </div>
+</div>

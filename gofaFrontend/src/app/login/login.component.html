@@ -1,0 +1,54 @@
+<div class="login-wrapper">
+  <div class="login-form">
+    <h1 lang="en">Login - <span lang="am">ግባ</span></h1>
+
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="auth-form">
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username" lang="en">Username</label>
+        <label for="username" lang="am">የተጠቃሚ ስም</label>
+        <input
+          id="username"
+          type="text"
+          [(ngModel)]="loginModel.username"
+          name="username"
+          required
+          [disabled]="isLoading"
+          placeholder="Enter username / የተጠቃሚ ስሙን ያስገቡ"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password" lang="en">Password</label>
+        <label for="password" lang="am">የይለፍ ቃል</label>
+        <input
+          id="password"
+          type="password"
+          [(ngModel)]="loginModel.password"
+          name="password"
+          required
+          [disabled]="isLoading"
+          placeholder="Enter password / የይለፍ ቃሉን ያስገቡ"
+        />
+      </div>
+
+      <!-- Error Message -->
+      <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-box">
+      <p>
+        <strong>{{ errorMessage }}</strong>
+        <br />
+        <small *ngIf="errorMessage.includes('disabled')">
+          Contact your system administrator for assistance.
+        </small>
+      </p>
+    </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="login-button" [disabled]="isLoading">
+        {{ isLoading ? 'Logging in...' : 'Login / ግባ' }}
+      </button>
+    </form>
+  </div>
+</div>

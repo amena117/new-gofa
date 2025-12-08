@@ -1,0 +1,156 @@
+<div class="model22-detail">
+  <h3 class="mb-4 text-center border-bottom pb-2">
+    የኢ.ፌ.ዲ.ሪ መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን መምሪያ 
+    <br />
+    የእቃው ወይም የንብረቱ ወጪ ደረሰኝ
+  </h3>
+
+  <div class="header">
+    <h1 class="title">Model22 Details / ሞዴል 22 ዝርዝሮች</h1>
+    <h1 class="print-title">Model22 Details / ሞዴል 22 ዝርዝሮች</h1>
+  </div>
+
+  <!-- Error & Loading -->
+  <div *ngIf="errorMessage" class="message error-message" role="alert">{{ errorMessage }}</div>
+  <div *ngIf="!model22 && !errorMessage" class="loading-state">
+    <div class="loading-spinner"></div>
+    <span>Loading details... / ዝርዝሮችን በመጫን ላይ...</span>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="model22" class="detail-container">
+
+    <!-- Withdrawal Information -->
+    <div class="detail-section">
+      <h2 class="section-title">Withdrawal Information / የመውጫ መረጃ</h2>
+      <div class="detail-grid">
+        <div class="detail-item"><span class="label">ID / መለያ:</span><span class="value">{{ model22.model22Id }}</span></div>
+        <div class="detail-item"><span class="label">Department / ዲፓርትመንት:</span><span class="value">{{ model22.department }}</span></div>
+        <div class="detail-item"><span class="label">Recipient Name / ተቀባዩ ስም:</span><span class="value">{{ model22.recipientName }}</span></div>
+        <div class="detail-item"><span class="label">Recipient Unit / ተቀባዩ ክፍል:</span><span class="value">{{ model22.recipientOrganization }}</span></div>
+        <div class="detail-item"><span class="label">Date / የመዝገብ ቀን:</span><span class="value">{{ model22.ethiopianDate }}</span></div>
+        <div class="detail-item"><span class="label">Warehouse / መጋዘን:</span><span class="value">{{ model22.role }}</span></div>
+        <div class="detail-item"><span class="label">Registered By / የመዘገበው:</span><span class="value">{{ model22.registeredByFullName || model22.registeredBy || 'Unknown' }}</span></div>
+      </div>
+    </div>
+
+    <!-- Main Items Table -->
+    <div class="detail-section">
+      <h2 class="section-title">Items / እቃዎች</h2>
+      <div class="table-container" *ngIf="model22.items.length > 0; else noItems">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Description / መግለጫ</th>
+              <th>Model / ሞዴል</th>
+              <th>Quantity / ብዛት</th>
+              <th>Unit Price / ነጠላ ዋጋ</th>
+              <th>Currency / መገበያዥ</th>
+              <th>Serial Numbers / ተከታታይ ቁጥሮች</th>
+              <th>Item Total / የእቃ ጠቅላላ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of model22.items; let i = index">
+              <td data-label="#">{{ i + 1 }}</td>
+              <td data-label="Description">{{ item.description }}</td>
+              <td data-label="Model">{{ item.model }}</td>
+              <td data-label="Quantity">{{ item.quantity }}</td>
+              <td data-label="Unit Price">{{ item.unitPrice | number:'1.2-2' }}</td>
+              <td data-label="Currency">{{ item.currency }}</td>
+              <td data-label="Serial Numbers">
+                <div class="serial-numbers">
+                  {{ item.serialNumbers.length > 0 ? item.serialNumbers.join(', ') : 'None / የለም' }}
+                </div>
+              </td>
+              <td data-label="Item Total" class="item-total-cell">
+                <strong>{{ getItemTotalWithAccessories(item) }}</strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noItems>
+        <div class="no-data">No items found for this withdrawal. / ለዚህ መውጫ ምንም እቃዎች አልተገኙም።</div>
+      </ng-template>
+    </div>
+
+    <!-- Separate Accessories Table (Only shown if any accessories exist) -->
+    <div class="detail-section" *ngIf="hasAccessories()">
+      <h2 class="section-title">Accessories / አብራጮች</h2>
+      <div class="table-container">
+        <table class="data-table accessories-main-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Main Item / ዋና እቃ</th>
+              <th>Name / ስም</th>
+              <th>Model / ሞዴል</th>
+              <th>Quantity / ብዛት</th>
+              <th>Unit Price / ነጠላ ዋጋ</th>
+              <th>Currency / መገበያያ</th>
+              <th>Total / ጠቅላላ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let acc of getAllAccessoriesWithParent(); let j = index">
+              <td data-label="#">{{ j + 1 }}</td>
+              <td data-label="Main Item"><strong>{{ acc.parentDescription }}</strong> ({{ acc.parentModel }})</td>
+              <td data-label="Name">{{ acc.accessory.name || 'N/A' }}</td>
+              <td data-label="Model">{{ acc.accessory.model || 'N/A' }}</td>
+              <td data-label="Quantity">{{ acc.accessory.quantity }}</td>
+              <td data-label="Unit Price">{{ (acc.accessory.unitPrice || 0) | number:'1.2-2' }}</td>
+              <td data-label="Currency">{{ acc.accessory.currency || acc.parentCurrency }}</td>
+              <td data-label="Total" class="accessory-total">
+                <strong>
+                  {{ ((acc.accessory.unitPrice || 0) * acc.accessory.quantity) | number:'1.2-2' }}
+                  {{ acc.accessory.currency || acc.parentCurrency }}
+                </strong>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="accessories-total-row">
+              <td colspan="7" class="total-label">
+                <strong>Accessories Grand Total / የአብራጮች ግራንድ ጠቅላላ:</strong>
+              </td>
+              <td class="total-value"><strong>{{ getAllAccessoriesTotal() }}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Grand Total Summary -->
+    <div class="totals-summary">
+      <div class="summary-row grand-total-row">
+        <span class="summary-label">Grand Total (Items + Accessories) / ግራንድ ጠቅላላ (እቃዎች + አብራጮች):</span>
+        <span class="summary-value grand-total-value">{{ getGrandTotalWithAccessories() }}</span>
+      </div>
+    </div>
+
+    <!-- Signature Section -->
+    <div class="signature-section" *ngIf="userRole !== 'supplyanddistributionteamleader'">
+      <h3>Signatures / ፊርማዎች</h3>
+      <div class="signature-grid">
+        <div class="signature-item">
+          <span class="signature-label">Approved By / ያፀደቀው:</span>
+          <div class="signature-line"></div>
+          <span class="signature-date">Date / ቀን: ____________________</span>
+        </div>
+        <div class="signature-item">
+          <span class="signature-label">Expert / ባለሙያ:</span>
+          <div class="signature-line"></div>
+          <span class="signature-date">Date / ቀን: ____________________</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button class="action-btn secondary" (click)="goBack()">Back / ተመለስ</button>
+      <button class="action-btn primary" (click)="downloadPDF()">Download PDF / ፒዲኤፍ አውርድ</button>
+    </div>
+  </div>
+</div>

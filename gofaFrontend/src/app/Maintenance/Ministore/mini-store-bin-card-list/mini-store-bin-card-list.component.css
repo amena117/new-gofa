@@ -1,0 +1,114 @@
+.container {
+    width: 95%;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #fff; /* White text for better contrast */
+    margin-bottom: 20px;
+    padding: 20px;
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    /*background: linear-gradient(45deg, #ea210b, #04e763); Red and Green gradient to mimic the flag */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+    font-size: 1.8rem; /* Larger text size for prominence */
+    letter-spacing: 2px; /* Spacing between letters for a more elegant look */
+  }
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .data-table th,
+  .data-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .data-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .data-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .data-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+
+  button.delete {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  margin-left: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button.delete:hover {
+  background-color: #c9302c;
+}
+
+  button {
+    margin: 2px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  button.update {
+    background: linear-gradient(45deg, #ea210b, Black); 
+    color: white;
+  }
+  
+  button.receive {
+    background-color: #2196f3;
+    color: white;
+  }
+  button.view-serial{
+    background: linear-gradient(45deg, #ea210b, black); 
+    color: white;
+  }
+  
+  button.delete {
+    background-color: #f44336;
+    color: white;
+  }
+  .search-bar {
+    margin-bottom: 20px;
+  }
+  
+  .search-bar input {
+    padding: 8px;
+    margin-right: 10px;
+  }
+  
+  .search-bar select {
+    padding: 8px;
+    margin-right: 10px;
+  }
+  
+  .pagination {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .pagination button {
+    padding: 8px 16px;
+    margin: 0 5px;
+  }
+  
+  .pagination span {
+    font-size: 16px;
+    margin: 0 10px;
+  }

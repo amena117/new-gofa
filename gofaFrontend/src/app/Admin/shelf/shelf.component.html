@@ -1,0 +1,88 @@
+<div class="shelf-container">
+  <h2>Register Shelf / የመጋዘን መደርደሪያ መዝግብ</h2>
+  <form (ngSubmit)="onSubmit()" #shelfForm="ngForm" class="form-container">
+    <div class="form-grid">
+      <!-- Shelf Name -->
+      <div class="form-group">
+        <label for="name">Shelf Name / መደርደሪያ ስም:</label>
+        <input
+          id="name"
+          type="text"
+          class="form-control"
+          [(ngModel)]="shelf.name"
+          name="name"
+          required
+          placeholder="Shelf Name / መደርደሪያ ስም"
+        />
+        <div *ngIf="shelfForm.submitted && !shelf.name" class="text-danger">
+          Please enter the shelf name / የመደርደሪያ ስም ያስገቡ።
+        </div>
+      </div>
+
+      <!-- Column -->
+      <div class="form-group">
+        <label for="column">Column / አምድ:</label>
+        <input
+          id="column"
+          type="text"
+          class="form-control"
+          [(ngModel)]="shelf.column"
+          name="column"
+          required
+          placeholder="Column / አምድ"
+        />
+        <div *ngIf="shelfForm.submitted && !shelf.column" class="text-danger">
+          Please enter column information / የአምድ መግለጫ ያስገቡ።
+        </div>
+      </div>
+
+      <!-- Row -->
+      <div class="form-group">
+        <label for="row">Row / ረድፍ:</label>
+        <input
+          id="row"
+          type="text"
+          class="form-control"
+          [(ngModel)]="shelf.row"
+          name="row"
+          required
+          placeholder="Row / ሰራ"
+        />
+        <div *ngIf="shelfForm.submitted && !shelf.row" class="text-danger">
+          Please enter row information / የሰራ መግለጫ ያስገቡ።
+        </div>
+      </div>
+
+      <!-- Warehouse Selection -->
+      <div class="form-group">
+        <label for="warehouseId">Warehouse Name / መጋዘን ስም:</label>
+        <select
+          id="warehouseId"
+          class="form-control"
+          [(ngModel)]="shelf.warehouseId"
+          name="warehouseId"
+          required
+        >
+          <option value="" disabled selected>--- Select Warehouse / መጋዘን ይምረጡ ---</option>
+          <option *ngFor="let warehouse of warehouses" [value]="warehouse.warehouseId">
+            {{ warehouse.name }} ({{ warehouse.location }})
+          </option>
+        </select>
+        <div *ngIf="shelfForm.submitted && !shelf.warehouseId" class="text-danger">
+          Please select a warehouse / መዋቅሩን ያስገቡ።
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isSubmitting || !shelfForm.valid"
+        >
+          {{ isSubmitting ? 'Loading... / በመጫን ላይ...' : 'Register / መዝግብ' }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

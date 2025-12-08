@@ -1,0 +1,27 @@
+<div *ngIf="isLoading" class="loading">
+    <p>Loading...</p>
+  </div>
+  
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+  </div>
+  
+  <div *ngIf="warehouse && !isLoading" class="edit-form">
+    <h2>Edit Warehouse</h2>
+    <form (ngSubmit)="onSubmit()">
+      <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" [(ngModel)]="warehouse.name" required />
+      </div>
+      <div>
+        <label for="location">Location:</label>
+        <input type="text" id="location" [(ngModel)]="warehouse.location" required />
+      </div>
+      <button type="submit" [disabled]="isLoading">Save</button>
+      <button type="button" (click)="onCancel()">Cancel</button>
+    </form>
+  </div>
+  
+  <div *ngIf="successMessage" class="success">
+    <p>{{ successMessage }}</p>
+  </div>

@@ -1,0 +1,38 @@
+<div class="container">
+  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+    Add Special Tools Register/ የትውስት ንብረቶችን መመዝገብ</h2>
+
+  <form [formGroup]="requestForm" (ngSubmit)="onSubmit()" class="form-grid">
+    <div class="form-group">
+      <label for="toolName" class="form-label">Tool Name</label>
+      <input type="text" id="toolName" formControlName="toolName" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="recievedBy" class="form-label">Received By</label>
+      <input type="text" id="recievedBy" formControlName="recievedBy" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="quantity" class="form-label">Quantity</label>
+      <input type="number" id="quantity" formControlName="quantity" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="description" class="form-label">Description</label>
+      <input type="text" id="description" formControlName="description" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="recievedDate" class="form-label">Received Date</label>
+      <input type="datetime-local" id="recievedDate" formControlName="recievedDate" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="givenBy" class="form-label">Given By</label>
+      <input type="text" id="givenBy" formControlName="givenBy" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="returnDate" class="form-label">Return Date</label>
+      <input type="datetime-local" id="returnDate" formControlName="returnDate" class="form-control" />
+    </div>
+    <div class="form-group full-width">
+      <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Save' }}</button>
+    </div>
+  </form>
+</div>

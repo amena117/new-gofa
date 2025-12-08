@@ -1,0 +1,285 @@
+request-order-list.component.css
+
+/* --- Layout and Structure --- */
+.main-wrapper {
+    display: flex;
+    min-height: 100vh; /* Ensure it takes full height */
+    background-color: #f8f9fa; /* Light background for the whole page */
+}
+
+/*  */
+
+
+
+/* --- Card Styling --- */
+.custom-card {
+    border-radius: 12px; /* Softer rounded corners for the card */
+    overflow: hidden; /* Ensures header background respects border-radius */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Modern shadow */
+    border: none; /* Remove default card border */
+    width: 100%; /* Ensure card takes full container width */
+}
+
+.custom-card-header {
+    background-color: #03203c !important; /* Specific dark blue */
+    color: white;
+    padding: 1rem 1.5rem; /* Adjusted padding */
+    border-bottom: none;
+    position: relative;
+    z-index: 1;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Space between header elements */
+}
+
+.card-title-text {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 0;
+    flex-shrink: 0; /* Prevent title from shrinking */
+}
+
+/* --- Search and Sort Inputs in Header --- */
+.custom-card-header .form-group {
+    margin-bottom: 0;
+    flex-grow: 1; /* Allow form groups to grow */
+}
+
+.custom-input,
+.custom-select {
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.2s ease-in-out;
+    width: 100%; /* Ensure inputs/selects take full available width */
+}
+
+.custom-input::placeholder,
+.custom-select option {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.custom-input:focus,
+.custom-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.25rem rgba(128, 189, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.2);
+    outline: none;
+}
+
+/* For select arrow color on dark background */
+.custom-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.65em 0.65em;
+}
+
+/* --- Table Styling --- */
+.card-body.p-0 {
+    padding: 0 !important;
+}
+
+.custom-table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.custom-table {
+    width: 100%; /* Full width of container */
+    min-width: 900px; /* Increased to ensure columns aren't cramped */
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.custom-thead {
+    background-color: #e9ecef;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.custom-table th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.custom-table td {
+    padding: 0.9rem 1.5rem;
+    vertical-align: middle;
+    border-top: 1px solid #e9ecef;
+    cursor: pointer;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f0f8ff;
+}
+
+.custom-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* --- Buttons --- */
+.create-order-btn {
+    background-color: #007bff;
+    border-color: #007bff;
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+.create-order-btn:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+.view-details-btn {
+    background-color: #03203c;
+    color: white;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    border: none;
+}
+
+.view-details-btn:hover {
+    background-color: #021a30;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Pagination --- */
+.custom-pagination-container {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem !important;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.custom-pagination .page-item .page-link {
+    border-radius: 6px;
+    margin: 0 3px;
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease-in-out;
+    min-width: 38px;
+    text-align: center;
+}
+
+.custom-pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+}
+
+.custom-pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.custom-pagination .page-item .page-link:hover:not(.disabled) {
+    background-color: #e9f5ff;
+    border-color: #b3d7ff;
+}
+
+.items-per-page-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.custom-select-sm {
+    border-radius: 6px;
+    padding: 0.375rem 1rem;
+    font-size: 0.875rem;
+    height: calc(1.5em + 0.75rem + 2px);
+    width: auto;
+    display: inline-block;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .content-container {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
+
+    app-shared-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
+        border-bottom: 1px solid #eee;
+    }
+
+    .custom-card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        padding: 1rem;
+    }
+
+    .card-title-text {
+        font-size: 1.4rem;
+    }
+
+    .custom-card-header .d-flex {
+        flex-direction: column;
+        gap: 0.8rem;
+        width: 100%;
+    }
+
+    .custom-input,
+    .custom-select {
+        width: 100%;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        padding: 0.75rem 0.8rem;
+        font-size: 0.875rem;
+    }
+
+    .custom-pagination-container {
+        flex-direction: column;
+        padding: 1rem !important;
+    }
+
+    .custom-pagination {
+        margin-bottom: 1rem;
+    }
+
+    .items-per-page-group {
+        width: 100%;
+        text-align: center;
+    }
+
+    .items-per-page-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .custom-select-sm {
+        width: 100px;
+        margin: 0 auto;
+    }
+}

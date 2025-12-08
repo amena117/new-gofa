@@ -1,0 +1,160 @@
+<div class="content-container">
+  <button type="button" class="btn btn-secondary" (click)="router.navigate(['/MasterCard/mastercard-list'])">
+    Cancel
+  </button>
+  <div class="container mt-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white">
+        <h4 class="card-title text-center mb-3">Edit Master Card Item</h4>
+      </div>
+
+      <div class="card-body p-4">
+        <form [formGroup]="editForm" (ngSubmit)="onSubmit(itemId)">
+          <div class="row g-3">
+            <!-- Left Column -->
+            <div class="col-md-6">
+
+              <div class="form-group">
+                <b><label>Model</label></b>
+                <input formControlName="model" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>Part Number</label></b>
+                <input formControlName="partNumber" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>Description</label></b>
+                <input formControlName="description" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>Unit of Measure (U/M)</label></b>
+                <input formControlName="um" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>In.CH.Ab</label></b>
+                <input formControlName="inCHAb" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>Unit Pack</label></b>
+                <input formControlName="unitPack" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>Lead Time</label></b>
+                <input formControlName="leadTime" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>Consigning</label></b>
+                <input formControlName="consigning" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>Location</label>
+                <input formControlName="location" class="form-control" />
+              </div>
+
+              <div class="form-group">
+                <label>Quantity Ordered</label>
+                <input formControlName="qytOrder" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>Quantity</label>
+                <input formControlName="qyt" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>Voucher No</label>
+                <input formControlName="voucherNo" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>Received</label>
+                <input formControlName="received" class="form-control" />
+              </div>
+
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <b><label>Average Usage</label></b>
+                <input formControlName="avgUsage" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>S.S.L</label></b>
+                <input formControlName="ssl" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>Max Level</label></b>
+                <input formControlName="maxLevel" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>Record Point</label></b>
+                <input formControlName="recordPoint" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>VED</label></b>
+                <input formControlName="ved" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>ABC</label></b>
+                <input formControlName="abc" class="form-control" />
+              </div>
+              <div class="form-group">
+                <b><label>Status</label></b>
+                <select formControlName="status" class="form-select">
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Date</label>
+                <input formControlName="date" class="form-control" type="date" />
+              </div>
+              <div class="form-group">
+                <b><label>Order Time</label></b>
+                <input formControlName="orderTime" type="datetime-local" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>Order Number</label>
+                <input formControlName="orderNo" class="form-control" />
+              </div>
+
+              <div class="form-group">
+                <label>Issued</label>
+                <input formControlName="issued" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>In Stock</label>
+                <input formControlName="inStock" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>Unit Price</label>
+                <input formControlName="unitPrice" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>ORG</label>
+                <input formControlName="org" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>Posted By</label>
+                <input formControlName="postedBy" class="form-control" />
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+          <div class="text-center mt-3">
+            <button type="submit" class="btn btn-primary me-2" [disabled]="editForm.invalid">
+              Update
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="router.navigate(['/MasterCard/mastercard-list'])">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

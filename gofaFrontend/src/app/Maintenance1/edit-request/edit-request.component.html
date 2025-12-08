@@ -1,0 +1,117 @@
+<div class="container">
+  <h2 class="text-center">Edit Maintenance Request</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center">
+    <p>Loading...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger text-center">
+    {{ error }}
+  </div>
+
+  <!-- Edit Form -->
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading && maintenanceRequest">
+    <!-- Works Order Number -->
+    <div class="form-group">
+      <label for="worksOrderNumber">Works Order Number</label>
+      <input type="number" id="worksOrderNumber" formControlName="worksOrderNumber" class="form-control" readonly />
+    </div>
+
+    <!-- Nomenclature -->
+    <div class="form-group">
+      <label for="nomenclature">Nomenclature</label>
+      <input type="text" id="nomenclature" formControlName="nomenclature" class="form-control" />
+      <small *ngIf="submitted && editForm.get('nomenclature')?.invalid" class="text-danger">
+        Nomenclature is required.
+      </small>
+    </div>
+
+    <!-- Quantity -->
+    <div class="form-group">
+      <label for="quantity">Quantity</label>
+      <input type="number" id="quantity" formControlName="quantity" class="form-control" min="1" />
+      <small *ngIf="submitted && editForm.get('quantity')?.invalid" class="text-danger">
+        Quantity is required and must be at least 1.
+      </small>
+    </div>
+
+    <!-- Requested By -->
+    <div class="form-group">
+      <label for="requestedBy">Requested By</label>
+      <input type="text" id="requestedBy" formControlName="requestedBy" class="form-control" />
+      <small *ngIf="submitted && editForm.get('requestedBy')?.invalid" class="text-danger">
+        Requested By is required.
+      </small>
+    </div>
+
+    <!-- Serial No of Equipment -->
+    <div class="form-group">
+      <label for="serialNoOfEquip">Serial No of Equipment</label>
+      <input type="text" id="serialNoOfEquip" formControlName="serialNoOfEquip" class="form-control" />
+      <small *ngIf="submitted && editForm.get('serialNoOfEquip')?.invalid" class="text-danger">
+        Serial No of Equipment is required.
+      </small>
+    </div>
+
+    <!-- Brief Description of Work -->
+    <div class="form-group">
+      <label for="briefDescriptionOfWork">Brief Description of Work</label>
+      <textarea id="briefDescriptionOfWork" formControlName="briefDescriptionOfWork" class="form-control"></textarea>
+      <small *ngIf="submitted && editForm.get('briefDescriptionOfWork')?.invalid" class="text-danger">
+        Brief Description of Work is required.
+      </small>
+    </div>
+
+    <!-- Date Work Order Received -->
+    <div class="form-group">
+      <label for="dateWorkOrderReceived">Date Work Order Received</label>
+      <input type="date" id="dateWorkOrderReceived" formControlName="dateWorkOrderReceived" class="form-control" />
+      <small *ngIf="submitted && editForm.get('dateWorkOrderReceived')?.invalid" class="text-danger">
+        Date Work Order Received is required.
+      </small>
+    </div>
+
+    <!-- Repair Start Date -->
+    <div class="form-group">
+      <label for="repairStartDate">Repair Start Date</label>
+      <input type="date" id="repairStartDate" formControlName="repairStartDate" class="form-control" />
+    </div>
+
+    <!-- Repair Finish Date -->
+    <div class="form-group">
+      <label for="repairFinishDate">Repair Finish Date</label>
+      <input type="date" id="repairFinishDate" formControlName="repairFinishDate" class="form-control" />
+    </div>
+
+    <!-- Man Hours -->
+    <div class="form-group">
+      <label for="manHours">Man Hours</label>
+      <input type="number" id="manHours" formControlName="manHours" class="form-control" min="0" step="0.01" />
+      <small *ngIf="submitted && editForm.get('manHours')?.invalid" class="text-danger">
+        Man Hours must be a non-negative number.
+      </small>
+    </div>
+
+    <!-- Parts Cost -->
+    <div class="form-group">
+      <label for="partsCost">Parts Cost</label>
+      <input type="number" id="partsCost" formControlName="partsCost" class="form-control" min="0" step="0.01" />
+      <small *ngIf="submitted && editForm.get('partsCost')?.invalid" class="text-danger">
+        Parts Cost must be a non-negative number.
+      </small>
+    </div>
+
+    <!-- Remark -->
+    <div class="form-group">
+      <label for="remark">Remark</label>
+      <textarea id="remark" formControlName="remark" class="form-control"></textarea>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="text-center">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+  </form>
+</div>

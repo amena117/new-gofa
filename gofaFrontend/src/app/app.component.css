@@ -1,0 +1,35 @@
+/* Default main content with sidebar offset */
+.main-content {
+  margin-left: 280px;
+  padding: 2rem;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+/* Full width mode - removes sidebar space and centers content */
+.main-content.full-width {
+  margin-left: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  padding: 2rem;
+}
+
+/* Content container inside main-content */
+.content-container {
+  width: 100%;
+  max-width: 2600px;
+  padding: 2rem;
+}
+
+/* Ensure no sidebar spacing when sidebar is not open */
+body:not(.sidebar-open) .main-content {
+  margin-left: 0 !important;
+}
+
+/* Hide sidebar-toggle if rendered unexpectedly */
+.sidebar-toggle {
+  display: none;
+}

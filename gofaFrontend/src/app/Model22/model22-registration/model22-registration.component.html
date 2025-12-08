@@ -1,0 +1,550 @@
+<div class="item-detail">
+  <h3 class="section-title text-center" style="border-bottom: 2px solid #e9ecef; padding-bottom: 12px; margin-bottom: 24px; font-size: 20px; font-weight: 600;">
+    የኢ.ፌ.ዲ.ሪ መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን መምሪያ 
+    <br />
+    የእቃው ወይም የንብረቱ ወጪ ደረሰኝ
+  </h3>
+
+  <div class="withdrawal-registration">
+    <!-- Header -->
+    <div class="header">
+      <h1 class="title">Withdrawal Registration / የእቃ መውጫ መመዝገቢያ</h1>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="message success-message" role="alert">
+      {{ successMessage }}
+    </div>
+
+    <!-- Error Message with Details -->
+    <div *ngIf="errorMessage" class="message error-message" role="alert">
+      {{ errorMessage }}
+      <ul *ngIf="errorDetails && errorDetails.length" class="error-list" style="margin-top: 8px; padding-left: 20px; font-size: 13px;">
+        <li *ngFor="let error of errorDetails">{{ error }}</li>
+      </ul>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="submitted" class="loading-state" style="text-align: center; padding: 40px; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+      <div class="loading-spinner" style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #03203c; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      <span style="font-size: 16px; font-weight: 500; color: #2d3748;">Submitting withdrawal... / መውጫ በማስገባት ላይ...</span>
+    </div>
+
+    <!-- Main Form -->
+    <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" *ngIf="!submitted" class="form-container">
+
+      <!-- Withdrawal Information -->
+      <h2 class="section-title">Withdrawal Information / የመውጫ መረጃ</h2>
+      
+      <!-- Accessory Toggle -->
+      <div class="table-row">
+        <div class="table-label">Include Accessories / አብራጮችን አስገባ</div>
+        <div class="table-input">
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="useAccessories" name="useAccessories">
+            <span class="slider round"></span>
+          </label>
+          <span style="margin-left: 10px; font-size: 14px; color: #666;">
+            {{ useAccessories ? 'With accessories enabled' : 'Without accessories' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <div class="table-row">
+          <div class="table-label">Voucher Number / ቫውቸር ቁጥር <span class="required">*</span></div>
+          <div class="table-input">
+            <input
+              matInput
+              [formControl]="voucherNumberControl"
+              [(ngModel)]="model22.voucherNumber"
+              name="voucherNumber"
+              placeholder="Enter voucher number (optional) / ቫውቸር ቁጥር ያስገቡ (አማራጭ)" />
+          </div>
+
+          <div class="table-label">Registered By / የመዘገበው <span class="required">*</span></div>
+          <div class="table-input">
+            <input
+              matInput
+              [ngModel]="model22.registeredBy"
+              name="registeredBy"
+              readonly
+              required
+              #registeredBy="ngModel"
+              style="background: #e9ecef; cursor: not-allowed;" />
+            <div *ngIf="registeredBy.invalid && (registeredBy.touched || registerForm.submitted)" class="error">
+              Registered By is required / የመዘገበው ያስፈልጋል
+            </div>
+          </div>
+        </div>
+
+        <div class="table-row">
+          <div class="table-label">Department / ዲፓርትመንት <span class="required">*</span></div>
+          <div class="table-input">
+            <input
+              matInput
+              [(ngModel)]="model22.department"
+              name="department"
+              required
+              #department="ngModel"
+              placeholder="Enter department / ዲፓርትመንት ያስገቡ" />
+            <div *ngIf="department.invalid && (department.touched || registerForm.submitted)" class="error">
+              Department is required / ዲፓርትመንት ያስፈልጋል
+            </div>
+          </div>
+        </div>
+
+        <div class="table-row">
+          <div class="table-label">Recipient Name / ተቀባዩ ስም <span class="required">*</span></div>
+          <div class="table-input">
+            <input
+              matInput
+              [(ngModel)]="model22.recipientName"
+              name="recipientName"
+              required
+              #recipientName="ngModel"
+              placeholder="Enter recipient name / ተቀባይ ስም ያስገቡ" />
+            <div *ngIf="recipientName.invalid && (recipientName.touched || registerForm.submitted)" class="error">
+              Recipient Name is required / ተቀባዩ ስም ያስፈልጋል
+            </div>
+          </div>
+        </div>
+
+        <div class="table-row">
+          <div class="table-label">Recipient Unit / ተቀባዩ ክፍል <span class="required">*</span></div>
+          <div class="table-input">
+            <input
+              matInput
+              [(ngModel)]="model22.recipientOrganization"
+              name="recipientOrganization"
+              required
+              #recipientOrganization="ngModel"
+              placeholder="Enter organization / ድርጅት ያስገቡ" />
+            <div *ngIf="recipientOrganization.invalid && (recipientOrganization.touched || registerForm.submitted)" class="error">
+              Organization is required / ክፍል ያስፈልጋል
+            </div>
+          </div>
+        </div>
+
+        <div class="table-row">
+          <div class="table-label">Withdrawal Date / የመጣበት ቀን <span class="required">*</span></div>
+          <div class="table-input">
+            <input
+              matInput
+              [(ngModel)]="model22.ethiopianDate"
+              name="ethiopianDate"
+              required
+              #ethiopianDate="ngModel"
+              placeholder="e.g., ነሐሴ 21, 2017" />
+            <div *ngIf="ethiopianDate.invalid && (ethiopianDate.touched || registerForm.submitted)" class="error">
+              Date is required / ቀን ያስፈልጋል
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items to Withdraw -->
+      <h2 class="section-title">Items to Withdraw / የሚወጡ እቃዎች</h2>
+      <div class="items-list">
+        <div *ngFor="let item of model22.items; let i = index" class="form-container" style="margin-bottom: 24px; padding: 20px; position: relative;">
+
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #03203c;">Item {{ i + 1 }}</h3>
+
+          <!-- Search Item -->
+          <div class="table-row">
+            <div class="table-label">Search Item / እቃ ፈልግ <span class="required">*</span></div>
+            <div class="table-input">
+              <input
+                matInput
+                [formControl]="searchControls[i]"
+                [matAutocomplete]="itemAuto"
+                placeholder="Search by description, model or serial number"
+                [id]="'search' + i"
+                name="search{{i}}"
+                style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb;" />
+              <mat-autocomplete #itemAuto="matAutocomplete" (optionSelected)="selectItem($event, i)" [displayWith]="displayItem">
+                <mat-option *ngFor="let item of filteredItems[i] | async" [value]="item">
+                  {{ item.description }} ({{ item.model }}) - Role: {{ item.role }} - Qty: {{ item.quantity }}
+                </mat-option>
+              </mat-autocomplete>
+              <div *ngIf="selectedItem[i]" style="font-size: 13px; color: #4a5568; margin-top: 6px;">
+                Selected: {{ selectedItem[i]?.description }} (Available: {{ selectedItem[i]?.quantity }})
+              </div>
+              <div *ngIf="!selectedItem[i] && (searchControls[i].touched || registerForm.submitted)" class="error">
+                Please select an item / እባክዎ እቃ ይምረጡ
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="table-row">
+            <div class="table-label">Description / መግለጫ <span class="required">*</span></div>
+            <div class="table-input">
+              <input
+                matInput
+                [(ngModel)]="item.description"
+                name="description{{i}}"
+                required
+                #description="ngModel"
+                placeholder="Item description / መግለጫ ያስገቡ" />
+              <div *ngIf="description.invalid && (description.touched || registerForm.submitted)" class="error">
+                Description is required / መግለጫ ያስፈልጋል
+              </div>
+            </div>
+          </div>
+
+          <!-- Model -->
+          <div class="table-row">
+            <div class="table-label">Model / ሞዴል <span class="required">*</span></div>
+            <div class="table-input">
+              <input
+                matInput
+                [(ngModel)]="item.model"
+                name="model{{i}}"
+                required
+                #model="ngModel"
+                placeholder="Item model / ሞዴል ያስገቡ" />
+              <div *ngIf="model.invalid && (model.touched || registerForm.submitted)" class="error">
+                Model is required / ሞዴል ያስፈልጋል
+              </div>
+            </div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="table-row">
+            <div class="table-label">Quantity / ብዛት <span class="required">*</span></div>
+            <div class="table-input">
+              <input
+                matInput
+                type="number"
+                [formControl]="quantityControls[i]"
+                name="quantity{{i}}"
+                required
+                min="1"
+                [max]="selectedItem[i]?.quantity || 9999"
+                (ngModelChange)="onQuantityChange(i)"
+                style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb;" />
+              <div *ngIf="quantityControls[i].hasError('required') && (quantityControls[i].touched || registerForm.submitted)" class="error">
+                Quantity is required / ብዛት ያስፈልጋል
+              </div>
+              <div *ngIf="(quantityControls[i].hasError('min') || quantityControls[i].hasError('invalidQuantity'))" class="error">
+                Quantity must be greater than 0 / ብዛት ከ0 በላይ መሆን አለበት
+              </div>
+              <div *ngIf="quantityControls[i].hasError('exceedsStock')" class="error">
+                Quantity exceeds available stock ({{ selectedItem[i]?.quantity || 0 }}) / ብዛት ከነባር ክምችት አልፏል
+              </div>
+              <div *ngIf="quantityControls[i].hasError('noItemSelected')" class="error">
+                Please select an item first / እባክዎ መጀመሪያ እቃ ይምረጡ
+              </div>
+            </div>
+          </div>
+
+          <!-- Unit Price -->
+          <div class="table-row">
+            <div class="table-label">Unit Price / ነጠላ ዋጋ <span class="required">*</span></div>
+            <div class="table-input">
+              <input
+                matInput
+                type="number"
+                [(ngModel)]="item.unitPrice"
+                name="unitPrice{{i}}"
+                required
+                min="0" 
+                step="0.01" />
+              <div *ngIf="item.unitPrice < 0 && (registerForm.submitted || registerForm.touched)" class="error">
+                Unit Price cannot be negative / ነጠላ ዋጋ አሉታዊ መሆን አይችልም
+              </div>
+            </div>
+          </div>
+
+          <!-- Currency -->
+          <div class="table-row">
+            <div class="table-label">Currency / መገበያያ <span class="required">*</span></div>
+            <div class="table-input">
+              <select
+                [formControl]="currencyControls[i]"
+                style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb; font-size: 15px;">
+                <option *ngFor="let currency of availableCurrencies" [value]="currency">
+                  {{ currency }}
+                </option>
+              </select>
+              <div *ngIf="currencyControls[i].invalid && (currencyControls[i].touched || registerForm.submitted)" class="error">
+                Currency must be one of: {{ availableCurrencies.join(', ') }} / መገበዬዥ ከእነዚህ መሆን አለበት፡ {{ availableCurrencies.join(', ') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Accessories Section -->
+          <div *ngIf="useAccessories && selectedItem[i]?.accessories?.length" class="accessories-section">
+            <h4 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px 0; color: #03203c;">
+              Accessories / አብራጮች
+              <span style="font-size: 13px; font-weight: normal; color: #6b7280;">
+                (Select accessories to withdraw / ለመውጫ አብራጮችን ይምረጡ)
+              </span>
+            </h4>
+            
+            <div class="accessories-list">
+              <div *ngFor="let accessory of selectedItem[i]?.accessories" class="accessory-item" style="margin-bottom: 12px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 2;">
+                    <strong>{{ accessory.name }}</strong> - {{ accessory.model }}
+                    <br>
+                    <small style="color: #6b7280;">
+                      Available: {{ accessory.quantity }} | 
+                      Price: {{ accessory.unitPrice || 0 }} {{ accessory.currency || 'ETB' }}
+                    </small>
+                  </div>
+                  <div style="flex: 1; text-align: right;">
+                    <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #6b7280;">Quantity / ብዛት:</label>
+                    <input
+                      type="number"
+                      [formControl]="accessoryControls[i][accessory.id!]"
+                      min="0"
+                      [max]="accessory.quantity"
+                      (change)="onAccessoryQuantityChange(i, accessory.id!, $any($event.target).value)"
+                      style="width: 80px; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; text-align: center;"
+                      placeholder="0">
+                    <div *ngIf="accessoryControls[i][accessory.id!]?.hasError('max')" class="error" style="font-size: 11px;">
+                      Exceeds available stock / ከነባር ክምችት አልፏል
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="getSelectedAccessoriesCount(i) > 0" style="margin-top: 8px; font-size: 13px; color: #059669;">
+              {{ getSelectedAccessoriesCount(i) }} accessory(ies) selected / {{ getSelectedAccessoriesCount(i) }} አብራጭ(ዎች) ተመርጠዋል
+            </div>
+          </div>
+
+          <!-- Serial Numbers Section -->
+          <div *ngIf="selectedItem[i]?.serialNumbers?.length" class="serial-numbers-section">
+            <h4 style="font-size: 16px; font-weight: 600; margin: 0 0 12px 0; color: #03203c;">
+              Serial Numbers / ተከታታይ ቁጥሮች
+              <span style="font-size: 13px; font-weight: normal; color: #6b7280;">
+                (Required: {{ model22.role === 'SPAREPART' ? 'At least 1' : quantityControls[i].value }} serial number(s))
+              </span>
+            </h4>
+            
+            <div class="serial-inputs">
+              <div *ngFor="let serial of model22.items[i].serialNumbers; let j = index" class="serial-row" style="position: relative;">
+                <div style="flex: 1;">
+                  <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #6b7280;">
+                    Serial Number {{ j + 1 }} / ተከታታይ ቁጥር {{ j + 1 }} <span class="required">*</span>
+                  </label>
+                  <input
+                    matInput
+                    [formControl]="serialControls[i][j]"
+                    [(ngModel)]="model22.items[i].serialNumbers[j]"
+                    name="serial{{i}}{{j}}"
+                    placeholder="Enter serial number / ተከታታይ ቁጥር ያስገቡ"
+                    (input)="onSerialInput($event, i, j)"
+                    (focus)="showSerialSuggestions(i, j)"
+                    (blur)="hideSerialSuggestions(i, j)"
+                    style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb;" />
+                  
+                  <!-- Custom dropdown for serial suggestions -->
+                  <div *ngIf="showSuggestions[i]?.[j] && getFilteredSerials(i, j).length > 0" 
+                       class="custom-autocomplete" 
+                       style="border: 1px solid #d1d5db; border-radius: 4px; background: white; max-height: 200px; overflow-y: auto; position: absolute; z-index: 1000; width: 100%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+                    <div *ngFor="let serialOption of getFilteredSerials(i, j)" 
+                         class="suggestion-item"
+                         (mousedown)="selectSerialManual(serialOption, i, j)"
+                         style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f3f4f6;"
+                         [class.hover]="hoveredSuggestion === serialOption"
+                         (mouseenter)="hoveredSuggestion = serialOption"
+                         (mouseleave)="hoveredSuggestion = null">
+                      {{ serialOption }}
+                    </div>
+                  </div>
+                  
+                  <div *ngIf="serialNumberErrors[i][j]" class="error" style="font-size: 11px;">
+                    {{ serialNumberErrors[i][j] }}
+                  </div>
+                </div>
+                
+                <!-- Remove Serial Button -->
+                <button
+                  *ngIf="model22.items[i].serialNumbers.length > 1"
+                  type="button"
+                  class="action-btn danger small"
+                  (click)="removeSerialNumber(i, j)"
+                  style="margin-top: 24px;"
+                  attr.aria-label="Remove serial number {{ j + 1 }}">
+                  Remove
+                </button>
+              </div>
+            </div>
+
+            <!-- Add Serial Button -->
+            <div *ngIf="canAddMoreSerials(i)" class="form-actions" style="margin-top: 12px; justify-content: flex-start;">
+              <button
+                type="button"
+                class="action-btn secondary small"
+                (click)="addSerialNumber(i)"
+                attr.aria-label="Add serial number">
+                Add Serial Number / ተከታታይ ቁጥር ጨምር
+              </button>
+            </div>
+
+            <!-- Available Serials Info -->
+            <div style="margin-top: 8px; font-size: 13px; color: #6b7280;">
+              Available serial numbers: {{ getAvailableSerialNumbers(i) }}
+            </div>
+          </div>
+
+          <!-- Remove Item Button -->
+          <div *ngIf="model22.items.length > 1" class="form-actions item-actions" style="margin-top: 16px; justify-content: flex-end;">
+            <button
+              type="button"
+              class="action-btn secondary small"
+              (click)="removeItem(i)"
+              attr.aria-label="Remove item {{ i + 1 }}">
+              Remove / አስወግድ
+            </button>
+          </div>
+        </div>
+
+        <!-- Add New Item Button -->
+        <div class="form-actions" style="margin-top: 16px;">
+          <button
+            type="button"
+            class="action-btn secondary"
+            (click)="addItem()"
+            attr.aria-label="Add new item">
+            Add Item / እቃ ጨምር
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="action-btn primary"
+          [disabled]="registerForm.invalid || submitted">
+          <span *ngIf="submitted">Submitting... / በማስገባት ላይ...</span>
+          <span *ngIf="!submitted">Submit Withdrawal / መውጫ አስገባ</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .text-center { text-align: center; }
+  
+  .accessories-section {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+    background: #fafbfc;
+  }
+  
+  .serial-numbers-section {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+    background: #fafbfc;
+  }
+  
+  .serial-row, .accessory-item {
+    margin-bottom: 12px;
+  }
+  
+  .serial-inputs, .accessories-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .action-btn.danger {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .action-btn.danger:hover {
+    background-color: #b91c1c;
+  }
+
+  .action-btn.danger:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  .action-btn.small {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  /* Toggle switch styles */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+  }
+
+  input:checked + .slider {
+    background-color: #03203c;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+
+  .slider.round {
+    border-radius: 24px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  /* Custom autocomplete styles */
+  .suggestion-item:hover {
+    background-color: #f3f4f6;
+  }
+
+  .suggestion-item.hover {
+    background-color: #e5e7eb;
+  }
+</style>

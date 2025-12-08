@@ -1,0 +1,49 @@
+<div *ngIf="isLoading" class="loading">Loading report...</div>
+<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+<div class="report-table" *ngIf="!isLoading && reportData.length">
+  <table>
+    <thead>
+      <tr>
+        <th>Stock Number</th>
+        <th>Information by Part Numbers</th>
+         <th>Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of paginatedData">
+        <td>{{ item.stockNumber }}</td>
+        <td>
+          <table class="inner-table">
+            <thead>
+              <tr>
+                <th>Part Number</th>
+                <th>Status</th>
+                <th>In Date</th>
+                <th>Out Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let sn of item.serialNumbers.slice().reverse()">
+                <td>{{ sn.serialNumber }}</td>
+                <td>{{ sn.status }}</td>
+                <td>{{ sn.inDate | date:'short' }}</td>
+                <td>{{ sn.outDate | date:'short' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+         <td>{{ item.balance }}</td>
+      </tr>
+     
+    </tbody>
+    
+  </table>
+
+  <!-- Pagination Controls -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="currentPage = currentPage + 1" [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>

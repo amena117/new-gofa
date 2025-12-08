@@ -1,0 +1,69 @@
+<div class="container">
+  <h2>{{ isEditMode ? 'Edit Special Tools Register' : 'Add Special Tools Register/ የትውስት ንብረቶችን መመዝገብ' }}</h2>
+
+  <form [formGroup]="requestForm" (ngSubmit)="onSubmit()" class="form-grid">
+    <div class="form-group">
+      <label for="toolName" class="form-label">Tool Name</label>
+      <input type="text" id="toolName" formControlName="toolName" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="recievedBy" class="form-label">Received By</label>
+      <input type="text" id="recievedBy" formControlName="recievedBy" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="quantity" class="form-label">Quantity</label>
+      <input type="number" id="quantity" formControlName="quantity" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="description" class="form-label">Description</label>
+      <input type="text" id="description" formControlName="description" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="recievedDate" class="form-label">Received Date</label>
+      <input type="datetime-local" id="recievedDate" formControlName="recievedDate" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="givenBy" class="form-label">Given By</label>
+      <input type="text" id="givenBy" formControlName="givenBy" class="form-control" required />
+    </div>
+    <div class="form-group">
+      <label for="returnDate" class="form-label">Return Date</label>
+      <input type="datetime-local" id="returnDate" formControlName="returnDate" class="form-control" />
+    </div>
+    <div class="form-group full-width">
+      <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Save' }}</button>
+    </div>
+  </form>
+
+
+  <!-- <h3>Special Tools Register List</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Tool Name</th>
+        <th>Received By</th>
+        <th>Quantity</th>
+        <th>Description</th>
+        <th>Received Date</th>
+        <th>Given By</th>
+        <th>Return Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let record of specialToolsRegisters">
+        <td>{{ record.toolName }}</td>
+        <td>{{ record.recievedBy }}</td>
+        <td>{{ record.quantity }}</td>
+        <td>{{ record.description }}</td>
+        <td>{{ record.recievedDate | date:'medium' }}</td>
+        <td>{{ record.givenBy }}</td>
+        <td>{{ record.returnDate | date:'medium' }}</td>
+        <td>
+          <button (click)="editRecord(record.id)" class="action-button edit-button">Edit</button>
+          <button (click)="deleteRecord(record.id)" class="action-button delete-button">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table> -->
+</div>

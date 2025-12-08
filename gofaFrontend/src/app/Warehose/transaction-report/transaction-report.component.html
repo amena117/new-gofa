@@ -1,0 +1,229 @@
+<div class="transaction-report">
+  <h3 class="mb-4 text-center border-bottom pb-2">
+    የኢ.ፌ.ዲ.ሪ መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን መምሪያ
+    <br />
+    የእቃ መቀበያ ሪፖርት
+  </h3>
+
+  <div class="header">
+    <h1 class="title">Receive Report / የእቃ መቀበያ ሪፖርት</h1>
+  </div>
+
+  <!-- Info Banner for Team Leader -->
+  <div *ngIf="isSupplyAndDistributionLeader" class="info-banner">
+    <span> የሁሉም ሚናዎች የመቀበያ መዝገቦችን ትመልከታለህ / Viewing all roles: VHF, HF, Sparepart, Electronics</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading transactions... / ግብይቶችን በመጫን ላይ...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage && !isLoading" class="error-message">
+    <strong>Error:</strong> {{ errorMessage }}
+  </div>
+
+  <!-- Content -->
+  <ng-container *ngIf="!isLoading">
+    <!-- Filters -->
+    <div class="filter-container">
+      <div class="search-date-wrapper">
+        <div class="search-wrapper">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            [ngModel]="searchQuery"
+            (ngModelChange)="onSearchChange($event)"
+            placeholder="Search by description, department, or recipient... / በመግለጫ፣ ዲፓርትመንት ወይም አቅራቢ ፈልግ..."
+            class="search-input"
+            aria-label="Search transactions"
+          />
+          <span *ngIf="isSearching" class="searching-hint" style="margin-left: 8px; color: #007bff; font-size: 0.9em;">
+            Searching...
+          </span>
+        </div>
+        <div class="date-filter-wrapper">
+          <label for="dateFilter">Date Filter / በቀን ማጣሪያ:</label>
+          <select [(ngModel)]="selectedPeriod" (change)="applyFilters()" id="dateFilter" aria-label="Filter by date range">
+            <option value="">All Dates / ሁሉም ቀናት</option>
+            <option value="1week">Last 1 Week / ያለፈው 1 ሳምንት</option>
+            <option value="1month">Last 1 Month / ያለፈው 1 ወር</option>
+            <option value="3months">Last 3 Months / ያለፉት 3 ወሮች</option>
+            <option value="6months">Last 6 Months / ያለፉት 6 ወሮች</option>
+            <option value="12months">Last 12 Months / ያለፉት 12 ወሮች</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Export Dropdown -->
+      <div class="export-dropdown">
+        <button class="action-btn primary" (click)="toggleExportDropdown()" aria-label="Export options">
+          Export / ላክ
+          <span class="arrow">{{ isExportDropdownOpen ? '▲' : '▼' }}</span>
+        </button>
+        <div *ngIf="isExportDropdownOpen" class="export-dropdown-menu">
+          <button class="export-option" (click)="exportToExcel()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M5.5 7a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-5z"/>
+              <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h11A1.5 1.5 0 0 1 15 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5v-11zM2.5 2a.5.5 0 0 0-.5.5V13a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V2.5a.5.5 0 0 0-.5-.5h-11z"/>
+            </svg>
+            Excel (.xlsx) / ኤክሴል
+          </button>
+          <button class="export-option" (click)="exportToCsv()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            CSV (.csv) / ሲኤስቪ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role Dropdown Selector (Only for Team Leader) -->
+    <div *ngIf="isSupplyAndDistributionLeader" class="role-filter-container">
+      <button class="action-btn secondary small" (click)="toggleRoleDropdown()">
+        {{ selectedRoles.length === 0 ? 'Select Roles' : selectedRoles.join(', ') }}
+        <span class="arrow">{{ isRoleDropdownOpen ? '▲' : '▼' }}</span>
+      </button>
+      <div *ngIf="isRoleDropdownOpen" class="role-dropdown-menu">
+        <div class="role-item" *ngFor="let role of availableRoles">
+          <input
+            type="checkbox"
+            [id]="'role-' + role"
+            [checked]="selectedRoles.includes(role)"
+            (change)="onRoleChange($event, role)"
+          />
+          <label [for]="'role-' + role">{{ role }}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Dropdown Selector -->
+    <div class="category-filter-container">
+      <button class="action-btn secondary small" (click)="toggleCategoryDropdown()">
+        {{ selectedCategories.length === 0 ? 'Select Categories' : selectedCategories.join(', ') }}
+        <span class="arrow">{{ isCategoryDropdownOpen ? '▲' : '▼' }}</span>
+      </button>
+      <div *ngIf="isCategoryDropdownOpen" class="category-dropdown-menu">
+        <div class="category-item" *ngFor="let category of availableCategories">
+          <input
+            type="checkbox"
+            [id]="'category-' + category"
+            [checked]="selectedCategories.includes(category)"
+            (change)="onCategoryChange($event, category)"
+          />
+          <label [for]="'category-' + category">{{ category }}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container" *ngIf="filteredTransactions.length > 0; else noResults">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Description / መግለጫ</th>
+            <th>Model / ሞዴል</th>
+            <th (click)="sortTable('ethiopianDate')" class="sortable">
+              Date / ቀን 
+              <span *ngIf="sortColumn === 'ethiopianDate'">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </th>
+            <th>Recipient / አቅራቢ</th>
+            <th (click)="sortTable('totalQuantity')" class="sortable">
+              Qty / ብዛት
+              <span *ngIf="sortColumn === 'totalQuantity'">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </th>
+            <th (click)="sortTable('unitPrice')" class="sortable">
+              Unit Price / የነጠላ ዋጋ
+              <span *ngIf="sortColumn === 'unitPrice'">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </th>
+            <th (click)="sortTable('totalPrice')" class="sortable">
+              Total Price / ጠቅላላ ዋጋ
+              <span *ngIf="sortColumn === 'totalPrice'">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="pagedTransactions.length === 0">
+            <td colspan="8" class="no-data">
+              No records found on this page. / በዚህ ገጽ ላይ ምንም መዝገቦች አልተገኙም።
+            </td>
+          </tr>
+          <tr *ngFor="let t of pagedTransactions; let i = index">
+            <td data-label="No">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+            <td data-label="Description">{{ t.description }}</td>
+            <td data-label="Model">{{ t.model }}</td>
+            <td data-label="Date">{{ formatEthiopianDate(t.ethiopianDate) }}</td>
+            <td data-label="Recipient">{{ t.recipientName }}</td>
+            <td data-label="Qty">{{ t.totalQuantity }}</td>
+            <td data-label="Unit Price">{{ t.unitPrice | number:'1.2-2' }} {{ t.currency }}</td>
+            <td data-label="Total Price">{{ t.totalPrice | number:'1.2-2' }} {{ t.currency }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Grand Total Display -->
+    <div class="grand-total" *ngIf="filteredTransactions.length > 0">
+      <strong>Grand Total / ግራንድ ጠቅላላ: {{ calculateGrandTotal() }}</strong>
+    </div>
+
+    <!-- Pagination -->
+    <!-- Updated Pagination Controls -->
+<div class="pagination-controls" *ngIf="getTotalPages() > 1">
+  <div class="page-info">
+    Page {{ currentPage }} of {{ getTotalPages() }} / ገጽ {{ currentPage }} ለ {{ getTotalPages() }}
+  </div>
+  <div class="page-size">
+    Items per page / በገጽ:
+    <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="20">20</option>
+      <option [value]="50">50</option>
+    </select>
+  </div>
+  <div class="nav-buttons">
+    <button
+      class="action-btn secondary small"
+      [disabled]="currentPage === 1"
+      (click)="previousPage()">
+      Prev / ቀዳሚ
+    </button>
+    <button
+      class="action-btn primary small"
+      [disabled]="currentPage >= getTotalPages()"
+      (click)="nextPage()">
+      Next / ቀጣይ
+    </button>
+  </div>
+</div>
+
+    <!-- No Results -->
+    <ng-template #noResults>
+      <div class="empty-state">
+        <div *ngIf="!searchQuery && !selectedPeriod && !selectedRoles.length && !selectedCategories.length" class="no-data">
+          No transaction records available. / የግብይት መዝገቦች የሉም።
+        </div>
+        <div *ngIf="(searchQuery || selectedPeriod || selectedRoles.length || selectedCategories.length) && filteredTransactions.length === 0" class="no-data">
+          No records found matching criteria. / መስፈርቶችን የሚያሟሉ መዝገቦች አልተገኙም።
+        </div>
+      </div>
+    </ng-template>
+  </ng-container>
+</div>

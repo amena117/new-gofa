@@ -1,0 +1,140 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header" [@fadeIn]>
+    <h1>Inventory Dashboard / የክምችት ዳሽቦርድ</h1>
+    <div class="header-actions">
+      <button class="refresh-btn" (click)="refreshData()">
+        <span class="refresh-icon">↻</span> Refresh / አድስ
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state" [@fadeIn]>
+    <div class="spinner"></div>
+    <p>Loading dashboard data... / የዳሽቦርድ ውሂብ በመጫን ላይ...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state" [@fadeIn]>
+    <div class="error-icon">⚠️</div>
+    <p>{{ errorMessage }}</p>
+    <button class="retry-btn" (click)="refreshData()">Try Again / እንደገና ሞክር</button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading && !errorMessage" class="dashboard-content">
+    <!-- Summary Cards -->
+    <div class="summary-cards" [@fadeIn]>
+      <div class="summary-card">
+        <div class="card-icon">📦</div>
+        <div class="card-content">
+          <h3>{{ summaryData.totalItems }}</h3>
+          <p>Total Items / ጠቅላላ እቃዎች</p>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">🔢</div>
+        <div class="card-content">
+          <h3>{{ summaryData.totalQuantity }}</h3>
+          <p>Total Quantity / ጠቅላላ ብዛት</p>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">⚠️</div>
+        <div class="card-content">
+          <h3>{{ summaryData.lowStockItems.length }}</h3>
+          <p>Low Stock Items / ዝቅተኛ ክምችት እቃዎች</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Cards Section -->
+    <div class="data-cards" [@fadeIn]>
+
+      <!-- Items by Category with Search -->
+      <div class="data-card">
+        <h3>Items by Category / እቃዎች በመጠሪያ</h3>
+        <div class="search-container">
+          <input
+            type="text"
+            placeholder="Search categories... / የመጠሪያ ፍለጋ"
+            (input)="onCategorySearch($event)"
+            class="search-input"
+            [value]="categorySearchTerm"
+          />
+        </div>
+        <div class="card-grid">
+          <div *ngFor="let category of displayedCategories" class="category-card">
+            <div class="card-content">
+              <h4>{{ category.name }}</h4>
+              <p>Count / ብዛት: {{ category.count }}</p>
+            </div>
+          </div>
+          <div *ngIf="filteredCategories.length === 0" class="no-data">
+            No matching categories / የሚዛመድ መጠሪያ የለም
+          </div>
+        </div>
+
+        <!-- Show More / Less Button -->
+        <button
+          *ngIf="shouldShowToggle()"
+          (click)="toggleShowAll()"
+          class="show-more-btn">
+          {{ showAllCategories ? 'Show Less / ያነስ አሳይ' : 'Show All (' + filteredCategories.length + ') / ሁሉንም አሳይ' }}
+        </button>
+      </div>
+
+      <!-- Inventory by Warehouse -->
+      <div class="data-card">
+        <h3>Total number of Items / በመጋዘን ውስጥ ያለ ጠቅላላ እቃ</h3>
+        <div class="card-grid">
+          <div *ngFor="let warehouse of summaryData.itemsByWarehouse" class="warehouse-card">
+            <div class="card-content">
+              <h4>{{ warehouse.name }}</h4>
+              <p>Quantity / ብዛት: {{ warehouse.quantity }}</p>
+            </div>
+          </div>
+          <div *ngIf="summaryData.itemsByWarehouse.length === 0" class="no-data">
+            No warehouse data available / የመጋዘን ውሂቖ የለም
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Tables Section -->
+    <div class="data-section" [@fadeIn]>
+      <div class="data-card">
+        <h3>Low Stock Alert / ዝቅተኛ ክምችት ማስጠንቀቂያ ⚠️</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Item Description / የእቃ መግለጫ</th>
+                <th>Model / ሞዴል</th>
+                <th>Quantity / ብዛት</th>
+                <th>Status / ሁኔታ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of summaryData.lowStockItems" 
+                  (click)="onItemClick(item.itemId)"
+                  class="clickable-row">
+                <td>{{ item.description }}</td>
+                <td>{{ item.model }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>
+                  <span class="status-badge critical" *ngIf="item.isCriticallyLow">Critically Low / በጣም ዝቅተኛ</span>
+                  <span class="status-badge low" *ngIf="item.isLow">Low / ዝቅተኛ</span>
+                </td>
+              </tr>
+              <tr *ngIf="summaryData.lowStockItems.length === 0">
+                <td colspan="4" class="no-data">No low stock items / ዝቅተኛ ክምችት እቃዎች የሉም</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

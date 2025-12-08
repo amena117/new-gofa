@@ -1,0 +1,85 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\3rdpartylicenses.txt",
+      "PackagePath": "staticwebassets\\3rdpartylicenses.txt"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\assets\\logo.png",
+      "PackagePath": "staticwebassets\\browser\\assets\\logo.png"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\assets\\site.webmanifest",
+      "PackagePath": "staticwebassets\\browser\\assets\\site.webmanifest"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\chunk-46YNTKQN.js",
+      "PackagePath": "staticwebassets\\browser\\chunk-46YNTKQN.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\chunk-4ZG7KS2R.js",
+      "PackagePath": "staticwebassets\\browser\\chunk-4ZG7KS2R.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\chunk-5EWFY2QA.js",
+      "PackagePath": "staticwebassets\\browser\\chunk-5EWFY2QA.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\chunk-LLUJTFDR.js",
+      "PackagePath": "staticwebassets\\browser\\chunk-LLUJTFDR.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\chunk-PROPCZWA.js",
+      "PackagePath": "staticwebassets\\browser\\chunk-PROPCZWA.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\chunk-RUIJBL2N.js",
+      "PackagePath": "staticwebassets\\browser\\chunk-RUIJBL2N.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\chunk-TSRGIXR5.js",
+      "PackagePath": "staticwebassets\\browser\\chunk-TSRGIXR5.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\favicon.ico",
+      "PackagePath": "staticwebassets\\browser\\favicon.ico"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\index.html",
+      "PackagePath": "staticwebassets\\browser\\index.html"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\main-M5BZEME5.js",
+      "PackagePath": "staticwebassets\\browser\\main-M5BZEME5.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\polyfills-FFHMD2TL.js",
+      "PackagePath": "staticwebassets\\browser\\polyfills-FFHMD2TL.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\scripts-FR7HA4WI.js",
+      "PackagePath": "staticwebassets\\browser\\scripts-FR7HA4WI.js"
+    },
+    {
+      "Id": "C:\\Users\\Josiah\\Desktop\\test-main\\Gofabackend\\wwwroot\\browser\\styles-BM455MZV.css",
+      "PackagePath": "staticwebassets\\browser\\styles-BM455MZV.css"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.Gofabackend.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.Gofabackend.props",
+      "PackagePath": "build\\Gofabackend.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.Gofabackend.props",
+      "PackagePath": "buildMultiTargeting\\Gofabackend.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.Gofabackend.props",
+      "PackagePath": "buildTransitive\\Gofabackend.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

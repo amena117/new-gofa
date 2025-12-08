@@ -1,0 +1,37 @@
+<h1>Admin Dashboard</h1>
+
+<!-- Display Users -->
+<table border="1" cellpadding="10">
+  <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Username</th>
+      <th>Roles</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of users">
+      <td>{{ user.FirstName }}</td>
+      <td>{{ user.LastName }}</td>
+      <td>{{ user.Username }}</td>
+      <td>{{ user.Roles.join(', ') }}</td>
+      <td>
+        <button (click)="removeUser(user.Id)">Remove</button>
+        <button (click)="openRoleModal(user)">Change Roles</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Role Modal -->
+<div *ngIf="selectedUser" style="border: 1px solid #ccc; padding: 20px; margin-top: 20px;">
+  <h3>Update Roles for {{ selectedUser.Username }}</h3>
+  <select multiple [(ngModel)]="selectedRoles">
+    <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+  </select>
+  <br /><br />
+  <button (click)="saveRoles()">Save</button>
+  <button (click)="closeRoleModal()">Cancel</button>
+</div>

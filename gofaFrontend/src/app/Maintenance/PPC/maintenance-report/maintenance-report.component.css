@@ -1,0 +1,441 @@
+/* General Styles */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f9fc;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Header - Solid Black Background */
+h2 {
+  text-align: center;
+  color: white;
+  background: linear-gradient(90deg, #1e3c72, #2a5298);
+  padding: 1.3rem 1rem;
+  border-radius: 12px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Filter Form - Two Columns Layout */
+.form-group-inline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem 2rem; /* row-gap column-gap */
+  align-items: center;
+  flex-wrap: wrap; /* fallback for older browsers */
+}
+
+/* Label styling stays the same */
+.form-group-inline label {
+  font-weight: 600;
+  color: #2c3e50;
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+/* Inputs and selects styling remains */
+.form-group-inline input[type='date'],
+.form-group-inline select {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  flex: 1;
+  min-width: 160px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Responsive adjustments remain */
+@media (max-width: 768px) {
+  .form-group-inline {
+    grid-template-columns: 1fr; /* single column on small screens */
+    gap: 0.8rem;
+  }
+}
+
+
+/* Optional: Shine animation on header */
+h2::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transform: rotate(35deg);
+  pointer-events: none;
+  animation: shine 3s infinite;
+  z-index: -1;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Filter Form */
+.filter-container {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #f9f9fb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.form-group-inline {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 1rem 2rem; /* row-gap column-gap */
+  align-items: center;
+}
+
+.form-group-inline label {
+  font-weight: 600;
+  color: #2c3e50;
+  white-space: nowrap;
+}
+
+.form-group-inline input[type='date'],
+.form-group-inline select {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  width: 100%;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group-inline input[type='date']:focus,
+.form-group-inline select:focus {
+  outline: none;
+  border-color: #000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Center submit button below grid */
+.form-group-inline button[type="submit"] {
+  grid-column: 1 / -1; /* span across both columns */
+  justify-self: center;
+  margin-top: 0.5rem;
+}
+
+/* Action Button - Black */
+.action-button {
+  padding: 0.65rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: white;
+  background-color: #000000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-button:hover:not(:disabled) {
+  background-color: #111;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.action-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Print Button */
+.print-button {
+  background-color: #000000;
+}
+
+.print-button:hover:not(:disabled) {
+  background-color: #111;
+}
+
+.print-button-container {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+/* Loading & Error */
+.loading-indicator,
+.error-message {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 1rem;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  margin: 1.5rem 0;
+  border: 1px dashed #dee2e6;
+}
+
+.error-message {
+  color: #d93025;
+  background-color: #f8d7da;
+  border-color: #f1aeb5;
+}
+
+/* Table Styles */
+.request-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 0.95rem;
+}
+
+.request-table thead {
+  background-color: #000000; /* Black header */
+  color: white;
+}
+
+.request-table th {
+  padding: 0.9rem 1.2rem;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.request-table tbody td {
+  padding: 0.85rem 1.2rem;
+  border-bottom: 1px solid #e9ecef;
+  color: #444;
+}
+
+.request-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.request-table tbody tr:hover {
+  background-color: #f1f8ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Grouped Section Headers */
+.container h3 {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #000;
+  display: inline-block;
+}
+
+/* Summary Section */
+.summary-passage {
+  margin-top: 2.5rem;
+  padding: 1.8rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #000;
+}
+
+.summary-passage h3 {
+  margin-top: 0;
+  color: #222;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.summary-passage h4 {
+  color: #000;
+  margin: 1rem 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.summary-passage p,
+.summary-passage li {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.summary-passage ul {
+  margin-left: 1.5rem;
+  padding-left: 0.5rem;
+}
+
+.summary-passage li {
+  list-style-type: disc;
+}
+
+/* No Data Message */
+.no-data {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #888;
+  padding: 2rem;
+  background-color: #fdfdfd;
+  border-radius: 10px;
+  margin: 1.5rem 0;
+  border: 1px dashed #ccc;
+}
+
+/* Print Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .container,
+  .container * {
+    visibility: visible;
+  }
+
+  .container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none;
+    background: white;
+  }
+
+  .filter-container,
+  .print-button-container,
+  .loading-indicator,
+  .error-message,
+  .no-data {
+    display: none;
+  }
+
+  h2 {
+    background-color: #000;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  .request-table {
+    font-size: 12px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  .request-table th,
+  .request-table td {
+    padding: 6px;
+    border: 1px solid #000;
+  }
+
+  .summary-passage {
+    background-color: transparent;
+    border-left: 2px solid #000;
+    font-size: 12px;
+  }
+
+  .summary-passage h3,
+  .summary-passage h4 {
+    border-bottom: 1px solid #000;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .form-group-inline {
+    grid-template-columns: 1fr; /* single column on small screens */
+    gap: 0.8rem;
+  }
+
+  .form-group-inline button[type="submit"] {
+    justify-self: stretch;
+  }
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.2rem;
+    margin: 1rem auto;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    padding: 1rem;
+  }
+
+  .form-group-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-group-inline label {
+    min-width: auto;
+  }
+
+  .request-table th,
+  .request-table td {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+
+  .summary-passage {
+    padding: 1rem;
+  }
+
+  .summary-passage h3 {
+    font-size: 1.1rem;
+  }
+
+  .summary-passage p,
+  .summary-passage li {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .action-button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .no-data,
+  .loading-indicator,
+  .error-message {
+    font-size: 0.95rem;
+  }
+}
