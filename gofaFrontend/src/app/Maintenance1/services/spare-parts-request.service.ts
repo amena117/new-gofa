@@ -62,4 +62,23 @@ export class SParePartsRequestService {
       })
     );
   }
-}
+
+  /** ================= ROUTE TO TEAM LEADER ================= */
+  routeToTeamLeader(id: number, approvedBy: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/route-to-team-leader/${id}`, { approvedBy }).pipe(
+      catchError((error) => {
+        console.error(`Error routing request with ID ${id}:`, error);
+        return throwError(() => new Error('Failed to route request to team leader.'));
+      })
+    );
+  }
+
+  /** ================= GET BY CURRENT STAGE ================= */
+  getByCurrentStage(stage: string): Observable<SParePartsRequest[]> {
+    return this.http.get<SParePartsRequest[]>(`${this.apiUrl}/by-current-stage/${stage}`).pipe(
+      catchError((error) => {
+        console.error(`Error fetching requests by stage ${stage}:`, error);
+        return throwError(() => new Error('Failed to fetch requests by stage.'));
+      })
+    );
+  }

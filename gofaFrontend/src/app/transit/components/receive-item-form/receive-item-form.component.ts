@@ -8,6 +8,12 @@ import { Router } from '@angular/router';
 interface Accessory {
   name: string;
   quantity: number;
+  subAccessories?: SubAccessory[];
+}
+
+interface SubAccessory {
+  name: string;
+  quantity: number;
 }
 
 interface ExtraItem {
@@ -52,6 +58,8 @@ interface Model1Dto {
   accessories: Accessory[];
   hasExtraItems: boolean;
   extraItems: ExtraItem[];
+  vat: number;
+  grandTotal: number;
 }
 
 @Component({
@@ -114,7 +122,7 @@ export class ReceiveItemFormComponent {
   }
 
   createItem(): FormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       serialNumber: ['', Validators.required],
       description: ['', Validators.required],
       unitOfMeasurment: ['', Validators.required],
@@ -126,8 +134,27 @@ export class ReceiveItemFormComponent {
       hasAccessories: [false],
       accessories: this.fb.array([]),
       hasExtraItems: [false],
-      extraItems: this.fb.array([])
+      extraItems: this.fb.array([]),
+      vat: [0, [Validators.required, Validators.min(0)]],
+      grandTotal: [0, [Validators.required, Validators.min(0)]]
     });
+
+    // Auto-calculate amount and grandTotal
+    group.valueChanges.subscribe(val => {
+      const received = +(val?.received || 0);
+      const unitPrice = +(val?.unitOfPrice || 0);
+      const vat = +(val?.vat || 0);
+
+      const amount = received * unitPrice;
+      const grandTotal = amount + vat;
+
+      group.patchValue({
+        amount: amount,
+        grandTotal: grandTotal
+      }, { emitEvent: false });
+    });
+
+    return group;
   }
 
   addItem(): void {
@@ -148,13 +175,36 @@ export class ReceiveItemFormComponent {
     this.getAccessoryControls(itemIndex).push(
       this.fb.group({
         name: [''],
-        quantity: ['']
+        quantity: [''],
+        unitPrice: [''],
+        currency: [''],
+        hasSubAccessories: [false],
+        subAccessories: this.fb.array([])
       })
     );
   }
 
   removeAccessory(itemIndex: number, accIndex: number): void {
     this.getAccessoryControls(itemIndex).removeAt(accIndex);
+  }
+
+  getSubAccessoryControls(itemIndex: number, accIndex: number): FormArray {
+    return this.getAccessoryControls(itemIndex).at(accIndex).get('subAccessories') as FormArray;
+  }
+
+  addSubAccessory(itemIndex: number, accIndex: number): void {
+    this.getSubAccessoryControls(itemIndex, accIndex).push(
+      this.fb.group({
+        name: [''],
+        quantity: [''],
+        unitPrice: [''],
+        currency: ['']
+      })
+    );
+  }
+
+  removeSubAccessory(itemIndex: number, accIndex: number, subAccIndex: number): void {
+    this.getSubAccessoryControls(itemIndex, accIndex).removeAt(subAccIndex);
   }
 
   getExtraItemControls(itemIndex: number): FormArray {
@@ -216,7 +266,7 @@ export class ReceiveItemFormComponent {
 
     this.receiveForm.patchValue({
       registeredBy: fullName + " (" + title + ")",
-      
+
     });
   }
 
@@ -273,21 +323,33 @@ export class ReceiveItemFormComponent {
         hasAccessories: item.hasAccessories,
         accessories: item.hasAccessories
           ? (item.accessories || []).map((acc: any) => ({
-              name: acc.name || '',
-              quantity: +acc.quantity || 0
-            }))
+            name: acc.name || '',
+            quantity: +acc.quantity || 0,
+            unitPrice: acc.unitPrice ? +acc.unitPrice : null,
+            currency: acc.currency || null,
+            subAccessories: acc.hasSubAccessories && acc.subAccessories
+              ? acc.subAccessories.map((subAcc: any) => ({
+                  name: subAcc.name || '',
+                  quantity: +subAcc.quantity || 0,
+                  unitPrice: subAcc.unitPrice ? +subAcc.unitPrice : null,
+                  currency: subAcc.currency || null
+                }))
+              : []
+          }))
           : [],
 
         hasExtraItems: item.hasExtraItems,
         extraItems: item.hasExtraItems
           ? (item.extraItems || []).map((extra: any) => ({
-              name: extra.name,
-              quantity: +extra.quantity,
-              store: extra.store,
-              extraStatus: extra.extraStatus,
-              extraRecivedByName: '' // Optional: set later
-            }))
-          : []
+            name: extra.name,
+            quantity: +extra.quantity,
+            store: extra.store,
+            extraStatus: extra.extraStatus,
+            extraRecivedByName: '' // Optional: set later
+          }))
+          : [],
+        vat: +item.vat,
+        grandTotal: +item.grandTotal
       };
       payloads.push(payload);
     }

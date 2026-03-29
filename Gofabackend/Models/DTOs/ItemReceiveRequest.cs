@@ -20,6 +20,7 @@ namespace Gofabackend.Models
         public decimal UnitPrice { get; set; } // Mandatory
         public string Currency { get; set; } = "ETB"; // Default to ETB
         public string Source { get; set; } = "Purchase";
+        public string History { get; set; } = string.Empty; // Item history/notes
         public List<string> SerialNumbers { get; set; } = new List<string>();
         public List<AccessoryRequest> Accessories { get; set; } = new List<AccessoryRequest>();
     }
@@ -31,5 +32,16 @@ namespace Gofabackend.Models
         public int Quantity { get; set; }
         public decimal? UnitPrice { get; set; } // Optional
         public string? Currency { get; set; } // Optional
+        public bool RequiresSerialNumbers { get; set; } = false; // Whether this accessory requires serial numbers
+        public List<string> SerialNumbers { get; set; } = new List<string>(); // Serial numbers for this accessory
+        public List<SubAccessoryRequest> SubAccessories { get; set; } = new List<SubAccessoryRequest>(); // Sub-accessories
+    }
+
+    public class SubAccessoryRequest
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string Currency { get; set; } = "ETB";
     }
 }

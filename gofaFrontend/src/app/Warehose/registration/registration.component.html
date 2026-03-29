@@ -6,16 +6,21 @@
   </h3>
   <div class="header">
     <h1 class="title">{{ isBulkMode ? 'Bulk Item Registration' : 'Register New Item' }}</h1>
-    <button class="toggle-btn" (click)="toggleMode()" attr.aria-label="Toggle between single and bulk registration modes">
-      {{ isBulkMode ? 'Switch to Single Item / ነጠላ እቃ መዝግብ' : 'Switch to Bulk Registration / ጅምላ እቃ መዝግብ' }}
-    </button>
+    <div style="display: flex; gap: 12px;">
+      <button class="toggle-btn" (click)="toggleAccessoryMode()" attr.aria-label="Toggle to register accessory only">
+        {{ isAccessoryMode ? 'Switch to Item Registration / እቃ መዝግብ' : 'Register Accessory Only / አብራጭ ብቻ መዝግብ' }}
+      </button>
+      <button class="toggle-btn" (click)="toggleMode()" attr.aria-label="Toggle between single and bulk registration modes">
+        {{ isBulkMode ? 'Switch to Single Item / ነጠላ እቃ መዝግብ' : 'Switch to Bulk Registration / ጅምላ እቃ መዝግብ' }}
+      </button>
+    </div>
   </div>
 
   <div *ngIf="errorMessage" class="message error-message" role="alert">{{ errorMessage }}</div>
   <div *ngIf="successMessage" class="message success-message" role="alert">{{ successMessage }}</div>
 
   <!-- Single Item Form -->
-  <div *ngIf="!isBulkMode" class="form-container">
+  <div *ngIf="!isBulkMode && !isAccessoryMode" class="form-container">
     <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" aria-labelledby="single-item-title">
       <!-- Registration Info -->
       <div class="form-section">
@@ -164,6 +169,15 @@
               </div>
             </div>
           </div>
+          <div class="table-row">
+            <label class="table-label">History / ታሪክ</label>
+            <div class="table-input">
+              <textarea formControlName="history" rows="3" placeholder="Enter item history, notes, or additional information..." attr.aria-describedby="history-help"></textarea>
+              <div id="history-help" class="help-text">
+                Optional: Add any relevant history, maintenance notes, or additional information about this item.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -272,34 +286,197 @@
     <button *ngIf="showAccessories" type="button" class="action-btn secondary small" (click)="addAccessory()" attr.aria-label="Add new accessory">Add Accessory / ተያያዥ እቃ ጨምር</button>
   </h2>
   <div class="table-container" *ngIf="showAccessories">
-    <div *ngFor="let accessory of accessories.controls; let i=index" [formGroupName]="i" class="table-row accessory-row">
-      <label class="table-label">Accessory / ተያያዥ እቃዎች {{ i + 1 }}</label>
-      <div class="input-group accessory-input-group">
-        <input class="table-input" formControlName="name" placeholder="Accessory name" [attr.aria-describedby]="'accessoryName' + i + '-error'" />
-        <input class="table-input" formControlName="model" placeholder="Accessory model" [attr.aria-describedby]="'accessoryModel' + i + '-error'" />
-        <input class="table-input" type="number" formControlName="quantity" min="1" placeholder="Quantity" [attr.aria-describedby]="'accessoryQuantity' + i + '-error'" />
-        
-        <!-- New Unit Price and Currency Fields -->
-        <input class="table-input" type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="Unit Price" [attr.aria-describedby]="'accessoryUnitPrice' + i + '-error'" />
-        <select class="table-input" formControlName="currency" [attr.aria-describedby]="'accessoryCurrency' + i + '-error'">
-          <option value="" disabled>Currency</option>
-          <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
-        </select>
-        
-        <button class="action-btn secondary small" (click)="removeAccessory(i)" *ngIf="accessories.length > 0" [attr.aria-label]="'Remove accessory ' + (i + 1)">Remove / አጥፋ</button>
-        
-        <!-- Error Messages -->
-        <div *ngIf="accessory.get('name')?.invalid && accessory.get('name')?.touched" [id]="'accessoryName' + i + '-error'" class="error">
-          Accessory name is required. / ተያያዥ እቃው ስም ግዴታ ነው።
+    <div *ngFor="let accessory of accessories.controls; let i=index" [formGroupName]="i" class="accessory-card">
+      <div class="accessory-header">
+        <h4 class="accessory-title">
+          <i class="icon-accessory"></i>
+          Accessory {{ i + 1 }} / ተያያዥ እቃ {{ i + 1 }}
+        </h4>
+        <button class="action-btn danger small" (click)="removeAccessory(i)" *ngIf="accessories.length > 0" [attr.aria-label]="'Remove accessory ' + (i + 1)">
+          <i class="icon-trash"></i> Remove / አጥፋ
+        </button>
+      </div>
+      
+      <div class="accessory-content">
+        <!-- Basic Information Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Name / ስም</label>
+            <input class="form-input" formControlName="name" placeholder="Enter accessory name" [attr.aria-describedby]="'accessoryName' + i + '-error'" />
+            <div *ngIf="accessory.get('name')?.invalid && accessory.get('name')?.touched" [id]="'accessoryName' + i + '-error'" class="error-message">
+              <i class="icon-warning"></i> Accessory name is required / ተያያዥ እቃው ስም ግዴታ ነው
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Model / ሞዴል</label>
+            <input class="form-input" formControlName="model" placeholder="Enter model number" [attr.aria-describedby]="'accessoryModel' + i + '-error'" />
+            <div *ngIf="accessory.get('model')?.invalid && accessory.get('model')?.touched" [id]="'accessoryModel' + i + '-error'" class="error-message">
+              <i class="icon-warning"></i> Accessory model is required / ተያያዥ እቃው ሞዴል ግዴታ ነው
+            </div>
+          </div>
         </div>
-        <div *ngIf="accessory.get('model')?.invalid && accessory.get('model')?.touched" [id]="'accessoryModel' + i + '-error'" class="error">
-          Accessory model is required. / ተያያዥ እቃው ሞዴል ግዴታ ነው።
+
+        <!-- Quantity and Pricing Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Quantity / ብዛት</label>
+            <input class="form-input" type="number" formControlName="quantity" min="1" placeholder="1" 
+                   (change)="onAccessoryQuantityChange(i)" [attr.aria-describedby]="'accessoryQuantity' + i + '-error'" />
+            <div *ngIf="accessory.get('quantity')?.invalid && accessory.get('quantity')?.touched" [id]="'accessoryQuantity' + i + '-error'" class="error-message">
+              <i class="icon-warning"></i> Quantity must be at least 1 / ብዛት ቢያንስ 1 መሆን አለበት
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Unit Price / ነጠላ ዋጋ</label>
+            <input class="form-input" type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="0.00" [attr.aria-describedby]="'accessoryUnitPrice' + i + '-error'" />
+            <div *ngIf="accessory.get('unitPrice')?.invalid && accessory.get('unitPrice')?.touched" [id]="'accessoryUnitPrice' + i + '-error'" class="error-message">
+              <i class="icon-warning"></i> Unit price must be non-negative / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Currency / ምንዛሪ</label>
+            <select class="form-input" formControlName="currency" [attr.aria-describedby]="'accessoryCurrency' + i + '-error'">
+              <option value="" disabled>Select currency</option>
+              <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+            </select>
+          </div>
         </div>
-        <div *ngIf="accessory.get('quantity')?.invalid && accessory.get('quantity')?.touched" [id]="'accessoryQuantity' + i + '-error'" class="error">
-          Quantity must be at least 1. / ብዛት ቢያንስ 1 መሆን አለበት።
+
+        <!-- Serial Number Requirement -->
+        <div class="form-row">
+          <div class="form-group full-width">
+            <div class="checkbox-container">
+              <input type="checkbox" [id]="'accessoryRequiresSerial' + i" formControlName="requiresSerialNumbers" 
+                     (change)="onAccessoryRequiresSerialNumbersChange(i)" class="checkbox-input" />
+              <label [for]="'accessoryRequiresSerial' + i" class="checkbox-label">
+                <i class="checkbox-icon"></i>
+                <span class="checkbox-text">This accessory requires serial numbers / ይህ ተያያዥ እቃ ተከታታይ ቁጥር ያስፈልገዋል</span>
+              </label>
+            </div>
+          </div>
         </div>
-        <div *ngIf="accessory.get('unitPrice')?.invalid && accessory.get('unitPrice')?.touched" [id]="'accessoryUnitPrice' + i + '-error'" class="error">
-          Unit price must be non-negative. / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት።
+
+        <!-- Serial Numbers Section -->
+        <div *ngIf="accessory.get('requiresSerialNumbers')?.value" class="serial-numbers-container">
+          <div class="serial-numbers-header">
+            <h5 class="serial-numbers-title">
+              <i class="icon-barcode"></i>
+              Serial Numbers for "{{ accessory.get('name')?.value || 'Accessory' }}" / ተከታታይ ቁጥሮች
+            </h5>
+            <div class="serial-numbers-info">
+              <span class="info-badge">{{ getAccessorySerialNumbers(i).length }} of {{ accessory.get('quantity')?.value || 0 }} required</span>
+            </div>
+          </div>
+          
+          <div formArrayName="serialNumbers" class="serial-numbers-grid">
+            <div *ngFor="let serial of getAccessorySerialNumbers(i).controls; let j=index" class="serial-input-container">
+              <label class="serial-label">Serial {{ j + 1 }}</label>
+              <div class="serial-input-wrapper">
+                <input class="serial-input" [formControlName]="j" 
+                       placeholder="Enter serial number" 
+                       [attr.aria-describedby]="'accessorySerial' + i + j + '-error'"
+                       [class.error]="serial.invalid && serial.touched" />
+                <i class="serial-icon icon-tag"></i>
+              </div>
+              <div *ngIf="serial.invalid && serial.touched" [id]="'accessorySerial' + i + j + '-error'" class="error-message small">
+                <i class="icon-warning"></i> Required / ግዴታ
+              </div>
+            </div>
+          </div>
+          
+          <!-- Serial Numbers Status -->
+          <div class="serial-numbers-status" [class.complete]="getAccessorySerialNumbers(i).length === (accessory.get('quantity')?.value || 0) && getAccessorySerialNumbers(i).valid">
+            <i class="status-icon" [class.icon-check]="getAccessorySerialNumbers(i).length === (accessory.get('quantity')?.value || 0) && getAccessorySerialNumbers(i).valid" 
+               [class.icon-warning]="getAccessorySerialNumbers(i).length !== (accessory.get('quantity')?.value || 0) || getAccessorySerialNumbers(i).invalid"></i>
+            <span class="status-text">
+              <ng-container *ngIf="getAccessorySerialNumbers(i).length === (accessory.get('quantity')?.value || 0) && getAccessorySerialNumbers(i).valid">
+                All serial numbers provided / ሁሉም ተከታታይ ቁጥሮች ተሰጥተዋል
+              </ng-container>
+              <ng-container *ngIf="getAccessorySerialNumbers(i).length !== (accessory.get('quantity')?.value || 0) || getAccessorySerialNumbers(i).invalid">
+                Please provide all required serial numbers / እባክዎ ሁሉንም የሚያስፈልጉ ተከታታይ ቁጥሮች ያቅርቡ
+              </ng-container>
+            </span>
+          </div>
+        </div>
+
+        <!-- Sub-Accessories Section -->
+        <div class="sub-accessories-container" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6366f1;">
+          <div class="sub-accessories-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h5 style="margin: 0; color: #4b5563; font-size: 14px; font-weight: 600;">
+              <i class="icon-layers"></i>
+              Sub-Accessories / ንዑስ አባሪዎች
+              <span style="font-size: 12px; color: #6b7280; font-weight: normal; margin-left: 8px;">
+                ({{ getSubAccessories(i).length }} items)
+              </span>
+            </h5>
+            <button type="button" class="action-btn secondary small" (click)="addSubAccessory(i)" 
+                    style="padding: 4px 12px; font-size: 12px;">
+              <i class="icon-plus"></i> Add Sub-Accessory / ንዑስ አባሪ ጨምር
+            </button>
+          </div>
+          
+          <div style="background: #fef3c7; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px; font-size: 11px; color: #92400e;">
+            ℹ️ <strong>Note:</strong> Enter quantity PER ACCESSORY UNIT. Example: If each accessory comes with 5 cables, enter "5" (not total).
+          </div>
+
+          <div formArrayName="subAccessories">
+            <div *ngFor="let subAccessory of getSubAccessories(i).controls; let j=index" 
+                 [formGroupName]="j" 
+                 style="background: white; padding: 12px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #e5e7eb;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 13px; font-weight: 600; color: #374151;">
+                  Sub-Accessory {{ j + 1 }}
+                </span>
+                <button type="button" class="action-btn danger small" (click)="removeSubAccessory(i, j)" 
+                        style="padding: 2px 8px; font-size: 11px;">
+                  <i class="icon-trash"></i> Remove
+                </button>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px;">
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label" style="font-size: 12px;">Name / ስም</label>
+                  <input class="form-input" formControlName="name" placeholder="Sub-accessory name" style="font-size: 13px; padding: 6px 10px;" />
+                  <div *ngIf="subAccessory.get('name')?.invalid && subAccessory.get('name')?.touched" class="error-message" style="font-size: 11px;">
+                    Required / ግዴታ
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label" style="font-size: 12px;">
+                    Quantity (per accessory) / ብዛት (በአንድ አባሪ)
+                    <span style="font-size: 10px; color: #6b7280; font-weight: normal;">
+                      *How many come with 1 accessory
+                    </span>
+                  </label>
+                  <input class="form-input" type="number" formControlName="quantity" min="1" placeholder="1" style="font-size: 13px; padding: 6px 10px;" />
+                  <div *ngIf="subAccessory.get('quantity')?.invalid && subAccessory.get('quantity')?.touched" class="error-message" style="font-size: 11px;">
+                    Min 1 / ቢያንስ 1
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label" style="font-size: 12px;">Price / ዋጋ</label>
+                  <input class="form-input" type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="0.00" style="font-size: 13px; padding: 6px 10px;" />
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                  <label class="form-label" style="font-size: 12px;">Currency / ምንዛሪ</label>
+                  <select class="form-input" formControlName="currency" style="font-size: 13px; padding: 6px 10px;">
+                    <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="getSubAccessories(i).length === 0" style="text-align: center; padding: 20px; color: #9ca3af; font-size: 13px;">
+              No sub-accessories added yet. Click "Add Sub-Accessory" to add one.<br/>
+              ገና ምንም ንዑስ አባሪዎች አልተጨመሩም። "ንዑስ አባሪ ጨምር" የሚለውን ጠቅ ያድርጉ።
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -309,6 +486,311 @@
       <!-- Submit Button -->
       <div class="form-actions">
         <button type="submit" class="action-btn primary" [disabled]="itemForm.invalid" attr.aria-label="Register item">Register Item / እቃ መዝግብ</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Accessory Registration Form -->
+  <div *ngIf="isAccessoryMode && !isBulkMode" class="form-container">
+    <form [formGroup]="itemForm" (ngSubmit)="onAccessorySubmit()" aria-labelledby="accessory-item-title">
+      <h2 class="section-title" style="color: #0a4b78; margin-bottom: 20px;">
+        🔧 Add Accessories to Existing Item / ለነባር እቃ አባሪዎች ጨምር
+      </h2>
+      
+      <!-- Parent Item Selection -->
+      <div class="form-section">
+        <h2 class="section-title">Select Parent Item / ዋና እቃ ምረጥ</h2>
+        <div class="table-container">
+          <div class="table-row">
+            <label class="table-label">Search Item / እቃ ፈልግ <span class="required">*</span></label>
+            <div class="table-input">
+              <input 
+                type="text" 
+                [formControl]="parentItemSearchControl"
+                [matAutocomplete]="autoParent"
+                placeholder="Search by name, model, or serial number..."
+                style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+              <mat-autocomplete #autoParent="matAutocomplete" [displayWith]="displayParentItem" (optionSelected)="selectParentItem($event)">
+                <mat-option *ngFor="let item of filteredParentItems | async" [value]="item">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <strong>{{ item.description }}</strong> - {{ item.model }}
+                      <br>
+                      <small style="color: #6b7280;">{{ item.category }} | Qty: {{ item.quantity }}</small>
+                    </div>
+                  </div>
+                </mat-option>
+              </mat-autocomplete>
+              <div *ngIf="!selectedParentItem" class="error" style="margin-top: 4px;">
+                Please select a parent item
+              </div>
+            </div>
+          </div>
+          
+          <!-- Show selected parent item info -->
+          <div *ngIf="selectedParentItem" style="margin-top: 16px; padding: 16px; background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 8px;">
+            <h3 style="margin: 0 0 8px 0; color: #0369a1; font-size: 16px;">Selected Item:</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 14px;">
+              <div><strong>Name:</strong> {{ selectedParentItem.description }}</div>
+              <div><strong>Model:</strong> {{ selectedParentItem.model }}</div>
+              <div><strong>Category:</strong> {{ selectedParentItem.category }}</div>
+              <div><strong>Current Quantity:</strong> {{ selectedParentItem.quantity }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Receipt Information -->
+      <div class="form-section">
+        <h2 class="section-title">Receipt Information / የደረሰኝ መረጃ</h2>
+        <div class="table-container">
+          <div class="table-row">
+            <label class="table-label">Has Voucher Number / ሰነድ ቁጥር አለው</label>
+            <div class="table-input checkbox-container">
+              <label class="toggle-switch">
+                <input type="checkbox" class="toggle-switch-input" formControlName="hasVoucherNumber" id="accHasVoucherNumber" />
+                <span class="toggle-switch-slider"></span>
+              </label>
+              <label for="accHasVoucherNumber" class="toggle-label">Enable / ሰነድ ቁጥር መዝግብ</label>
+            </div>
+          </div>
+          <div class="table-row" *ngIf="itemForm.get('hasVoucherNumber')?.value">
+            <label class="table-label">Voucher Number / ሰነድ ቁጥር</label>
+            <div class="table-input">
+              <input formControlName="voucherNumber" placeholder="e.g., VN123" />
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Received From / ከማን እንደተቀበለ <span class="required">*</span></label>
+            <div class="table-input">
+              <input formControlName="receivedFrom" placeholder="e.g., Supplier Name" />
+              <div *ngIf="itemForm.get('receivedFrom')?.invalid && itemForm.get('receivedFrom')?.touched" class="error">
+                Received from is required.
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Source / ምንጭ <span class="required">*</span></label>
+            <div class="table-input">
+              <select formControlName="source">
+                <option value="" disabled>Select source / ምንጭ ምረጥ</option>
+                <option *ngFor="let source of sources" [value]="source">{{ source }}</option>
+              </select>
+              <div *ngIf="itemForm.get('source')?.invalid && itemForm.get('source')?.touched" class="error">
+                Source is required.
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Registered By / የመዘገበው</label>
+            <div class="table-input">
+              <input formControlName="registeredBy" readonly />
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Transaction Date / የምዝገባ ቀን</label>
+            <div class="table-input">
+              <input formControlName="transactionDate" readonly />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accessories List -->
+      <div class="form-section">
+        <h2 class="section-title">Accessories / አባሪዎች</h2>
+        <div formArrayName="accessories">
+          <div *ngFor="let accessory of accessories.controls; let i = index" [formGroupName]="i" 
+               style="margin-bottom: 20px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fafbfc;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="margin: 0; font-size: 16px; color: #03203c;">Accessory {{ i + 1 }}</h3>
+              <button type="button" class="action-btn danger small" (click)="removeAccessory(i)" *ngIf="accessories.length > 1">
+                Remove / አስወግድ
+              </button>
+            </div>
+
+            <!-- Add to Existing or Create New Toggle -->
+            <div style="margin-bottom: 16px; padding: 12px; background: #f0f9ff; border-radius: 6px; border-left: 3px solid #3b82f6;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e40af;">
+                Accessory Mode / የአባሪ ሁኔታ:
+              </label>
+              <div style="display: flex; gap: 16px;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                  <input type="radio" 
+                         [name]="'accessoryMode' + i" 
+                         [value]="'new'"
+                         [checked]="!accessory.get('isAddingToExisting')?.value"
+                         (change)="onAccessoryModeChange(i, 'new')"
+                         style="margin-right: 6px;" />
+                  <span>Create New Accessory / አዲስ አባሪ ፍጠር</span>
+                </label>
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                  <input type="radio" 
+                         [name]="'accessoryMode' + i" 
+                         [value]="'existing'"
+                         [checked]="accessory.get('isAddingToExisting')?.value"
+                         (change)="onAccessoryModeChange(i, 'existing')"
+                         style="margin-right: 6px;" />
+                  <span>Add to Existing Accessory / ወደ ነባር አባሪ ጨምር</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Existing Accessory Selector (shown when "Add to Existing" is selected) -->
+            <div *ngIf="accessory.get('isAddingToExisting')?.value" 
+                 style="margin-bottom: 16px; padding: 12px; background: #fef3c7; border-radius: 6px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #92400e;">
+                Select Existing Accessory / ነባር አባሪ ይምረጡ <span class="required">*</span>
+              </label>
+              <select formControlName="existingAccessoryId" 
+                      (change)="onExistingAccessorySelected(i)"
+                      style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;">
+                <option value="">-- Select Accessory / አባሪ ይምረጡ --</option>
+                <option *ngFor="let existingAcc of selectedParentItem?.accessories" 
+                        [value]="existingAcc.id">
+                  {{ existingAcc.name }} - {{ existingAcc.model }} (Current Qty: {{ existingAcc.quantity }})
+                </option>
+              </select>
+              <div style="margin-top: 8px; font-size: 12px; color: #92400e;">
+                ℹ️ The quantity you enter will be added to the existing accessory's quantity
+              </div>
+            </div>
+            
+            <div class="table-container">
+              <div class="table-row">
+                <label class="table-label">Name / ስም <span class="required">*</span></label>
+                <div class="table-input">
+                  <input formControlName="name" 
+                         placeholder="e.g., Battery, Antenna" 
+                         [readonly]="accessory.get('isAddingToExisting')?.value && accessory.get('existingAccessoryId')?.value" />
+                </div>
+              </div>
+              <div class="table-row">
+                <label class="table-label">Model / ሞዴል <span class="required">*</span></label>
+                <div class="table-input">
+                  <input formControlName="model" 
+                         placeholder="e.g., M902394" 
+                         [readonly]="accessory.get('isAddingToExisting')?.value && accessory.get('existingAccessoryId')?.value" />
+                </div>
+              </div>
+              <div class="table-row">
+                <label class="table-label">Quantity / ብዛት <span class="required">*</span></label>
+                <div class="table-input">
+                  <input type="number" formControlName="quantity" min="1" placeholder="1" 
+                         (change)="onAccessoryQuantityChange(i)" />
+                  <div *ngIf="accessory.get('isAddingToExisting')?.value && accessory.get('existingAccessoryId')?.value" 
+                       style="font-size: 11px; color: #6b7280; margin-top: 4px;">
+                    This will be added to existing quantity
+                  </div>
+                </div>
+              </div>
+              <div class="table-row">
+                <label class="table-label">Unit Price / የነጠላ ዋጋ <span class="required">*</span></label>
+                <div class="table-input">
+                  <input type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="0.00" />
+                  <div *ngIf="accessory.get('isAddingToExisting')?.value && accessory.get('existingAccessoryId')?.value" 
+                       style="font-size: 11px; color: #6b7280; margin-top: 4px;">
+                    You can update the unit price if needed
+                  </div>
+                </div>
+              </div>
+              <div class="table-row">
+                <label class="table-label">Currency / መገበያያ <span class="required">*</span></label>
+                <div class="table-input">
+                  <select formControlName="currency" 
+                          [disabled]="accessory.get('isAddingToExisting')?.value && accessory.get('existingAccessoryId')?.value">
+                    <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-row">
+                <label class="table-label">Requires Serial Numbers / ተከታታይ ቁጥሮች ያስፈልጋሉ</label>
+                <div class="table-input checkbox-container">
+                  <label class="toggle-switch">
+                    <input type="checkbox" class="toggle-switch-input" formControlName="requiresSerialNumbers" 
+                           (change)="onAccessoryRequiresSerialNumbersChange(i)"
+                           [disabled]="accessory.get('isAddingToExisting')?.value && accessory.get('existingAccessoryId')?.value" />
+                    <span class="toggle-switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Serial Numbers Section for Accessory Mode -->
+            <div *ngIf="accessory.get('requiresSerialNumbers')?.value" style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 6px;">
+              <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #374151;">
+                Serial Numbers for {{ accessory.get('name')?.value || 'Accessory' }}
+              </h4>
+              <div formArrayName="serialNumbers">
+                <div *ngFor="let serial of getAccessorySerialNumbers(i).controls; let j = index" 
+                     style="margin-bottom: 8px; display: flex; gap: 8px; align-items: center;">
+                  <input [formControlName]="j" placeholder="Serial {{ j + 1 }}" 
+                         style="flex: 1; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;" />
+                  <button type="button" class="action-btn danger small" 
+                          (click)="removeAccessorySerialNumber(i, j)"
+                          *ngIf="getAccessorySerialNumbers(i).length > 1">
+                    Remove
+                  </button>
+                </div>
+              </div>
+              <button type="button" class="action-btn secondary small" 
+                      (click)="addAccessorySerialNumber(i)" 
+                      style="margin-top: 8px;">
+                + Add Serial Number
+              </button>
+            </div>
+
+            <!-- Sub-Accessories Section for Accessory Mode -->
+            <div style="margin-top: 16px; padding: 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #6366f1;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h4 style="margin: 0; font-size: 14px; color: #4b5563;">
+                  Sub-Accessories ({{ getSubAccessories(i).length }})
+                </h4>
+                <button type="button" class="action-btn secondary small" (click)="addSubAccessory(i)">
+                  + Add Sub-Accessory
+                </button>
+              </div>
+              
+              <div formArrayName="subAccessories">
+                <div *ngFor="let subAcc of getSubAccessories(i).controls; let j = index" 
+                     [formGroupName]="j"
+                     style="background: white; padding: 10px; margin-bottom: 8px; border-radius: 4px; border: 1px solid #e5e7eb;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 12px; font-weight: 600;">Sub-Accessory {{ j + 1 }}</span>
+                    <button type="button" class="action-btn danger small" (click)="removeSubAccessory(i, j)">
+                      Remove
+                    </button>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px;">
+                    <input formControlName="name" placeholder="Name" style="padding: 6px; border: 1px solid #d1d5db; border-radius: 4px;" />
+                    <div>
+                      <input type="number" formControlName="quantity" min="1" placeholder="Per unit" title="Quantity per accessory unit" style="padding: 6px; border: 1px solid #d1d5db; border-radius: 4px;" />
+                      <div style="font-size: 9px; color: #6b7280; margin-top: 2px;">Per accessory</div>
+                    </div>
+                    <input type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="Price" style="padding: 6px; border: 1px solid #d1d5db; border-radius: 4px;" />
+                    <select formControlName="currency" style="padding: 6px; border: 1px solid #d1d5db; border-radius: 4px;">
+                      <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div *ngIf="getSubAccessories(i).length === 0" style="text-align: center; padding: 12px; color: #9ca3af; font-size: 12px;">
+                  No sub-accessories added yet
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button type="button" class="action-btn secondary" (click)="addAccessory()" style="margin-top: 12px;">
+          + Add Another Accessory / ሌላ አብራጭ ጨምር
+        </button>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button type="submit" class="action-btn primary" [disabled]="!selectedParentItem || !itemForm.get('receivedFrom')?.value || !itemForm.get('source')?.value || accessories.length === 0">
+          Add Accessories / አባሪዎች ጨምር
+        </button>
       </div>
     </form>
   </div>
@@ -465,6 +947,15 @@
               </div>
             </div>
             <div class="table-row">
+              <label class="table-label">History / ታሪክ</label>
+              <div class="table-input">
+                <textarea formControlName="history" rows="3" placeholder="Enter item history, notes, or additional information..." [attr.aria-describedby]="'bulkHistory' + i + '-help'"></textarea>
+                <div [id]="'bulkHistory' + i + '-help'" class="help-text">
+                  Optional: Add any relevant history, maintenance notes, or additional information about this item.
+                </div>
+              </div>
+            </div>
+            <div class="table-row">
               <label class="table-label">Shelf / መደርደርያ <span class="required">*</span></label>
               <div class="table-input">
                 <select formControlName="shelf" *ngIf="!isLoadingShelves; else loadingShelves" [attr.aria-describedby]="'bulkShelf' + i + '-error'">
@@ -574,34 +1065,120 @@
     <button *ngIf="showBulkAccessories[i]" type="button" class="action-btn secondary small" (click)="addAccessoryToItem(i)" [attr.aria-label]="'Add new accessory for item ' + (i + 1)">Add Accessory / ተያያዥ እቃ ጨምር</button>
   </h2>
   <div class="table-container" *ngIf="showBulkAccessories[i]">
-    <div *ngFor="let accessory of getAccessoriesForItem(i).controls; let j=index" [formGroupName]="j" class="table-row accessory-row">
-      <label class="table-label">Accessory / ተያያዥ እቃዎች {{ j + 1 }}</label>
-      <div class="input-group accessory-input-group">
-        <input class="table-input" formControlName="name" placeholder="Accessory name" [attr.aria-describedby]="'bulkAccessoryName' + i + j + '-error'" />
-        <input class="table-input" formControlName="model" placeholder="Accessory model" [attr.aria-describedby]="'bulkAccessoryModel' + i + j + '-error'" />
-        <input class="table-input" type="number" formControlName="quantity" min="1" placeholder="Quantity" [attr.aria-describedby]="'bulkAccessoryQuantity' + i + j + '-error'" />
-        
-        <!-- New Unit Price and Currency Fields -->
-        <input class="table-input" type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="Unit Price" [attr.aria-describedby]="'bulkAccessoryUnitPrice' + i + j + '-error'" />
-        <select class="table-input" formControlName="currency" [attr.aria-describedby]="'bulkAccessoryCurrency' + i + j + '-error'">
-          <option value="" disabled>Currency</option>
-          <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
-        </select>
-        
-        <button class="action-btn secondary small" (click)="removeAccessoryFromItem(i, j)" *ngIf="getAccessoriesForItem(i).length > 0" [attr.aria-label]="'Remove accessory ' + (j + 1) + ' for item ' + (i + 1)">Remove / አጥፋ</button>
-        
-        <!-- Error Messages -->
-        <div *ngIf="accessory.get('name')?.invalid && accessory.get('name')?.touched" [id]="'bulkAccessoryName' + i + j + '-error'" class="error">
-          Accessory name is required. / ተያያዥ እቃው ስም ግዴታ ነው።
+    <div *ngFor="let accessory of getAccessoriesForItem(i).controls; let j=index" [formGroupName]="j" class="accessory-card">
+      <div class="accessory-header">
+        <h4 class="accessory-title">
+          <i class="icon-accessory"></i>
+          Accessory {{ j + 1 }} for Item {{ i + 1 }} / ተያያዥ እቃ {{ j + 1 }} ለእቃ {{ i + 1 }}
+        </h4>
+        <button class="action-btn danger small" (click)="removeAccessoryFromItem(i, j)" *ngIf="getAccessoriesForItem(i).length > 0" [attr.aria-label]="'Remove accessory ' + (j + 1) + ' for item ' + (i + 1)">
+          <i class="icon-trash"></i> Remove / አጥፋ
+        </button>
+      </div>
+      
+      <div class="accessory-content">
+        <!-- Basic Information Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Name / ስም</label>
+            <input class="form-input" formControlName="name" placeholder="Enter accessory name" [attr.aria-describedby]="'bulkAccessoryName' + i + j + '-error'" />
+            <div *ngIf="accessory.get('name')?.invalid && accessory.get('name')?.touched" [id]="'bulkAccessoryName' + i + j + '-error'" class="error-message">
+              <i class="icon-warning"></i> Accessory name is required / ተያያዥ እቃው ስም ግዴታ ነው
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Model / ሞዴል</label>
+            <input class="form-input" formControlName="model" placeholder="Enter model number" [attr.aria-describedby]="'bulkAccessoryModel' + i + j + '-error'" />
+            <div *ngIf="accessory.get('model')?.invalid && accessory.get('model')?.touched" [id]="'bulkAccessoryModel' + i + j + '-error'" class="error-message">
+              <i class="icon-warning"></i> Accessory model is required / ተያያዥ እቃው ሞዴል ግዴታ ነው
+            </div>
+          </div>
         </div>
-        <div *ngIf="accessory.get('model')?.invalid && accessory.get('model')?.touched" [id]="'bulkAccessoryModel' + i + j + '-error'" class="error">
-          Accessory model is required. / ተያያዥ እቃው ሞዴል ግዴታ ነው።
+
+        <!-- Quantity and Pricing Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Quantity / ብዛት</label>
+            <input class="form-input" type="number" formControlName="quantity" min="1" placeholder="1" 
+                   (change)="onAccessoryQuantityChangeForItem(i, j)" [attr.aria-describedby]="'bulkAccessoryQuantity' + i + j + '-error'" />
+            <div *ngIf="accessory.get('quantity')?.invalid && accessory.get('quantity')?.touched" [id]="'bulkAccessoryQuantity' + i + j + '-error'" class="error-message">
+              <i class="icon-warning"></i> Quantity must be at least 1 / ብዛት ቢያንስ 1 መሆን አለበት
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Unit Price / ነጠላ ዋጋ</label>
+            <input class="form-input" type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="0.00" [attr.aria-describedby]="'bulkAccessoryUnitPrice' + i + j + '-error'" />
+            <div *ngIf="accessory.get('unitPrice')?.invalid && accessory.get('unitPrice')?.touched" [id]="'bulkAccessoryUnitPrice' + i + j + '-error'" class="error-message">
+              <i class="icon-warning"></i> Unit price must be non-negative / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Currency / ምንዛሪ</label>
+            <select class="form-input" formControlName="currency" [attr.aria-describedby]="'bulkAccessoryCurrency' + i + j + '-error'">
+              <option value="" disabled>Select currency</option>
+              <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+            </select>
+          </div>
         </div>
-        <div *ngIf="accessory.get('quantity')?.invalid && accessory.get('quantity')?.touched" [id]="'bulkAccessoryQuantity' + i + j + '-error'" class="error">
-          Quantity must be at least 1. / ብዛት ቢያንስ 1 መሆን አለበት።
+
+        <!-- Serial Number Requirement -->
+        <div class="form-row">
+          <div class="form-group full-width">
+            <div class="checkbox-container">
+              <input type="checkbox" [id]="'bulkAccessoryRequiresSerial' + i + j" formControlName="requiresSerialNumbers" 
+                     (change)="onAccessoryRequiresSerialNumbersChangeForItem(i, j)" class="checkbox-input" />
+              <label [for]="'bulkAccessoryRequiresSerial' + i + j" class="checkbox-label">
+                <i class="checkbox-icon"></i>
+                <span class="checkbox-text">This accessory requires serial numbers / ይህ ተያያዥ እቃ ተከታታይ ቁጥር ያስፈልገዋል</span>
+              </label>
+            </div>
+          </div>
         </div>
-        <div *ngIf="accessory.get('unitPrice')?.invalid && accessory.get('unitPrice')?.touched" [id]="'bulkAccessoryUnitPrice' + i + j + '-error'" class="error">
-          Unit price must be non-negative. / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት።
+
+        <!-- Serial Numbers Section -->
+        <div *ngIf="accessory.get('requiresSerialNumbers')?.value" class="serial-numbers-container">
+          <div class="serial-numbers-header">
+            <h5 class="serial-numbers-title">
+              <i class="icon-barcode"></i>
+              Serial Numbers for "{{ accessory.get('name')?.value || 'Accessory' }}" / ተከታታይ ቁጥሮች
+            </h5>
+            <div class="serial-numbers-info">
+              <span class="info-badge">{{ getAccessorySerialNumbersForItem(i, j).length }} of {{ accessory.get('quantity')?.value || 0 }} required</span>
+            </div>
+          </div>
+          
+          <div formArrayName="serialNumbers" class="serial-numbers-grid">
+            <div *ngFor="let serial of getAccessorySerialNumbersForItem(i, j).controls; let k=index" class="serial-input-container">
+              <label class="serial-label">Serial {{ k + 1 }}</label>
+              <div class="serial-input-wrapper">
+                <input class="serial-input" [formControlName]="k" 
+                       placeholder="Enter serial number" 
+                       [attr.aria-describedby]="'bulkAccessorySerial' + i + j + k + '-error'"
+                       [class.error]="serial.invalid && serial.touched" />
+                <i class="serial-icon icon-tag"></i>
+              </div>
+              <div *ngIf="serial.invalid && serial.touched" [id]="'bulkAccessorySerial' + i + j + k + '-error'" class="error-message small">
+                <i class="icon-warning"></i> Required / ግዴታ
+              </div>
+            </div>
+          </div>
+          
+          <!-- Serial Numbers Status -->
+          <div class="serial-numbers-status" [class.complete]="getAccessorySerialNumbersForItem(i, j).length === (accessory.get('quantity')?.value || 0) && getAccessorySerialNumbersForItem(i, j).valid">
+            <i class="status-icon" [class.icon-check]="getAccessorySerialNumbersForItem(i, j).length === (accessory.get('quantity')?.value || 0) && getAccessorySerialNumbersForItem(i, j).valid" 
+               [class.icon-warning]="getAccessorySerialNumbersForItem(i, j).length !== (accessory.get('quantity')?.value || 0) || getAccessorySerialNumbersForItem(i, j).invalid"></i>
+            <span class="status-text">
+              <ng-container *ngIf="getAccessorySerialNumbersForItem(i, j).length === (accessory.get('quantity')?.value || 0) && getAccessorySerialNumbersForItem(i, j).valid">
+                All serial numbers provided / ሁሉም ተከታታይ ቁጥሮች ተሰጥተዋል
+              </ng-container>
+              <ng-container *ngIf="getAccessorySerialNumbersForItem(i, j).length !== (accessory.get('quantity')?.value || 0) || getAccessorySerialNumbersForItem(i, j).invalid">
+                Please provide all required serial numbers / እባክዎ ሁሉንም የሚያስፈልጉ ተከታታይ ቁጥሮች ያቅርቡ
+              </ng-container>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -613,7 +1190,7 @@
       <!-- Submit Button -->
       <div class="form-actions">
         <button type="submit" class="action-btn primary" [disabled]="bulkForm.invalid" attr.aria-label="Register bulk items">Register Items / እቃዎች መዝግብ</button>
-        <button type="button" class="action-btn secondary" (click)="debugFormErrors()" attr.aria-label="Debug form errors">Debug Form</button>
+        
       </div>
     </form>
   </div>

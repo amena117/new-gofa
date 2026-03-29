@@ -52,13 +52,15 @@ import { RejectRequestComponent } from './Ministore/reject-request/reject-reques
 @NgModule({
   declarations: [
     MaintenanceComponent,
-    
+    RequestDetailsComponent,
     EditRequestComponent,
     MaintenanceRegisterListComponent,
     SparePartsRequestListComponent,
     SparePartsRequestFormComponent,
     SparePartsRequestDetailsComponent,
-   
+    SpecialToolsRegisterListComponent,
+    SpecialToolsRegisterFormComponent,
+    SpecialToolsRegisterDetailsComponent,
     MaintenanceRequestRegisterComponent,
     MaintenanceRequestRegisterListComponent,
     AssignMaintenanceComponent,

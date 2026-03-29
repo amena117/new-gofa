@@ -1,67 +1,121 @@
-<div class="container">
-  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Assign Maintenance / የጠጋኝ ንብረት መመደቢያ</h2>
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Assign Maintenance / የጥገና ንብረት መመደቢያ</h1>
+  </div>
 
-  <!-- Form for Maintenance Assignment -->
-  <form (ngSubmit)="onSubmit()">
-    <!-- Works Order Number -->
-    <div class="form-group">
-      <label for="worksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
-      <input
-        type="text"
-        id="worksOrderNumber"
-        class="form-control"
-        [(ngModel)]="worksOrderNumber"
-        name="worksOrderNumber"
-        readonly
-      />
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner-border" role="status"></div>
+    <p>Loading request data...</p>
+  </div>
+
+  <!-- Form Card -->
+  <div *ngIf="!isLoading && requestData" class="form-card">
+    
+    <!-- Existing Request Information (Read-only) -->
+    <div class="info-section">
+      <h3 class="section-title">
+        <i class="bi bi-info-circle"></i> Request Information / የጥያቄ መረጃ
+      </h3>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
+          <div class="info-value">{{ requestData.worksOrderNumber }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Nomenclature / ስያሜ</label>
+          <div class="info-value">{{ requestData.nomenclature || 'N/A' }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Model Number / የሞዴል ቁጥር</label>
+          <div class="info-value">{{ requestData.model || 'N/A' }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Serial Number / ተራ ቁጥር</label>
+          <div class="info-value">{{ requestData.serialNoOfEquip || 'N/A' }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Requested By / የጠየቀው</label>
+          <div class="info-value">{{ requestData.requestedBy || 'N/A' }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Date Received / የተቀበለበት ቀን</label>
+          <div class="info-value">{{ requestData.dateWorkOrderReceived | date:'MMM d, y' }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Status / ሁኔታ</label>
+          <div class="info-value">
+            <span class="status-badge">{{ requestData.status || 'Pending' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="info-item full-width" *ngIf="requestData.briefDescriptionOfWork">
+        <label>Description / መግለጫ</label>
+        <div class="info-value">{{ requestData.briefDescriptionOfWork }}</div>
+      </div>
     </div>
 
-    <!-- Model Number -->
-    <div class="form-group">
-      <label for="modelNumber">Model Number / የሞዴል ቁጥር</label>
-      <input
-        type="text"
-        id="modelNumber"
-        class="form-control"
-        [(ngModel)]="modelNumber"
-        name="modelNumber"
-        required
-      />
-    </div>
+    <!-- Assignment Form -->
+    <form (ngSubmit)="onSubmit()">
+      <div class="assignment-section">
+        <h3 class="section-title">
+          <i class="bi bi-person-check"></i> Assignment Details / የመመደቢያ ዝርዝር
+        </h3>
+        
+        <div class="form-row">
+          <!-- Maintenance Type -->
+          <div class="form-group">
+            <label for="maintenanceType">Maintenance Type / የጥገና አይነት <span class="required">*</span></label>
+            <select
+              id="maintenanceType"
+              class="form-control"
+              [(ngModel)]="maintenanceType"
+              name="maintenanceType"
+              (change)="updateRequestedTo()"
+              required
+            >
+              <option value="">Select Maintenance Type / የጥገና አይነት ይምረጡ</option>
+              <option value="Office_machine">Office Machine</option>
+              <option value="POWER">POWER</option>
+              <option value="RADIO_MAINTENANCE">RADIO MAINTENANCE</option>
+              <option value="HF_RADIO">HF RADIO</option>
+            </select>
+          </div>
 
-    <!-- Maintenance Type -->
-    <div class="form-group">
-      <label for="maintenanceType">Maintenance Type / የጥገና አይነት</label>
-      <select
-        id="maintenanceType"
-        class="form-control"
-        [(ngModel)]="maintenanceType"
-        name="maintenanceType"
-        (change)="updateRequestedTo()"
-        required
-      >
-        <option value="">-- Select Maintenance Type / የጥገና አይነት ይምረጡ --</option>
-        <option value="Office_machine">Office_machine</option>
-        <option value="POWER">POWER</option>
-        <option value="RADIO_MAINTENANCE">RADIO_MAINTENANCE</option>
-      </select>
-    </div>
+          <!-- Requested To (Auto-filled) -->
+          <div class="form-group">
+            <label for="requestedTo">Assigned To / የተመደበው ቦታ</label>
+            <input
+              type="text"
+              id="requestedTo"
+              class="form-control"
+              [(ngModel)]="requestedTo"
+              name="requestedTo"
+              readonly
+            />
+          </div>
+        </div>
+      </div>
 
-    <!-- Requested To -->
-    <div class="form-group">
-      <label for="requestedTo">Requested To / የተጠየቀው ቦታ</label>
-      <input
-        type="text"
-        id="requestedTo"
-        class="form-control"
-        [(ngModel)]="requestedTo"
-        name="requestedTo"
-        readonly
-      />
-    </div>
-
-    <!-- Submit Button -->
-    <button type="submit" class="btn btn-primary">Submit / አስገባ</button>
-  </form>
+      <!-- Buttons -->
+      <div class="button-container">
+        <button type="submit" class="action-btn primary">
+          <i class="bi bi-check-circle"></i> Assign / መድብ
+        </button>
+        <button type="button" class="action-btn secondary" (click)="router.navigate(['/maintenance/request-list'])">
+          <i class="bi bi-x-circle"></i> Cancel / ሰርዝ
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

@@ -1,8 +1,42 @@
-<div class="item-listing">
+<div #listingContent class="item-listing">
+  <!-- Header with Title and Action Button -->
   <div class="header">
     <h1 class="title">Item Listing / የዕቃዎች ዝርዝር</h1>
 
-    <!-- Role Filter Dropdown - Only for Supply and Distribution Team Leader -->
+    <div class="header-actions">
+      <!-- Export PDF Button -->
+      <button 
+        class="action-btn secondary" 
+        (click)="exportToPDF()"
+        [disabled]="filteredItems.length === 0"
+        aria-label="Export to PDF">
+        📄 Export PDF / ወደ PDF ላክ
+      </button>
+
+      <!-- Register New Item Button - Hidden for Supply and Distribution Team Leader -->
+      <button 
+        *ngIf="!isSupplyAndDistributionLeader()"
+        class="action-btn primary" 
+        (click)="navigateToRegister()"
+        aria-label="Navigate to register new item">
+        Register New Item / አዲስ እቃ መዝግብ
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <!-- Filter Header with Clear Button -->
+    <div class="filters-header" *ngIf="hasActiveFilters()">
+      <span class="active-filters-badge">
+        {{ getActiveFilterCount() }} filter(s) active / {{ getActiveFilterCount() }} ማጣሪያ(ዎች) ንቁ
+      </span>
+      <button class="clear-filters-btn" (click)="clearAllFilters()" aria-label="Clear all filters">
+        Clear All / ሁሉንም አጽዳ
+      </button>
+    </div>
+
+    <!-- Role Filter - Only for Supply and Distribution Team Leader -->
     <div *ngIf="isSupplyAndDistributionLeader()" class="filter-controls">
       <label for="roleFilter">Filter by Role(s): </label>
       <div class="custom-multiselect">
@@ -27,37 +61,51 @@
       </div>
     </div>
 
-    <!-- Debug Button -->
-    <!-- <button 
-      class="action-btn secondary" 
-      (click)="debugUserCache()"
-      style="margin-left: auto;"
-      aria-label="Debug user cache">
-      Debug Cache
-    </button> -->
+    <!-- Search and Category Filter -->
+    <div class="search-filter-group">
+      <div class="search-group">
+        <label for="searchInput" class="search-label">Search: </label>
+        <input
+          id="searchInput"
+          type="text"
+          class="search-input"
+          placeholder="Search by description, model, voucher, or received from..."
+          [value]="searchTerm"
+          (input)="onSearchChange($event)"
+          aria-label="Search items by description, model, voucher number, or received from"
+        />
+      </div>
 
-    <!-- Register New Item Button - Hidden for Supply and Distribution Team Leader -->
-    <button 
-      *ngIf="!isSupplyAndDistributionLeader()"
-      class="action-btn primary" 
-      (click)="navigateToRegister()"
-      aria-label="Navigate to register new item">
-      Register New Item / አዲስ እቃ መዝግብ
-    </button>
-  </div>
+      <div class="filter-group">
+        <label for="categoryFilter" class="filter-label">Category / ምድብ: </label>
+        <select
+          id="categoryFilter"
+          class="filter-select"
+          [value]="selectedCategory"
+          (change)="onCategoryChange($event)"
+          aria-label="Filter items by category">
+          <option value="">All / ሁሉም ({{ items.length }})</option>
+          <option *ngFor="let category of availableCategories" [value]="category">
+            {{ category }} ({{ getCategoryCount(category) }})
+          </option>
+        </select>
+      </div>
 
-  <!-- Search Input -->
-  <div class="search-container">
-    <label for="searchInput" class="search-label">Search by Description: </label>
-    <input
-      id="searchInput"
-      type="text"
-      class="search-input"
-      placeholder="Search items..."
-      [value]="searchTerm"
-      (input)="onSearchChange($event)"
-      aria-label="Search items by description"
-    />
+      <div class="filter-group">
+        <label for="sourceFilter" class="filter-label">Source / ምንጭ: </label>
+        <select
+          id="sourceFilter"
+          class="filter-select"
+          [value]="selectedSource"
+          (change)="onSourceChange($event)"
+          aria-label="Filter items by source">
+          <option value="">All / ሁሉም ({{ items.length }})</option>
+          <option *ngFor="let source of availableSources" [value]="source">
+            {{ source }} ({{ getSourceCount(source) }})
+          </option>
+        </select>
+      </div>
+    </div>
   </div>
 
   <!-- Loading State -->
@@ -80,6 +128,7 @@
             <th>Name (Description) / የእቃ ስም</th>
             <th>Quantity / ብዛት</th>
             <th>Category / ምድብ</th>
+            <th>Voucher Number / የሰነድ ቁጥር</th>
             <th>Registered By / የመዘገበው</th>
             <th>Registration Date / የምዝገባ ቀን</th>
             <th>Actions / ተግባር</th>
@@ -95,6 +144,7 @@
               <span *ngIf="item.quantity === 0" class="warning-tooltip" title="Zero quantity detected"></span>
             </td>
             <td data-label="Category / ምድብ">{{ item.category || 'Unknown' }}</td>
+            <td data-label="Voucher Number / የሰነድ ቁጥር">{{ item.voucherNumber || '-' }}</td>
             <td data-label="Registered By / የመዘገበው">
               {{ getRegisteredByDisplay(item.registeredBy) }}
             </td>

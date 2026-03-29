@@ -66,6 +66,45 @@ export class ReportComponent implements OnInit {
         });
     }
 
+    exportToCSV(): void {
+  if (!this.reportItems || this.reportItems.length === 0) {
+    return;
+  }
+
+  // Define CSV headers (bilingual)
+  const headers = [
+    'Model / ሞዴል',
+    'Part Number / የእቃው መለያ ቁጥር',
+    'Total Received / አጠቃላይ ገቢ',
+    'Total Issued / አጠቃላይ ወጪ',
+    'In Stock / በመጋዘን ውስጥ'
+  ];
+
+  // Map report items to CSV rows
+  const rows = this.reportItems.map(item => [
+    `"${item.item.model}"`,
+    `"${item.item.partNumber}"`,
+    item.totals.totalReceived,
+    item.totals.totalIssued,
+    item.totals.inStock
+  ]);
+
+  // Build CSV content
+  let csvContent = headers.join(',') + '\n';
+  csvContent += rows.map(row => row.join(',')).join('\n');
+
+  // Create blob and trigger download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `Inventory_Report_${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
     applyFilter(): void {
         console.log('Filter values:', this.filter);
         this.loadReport();

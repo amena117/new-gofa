@@ -31,30 +31,32 @@ export class UserListComponent implements OnInit {
   error: string | null = null;
   searchName = '';
   selectedRole = '';
-  
+
   // Define all available roles
   allAvailableRoles = [
-    'VHF', 'HF', 'ELECTRONICS', 'SPAREPART', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 
-    'PROPERTY_CONTROL_TEAMLEADER', 'PROPERTY_CONTROL', 'SUPPLY_AND_DISTRIBUTION_HEAD',
-    'TRANSIT', 'PPC', 'POWER', 'QUALITY', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE', 
-    'ELECTRONICS_PTEAM', 'ELECTRONICS_HTEAM', 'MINISTORE', 'RADIO', 'SUPER_ADMIN', 
+    'VHF', 'HF', 'ELECTRONICS', 'SPAREPART', 'PROPERTY_CONTROL',
+    'SUPPLY_AND_DISTRIBUTION_MANAGER', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER',
+    'PROPERTY_CONTROL_TEAMLEADER', 'PROPERTY_CONTROL_HEAD', 'SUPPLY_AND_DISTRIBUTION_HEAD',
+    'TRANSIT', 'PPC', 'POWER', 'QUALITY', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE',
+    'ELECTRONICS_PTEAM', 'ELECTRONICS_HTEAM', 'MINISTORE', 'RADIO', 'SUPER_ADMIN',
     'MAINTENANCE_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER', 'RTEAM_LEADER',
     'SANDD_ADMIN', 'MAINTENANCE_ADMIN'
   ];
-  
-  // Roles that each admin can manage
+
+  // SSandmadmin Roles (Strict List)
   sandDRoles = [
-    'VHF', 'HF', 'ELECTRONICS', 'SPAREPART', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 
-    'PROPERTY_CONTROL_TEAMLEADER', 'PROPERTY_CONTROL', 'SUPPLY_AND_DISTRIBUTION_HEAD',
-    'TRANSIT'
+    'VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'PROPERTY_CONTROL',
+    'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL_TEAMLEADER', 'TRANSIT'
   ];
-  
+
+  // Maintenance Admin Roles (The rest)
   maintenanceRoles = [
-    'PPC', 'POWER', 'QUALITY', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE', 
-    'ELECTRONICS_PTEAM', 'ELECTRONICS_HTEAM', 'MINISTORE', 'RADIO', 
+    'SUPPLY_AND_DISTRIBUTION_MANAGER', 'SUPPLY_AND_DISTRIBUTION_HEAD',
+    'PPC', 'POWER', 'QUALITY', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE',
+    'ELECTRONICS_PTEAM', 'ELECTRONICS_HTEAM', 'MINISTORE', 'RADIO',
     'MAINTENANCE_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER', 'RTEAM_LEADER'
   ];
-  
+
   availableRoles: string[] = [];
   currentUserRole: string | null = null;
   currentPage = 1;
@@ -63,7 +65,7 @@ export class UserListComponent implements OnInit {
 
   private apiUrl = `${environment.apiBaseUrl}/api/auth`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   ngOnInit() {
     console.log('[UserListComponent] Initializing with apiUrl:', this.apiUrl);
@@ -91,47 +93,43 @@ export class UserListComponent implements OnInit {
   // Change from private to public so template can access it
   canManageUser(userRole: string): boolean {
     const currentRole = this.currentUserRole;
-    
+
     if (!currentRole) return false;
-    
+
     if (currentRole === 'SUPER_ADMIN') {
-      return true; // SUPER_ADMIN can manage all users
+      return true;
     }
-    
+
     if (currentRole === 'SANDD_ADMIN') {
-      // SANDD_ADMIN can only manage S&D roles and cannot manage other admins
-      return this.sandDRoles.includes(userRole) && 
-             !['SUPER_ADMIN', 'SANDD_ADMIN', 'MAINTENANCE_ADMIN'].includes(userRole);
+      // SANDD_ADMIN can only manage their specific list
+      return this.sandDRoles.includes(userRole);
     }
-    
+
     if (currentRole === 'MAINTENANCE_ADMIN') {
-      // MAINTENANCE_ADMIN can only manage maintenance roles and cannot manage other admins
-      return this.maintenanceRoles.includes(userRole) && 
-             !['SUPER_ADMIN', 'SANDD_ADMIN', 'MAINTENANCE_ADMIN'].includes(userRole);
+      // MAINTENANCE_ADMIN can only manage the rest
+      return this.maintenanceRoles.includes(userRole);
     }
-    
+
     return false;
   }
 
   private canSeeUser(userRole: string): boolean {
     const currentRole = this.currentUserRole;
-    
+
     if (!currentRole) return false;
-    
+
     if (currentRole === 'SUPER_ADMIN') {
-      return true; // SUPER_ADMIN can see all users
+      return true;
     }
-    
+
     if (currentRole === 'SANDD_ADMIN') {
-      // SANDD_ADMIN can see S&D roles and other SANDD_ADMINs
       return this.sandDRoles.includes(userRole) || userRole === 'SANDD_ADMIN';
     }
-    
+
     if (currentRole === 'MAINTENANCE_ADMIN') {
-      // MAINTENANCE_ADMIN can see maintenance roles and other MAINTENANCE_ADMINs
       return this.maintenanceRoles.includes(userRole) || userRole === 'MAINTENANCE_ADMIN';
     }
-    
+
     return false;
   }
 
@@ -184,7 +182,7 @@ export class UserListComponent implements OnInit {
           this.users = response.data
             .filter((user: User) => this.canSeeUser(user.role))
             .sort((a: User, b: User) => b.id - a.id);
-          
+
           this.applyFilters();
         } else {
           this.error = response.message || 'Failed to load users';
@@ -239,7 +237,7 @@ export class UserListComponent implements OnInit {
       alert('You do not have permission to edit this user.');
       return;
     }
-    
+
     user.isEditing = true;
     user.password = '';
     user.confirmPassword = '';
@@ -251,7 +249,7 @@ export class UserListComponent implements OnInit {
       alert('You do not have permission to edit this user.');
       return;
     }
-    
+
     this.isLoading = true;
     this.error = null;
 
@@ -370,7 +368,7 @@ export class UserListComponent implements OnInit {
       alert('You do not have permission to delete this user.');
       return;
     }
-    
+
     if (!confirm(`Are you sure you want to delete the user "${user.firstName} ${user.lastName}"?`)) {
       return;
     }
@@ -395,7 +393,7 @@ export class UserListComponent implements OnInit {
       alert('You do not have permission to disable/enable this user.');
       return;
     }
-    
+
     if (!confirm(`Are you sure you want to ${user.isDisabled ? 'enable' : 'disable'} "${user.firstName} ${user.lastName}"?`)) {
       return;
     }

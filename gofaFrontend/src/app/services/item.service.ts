@@ -135,10 +135,14 @@ export class ItemService {
   getItemsByRole(roles: string[] = ['VHF', 'HF', 'ELECTRONICS', 'SPAREPART']): Observable<Item[]> {
     const rolesQuery = roles.map(role => `roles=${encodeURIComponent(role)}`).join('&');
     const url = `${this.apiUrl}/by-roles?${rolesQuery}`;
+    console.log(`🔍 Fetching items for roles: ${roles.join(', ')}`);
+    console.log(`📡 Request URL: ${url}`);
+    
     return this.http.get<Item[]>(url, {
       headers: this.getHeaders(),
       withCredentials: true
     }).pipe(
+      tap(items => console.log(`✅ Received ${items.length} items for roles: ${roles.join(', ')}`)),
       map(items => items.map(item => ({
         ...item,
         description: item.description || 'Unknown',
@@ -152,7 +156,10 @@ export class ItemService {
         units: item.units || [],
         transactionHistory: item.transactionHistory || []
       }))),
-      catchError(this.handleError)
+      catchError(error => {
+        console.error(`❌ Error fetching items for roles ${roles.join(', ')}:`, error);
+        return this.handleError(error);
+      })
     );
   }
   getDashboardItemsByRole(roles: string[]): Observable<DashboardItem[]> {
@@ -578,6 +585,42 @@ export class ItemService {
       }
     ).pipe(
       catchError(this.handleError)
+    );
+  }
+
+  // Add accessories to an existing item
+  addAccessoriesToItem(request: any): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(
+      `${this.apiUrl}/${request.itemId}/add-accessories`,
+      request,
+      {
+        headers: this.getHeaders(),
+        withCredentials: true
+      }
+    ).pipe(
+      tap(response => {
+        console.log('ItemService: Add accessories response:', response);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  // Get accessories by role
+  getAccessoriesByRole(roles: string[]): Observable<any[]> {
+    const rolesQuery = roles.map(role => `roles=${encodeURIComponent(role)}`).join('&');
+    const url = `${this.apiUrl}/accessories/by-roles?${rolesQuery}`;
+    console.log(`🔍 Fetching accessories for roles: ${roles.join(', ')}`);
+    console.log(`📡 Request URL: ${url}`);
+    
+    return this.http.get<any[]>(url, {
+      headers: this.getHeaders(),
+      withCredentials: true
+    }).pipe(
+      tap(accessories => console.log(`✅ Received ${accessories.length} accessories for roles: ${roles.join(', ')}`)),
+      catchError(error => {
+        console.error(`❌ Error fetching accessories for roles ${roles.join(', ')}:`, error);
+        return this.handleError(error);
+      })
     );
   }
 

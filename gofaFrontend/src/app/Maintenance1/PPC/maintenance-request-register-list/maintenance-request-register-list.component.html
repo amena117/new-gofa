@@ -112,5 +112,115 @@
 </nav>
 
 
-  <!-- Modals remain unchanged -->
+  <!-- Modals -->
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="editModalLabel">
+          <i class="bi bi-pencil-square"></i> Edit Maintenance Request / የጥገና መጠየቂያ አርትዕ
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="editRequest">
+        <form>
+          <div class="row">
+            <!-- Column 1 -->
+            <div class="col-md-6">
+              <!-- Works Order Number (Read-only) -->
+              <div class="mb-3">
+                <label for="editWorksOrderNumber" class="form-label">Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
+                <input type="number" class="form-control bg-light" id="editWorksOrderNumber" [(ngModel)]="editRequest.worksOrderNumber" name="worksOrderNumber" readonly />
+              </div>
+
+              <!-- Quantity -->
+              <div class="mb-3">
+                <label for="editQuantity" class="form-label">Quantity / ብዛት</label>
+                <input type="number" class="form-control bg-light" id="editQuantity" [(ngModel)]="editRequest.quantity" name="quantity" readonly />
+                <small class="text-muted">Quantity is always 1 for maintenance requests</small>
+              </div>
+
+              <!-- Serial No of Equipment -->
+              <div class="mb-3">
+                <label for="editSerialNo" class="form-label">Serial No of Equipment / የመሳሪያው ተራ ቁጥር</label>
+                <input type="text" class="form-control" id="editSerialNo" [(ngModel)]="editRequest.serialNoOfEquip" name="serialNoOfEquip" />
+              </div>
+
+              <!-- Equipment Type -->
+              <div class="mb-3">
+                <label for="editEquipmentType" class="form-label">Equipment Type ID / የመሳሪያ አይነት</label>
+                <input type="number" class="form-control" id="editEquipmentType" [(ngModel)]="editRequest.equipmentTypeId" name="equipmentTypeId" />
+              </div>
+
+              <!-- Current Handler (Read-only) -->
+              <div class="mb-3">
+                <label for="editCurrentHandler" class="form-label">Current Handler / የአሁኑ ተቋም</label>
+                <input type="text" class="form-control bg-light" id="editCurrentHandler" [(ngModel)]="editRequest.currentHandler" name="currentHandler" readonly />
+              </div>
+            </div>
+
+            <!-- Column 2 -->
+            <div class="col-md-6">
+              <!-- Nomenclature / Model -->
+              <div class="mb-3">
+                <label for="editNomenclature" class="form-label">Model / ሞዴል</label>
+                <input type="text" class="form-control" id="editNomenclature" [(ngModel)]="editRequest.nomenclature" name="nomenclature" />
+              </div>
+
+              <!-- Requested By -->
+              <div class="mb-3">
+                <label for="editRequestedBy" class="form-label">Requested By / የጠየቀው</label>
+                <input type="text" class="form-control" id="editRequestedBy" [(ngModel)]="editRequest.requestedBy" name="requestedBy" />
+              </div>
+
+              <!-- Description of Work -->
+              <div class="mb-3">
+                <label for="editDescription" class="form-label">Description of Work / የስራው መግለጫ</label>
+                <textarea class="form-control" id="editDescription" rows="3" [(ngModel)]="editRequest.briefDescriptionOfWork" name="briefDescriptionOfWork"></textarea>
+              </div>
+
+              <!-- Date Work Order Received -->
+              <div class="mb-3">
+                <label for="editDateReceived" class="form-label">Date Work Order Received / የተቀበለበት ቀን</label>
+                <input type="date" class="form-control" id="editDateReceived" [(ngModel)]="editRequest.dateWorkOrderReceived" name="dateWorkOrderReceived" />
+              </div>
+
+              <!-- Status Stage -->
+              <div class="mb-3">
+                <label for="editStatusStage" class="form-label">Status Stage / የስታጎች ሁኔታ</label>
+                <select class="form-control" id="editStatusStage" [(ngModel)]="editRequest.statusStage" name="statusStage">
+                  <option value="">Select Status Stage / የስታጎች ሁኔታ ይምረጡ</option>
+                  <option value="POWER">POWER</option>
+                  <option value="OFFICE_MACHINE">OFFICE_MACHINE</option>
+                  <option value="VHF_RADIO">VHF_Radio</option>
+                  <option value="HF_RADIO">HF_Radio</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Letter ID (Full Width) -->
+          <div class="row">
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="editLetterId" class="form-label">Letter ID</label>
+                <input type="number" class="form-control" id="editLetterId" [(ngModel)]="editRequest.letterId" name="letterId" />
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cancel / ሰርዝ
+        </button>
+        <button type="button" class="btn btn-primary" (click)="onEditSubmit()">
+          <i class="bi bi-check-circle"></i> Save Changes / ለውጦችን አስቀምጥ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 </div>

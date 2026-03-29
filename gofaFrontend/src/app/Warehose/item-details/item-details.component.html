@@ -5,35 +5,31 @@
       <button class="action-btn secondary" (click)="navigateBack()" aria-label="Go back to items list">
         Back / ተመለስ
       </button>
-      
+
       <!-- Edit/Save/Cancel Buttons -->
       <div class="edit-buttons" *ngIf="!isEditing; else saveCancelButtons">
-        <button class="action-btn primary" (click)="enableEditing()" 
-                *ngIf="item" aria-label="Edit item details">
+        <button class="action-btn primary" (click)="enableEditing()" *ngIf="item" aria-label="Edit item details">
           Edit / አርትዕ
         </button>
       </div>
-      
+
       <ng-template #saveCancelButtons>
         <div class="edit-buttons">
-          <button class="action-btn secondary" (click)="cancelEditing()" 
-                  [disabled]="isSubmitting" aria-label="Cancel editing">
+          <button class="action-btn secondary" (click)="cancelEditing()" [disabled]="isSubmitting"
+            aria-label="Cancel editing">
             Cancel / ሰርዝ
           </button>
-          <button class="action-btn primary" (click)="onSubmit()" 
-                  [disabled]="isSubmitting || editForm.invalid" aria-label="Save changes">
+          <button class="action-btn primary" (click)="onSubmit()" [disabled]="isSubmitting || editForm.invalid"
+            aria-label="Save changes">
             <span *ngIf="!isSubmitting">Save / አስቀምጥ</span>
             <span *ngIf="isSubmitting">Saving... / በማስቀመጥ ላይ...</span>
           </button>
         </div>
       </ng-template>
 
-      <!-- <button class="action-btn primary" (click)="printPage()" aria-label="Print item details">
-        Print / አትም
-      </button>
       <button class="action-btn primary" (click)="downloadAsPDF()" aria-label="Download as PDF">
         Download PDF / እንደ PDF አውርድ
-      </button> -->
+      </button>
     </div>
   </div>
 
@@ -206,6 +202,50 @@
 
   <!-- Item Details (Read-only View) -->
   <div *ngIf="item && !isLoading && !isEditing" class="details-container">
+    
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="summary-icon received-icon">📥</div>
+        <div class="summary-content">
+          <div class="summary-label">Total Received / ጠቅላላ የተቀበለ</div>
+          <div class="summary-value">{{ totalReceived }}</div>
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <div class="summary-icon withdrawn-icon">📤</div>
+        <div class="summary-content">
+          <div class="summary-label">Total Withdrawn / ጠቅላላ የወጣ</div>
+          <div class="summary-value">{{ totalWithdrawn }}</div>
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <div class="summary-icon stock-icon">📦</div>
+        <div class="summary-content">
+          <div class="summary-label">Current Stock Value / የአሁኑ ክምችት ዋጋ</div>
+          <div class="summary-value">{{ getFormattedCurrencyBreakdown() }}</div>
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <div class="summary-icon transactions-icon">📊</div>
+        <div class="summary-content">
+          <div class="summary-label">Total Transactions / ጠቅላላ ግብይቶች</div>
+          <div class="summary-value">{{ totalTransactions }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Button -->
+    <div class="export-section">
+      <button class="action-btn primary export-btn" (click)="exportToExcel()" aria-label="Export to Excel">
+        📊 Export to Excel / ወደ ኤክሴል ላክ
+      </button>
+    </div>
+
+
     <!-- Item Information -->
     <div class="form-section">
       <h2 class="section-title">Item Information / የእቃ መረጃ</h2>
@@ -225,10 +265,6 @@
         <div class="info-item">
           <label class="info-label">Model / ሞዴል:</label>
           <span class="info-value">{{ item.model || 'Unknown / ያልታወቀ' }}</span>
-        </div>
-        <div class="info-item">
-          <label class="info-label">Source / ምንጭ:</label>
-          <span class="info-value">{{ item.source || 'Unknown / ያልታወቀ' }}</span>
         </div>
       </div>
     </div>
@@ -252,25 +288,6 @@
       </div>
     </div>
 
-    <!-- Registration Details -->
-    <div class="form-section">
-      <h2 class="section-title">Registration Details / የመመዝገቢያ ዝርዝሮች</h2>
-      <div class="info-grid">
-        <div class="info-item">
-          <label class="info-label">Voucher Number / የሰነድ ቁጥር:</label>
-          <span class="info-value">{{ item.voucherNumber || '-' }}</span>
-        </div>
-        <div class="info-item">
-          <label class="info-label">Received From / ከማን ተቀበለ:</label>
-          <span class="info-value">{{ item.receivedFrom || 'Unknown / ያልታወቀ' }}</span>
-        </div>
-        <div class="info-item">
-          <label class="info-label">Registration Date / የተመዘገበበት ቀን:</label>
-          <span class="info-value">{{ formatEthiopianDate(item.registrationDate) }}</span>
-        </div>
-      </div>
-    </div>
-
     <!-- Inventory Details -->
     <div class="form-section">
       <h2 class="section-title">Inventory Details / የክምችት ዝርዝሮች</h2>
@@ -289,7 +306,10 @@
         </div>
         <div class="info-item">
           <label class="info-label">Unit Price / የነጠላ ዋጋ:</label>
-          <span class="info-value">{{ item.unitPrice ? (item.unitPrice | number:'1.2-2') : '0.00' }} {{ item.currency || 'ETB' }}</span>
+          <span class="info-value">
+            <span *ngIf="item.currency === 'FOC'">0.00 FOC (Free of Charge)</span>
+            <span *ngIf="item.currency !== 'FOC'">{{ item.unitPrice ? (item.unitPrice | number:'1.2-2') : '0.00' }} {{ item.currency || 'ETB' }}</span>
+          </span>
         </div>
       </div>
     </div>
@@ -298,43 +318,206 @@
 
 
     <!-- Accessories -->
-    
-<div class="form-section">
-  <h2 class="section-title">Accessories / ተያያዥ እቃዎች</h2>
-  <div class="table-container" *ngIf="item.accessories && item.accessories.length > 0; else noAccessories">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Name / ስም</th>
-          <th>Model / ሞዴል</th>
-          <th>Quantity / ብዛት</th>
-          <th>Unit Price / የነጠላ ዋጋ</th>
-          <th>Currency / መገበያያ</th>
-          <th>Total Price / ጠቅላላ ዋጋ</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let accessory of item.accessories">
-          <td data-label="Name / ስም">{{ accessory.name || 'Unknown / ያልታወቀ' }}</td>
-          <td data-label="Model / ሞዴል">{{ accessory.model || 'Unknown / ያልታወቀ' }}</td>
-          <td data-label="Quantity / ብዛት">{{ accessory.quantity || 0 }}</td>
-          <td data-label="Unit Price / የነጠላ ዋጋ">
-            {{ accessory.unitPrice ? (accessory.unitPrice | number:'1.2-2') : '0.00' }}
-          </td>
-          <td data-label="Currency / መገበያያ">{{ accessory.currency || 'ETB' }}</td>
-          <td data-label="Total Price / ጠቅላላ ዋጋ">
-            {{ formatAccessoryPrice(accessory.unitPrice, accessory.currency, accessory.quantity) }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <ng-template #noAccessories>
-    <div class="no-data">
-      No accessories available / ምንም መለዋወጫዎች የሉም
+
+    <div class="form-section">
+      <div class="section-header">
+        <h2 class="section-title">Accessories / ተያያዥ እቃዎች</h2>
+        <div class="pagination-info" *ngIf="consolidatedAccessories && consolidatedAccessories.length > accessoryPageSize">
+          Page {{ accessoryCurrentPage }} of {{ getAccessoryTotalPages() }} ({{ consolidatedAccessories.length }} total)
+        </div>
+      </div>
+      <div class="table-container" *ngIf="consolidatedAccessories && consolidatedAccessories.length > 0; else noAccessories">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name / ስም</th>
+              <th>Model / ሞዴል</th>
+              <th>Total Quantity / ጠቅላላ ብዛት</th>
+              <th>Unit Price / የነጠላ ዋጋ</th>
+              <th>Currency / መገበያያ</th>
+              <th>Total Price / ጠቅላላ ዋጋ</th>
+              <th>Sub-Accessories / ንዑስ አባሪዎች</th>
+              <th>Actions / ተግባር</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let accessory of pagedAccessories">
+              <td data-label="Name / ስም">{{ accessory.name || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Model / ሞዴል">{{ accessory.model || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Total Quantity / ጠቅላላ ብዛት">{{ accessory.totalQuantity || 0 }}</td>
+              <td data-label="Unit Price / የነጠላ ዋጋ">
+                {{ accessory.unitPrice ? (accessory.unitPrice | number:'1.2-2') : '0.00' }}
+              </td>
+              <td data-label="Currency / መገበያያ">{{ accessory.currency || 'ETB' }}</td>
+              <td data-label="Total Price / ጠቅላላ ዋጋ">
+                {{ formatAccessoryPrice(accessory.unitPrice, accessory.currency, accessory.totalQuantity) }}
+              </td>
+              <td data-label="Sub-Accessories / ንዑስ አባሪዎች">
+                <span *ngIf="accessory.subAccessories && accessory.subAccessories.length > 0" 
+                      style="display: inline-flex; align-items: center; padding: 4px 8px; background: #fef3c7; color: #92400e; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                  📦 {{ accessory.subAccessories.length }} sub-accessory(ies)
+                </span>
+                <span *ngIf="!accessory.subAccessories || accessory.subAccessories.length === 0" 
+                      style="color: #9ca3af; font-size: 12px;">
+                  None / የለም
+                </span>
+              </td>
+              <td data-label="Actions / ተግባር" class="actions-column">
+                <button class="action-btn secondary small" 
+                        (click)="openAccessoryModal(accessory)"
+                        attr.aria-label="View details for accessory">
+                  <i class="icon-eye"></i> View / ይመልከቱ
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <!-- Accessories Pagination -->
+        <div class="pagination" *ngIf="getAccessoryTotalPages() > 1">
+          <button class="page-btn" 
+                  (click)="accessoryPreviousPage()" 
+                  [disabled]="accessoryCurrentPage === 1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Previous
+          </button>
+          
+          <div class="page-numbers">
+            <span class="page-info">Page {{ accessoryCurrentPage }} of {{ getAccessoryTotalPages() }}</span>
+          </div>
+          
+          <button class="page-btn" 
+                  (click)="accessoryNextPage()" 
+                  [disabled]="accessoryCurrentPage === getAccessoryTotalPages()">
+            Next
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <ng-template #noAccessories>
+        <div class="no-data">
+          No accessories available / ምንም መለዋወጫዎች የሉም
+        </div>
+      </ng-template>
     </div>
-  </ng-template>
-</div>
+
+    <!-- Accessory Details Modal -->
+    <div class="modal-overlay" *ngIf="showAccessoryModal" (click)="closeAccessoryModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Accessory Details / የተያያዥ እቃ ዝርዝር</h2>
+          <button class="close-btn" (click)="closeAccessoryModal()" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body" *ngIf="selectedAccessory">
+          <div class="detail-row">
+            <strong>Name / ስም:</strong> {{ selectedAccessory.name }}
+          </div>
+          <div class="detail-row">
+            <strong>Model / ሞዴል:</strong> {{ selectedAccessory.model }}
+          </div>
+          <div class="detail-row">
+            <strong>Total Received / ጠቅላላ የተቀበለ:</strong> {{ selectedAccessory.totalQuantity }}
+          </div>
+          <div class="detail-row" *ngIf="selectedAccessory.totalWithdrawn !== undefined">
+            <strong>Total Withdrawn / ጠቅላላ የወጣ:</strong> {{ selectedAccessory.totalWithdrawn }}
+          </div>
+          <div class="detail-row" *ngIf="selectedAccessory.currentQuantity !== undefined">
+            <strong>Current Quantity / የአሁኑ ብዛት:</strong> {{ selectedAccessory.currentQuantity }}
+          </div>
+          <div class="detail-row">
+            <strong>Unit Price / የነጠላ ዋጋ:</strong> {{ selectedAccessory.unitPrice | number:'1.2-2' }} {{ selectedAccessory.currency }}
+          </div>
+          <div class="detail-row" *ngIf="selectedAccessory.currentQuantity !== undefined">
+            <strong>Current Value / የአሁኑ ዋጋ:</strong> {{ getAccessoryValueByCurrency(selectedAccessory) }}
+          </div>
+          <div class="detail-row" *ngIf="selectedAccessory.currentQuantity === undefined">
+            <strong>Total Value / ጠቅላላ ዋጋ:</strong> {{ getAccessoryValueByCurrency(selectedAccessory) }}
+          </div>
+          
+          <!-- Sub-Accessories Section -->
+          <div class="detail-section" *ngIf="selectedAccessory.subAccessories && selectedAccessory.subAccessories.length > 0" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6366f1;">
+            <h3 style="margin: 0 0 12px 0; color: #4b5563; font-size: 16px; font-weight: 600;">
+              <i style="margin-right: 6px;">📦</i>
+              Sub-Accessories / ንዑስ አባሪዎች
+            </h3>
+            <table class="data-table" style="font-size: 13px;">
+              <thead>
+                <tr>
+                  <th>Name / ስም</th>
+                  <th>Quantity / ብዛት</th>
+                  <th>Unit Price / የነጠላ ዋጋ</th>
+                  <th>Currency / መገበያያ</th>
+                  <th>Total Value / ጠቅላላ ዋጋ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let subAcc of selectedAccessory.subAccessories">
+                  <td>{{ subAcc.name }}</td>
+                  <td>{{ subAcc.quantity * (selectedAccessory.currentQuantity || selectedAccessory.totalQuantity || 0) }}</td>
+                  <td>
+                    <span *ngIf="subAcc.unitPrice && subAcc.unitPrice > 0">{{ subAcc.unitPrice | number:'1.2-2' }}</span>
+                    <span *ngIf="!subAcc.unitPrice || subAcc.unitPrice === 0" style="color: #9ca3af; font-style: italic;">Not set</span>
+                  </td>
+                  <td>{{ subAcc.currency }}</td>
+                  <td>
+                    <span *ngIf="subAcc.unitPrice && subAcc.unitPrice > 0">{{ (subAcc.unitPrice * subAcc.quantity * (selectedAccessory.currentQuantity || selectedAccessory.totalQuantity || 0)) | number:'1.2-2' }} {{ subAcc.currency }}</span>
+                    <span *ngIf="!subAcc.unitPrice || subAcc.unitPrice === 0" style="color: #9ca3af; font-style: italic;">-</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top: 10px; font-size: 12px; color: #6b7280; font-style: italic;">
+              ℹ️ Sub-accessories are automatically withdrawn when the parent accessory is withdrawn.
+            </div>
+          </div>
+          
+          <div class="detail-section">
+            <h3>Transaction History / የግብይት ታሪክ</h3>
+            <table class="data-table" *ngIf="(selectedAccessory.allEntries && selectedAccessory.allEntries.length > 0) || (selectedAccessory.withdrawals && selectedAccessory.withdrawals.length > 0); else noTransactions">
+              <thead>
+                <tr>
+                  <th>Date / ቀን</th>
+                  <th>Action / ተግባር</th>
+                  <th>Quantity / ብዛት</th>
+                  <th>Voucher / ሰነድ</th>
+                  <th>Details / ዝርዝር</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Addition entries -->
+                <tr *ngFor="let entry of selectedAccessory.allEntries; let i = index" class="transaction-received">
+                  <td>{{ formatEthiopianDate(entry.date) }}</td>
+                  <td>Received / ተቀብሏል</td>
+                  <td>+{{ entry.quantity }}</td>
+                  <td>-</td>
+                  <td>{{ i === 0 ? 'Initial registration / የመጀመሪያ ምዝገባ' : 'Added to existing / ለነባር ተጨምሯል' }}</td>
+                </tr>
+                <!-- Withdrawal entries -->
+                <tr *ngFor="let withdrawal of selectedAccessory.withdrawals" class="transaction-withdrawn">
+                  <td>{{ formatEthiopianDate(withdrawal.date) }}</td>
+                  <td>Withdrawn / ወጥቷል</td>
+                  <td>-{{ withdrawal.quantity }}</td>
+                  <td>{{ withdrawal.voucherNumber }}</td>
+                  <td>{{ withdrawal.recipientName }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <ng-template #noTransactions>
+              <div class="no-data">
+                No transaction history available / ምንም የግብይት ታሪክ የለም
+              </div>
+            </ng-template>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="action-btn secondary" (click)="closeAccessoryModal()">Close / ዝጋ</button>
+        </div>
+      </div>
+    </div>
 
 
 
@@ -342,80 +525,194 @@
 
     <!-- Received Transactions -->
     <div class="form-section">
-      <h2 class="section-title">Received Transaction History / የተቀበሉ ግብይቶች ታሪክ</h2>
-      <div class="table-container" *ngIf="transactions.length > 0; else noReceiveTransactions">
+      <div class="section-header">
+        <h2 class="section-title">Received Transaction History / የተቀበሉ ግብይቶች ታሪክ</h2>
+        
+        <div class="header-controls">
+          <!-- Action Filter -->
+          <div class="filter-group">
+            <label for="actionFilter">Filter / አጣራ:</label>
+            <select id="actionFilter" [(ngModel)]="actionFilter" (ngModelChange)="applyActionFilter()" class="filter-select">
+              <option value="all">All Transactions / ሁሉም ግብይቶች</option>
+              <option value="received">Received Only / የተቀበሉ ብቻ</option>
+              <option value="withdrawn">Withdrawn Only / የወጡ ብቻ</option>
+            </select>
+          </div>
+          
+          <!-- Pagination Info -->
+          <div class="pagination-info" *ngIf="filteredTransactions.length > receiveHistoryPageSize">
+            Page {{ receiveHistoryCurrentPage }} of {{ getReceiveHistoryTotalPages() }} ({{ filteredTransactions.length }} total)
+          </div>
+        </div>
+      </div>
+      
+      <div class="table-container" *ngIf="filteredTransactions.length > 0; else noReceiveTransactions">
         <table class="data-table">
           <thead>
             <tr>
               <th>Date / ቀን</th>
               <th>Action / ተግባር</th>
               <th>Quantity / ብዛት</th>
+              <th>Received From / ከማን ተቀበለ</th>
+              <th>Source / ምንጭ</th>
               <th>Voucher Number / የሰነድ ቁጥር</th>
               <th>Unit Price / የክፍል ዋጋ</th>
               <th>Total Price / ጠቅላላ ዋጋ</th>
+              <th>History / ታሪክ</th>
               <th>Details / ዝርዝሮች</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let transaction of transactions">
+            <tr *ngFor="let transaction of pagedReceiveHistory" 
+                [ngClass]="getTransactionColorClass(transaction.action)"
+                [class.transaction-accessory-only]="transaction.isAccessoryOnly">
               <td data-label="Date">{{ formatEthiopianDate(transaction.date) }}</td>
               <td data-label="Action">{{ transaction.action || 'Unknown / ያልታወቀ' }}</td>
-              <td data-label="Quantity">{{ transaction.quantity || 0 }}</td>
+              <td data-label="Quantity">
+                <span *ngIf="transaction.isAccessoryOnly" class="accessory-only-badge" title="Accessory-only receipt - main item quantity unchanged">
+                  ACCESSORY ONLY
+                </span>
+                <span *ngIf="!transaction.isAccessoryOnly">{{ transaction.quantity || 0 }}</span>
+                <span *ngIf="transaction.isAccessoryOnly" style="color: #999; font-size: 0.9em;">
+                  (0 - accessories only)
+                </span>
+              </td>
+              <td data-label="Received From">{{ extractReceivedFrom(transaction.details) }}</td>
+              <td data-label="Source">{{ extractSource(transaction.details) }}</td>
               <td data-label="Voucher Number">{{ transaction.voucherNumber || '-' }}</td>
-              <td data-label="Unit Price">{{ transaction.unitPrice ? (transaction.unitPrice | number:'1.2-2') : '0.00' }} {{ transaction.currency || 'ETB' }}</td>
-              <td data-label="Total Price">{{ formatPrice(transaction.unitPrice || 0, transaction.currency || 'ETB', transaction.quantity || 1) }}</td>
+              <td data-label="Unit Price">{{ transaction.unitPrice ? (transaction.unitPrice | number:'1.2-2') : '0.00'
+                }} {{ transaction.currency || 'ETB' }}</td>
+              <td data-label="Total Price">{{ formatPrice(transaction.unitPrice || 0, transaction.currency || 'ETB',
+                transaction.quantity || 1) }}</td>
+              <td data-label="History" [class.highlight-accessories]="transaction.isAccessoryOnly">{{ formatAccessoryHistory(transaction) }}</td>
               <td data-label="Details">{{ transaction.details || 'None / የለም' }}</td>
             </tr>
           </tbody>
         </table>
+        
+        <!-- Receive History Pagination -->
+        <div class="pagination" *ngIf="getReceiveHistoryTotalPages() > 1">
+          <button class="page-btn" 
+                  (click)="receiveHistoryPreviousPage()" 
+                  [disabled]="receiveHistoryCurrentPage === 1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Previous
+          </button>
+          
+          <div class="page-numbers">
+            <span class="page-info">Page {{ receiveHistoryCurrentPage }} of {{ getReceiveHistoryTotalPages() }}</span>
+          </div>
+          
+          <button class="page-btn" 
+                  (click)="receiveHistoryNextPage()" 
+                  [disabled]="receiveHistoryCurrentPage === getReceiveHistoryTotalPages()">
+            Next
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
       </div>
       <ng-template #noReceiveTransactions>
         <div class="no-data">
-          No received transactions available / ምንም የተቀበሉ ግብይቶች የሉም
+          No transactions available for the selected filter / ለተመረጠው ማጣሪያ ምንም ግብይቶች የሉም
         </div>
       </ng-template>
     </div>
 
-    <!-- Model 22 Withdrawals -->
-    <div class="form-section">
-      <h2 class="section-title">Model 22 Withdrawal History / የሞዴል 22 ታሪክ</h2>
+    <!-- Model22 Withdrawal History -->
+    <div class="form-section" *ngIf="actionFilter === 'all' || actionFilter === 'withdrawn'">
+      <div class="section-header">
+        <h2 class="section-title">Withdrawal History / የመውጣት ታሪክ</h2>
+        <div class="pagination-info" *ngIf="model22Withdrawals.length > withdrawalHistoryPageSize">
+          Page {{ withdrawalHistoryCurrentPage }} of {{ getWithdrawalHistoryTotalPages() }} ({{ model22Withdrawals.length }} total)
+        </div>
+      </div>
+      
       <div *ngIf="isWithdrawalsLoading" class="loading-state">
         <div class="loading-spinner"></div>
         <span>Loading withdrawals... / ማውጣቶችን በመጫን ላይ...</span>
       </div>
-      <div class="table-container" *ngIf="!isWithdrawalsLoading && model22Withdrawals.length > 0; else noModel22Withdrawals">
+      
+      <div class="table-container" *ngIf="!isWithdrawalsLoading && model22Withdrawals.length > 0; else noWithdrawals">
         <table class="data-table">
           <thead>
             <tr>
-              <th>ID / መለያ</th>
-              <th>Description / መግለጫ</th>
               <th>Date / ቀን</th>
-              <th>Department / ዲፓርትመንት</th>
-              <th>Recipient / ተቀባይ</th>
-              <th>Unit / የተሰጠው ክፍል</th>
               <th>Quantity / ብዛት</th>
-              <th>Currency / መገበያያ</th>
+              <th>Voucher / ሰነድ</th>
+              <th>Recipient / ተቀባይ</th>
+              <th>Unit / ክፍል</th>
+              <th>Registered By / የመዘገበው</th>
               <th>Serial Numbers / ተከታታይ ቁጥሮች</th>
+              <th>Accessories / መለዋወጫዎች</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let entry of model22Withdrawals">
-              <td data-label="ID">{{ entry.withdrawal.model22Id || 'Unknown / ያልታወቀ' }}</td>
-              <td data-label="Description">{{ entry.description }}</td>
+            <tr *ngFor="let entry of pagedWithdrawalHistory" 
+                [class.transaction-withdrawn]="!entry.isAccessoryOnly"
+                [class.transaction-accessory-only]="entry.isAccessoryOnly">
               <td data-label="Date">{{ formatEthiopianDate(entry.withdrawal.ethiopianDate) }}</td>
-              <td data-label="Department">{{ entry.withdrawal.department || 'Unknown / ያልታወቀ' }}</td>
-              <td data-label="Recipient">{{ entry.withdrawal.recipientName || 'Unknown / ያልታወቀ' }}</td>
-              <td data-label="Unit">{{ entry.withdrawal.recipientOrganization || 'Unknown / ያልታወቀ' }}</td>
-              <td data-label="Quantity">{{ entry.quantity || 0 }}</td>
-              <td data-label="Currency">{{ entry.currency }}</td>
-              <td data-label="Serial Numbers">{{ entry.serialNumbers.length > 0 ? entry.serialNumbers.join(', ') : 'None / የለም' }}</td>
+              <td data-label="Quantity">
+                <span *ngIf="entry.isAccessoryOnly" class="accessory-only-badge" title="Accessory-only withdrawal - main item quantity unchanged">
+                  ACCESSORY ONLY
+                </span>
+                <span *ngIf="!entry.isAccessoryOnly">{{ entry.quantity || 0 }}</span>
+                <span *ngIf="entry.isAccessoryOnly" style="color: #999; font-size: 0.9em;">
+                  (0 - main item not withdrawn)
+                </span>
+              </td>
+              <td data-label="Voucher">{{ entry.withdrawal.voucherNumber || '-' }}</td>
+              <td data-label="Recipient">{{ entry.withdrawal.recipientName || '-' }}</td>
+              <td data-label="Unit">{{ entry.withdrawal.recipientOrganization || '-' }}</td>
+              <td data-label="Registered By">{{ entry.withdrawal.registeredBy || '-' }}</td>
+              <td data-label="Serial Numbers">
+                <span *ngIf="entry.serialNumbers.length > 0">{{ entry.serialNumbers.join(', ') }}</span>
+                <span *ngIf="entry.serialNumbers.length === 0">-</span>
+              </td>
+              <td data-label="Accessories">
+                <span *ngIf="entry.withdrawnAccessories.length > 0" [class.highlight-accessories]="entry.isAccessoryOnly">
+                  <span *ngFor="let acc of entry.withdrawnAccessories; let last = last">
+                    {{ acc.name }}({{ acc.quantity }})<span *ngIf="!last">, </span>
+                  </span>
+                </span>
+                <span *ngIf="entry.withdrawnAccessories.length === 0">-</span>
+              </td>
             </tr>
           </tbody>
         </table>
+        
+        <!-- Withdrawal History Pagination -->
+        <div class="pagination" *ngIf="getWithdrawalHistoryTotalPages() > 1">
+          <button class="page-btn" 
+                  (click)="withdrawalHistoryPreviousPage()" 
+                  [disabled]="withdrawalHistoryCurrentPage === 1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Previous
+          </button>
+          
+          <div class="page-numbers">
+            <span class="page-info">Page {{ withdrawalHistoryCurrentPage }} of {{ getWithdrawalHistoryTotalPages() }}</span>
+          </div>
+          
+          <button class="page-btn" 
+                  (click)="withdrawalHistoryNextPage()" 
+                  [disabled]="withdrawalHistoryCurrentPage === getWithdrawalHistoryTotalPages()">
+            Next
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
       </div>
-      <ng-template #noModel22Withdrawals>
-        <div class="no-data" *ngIf="!isWithdrawalsLoading">
-          No Model 22 withdrawals found for this item / ለዚህ እቃ ምንም የሞዴል 22 ፎርም አልተገኙም
+      
+      <ng-template #noWithdrawals>
+        <div class="no-data">
+          No withdrawal history available / ምንም የመውጣት ታሪክ የለም
         </div>
       </ng-template>
     </div>

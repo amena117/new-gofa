@@ -89,21 +89,45 @@ namespace Gofabackend.Utilities
 
             try
             {
-                // Split by comma to separate month-day from year
-                var parts = ethiopianDate.Split(',');
-                if (parts.Length != 2) return false;
+                // Handle both formats: "monthName day, year" AND "monthName, day, year"
+                // Split by comma and filter out empty parts
+                var parts = ethiopianDate.Split(',')
+                    .Select(p => p.Trim())
+                    .Where(p => !string.IsNullOrWhiteSpace(p))
+                    .ToArray();
+                
+                if (parts.Length < 2) return false;
 
-                var monthDay = parts[0].Trim();
-                var yearStr = parts[1].Trim();
+                string amharicMonth;
+                int day;
+                int year;
 
-                if (!int.TryParse(yearStr, out int year)) return false;
+                if (parts.Length == 2)
+                {
+                    // Format: "monthName day, year" (e.g., "የካቲት 10, 2018")
+                    var monthDay = parts[0].Trim();
+                    var yearStr = parts[1].Trim();
 
-                // Split month and day (e.g., "ነሐሴ 1" → ["ነሐሴ", "1"])
-                var monthDayParts = monthDay.Split(' ');
-                if (monthDayParts.Length < 2) return false;
+                    if (!int.TryParse(yearStr, out year)) return false;
 
-                string amharicMonth = monthDayParts[0];
-                if (!int.TryParse(monthDayParts[1], out int day)) return false;
+                    // Split month and day (e.g., "የካቲት 10" → ["የካቲት", "10"])
+                    var monthDayParts = monthDay.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (monthDayParts.Length < 2) return false;
+
+                    amharicMonth = monthDayParts[0];
+                    if (!int.TryParse(monthDayParts[1], out day)) return false;
+                }
+                else if (parts.Length == 3)
+                {
+                    // Format: "monthName, day, year" (e.g., "የካቲት, 10, 2018")
+                    amharicMonth = parts[0].Trim();
+                    if (!int.TryParse(parts[1].Trim(), out day)) return false;
+                    if (!int.TryParse(parts[2].Trim(), out year)) return false;
+                }
+                else
+                {
+                    return false;
+                }
 
                 // Map Amharic months to numbers (1–13)
                 var monthMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)

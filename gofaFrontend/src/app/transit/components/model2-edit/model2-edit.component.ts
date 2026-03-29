@@ -56,6 +56,8 @@ interface Model2Dto {
   accessories: Accessory[];
   hasExtraItems: boolean;
   extraItems: ExtraItem[];
+  vat: number;
+  grandTotal: number;
 }
 
 @Component({
@@ -126,7 +128,7 @@ export class Model2EditComponent implements OnInit {
   }
 
   createItem(): FormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       stockNumber: ['', Validators.required],
       description: ['', Validators.required],
       unitOfMeasurment: ['', Validators.required],
@@ -140,8 +142,27 @@ export class Model2EditComponent implements OnInit {
       hasAccessories: [false],
       accessories: this.fb.array([]),
       hasExtraItems: [false],
-      extraItems: this.fb.array([])
+      extraItems: this.fb.array([]),
+      vat: [0, [Validators.required, Validators.min(0)]],
+      grandTotal: [0, [Validators.required, Validators.min(0)]]
     });
+
+    // Auto-calculate totalPrice and grandTotal
+    group.valueChanges.subscribe(val => {
+      const issued = +(val?.issued || 0);
+      const unitPrice = +(val?.unitPrice || 0);
+      const vat = +(val?.vat || 0);
+
+      const totalPrice = issued * unitPrice;
+      const grandTotal = totalPrice + vat;
+
+      group.patchValue({
+        totalPrice: totalPrice,
+        grandTotal: grandTotal
+      }, { emitEvent: false });
+    });
+
+    return group;
   }
 
   addItem(): void {
@@ -286,6 +307,8 @@ export class Model2EditComponent implements OnInit {
       do: item.do,
       unitPrice: item.unitPrice,
       totalPrice: item.totalPrice,
+      vat: item.vat,
+      grandTotal: item.grandTotal,
       currency: item.currency,
       hasAccessories: item.hasAccessories,
       hasExtraItems: item.hasExtraItems
@@ -370,23 +393,25 @@ export class Model2EditComponent implements OnInit {
       hasAccessories: formValue.itemDetails[0].hasAccessories,
       accessories: formValue.itemDetails[0].hasAccessories
         ? (formValue.itemDetails[0].accessories || []).map((acc: any) => ({
-            name: acc.name || '',
-            quantity: +acc.quantity || 0
-          }))
+          name: acc.name || '',
+          quantity: +acc.quantity || 0
+        }))
         : [],
+      vat: +formValue.itemDetails[0].vat,
+      grandTotal: +formValue.itemDetails[0].grandTotal,
       hasExtraItems: formValue.itemDetails[0].hasExtraItems,
       extraItems: formValue.itemDetails[0].hasExtraItems
         ? (formValue.itemDetails[0].extraItems || []).map((extra: any) => ({
-            name: extra.name,
-            quantity: +extra.quantity,
-            store: extra.store,
-            extraStatus: extra.extraStatus,
-            extraIssuedByName: extra.extraIssuedByName || ''
-          }))
+          name: extra.name,
+          quantity: +extra.quantity,
+          store: extra.store,
+          extraStatus: extra.extraStatus,
+          extraIssuedByName: extra.extraIssuedByName || ''
+        }))
         : []
     };
 
-    
+
 
     this.model2Service.updateModel2Item(this.itemId, payload).subscribe({
       next: () => {

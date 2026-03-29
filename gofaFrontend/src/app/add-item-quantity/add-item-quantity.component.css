@@ -434,3 +434,317 @@ input[type="number"]::-webkit-inner-spin-button {
     font-size: 18px;
   }
 }
+
+/* ========================================
+   ACCESSORY CARD STYLES (from registration)
+   ======================================== */
+
+/* Accessory Card Layout */
+.accessory-card {
+  background: #ffffff;
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.accessory-card:hover {
+  border-color: #4a90e2;
+  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Accessory Header */
+.accessory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.accessory-title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.accessory-title .icon-accessory::before {
+  content: "🔧";
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+/* Accessory Content */
+.accessory-content {
+  padding: 20px;
+}
+
+/* Form Hint */
+.form-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Checkbox Styling */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.checkbox-container:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.checkbox-input {
+  margin: 0;
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+  accent-color: #4a90e2;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-text {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Serial Numbers Container */
+.serial-numbers-container {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.serial-numbers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.serial-numbers-title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.serial-numbers-title .icon-barcode::before {
+  content: "📊";
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.serial-numbers-info {
+  display: flex;
+  align-items: center;
+}
+
+.info-badge {
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Serial Numbers Grid */
+.serial-numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.serial-input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.serial-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.serial-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.serial-input {
+  width: 100%;
+  padding: 8px 32px 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  transition: all 0.2s ease;
+}
+
+.serial-input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+.serial-input.error {
+  border-color: #ef4444;
+}
+
+.serial-icon {
+  position: absolute;
+  right: 8px;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.serial-icon.icon-tag::before {
+  content: "🏷️";
+}
+
+/* Serial Numbers Status */
+.serial-numbers-status {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.serial-numbers-status.complete {
+  background: #d1fae5;
+  border-color: #10b981;
+}
+
+.status-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.status-icon.icon-check::before {
+  content: "✅";
+}
+
+.status-icon.icon-warning::before {
+  content: "⚠️";
+}
+
+.status-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.serial-numbers-status.complete .status-text {
+  color: #065f46;
+}
+
+/* Action Buttons */
+.action-btn.danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+}
+
+.action-btn.danger:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-1px);
+}
+
+.action-btn .icon-trash::before {
+  content: "🗑️";
+  margin-right: 4px;
+}
+
+/* Animation for new accessories */
+.accessory-card {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design for Accessories */
+@media (max-width: 768px) {
+  .serial-numbers-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .accessory-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}
+
+/* Serial number search container */
+.serial-search-container {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.serial-search-container input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.serial-search-container input:focus {
+  outline: none;
+  border-color: #03203c;
+  box-shadow: 0 0 0 3px rgba(3, 32, 60, 0.1);
+}
+
+.serial-search-container .form-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+}

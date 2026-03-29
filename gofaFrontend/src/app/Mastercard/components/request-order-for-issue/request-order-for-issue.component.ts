@@ -97,6 +97,9 @@ export class RequestOrderForIssueComponent implements OnInit {
     this.loadCurrentDateFromBackend(); // Fetch and set date
   }
 
+  // Add this near your other properties (e.g., after currencies)
+issuingStores: string[] = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
+
   // Load current date from backend and convert to Ethiopian
   loadCurrentDateFromBackend(): void {
     this.masterCardService.getCurrentDate().pipe(

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Model22Service } from '../../services/model22.service';
 import { Model22Dto } from '../../model/model22'; // Use Model22Dto
 import { AuthService } from '../../services/auth.service';
-import * as moment from 'moment'; // Use moment.js for date handling
 
 @Component({
   selector: 'app-model22-report',
@@ -13,7 +12,9 @@ export class Model22ReportComponent implements OnInit {
   model22Data: Model22Dto[] = []; // Changed to Model22Dto
   filteredData: Model22Dto[] = []; // Changed to Model22Dto
   departments: string[] = [];
+  categories: string[] = []; // Add categories list
   selectedDepartment: string = '';
+  selectedCategory: string = ''; // Add category filter
   selectedPeriod: string = '0'; // Default to show all data
   loading: boolean = false;
   error: string = '';
@@ -52,6 +53,18 @@ export class Model22ReportComponent implements OnInit {
         const roleFiltered = data.filter(item => item.role === userRole || userRole === 'SUPER_ADMIN');
         this.model22Data = roleFiltered;
         this.departments = [...new Set(roleFiltered.map(item => item.department || 'Unknown / ያልታወቀ'))].sort();
+        
+        // Extract unique categories from all items
+        const allCategories = new Set<string>();
+        roleFiltered.forEach(model22 => {
+          model22.items.forEach(item => {
+            if (item.category) {
+              allCategories.add(item.category);
+            }
+          });
+        });
+        this.categories = Array.from(allCategories).sort();
+        
         this.filteredData = [...this.model22Data];
         this.totalItemCount = roleFiltered.length;
         this.filteredItemCount = this.filteredData.length;
@@ -74,6 +87,12 @@ export class Model22ReportComponent implements OnInit {
     console.log(`Department filter applied: ${this.selectedDepartment}, Filtered count: ${this.filteredItemCount}`);
   }
 
+  onCategoryChange(): void {
+    this.applyFilters();
+    this.filteredItemCount = this.filteredData.length;
+    console.log(`Category filter applied: ${this.selectedCategory}, Filtered count: ${this.filteredItemCount}`);
+  }
+
   onPeriodChange(): void {
     this.applyFilters();
     this.filteredItemCount = this.filteredData.length;
@@ -85,15 +104,38 @@ export class Model22ReportComponent implements OnInit {
 
     const periodMonths = parseInt(this.selectedPeriod, 10);
     const today = new Date();
+    today.setHours(23, 59, 59, 999); // End of today
 
     // Apply date filter if period > 0
     if (periodMonths > 0) {
-      const cutoffDate = this.addMonthsToDate(today, -periodMonths);
-      cutoffDate.setHours(0, 0, 0, 0); // Normalize time
+      let cutoffDate: Date;
+      
+      // Use the same logic as backend
+      if (periodMonths === 0.25) { // 1 week
+        cutoffDate = new Date(today);
+        cutoffDate.setDate(cutoffDate.getDate() - 7);
+      } else if (periodMonths === 1) {
+        cutoffDate = new Date(today);
+        cutoffDate.setMonth(cutoffDate.getMonth() - 1);
+      } else if (periodMonths === 3) {
+        cutoffDate = new Date(today);
+        cutoffDate.setMonth(cutoffDate.getMonth() - 3);
+      } else if (periodMonths === 6) {
+        cutoffDate = new Date(today);
+        cutoffDate.setMonth(cutoffDate.getMonth() - 6);
+      } else if (periodMonths === 12) {
+        cutoffDate = new Date(today);
+        cutoffDate.setFullYear(cutoffDate.getFullYear() - 1);
+      } else {
+        cutoffDate = new Date(today);
+        cutoffDate.setMonth(cutoffDate.getMonth() - periodMonths);
+      }
+      
+      cutoffDate.setHours(0, 0, 0, 0); // Start of cutoff day
 
       filtered = filtered.filter(item => {
         const itemDate = this.parseEthiopianDate(item.ethiopianDate);
-        if (!itemDate) return false;
+        if (!itemDate || itemDate.getTime() === 0) return false;
         itemDate.setHours(0, 0, 0, 0); // Normalize time
         return itemDate >= cutoffDate && itemDate <= today;
       });
@@ -104,54 +146,48 @@ export class Model22ReportComponent implements OnInit {
       filtered = filtered.filter(item => item.department === this.selectedDepartment);
     }
 
-    this.filteredData = filtered;
-  }
+    // Filter by category (item category)
+    if (this.selectedCategory) {
+      filtered = filtered.filter(model22 => 
+        model22.items.some(item => item.category === this.selectedCategory)
+      );
+    }
 
-  private addMonthsToDate(date: Date, months: number): Date {
-    const result = new Date(date);
-    result.setMonth(result.getMonth() + months);
-    result.setDate(1); // First day of the month
-    result.setHours(0, 0, 0, 0);
-    return result;
+    this.filteredData = filtered;
   }
 
   private parseEthiopianDate(ethDate: string | null): Date | null {
     if (!ethDate || ethDate === 'Unknown Date') {
-      console.warn(`Invalid Ethiopian date: ${ethDate}`);
       return null;
     }
 
     try {
-      // Handle YYYY/MM/DD format
-      if (/^\d{4}\/\d{2}\/\d{2}$/.test(ethDate)) {
-        const [year, month, day] = ethDate.split('/').map(Number);
-        // Assume Ethiopian Calendar is close to Gregorian for simplicity
-        // Adjust for Ethiopian Calendar (approx 7-8 years behind due to calendar difference)
-        const gregorianYear = year + 7; // Simplified adjustment
-        return new Date(gregorianYear, month - 1, day);
+      const [monthStr, day, year] = ethDate.split(/[\s,]+/);
+      const ethMonths = [
+        'መስከረም', 'ጥቅምት', 'ህዳር', 'ታህሳስ', 'ጥር', 'የካቲት',
+        'መጋቢት', 'ሚያዚያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜ'
+      ];
+
+      const monthIndex = ethMonths.indexOf(monthStr);
+      if (monthIndex === -1 || !day || !year) {
+        console.warn(`Invalid Ethiopian date format: ${ethDate}`);
+        return null;
       }
 
-      // Handle Amharic or English month format (e.g., "Yekatit 12, 2018" or "የካቲት 12, 2018")
-      const [monthName, day, year] = ethDate.split(/[\s,]+/).filter(part => part);
-      const monthIndex = this.ethMonthNames.indexOf(monthName) !== -1
-        ? this.ethMonthNames.indexOf(monthName)
-        : this.getEnglishMonthNumber(monthName);
-      if (monthIndex === -1) throw new Error('Invalid month name');
-      const gregorianYear = parseInt(year, 10) + 7; // Simplified EC to GC conversion
-      return new Date(gregorianYear, monthIndex, parseInt(day, 10));
+      // Convert Ethiopian to Gregorian (approximate: +7 years, +8 days)
+      const gregorianYear = parseInt(year) + 7;
+      const gregorianDate = new Date(gregorianYear, monthIndex, parseInt(day) + 8);
+      
+      if (isNaN(gregorianDate.getTime())) {
+        console.warn(`Failed to parse Ethiopian date: ${ethDate}`);
+        return null;
+      }
+
+      return gregorianDate;
     } catch (error) {
-      console.error(`Failed to parse Ethiopian date: ${ethDate}`, error);
+      console.error(`Error parsing Ethiopian date: ${ethDate}`, error);
       return null;
     }
-  }
-
-  private getEnglishMonthNumber(monthName: string): number {
-    const monthMap: { [key: string]: number } = {
-      'Meskerem': 0, 'Tikimt': 1, 'Hidar': 2, 'Tahsas': 3, 'Tir': 4,
-      'Yekatit': 5, 'Megabit': 6, 'Miazia': 7, 'Ginbot': 8, 'Sene': 9,
-      'Hamle': 10, 'Nehase': 11, 'Pagume': 12
-    };
-    return monthMap[monthName] !== undefined ? monthMap[monthName] : -1;
   }
 
   calculateModel22Total(model22: Model22Dto): { total: number, currency: string } {
@@ -179,23 +215,24 @@ export class Model22ReportComponent implements OnInit {
       return 'ያልታወቀ ቀን';
     }
     try {
+      // If already in Amharic format, return as is
+      if (/[\u1200-\u137F]/.test(date)) {
+        return date;
+      }
+      
       // Handle YYYY/MM/DD format
       if (/^\d{4}\/\d{2}\/\d{2}$/.test(date)) {
         const [year, month, day] = date.split('/').map(Number);
         const amharicMonth = this.ethMonthNames[month - 1] || 'መስከረም';
         return `${amharicMonth} ${day}, ${year}`;
       }
-      // Handle legacy formats (e.g., "Yekatit 12, 2018" or Amharic)
-      if (/[\u1200-\u137F]/.test(date)) {
-        return date; // Already in Amharic
-      }
-      const [monthName, day, year] = date.split(/[\s,]+/).filter(part => part);
-      const monthIndex = this.getEnglishMonthNumber(monthName);
-      const amharicMonth = this.ethMonthNames[monthIndex] || 'መስከረም';
-      return `${amharicMonth} ${day}, ${year}`;
+      
+      // For other formats, just return as is
+      return date;
     } catch (error) {
       console.error('Error formatting Ethiopian date:', error);
       return 'ያልታወቀ ቀን';
     }
   }
+
 }

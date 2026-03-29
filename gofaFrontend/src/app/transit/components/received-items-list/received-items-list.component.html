@@ -1,198 +1,188 @@
-<style>
-  .custom-bg {
-      background-color: #03203c;
-      color: white;
-  }
-  .custom-text {
-      color: #02172a;
-  }
-  .custom-btn {
-      background-color: #02172a;
-      border-color: #02172a;
-      color: white;
-  }
-  .custom-btn:hover {
-      background-color: #033c73;
-      border-color: #033c73;
-  }
-  .title{
-    align-items: center;
-  }
-</style>
-<div class="content-container">
-  <!-- <div class="title"><h1>የኢ.ፌ.ዲ.ሪ መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን መምሪያ</h1></div> -->
-  <button class="btn btn-primary btn-sm" [routerLink]="['/transit/receive-item-form']">
-    + Add New Item
-  </button>
-  <div class="card shadow-sm mt-4">
-    <div class="card-header custom-bg text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Received Items / የእቃዎች ዝርዝር</h5>
+<div class="item-listing">
+  <!-- Header with Title and Action Button -->
+  <div class="header">
+    <h1 class="title">Received Items / የተረከቡ እቃዎች</h1>
 
-      <div class="form-group">
-        <label for="searchInput" class="form-label">Search / ፈልግ</label>
+    <div class="header-actions">
+      <button 
+        class="action-btn primary" 
+        [routerLink]="['/transit/receive-item-form']"
+        aria-label="Add new received item">
+        + Add New Item / አዲስ እቃ ጨምር
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <!-- Search and Sort Filter -->
+    <div class="search-filter-group">
+      <div class="search-group">
+        <label for="searchInput" class="search-label">Search: </label>
         <input
           id="searchInput"
           type="text"
-          class="form-control"
+          class="search-input"
+          placeholder="Search by supplier, description, model, or store type..."
           [(ngModel)]="searchQuery"
           (input)="onSearch()"
-          placeholder="Search by Supplier, Item Type, etc.">
+          aria-label="Search received items"
+        />
       </div>
 
-      <div class="form-group">
-        <label for="sortSelect" class="form-label">Sort By / አስተካክል</label>
+      <div class="filter-group">
+        <label for="sortFilter" class="filter-label">Sort By / ደርድር: </label>
         <select
-          id="sortSelect"
-          class="form-select"
+          id="sortFilter"
+          class="filter-select"
           [(ngModel)]="selectedSort"
-          (change)="onSortChange($event)">
+          (change)="onSortChange($event)"
+          aria-label="Sort received items">
           <option *ngFor="let option of sortOptions" [value]="option.value">
             {{ option.viewValue }}
           </option>
         </select>
       </div>
     </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Supplier / አቅራቢ</th>
-              <th>Description / የዕቃው ስም</th>
-              <th>Model / መለያ ቁ.</th>
-              <th>Received / የገባ </th>
-              <!-- <th>Received By / የተረካቢው</th> -->
+  </div>
 
-              <th>Store Type / ግምጃ ቤት</th>
-              <th>Accessories</th>
-              <th>Extra Item / ተጨማሪ እቃ</th>
-              <th>Status / እቃው ያለበት ሁኔታ</th>
-              <th>Actions / ተግባር</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of paginatedItems">
-              <td [routerLink]="['/transit/view-details', item.model1Id]">{{ item.supplier }}</td>
-              <td [routerLink]="['/transit/view-details', item.model1Id]">{{ item.description }}</td>
-              <td [routerLink]="['/transit/view-details', item.model1Id]">{{ item.serialNumber }}</td>
-              <td [routerLink]="['/transit/view-details', item.model1Id]">{{ item.received }}</td>
-              <!-- <td [routerLink]="['/transit/view-details', item.model1Id]">{{ item.recivedByName }}</td> -->
-
-              <td [routerLink]="['/transit/view-details', item.model1Id]">{{ item.storeType }}</td>
-              <td [routerLink]="['/transit/view-details', item.model1Id]">
-                <div *ngIf="(item.accessories ?? []).length > 0; else noAccessories">
-                  <ul class="mb-0 ps-3">
-                    <li *ngFor="let accessory of item.accessories">
-                      {{ accessory.name }} (Qty: {{ accessory.quantity }})
-                    </li>
-                  </ul>
+  <!-- Table and Pagination -->
+  <div class="content-section">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Supplier / አቅራቢ</th>
+            <th>Description / መግለጫ</th>
+            <th>Model / ሞዴል</th>
+            <th>Received / የተረከበ</th>
+            <th>Store Type / ግምጃ ቤት</th>
+            <th>Accessories / ተጨማሪዎች</th>
+            <th>Extra Items / ተጨማሪ እቃዎች</th>
+            <th>Status / ሁኔታ</th>
+            <th>Actions / ተግባር</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of paginatedItems; trackBy: trackByItemId" class="table-row">
+            <td data-label="Supplier" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
+              {{ item.supplier }}
+            </td>
+            <td data-label="Description" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
+              <div>
+                <div class="fw-medium">{{ item.description }}</div>
+                <small class="text-muted">{{ item.itemType }}</small>
+              </div>
+            </td>
+            <td data-label="Model" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
+              <code class="small">{{ item.serialNumber }}</code>
+            </td>
+            <td data-label="Received" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
+              <span class="badge bg-primary">{{ item.received }}</span>
+            </td>
+            <td data-label="Store Type" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
+              {{ item.storeType }}
+            </td>
+            <td data-label="Accessories" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
+              <div *ngIf="(item.accessories ?? []).length > 0; else noAccessories">
+                <div *ngFor="let accessory of item.accessories" class="small">
+                  {{ accessory.name }} ({{ accessory.quantity }})
                 </div>
-                <ng-template #noAccessories>
-                  <span class="text-muted">—</span>
-                </ng-template>
-              </td>
-              <!-- <td [routerLink]="['/transit/view-details', item.model1Id]">
-                <div *ngIf="(item.extraItems ?? []).length > 0; else noExtraItems">
-                  <ul class="mb-0 ps-3">
-                    <li *ngFor="let extra of item.extraItems">
-                      {{ extra.name }} (Qty: {{ extra.quantity }}) (STR: {{ extra.store }})
-                    </li>
-                  </ul>
+              </div>
+              <ng-template #noAccessories>
+                <span class="text-muted">—</span>
+              </ng-template>
+            </td>
+            <td data-label="Extra Items" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
+              <div *ngIf="(item.extraItems ?? []).length > 0; else noExtraItems">
+                <div *ngFor="let extra of item.extraItems" class="small">
+                  {{ extra.name }}
+                  <span class="badge badge-sm ms-1" 
+                        [class]="extra.extraStatus === 'Stores Recieved' ? 'bg-success' : 'bg-warning'">
+                    {{ getDisplayStatus(extra.extraStatus) }}
+                  </span>
                 </div>
-                <ng-template #noExtraItems>
-                  <span class="text-muted">—</span>
-                </ng-template>
-              </td> -->
-              <td [routerLink]="['/transit/view-details', item.model1Id]">
-                <div *ngIf="(item.extraItems ?? []).length > 0; else noExtraItems">
-                  <ul class="mb-0 ps-3">
-                    <li *ngFor="let extra of item.extraItems">
-                       {{ extra.name }} <!-- (Qty: {{ extra.quantity }}) (STR: {{ extra.store }})  -->
-                      <span class="badge ms-2"
-                            [ngClass]="{
-                              'bg-warning text-dark': extra.extraStatus === 'Waiting For Stores',
-                              'bg-success': extra.extraStatus === 'Stores Recieved'
-                            }">
-                        {{ extra.extraStatus || 'Waiting For Stores' }}
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-                <ng-template #noExtraItems>
-                  <span class="text-muted">—</span>
-                </ng-template>
-              </td>
-
-              <td [routerLink]="['/transit/view-details', item.model1Id]">
-                <span class="badge"
-                      [ngClass]="{
-                        'bg-warning text-dark': item.status === 'Waiting For Stores',
-                        'bg-success': item.status === 'Stores Recieved'
-                      }">
-                  {{ item.status || 'Waiting For Stores' }}
-                </span>
-              </td>
-              <td>
+              </div>
+              <ng-template #noExtraItems>
+                <span class="text-muted">—</span>
+              </ng-template>
+            </td>
+            <td data-label="Status" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
+              <span class="badge" 
+                    [class]="item.status === 'Stores Recieved' ? 'bg-success' : 'bg-warning'">
+                {{ getDisplayStatus(item.status) }}
+              </span>
+            </td>
+            <td data-label="Actions">
+              <div class="btn-group btn-group-sm">
                 <button
-                  class="btn custom-bg btn-sm mr-2"
+                  class="action-btn secondary small"
                   [routerLink]="['/transit/edit-item', item.model1Id]"
-                  *ngIf="canEditItem(item)">
+                  *ngIf="canEditItem(item)"
+                  [attr.aria-label]="'Edit item ' + item.description">
                   Edit
-                </button> <!-- / አስተካክል -->
+                </button>
                 <button
-                  class="btn btn-danger btn-sm mr-2"
+                  class="action-btn secondary small"
                   (click)="deleteItem(item)"
-                  *ngIf="canDeleteItem(item)">
+                  *ngIf="canDeleteItem(item)"
+                  [attr.aria-label]="'Delete item ' + item.description">
                   Delete
-                </button> <!-- / አጥፋ -->
-                <!-- <button *ngIf="item.status !== 'Approved'"
-                        class="btn btn-success btn-sm"
-                        (click)="approveItem(item)">
-                  Approve
-                </button> / አጽድቅ -->
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-        <div class="d-flex mt-4 justify-content-between">
-          <div></div>
-          <div>
-            <nav aria-label="Page navigation">
-              <ul class="pagination">
-                <!-- Previous Button -->
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
+    <!-- Pagination Controls -->
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <div class="pagination-info">
+        Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to 
+        {{ Math.min(currentPage * itemsPerPage, filteredItems.length) }} of {{ filteredItems.length }} items
+      </div>
 
-                <!-- Page Numbers -->
-                <li *ngFor="let page of getPageNumbers()" class="page-item" [class.active]="page === currentPage">
-                  <a class="page-link" (click)="onPageChange(page)">{{ page }}</a>
-                </li>
+      <div class="pagination-size">
+        <label for="pageSize">Items per page: </label>
+        <select id="pageSize" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
 
-                <!-- Next Button -->
-                <li class="page-item" [class.disabled]="currentPage === totalPages">
-                  <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div class="form-group me-4 mb-2">
-            <label>Items per page / እቃዎች በገጽ</label>
-            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </div>
-        </div>
+      <div class="pagination-buttons">
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage - 1)">
+          Previous
+        </button>
+
+        <span class="page-indicator">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(currentPage + 1)">
+          Next
+        </button>
       </div>
     </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filteredItems.length === 0" class="empty-state">
+    <h3>{{ receivedItems.length === 0 ? 'No received items found.' : 'No items match your search.' }}</h3>
+    <p>
+      <button *ngIf="searchQuery" class="action-btn secondary" (click)="clearSearch()" aria-label="Clear search">
+        Clear Search / ፍለጋ አጽዳ
+      </button>
+    </p>
   </div>
 </div>

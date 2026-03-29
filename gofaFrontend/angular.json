@@ -51,7 +51,12 @@
               "node_modules/bootstrap/dist/js/bootstrap.min.js"
             ],
             "progress": true,
-            "verbose": false
+            "verbose": false,
+            "optimization": {
+              "fonts": {
+                "inline": false
+              }
+            }
           },
           "configurations": {
             "production": {
@@ -77,13 +82,11 @@
               "optimization": true,
               "aot": true,
               "extractLicenses": true
-              
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
-              
             },
             "local": {
               "fileReplacements": [
@@ -99,9 +102,7 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            
-          },
+          "options": {},
           "configurations": {
             "production": {
               "browserTarget": "frontend:build:production",
@@ -125,10 +126,17 @@
             },
             "network": {
               "browserTarget": "frontend:build:development",
+              "host": "10.20.38.51", 
+              "port": 2023,
+              "disableHostCheck": true,
+              "publicHost": "10.20.38.51:2023"  
+            },
+            "network-all": {
+              "browserTarget": "frontend:build:development",
               "host": "0.0.0.0",
               "port": 2023,
               "disableHostCheck": true,
-              "publicHost": "10.20.38.171:2023"
+              "publicHost": "10.20.38.51:2023"  
             },
             "https": {
               "browserTarget": "frontend:build:development",
@@ -137,6 +145,22 @@
               "ssl": true,
               "sslKey": "./ssl/server.key",
               "sslCert": "./ssl/server.crt"
+            },
+            "ip-51": {  
+              "browserTarget": "frontend:build:development",
+              "host": "10.20.38.51",
+              "port": 2023,
+              "ssl": false,
+              "disableHostCheck": true,
+              "publicHost": "10.20.38.51:2023"
+            },
+            "local-ip": {
+              "browserTarget": "frontend:build:local",
+              "host": "0.0.0.0",
+              "port": 4200,
+              "ssl": false,
+              "disableHostCheck": true,
+              "publicHost": "localhost:4200"
             }
           },
           "defaultConfiguration": "local"

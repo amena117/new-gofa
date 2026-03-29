@@ -164,7 +164,7 @@ export class FromTransitComponent implements OnInit {
         this.filteredItems.sort((a, b) => (b.status || '').localeCompare(a.status || ''));
         break;
       case 'date':
-        this.filteredItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        this.filteredItems.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         break;
     }
     this.updatePagination();
@@ -193,5 +193,12 @@ export class FromTransitComponent implements OnInit {
   onItemsPerPageChange() {
     this.currentPage = 1;
     this.updatePagination();
+  }
+
+  getExtraItemsForCurrentStore(item: Item): any[] {
+    const userRole = this.itemDetails.role?.toLowerCase();
+    return (item.extraItems ?? []).filter(extra => 
+      (extra.store || '').toLowerCase() === userRole
+    );
   }
 }

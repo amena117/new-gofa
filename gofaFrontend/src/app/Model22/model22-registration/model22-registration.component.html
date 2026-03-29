@@ -38,7 +38,7 @@
       
       <!-- Accessory Toggle -->
       <div class="table-row">
-        <div class="table-label">Include Accessories / አብራጮችን አስገባ</div>
+        <div class="table-label">Include Accessories / አባሪዎችን አስገባ</div>
         <div class="table-input">
           <label class="switch">
             <input type="checkbox" [(ngModel)]="useAccessories" name="useAccessories">
@@ -150,6 +150,52 @@
 
           <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #03203c;">Item {{ i + 1 }}</h3>
 
+          <!-- Withdrawal Type Toggle -->
+          <div class="table-row" style="background: #f0f9ff; padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 2px solid #0ea5e9;">
+            <div class="table-label" style="font-weight: 600; color: #0369a1;">
+              Withdrawal Type / የመውጫ አይነት <span class="required">*</span>
+            </div>
+            <div class="table-input">
+              <div style="display: flex; gap: 16px; align-items: center;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 16px; border: 2px solid #d1d5db; border-radius: 8px; background: white; transition: all 0.2s;"
+                       [style.border-color]="withdrawalTypeControls[i].value === 'regular' ? '#0ea5e9' : '#d1d5db'"
+                       [style.background]="withdrawalTypeControls[i].value === 'regular' ? '#f0f9ff' : 'white'">
+                  <input 
+                    type="radio" 
+                    [formControl]="withdrawalTypeControls[i]" 
+                    value="regular"
+                    name="withdrawalType{{i}}"
+                    style="width: 18px; height: 18px; cursor: pointer;">
+                  <span style="font-weight: 500; color: #1f2937;">
+                    📦 Regular Item / መደበኛ እቃ
+                  </span>
+                </label>
+                
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 16px; border: 2px solid #d1d5db; border-radius: 8px; background: white; transition: all 0.2s;"
+                       [style.border-color]="withdrawalTypeControls[i].value === 'accessory-only' ? '#0ea5e9' : '#d1d5db'"
+                       [style.background]="withdrawalTypeControls[i].value === 'accessory-only' ? '#f0f9ff' : 'white'">
+                  <input 
+                    type="radio" 
+                    [formControl]="withdrawalTypeControls[i]" 
+                    value="accessory-only"
+                    name="withdrawalType{{i}}"
+                    style="width: 18px; height: 18px; cursor: pointer;">
+                  <span style="font-weight: 500; color: #1f2937;">
+                    🔧 Accessory Only / አባሪ ብቻ
+                  </span>
+                </label>
+              </div>
+              <div style="margin-top: 8px; font-size: 12px; color: #6b7280; font-style: italic;">
+                <span *ngIf="withdrawalTypeControls[i].value === 'regular'">
+                  ℹ️ Withdraws the item and optionally its accessories
+                </span>
+                <span *ngIf="withdrawalTypeControls[i].value === 'accessory-only'">
+                  ℹ️ Withdraws only accessories without changing parent item quantity
+                </span>
+              </div>
+            </div>
+          </div>
+
           <!-- Search Item -->
           <div class="table-row">
             <div class="table-label">Search Item / እቃ ፈልግ <span class="required">*</span></div>
@@ -211,7 +257,7 @@
           </div>
 
           <!-- Quantity -->
-          <div class="table-row">
+          <div class="table-row" *ngIf="!isAccessoryOnlyMode(i)">
             <div class="table-label">Quantity / ብዛት <span class="required">*</span></div>
             <div class="table-input">
               <input
@@ -235,6 +281,19 @@
               </div>
               <div *ngIf="quantityControls[i].hasError('noItemSelected')" class="error">
                 Please select an item first / እባክዎ መጀመሪያ እቃ ይምረጡ
+              </div>
+            </div>
+          </div>
+
+          <!-- Accessory-Only Mode Info -->
+          <div class="table-row" *ngIf="isAccessoryOnlyMode(i)" style="background: #fef3c7; padding: 12px; border-radius: 8px; border: 1px solid #fbbf24;">
+            <div style="display: flex; align-items: center; gap: 8px; color: #92400e;">
+              <span style="font-size: 20px;">⚠️</span>
+              <div>
+                <strong>Accessory-Only Mode</strong>
+                <p style="margin: 4px 0 0 0; font-size: 13px;">
+                  Parent item quantity will NOT be changed. Only selected accessories will be withdrawn.
+                </p>
               </div>
             </div>
           </div>
@@ -275,23 +334,28 @@
           </div>
 
           <!-- Accessories Section -->
-          <div *ngIf="useAccessories && selectedItem[i]?.accessories?.length" class="accessories-section">
+          <div *ngIf="(useAccessories || isAccessoryOnlyMode(i)) && selectedItem[i]?.accessories?.length" class="accessories-section">
             <h4 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px 0; color: #03203c;">
-              Accessories / አብራጮች
+              Accessories / አባሪዎች
               <span style="font-size: 13px; font-weight: normal; color: #6b7280;">
-                (Select accessories to withdraw / ለመውጫ አብራጮችን ይምረጡ)
+                (Select accessories to withdraw / ለመውጫ አባሪዎችን ይምረጡ)
+              </span>
+              <span *ngIf="isAccessoryOnlyMode(i)" style="margin-left: 8px; padding: 4px 8px; background: #fbbf24; color: #92400e; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                REQUIRED / ግዴታ
               </span>
             </h4>
             
             <div class="accessories-list">
-              <div *ngFor="let accessory of selectedItem[i]?.accessories" class="accessory-item" style="margin-bottom: 12px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div *ngFor="let accessory of selectedItem[i]?.accessories; trackBy: trackByAccessoryId" class="accessory-item" style="margin-bottom: 16px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 16px;">
                   <div style="flex: 2;">
                     <strong>{{ accessory.name }}</strong> - {{ accessory.model }}
                     <br>
                     <small style="color: #6b7280;">
-                      Available: {{ accessory.quantity }} | 
-                      Price: {{ accessory.unitPrice || 0 }} {{ accessory.currency || 'ETB' }}
+                      Available: {{ accessory.quantity }}
+                      <span *ngIf="accessory.requiresSerialNumbers" style="color: #dc2626; font-weight: 500;">
+                        | Requires Serial Numbers
+                      </span>
                     </small>
                   </div>
                   <div style="flex: 1; text-align: right;">
@@ -309,6 +373,119 @@
                     </div>
                   </div>
                 </div>
+                
+                <!-- Unit Price Section (shown when quantity > 0) -->
+                <div *ngIf="getAccessorySelection(i, accessory.id!)?.quantity > 0" 
+                     style="padding: 12px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 12px;">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="flex: 1;">
+                      <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #6b7280;">
+                        Unit Price / የነጠላ ዋጋ <span class="required">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        [value]="getAccessorySelection(i, accessory.id!)?.unitPrice || accessory.unitPrice || 0"
+                        (input)="updateAccessoryPrice(i, accessory.id!, $any($event.target).value)"
+                        min="0"
+                        step="0.01"
+                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;"
+                        placeholder="Enter unit price">
+                    </div>
+                    <div style="flex: 0 0 120px;">
+                      <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #6b7280;">
+                        Currency / ምንዛሬ <span class="required">*</span>
+                      </label>
+                      <select
+                        [value]="getAccessorySelection(i, accessory.id!)?.currency || model22.items[i].currency || 'ETB'"
+                        (change)="updateAccessoryCurrency(i, accessory.id!, $any($event.target).value)"
+                        style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;">
+                        <option *ngFor="let currency of availableCurrencies" [value]="currency">
+                          {{ currency }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div style="margin-top: 6px; font-size: 11px; color: #6b7280;">
+                    <i *ngIf="!isAccessoryOnlyMode(i)">ℹ️ Currency matches parent item</i>
+                    <i *ngIf="isAccessoryOnlyMode(i)">ℹ️ Set price and currency for this accessory</i>
+                  </div>
+                </div>
+                
+                <!-- Serial Numbers Section for Accessories -->
+                <div *ngIf="accessory.requiresSerialNumbers && getAccessorySelection(i, accessory.id!)?.quantity > 0" 
+                     style="margin-top: 12px; padding: 12px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px;">
+                  <h5 style="margin: 0 0 8px 0; font-size: 13px; font-weight: 600; color: #374151;">
+                    <i style="margin-right: 6px;">🏷️</i>
+                    Serial Numbers for {{ accessory.name }} ({{ getAccessorySelection(i, accessory.id!)?.quantity }} required)
+                  </h5>
+                  
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+                    <div *ngFor="let serial of getAccessorySelection(i, accessory.id!)?.serialNumbers; let j = index" 
+                         style="display: flex; flex-direction: column;">
+                      <label style="font-size: 12px; color: #374151; margin-bottom: 4px;">Serial {{ j + 1 }}</label>
+                      <select 
+                        class="serial-select-improved"
+                        [value]="getAccessorySerialNumber(i, accessory.id!, j)"
+                        (change)="setAccessorySerialNumber(i, accessory.id!, j, $any($event.target).value)"
+                        [style.border-color]="!getAccessorySerialNumber(i, accessory.id!, j) ? '#ef4444' : '#d1d5db'">
+                        <option value="">Select serial number</option>
+                        <option *ngFor="let availableSerial of accessory.serialNumbers" 
+                                [value]="availableSerial.serialNumber"
+                                [disabled]="isAccessorySerialNumberUsed(i, accessory.id!, availableSerial.serialNumber, j)">
+                          {{ availableSerial.serialNumber }}
+                        </option>
+                      </select>
+                      <div *ngIf="!getAccessorySerialNumber(i, accessory.id!, j)" 
+                           style="font-size: 11px; color: #ef4444; margin-top: 4px;">
+                        Required
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Status indicator -->
+                  <div style="margin-top: 8px; font-size: 11px;" 
+                       [style.color]="areAllAccessorySerialNumbersFilled(i, accessory.id!) ? '#059669' : '#dc2626'">
+                    <i>{{ areAllAccessorySerialNumbersFilled(i, accessory.id!) ? '✅' : '⚠️' }}</i>
+                    {{ areAllAccessorySerialNumbersFilled(i, accessory.id!) ? 
+                       'All serial numbers provided' : 
+                       'Please provide all required serial numbers' }}
+                  </div>
+                </div>
+
+                <!-- Sub-Accessories Display (shown when accessory quantity > 0) -->
+                <div *ngIf="accessory.subAccessories && accessory.subAccessories.length > 0 && getAccessorySelection(i, accessory.id!)?.quantity > 0" 
+                     style="margin-top: 12px; padding: 12px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px;">
+                  <h5 style="margin: 0 0 8px 0; font-size: 13px; font-weight: 600; color: #92400e;">
+                    <i style="margin-right: 6px;">📦</i>
+                    Sub-Accessories (Auto-Withdrawn) / ንዑስ አባሪዎች (በራስ-ሰር ይወጣሉ)
+                  </h5>
+                  <div style="font-size: 11px; color: #92400e; margin-bottom: 8px; font-style: italic;">
+                    ℹ️ These sub-accessories will be automatically withdrawn proportionally when you withdraw this accessory.
+                  </div>
+                  <div style="display: grid; gap: 6px;">
+                    <div *ngFor="let subAcc of accessory.subAccessories" 
+                         style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #ffffff; border-radius: 4px; font-size: 12px;">
+                      <div style="flex: 1;">
+                        <strong style="color: #374151;">{{ subAcc.name }}</strong>
+                        <span style="color: #6b7280; margin-left: 8px;">
+                          ({{ subAcc.quantity }} per accessory)
+                        </span>
+                      </div>
+                      <div style="text-align: right; color: #6b7280;">
+                        <div style="font-size: 11px;">Unit Price:</div>
+                        <div style="font-weight: 600; color: #374151;">
+                          {{ subAcc.unitPrice | number:'1.2-2' }} {{ subAcc.currency }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="margin-top: 8px; padding: 8px; background: #fef9c3; border-radius: 4px; font-size: 11px; color: #854d0e;">
+                    <strong>Total to be withdrawn:</strong>
+                    <div *ngFor="let subAcc of accessory.subAccessories" style="margin-top: 4px;">
+                      • {{ subAcc.name }}: {{ subAcc.quantity * getAccessorySelection(i, accessory.id!)?.quantity }} units
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             
@@ -317,8 +494,8 @@
             </div>
           </div>
 
-          <!-- Serial Numbers Section -->
-          <div *ngIf="selectedItem[i]?.serialNumbers?.length" class="serial-numbers-section">
+          <!-- Serial Numbers Section (only for regular item withdrawals, not accessory-only) -->
+          <div *ngIf="!isAccessoryOnlyMode(i) && selectedItem[i]?.serialNumbers?.length" class="serial-numbers-section">
             <h4 style="font-size: 16px; font-weight: 600; margin: 0 0 12px 0; color: #03203c;">
               Serial Numbers / ተከታታይ ቁጥሮች
               <span style="font-size: 13px; font-weight: normal; color: #6b7280;">
@@ -335,7 +512,6 @@
                   <input
                     matInput
                     [formControl]="serialControls[i][j]"
-                    [(ngModel)]="model22.items[i].serialNumbers[j]"
                     name="serial{{i}}{{j}}"
                     placeholder="Enter serial number / ተከታታይ ቁጥር ያስገቡ"
                     (input)="onSerialInput($event, i, j)"
@@ -345,12 +521,10 @@
                   
                   <!-- Custom dropdown for serial suggestions -->
                   <div *ngIf="showSuggestions[i]?.[j] && getFilteredSerials(i, j).length > 0" 
-                       class="custom-autocomplete" 
-                       style="border: 1px solid #d1d5db; border-radius: 4px; background: white; max-height: 200px; overflow-y: auto; position: absolute; z-index: 1000; width: 100%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+                       class="custom-autocomplete">
                     <div *ngFor="let serialOption of getFilteredSerials(i, j)" 
                          class="suggestion-item"
                          (mousedown)="selectSerialManual(serialOption, i, j)"
-                         style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f3f4f6;"
                          [class.hover]="hoveredSuggestion === serialOption"
                          (mouseenter)="hoveredSuggestion = serialOption"
                          (mouseleave)="hoveredSuggestion = null">
@@ -385,11 +559,6 @@
                 attr.aria-label="Add serial number">
                 Add Serial Number / ተከታታይ ቁጥር ጨምር
               </button>
-            </div>
-
-            <!-- Available Serials Info -->
-            <div style="margin-top: 8px; font-size: 13px; color: #6b7280;">
-              Available serial numbers: {{ getAvailableSerialNumbers(i) }}
             </div>
           </div>
 

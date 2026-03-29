@@ -31,9 +31,6 @@ import { InspectedItemsListComponent } from './components/inspected-items-list/i
 import { SendToStoreFormComponent } from './components/send-to-store-form/send-to-store-form.component';
 import { EditItemComponent } from './components/edit-item/edit-item.component';
 import { ViewDetailsComponent } from './components/view-details/view-details.component';
-
-import { Model19ListComponent } from './components/model19-list/model19-list.component';
-
 import { Model2ListComponent } from './components/model2-list/model2-list.component';
 import { Model2EditComponent } from './components/model2-edit/model2-edit.component';
 import { Model2DetailComponent } from './components/model2-detail/model2-detail.component';
@@ -52,8 +49,6 @@ const routes: Routes = [
   { path: '', redirectTo: '', pathMatch: 'full' },
   { path: 'edit-item/:id', component: EditItemComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] }  },
   {path: 'view-details/:id', component: ViewDetailsComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] }  },
-
-  { path: 'model19-list', component: Model19ListComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] }  },
 
   { path: 'model2-list', component: Model2ListComponent },
   { path: 'model2-add', component: Model2AddComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] }  },

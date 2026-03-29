@@ -59,25 +59,24 @@
   }
 
 
-.form-check-input {
-  width: 24px;  
-  height: 24px; 
-  cursor: pointer;
-  border: 2px solid #02172a; 
-}
+  .form-check-input {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    border: 2px solid #02172a;
+  }
 
-.form-check-input:checked {
-  background-color: #02172a; 
-  border-color: #02172a;
-}
+  .form-check-input:checked {
+    background-color: #02172a;
+    border-color: #02172a;
+  }
 
-.form-check-label {
-  font-weight: 600;
-  font-size: 1rem;
-  margin-left: 8px;
-  cursor: pointer;
-}
-
+  .form-check-label {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-left: 8px;
+    cursor: pointer;
+  }
 </style>
 
 <div class="content-container container">
@@ -121,9 +120,11 @@
                     </select>
                     <input *ngSwitchCase="'status'" formControlName="{{field.name}}" class="form-control" readonly />
 
-                    <input *ngSwitchDefault formControlName="{{field.name}}" class="form-control" [readonly]="field.name==='registeredBy'" />
+                    <input *ngSwitchDefault formControlName="{{field.name}}" class="form-control"
+                      [readonly]="field.name==='registeredBy'" />
                   </ng-container>
-                  <small class="text-danger" *ngIf="receiveForm.get(field.name)?.touched && receiveForm.get(field.name)?.hasError('required')">
+                  <small class="text-danger"
+                    *ngIf="receiveForm.get(field.name)?.touched && receiveForm.get(field.name)?.hasError('required')">
                     {{field.label}} is required
                   </small>
                 </div>
@@ -156,6 +157,8 @@
                   {name:'received', label:'Received / የገባ ብዛት'},
                   {name:'unitOfPrice', label:'Unit Price / ያንዱ ዋጋ'},
                   {name:'amount', label:'Total Price / ጠቅላላ ዋጋ'},
+                  {name:'vat', label:'VAT / ቫት'},
+                  {name:'grandTotal', label:'Grand Total / ጠቅላላ ድምር (ከቫት ጋር)'},
                   {name:'storeType', label:'Store Type / ግምጃ ቤት'}
                 ]">
                   <div class="col-md-4">
@@ -165,36 +168,102 @@
                         <option value="" disabled>Select Store Type</option>
                         <option *ngFor="let type of storeTypes" [value]="type">{{type}}</option>
                       </select>
-                      <input *ngSwitchDefault formControlName="{{f.name}}" class="form-control" [type]="f.name==='ordered'||f.name==='received'||f.name==='unitOfPrice'||f.name==='amount' ? 'number':'text'" />
+                      <input *ngSwitchDefault formControlName="{{f.name}}" class="form-control"
+                        [type]="f.name==='ordered'||f.name==='received'||f.name==='unitOfPrice'||f.name==='amount' ? 'number':'text'" />
                     </ng-container>
-                    <small class="text-danger" *ngIf="item.get(f.name)?.touched && item.get(f.name)?.hasError('required')">
+                    <small class="text-danger"
+                      *ngIf="item.get(f.name)?.touched && item.get(f.name)?.hasError('required')">
                       {{f.label}} is required
                     </small>
                   </div>
                 </ng-container>
 
                 <!-- Has Accessories -->
-                
+
                 <div class="col-md-4 d-flex align-items-center ">
                   <label class="form-check-label me-2" for="hasAccessories{{i}}">Has Accessories?</label>
-                  <input type="checkbox" formControlName="hasAccessories" class="form-check-input" id="hasAccessories{{i}}" />
+                  <input type="checkbox" formControlName="hasAccessories" class="form-check-input"
+                    id="hasAccessories{{i}}" />
                 </div>
 
-               
-                
+
+
 
                 <div *ngIf="item.get('hasAccessories')?.value" class="mt-3">
                   <label class="fw-bold">Accessory Details</label>
                   <div formArrayName="accessories">
-                    <div *ngFor="let acc of getAccessoryControls(i).controls; let j = index" [formGroupName]="j" class="row g-2 mb-2">
-                      <div class="col-md-5">
-                        <input formControlName="name" class="form-control" placeholder="Accessory Name / ስም" />
+                    <div *ngFor="let acc of getAccessoryControls(i).controls; let j = index" [formGroupName]="j"
+                      class="mb-3 p-3 border rounded">
+                      <div class="row g-2 mb-2">
+                        <div class="col-md-3">
+                          <input formControlName="name" class="form-control" placeholder="Accessory Name / ስም" />
+                        </div>
+                        <div class="col-md-2">
+                          <input type="number" formControlName="quantity" class="form-control"
+                            placeholder="Quantity / ብዛት" />
+                        </div>
+                        <div class="col-md-2">
+                          <input type="number" formControlName="unitPrice" class="form-control"
+                            placeholder="Unit Price (Optional)" />
+                        </div>
+                        <div class="col-md-2">
+                          <select formControlName="currency" class="form-select">
+                            <option value="">Currency (Optional)</option>
+                            <option value="Birr">BIRR</option>
+                            <option value="USD">USD</option>
+                            <option value="Euro">EURO</option>
+                            <option value="Pound">POUND</option>
+                          </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center">
+                          <label class="form-check-label me-2" for="hasSubAccessories{{i}}_{{j}}" style="font-size: 0.85rem;">
+                            Sub-Accessories?
+                          </label>
+                          <input type="checkbox" formControlName="hasSubAccessories" class="form-check-input"
+                            id="hasSubAccessories{{i}}_{{j}}" style="width: 1.2rem; height: 1.2rem;" />
+                        </div>
+                        <div class="col-md-1">
+                          <button type="button" class="btn btn-danger btn-sm w-100"
+                            (click)="removeAccessory(i,j)">X</button>
+                        </div>
                       </div>
-                      <div class="col-md-4">
-                        <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity / ብዛት" />
-                      </div>
-                      <div class="col-md-3">
-                        <button type="button" class="btn btn-danger btn-sm w-100" (click)="removeAccessory(i,j)">Remove</button>
+
+                      <!-- Sub-Accessories Section -->
+                      <div *ngIf="acc.get('hasSubAccessories')?.value" class="mt-2 ms-4">
+                        <label class="fw-bold" style="font-size: 0.9rem;">Sub-Accessory Details</label>
+                        <div formArrayName="subAccessories">
+                          <div *ngFor="let subAcc of getSubAccessoryControls(i, j).controls; let k = index" [formGroupName]="k"
+                            class="row g-2 mb-2">
+                            <div class="col-md-3">
+                              <input formControlName="name" class="form-control form-control-sm" 
+                                placeholder="Sub-Accessory Name / ስም" />
+                            </div>
+                            <div class="col-md-2">
+                              <input type="number" formControlName="quantity" class="form-control form-control-sm"
+                                placeholder="Quantity / ብዛት" />
+                            </div>
+                            <div class="col-md-2">
+                              <input type="number" formControlName="unitPrice" class="form-control form-control-sm"
+                                placeholder="Unit Price (Optional)" />
+                            </div>
+                            <div class="col-md-3">
+                              <select formControlName="currency" class="form-select form-select-sm">
+                                <option value="">Currency (Optional)</option>
+                                <option value="Birr">BIRR</option>
+                                <option value="USD">USD</option>
+                                <option value="Euro">EURO</option>
+                                <option value="Pound">POUND</option>
+                              </select>
+                            </div>
+                            <div class="col-md-2">
+                              <button type="button" class="btn btn-danger btn-sm w-100"
+                                (click)="removeSubAccessory(i, j, k)">X</button>
+                            </div>
+                          </div>
+                          <button type="button" class="btn btn-secondary btn-sm" (click)="addSubAccessory(i, j)">
+                            + Add Sub-Accessory
+                          </button>
+                        </div>
                       </div>
                     </div>
                     <button type="button" class="btn btn-info btn-sm" (click)="addAccessory(i)">+ Add Accessory</button>
@@ -202,13 +271,14 @@
                 </div>
 
                 <!-- Has Extra Items -->
-                
-                
+
+
                 <div class="col-md-4 d-flex align-items-center">
                   <label class="form-check-label me-2" for="hasExtraItems{{i}}">
                     Has Extra Items? / ተጨማሪ እቃ አለው?
                   </label>
-                  <input type="checkbox" formControlName="hasExtraItems" class="form-check-input" id="hasExtraItems{{i}}" style="width: 1.5rem; height: 1.5rem;" />
+                  <input type="checkbox" formControlName="hasExtraItems" class="form-check-input"
+                    id="hasExtraItems{{i}}" style="width: 1.5rem; height: 1.5rem;" />
                 </div>
 
 
@@ -217,16 +287,20 @@
                 <div *ngIf="item.get('hasExtraItems')?.value" class="mt-3">
                   <label class="fw-bold">Extra Item Details</label>
                   <div formArrayName="extraItems">
-                    <div *ngFor="let extra of getExtraItemControls(i).controls; let k = index" [formGroupName]="k" class="row g-2 mb-2">
+                    <div *ngFor="let extra of getExtraItemControls(i).controls; let k = index" [formGroupName]="k"
+                      class="row g-2 mb-2">
                       <div class="col-md-4">
                         <input formControlName="name" class="form-control" placeholder="Extra Item Name / ተጨማሪ እቃ ስም" />
-                        <small class="text-danger" *ngIf="extra.get('name')?.touched && extra.get('name')?.hasError('required')">
+                        <small class="text-danger"
+                          *ngIf="extra.get('name')?.touched && extra.get('name')?.hasError('required')">
                           Name is required
                         </small>
                       </div>
                       <div class="col-md-3">
-                        <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity / ብዛት" />
-                        <small class="text-danger" *ngIf="extra.get('quantity')?.touched && extra.get('quantity')?.hasError('required')">
+                        <input type="number" formControlName="quantity" class="form-control"
+                          placeholder="Quantity / ብዛት" />
+                        <small class="text-danger"
+                          *ngIf="extra.get('quantity')?.touched && extra.get('quantity')?.hasError('required')">
                           Quantity is required
                         </small>
                       </div>
@@ -235,7 +309,8 @@
                           <option value="" disabled>Select Store / ግምጃ ቤት</option>
                           <option *ngFor="let type of storeTypes" [value]="type">{{ type }}</option>
                         </select>
-                        <small class="text-danger" *ngIf="extra.get('store')?.touched && extra.get('store')?.hasError('required')">
+                        <small class="text-danger"
+                          *ngIf="extra.get('store')?.touched && extra.get('store')?.hasError('required')">
                           Store is required
                         </small>
                       </div>
@@ -247,13 +322,15 @@
                         <button type="button" class="btn btn-danger btn-sm" (click)="removeExtraItem(i, k)">X</button>
                       </div>
                     </div>
-                    <button type="button" class="btn btn-info btn-sm" (click)="addExtraItem(i)">+ Add Extra Item</button>
+                    <button type="button" class="btn btn-info btn-sm" (click)="addExtraItem(i)">+ Add Extra
+                      Item</button>
                   </div>
                 </div>
               </div>
             </div>
             <div class="card-footer text-end">
-              <button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)" *ngIf="itemDetails.length > 1">
+              <button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)"
+                *ngIf="itemDetails.length > 1">
                 Remove Item
               </button>
             </div>
@@ -277,7 +354,8 @@
                 <div class="col-md-6">
                   <label>{{f.label}}</label>
                   <input formControlName="{{f.name}}" class="form-control" />
-                  <small class="text-danger" *ngIf="receiveForm.get(f.name)?.touched && receiveForm.get(f.name)?.hasError('required')">
+                  <small class="text-danger"
+                    *ngIf="receiveForm.get(f.name)?.touched && receiveForm.get(f.name)?.hasError('required')">
                     {{f.label}} is required
                   </small>
                 </div>
@@ -299,7 +377,7 @@
         <!-- Submission Status -->
         <div class="mt-3 text-center" *ngIf="submissionStatus">
           <small [class.text-success]="!isSubmitting && submissionStatus.includes('successfully')"
-                 [class.text-danger]="submissionStatus.includes('Failed')">
+            [class.text-danger]="submissionStatus.includes('Failed')">
             {{ submissionStatus }}
           </small>
         </div>

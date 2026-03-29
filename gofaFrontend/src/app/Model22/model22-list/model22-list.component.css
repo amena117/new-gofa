@@ -1,6 +1,7 @@
 /* Main Container */
 .model22-listing {
-  max-width: 1200px; /* Increased from 1000px for consistency with previous CSS */
+  max-width: 1200px;
+  /* Increased from 1000px for consistency with previous CSS */
   margin: 40px auto;
   padding: 32px;
   font-family: 'Inter', 'Abyssinica SIL', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -299,39 +300,53 @@
   border-bottom: 1px solid #e9ecef;
 }
 
-.data-table th:nth-child(1), .data-table td:nth-child(1) { /* Recipient */
-  width: 18%;
+/* Table Column Widths */
+.data-table th:nth-child(1),
+.data-table td:nth-child(1) {
+  /* Voucher */
+  width: 12%;
 }
-.data-table th:nth-child(2), .data-table td:nth-child(2) { /* Date */
+
+.data-table th:nth-child(2),
+.data-table td:nth-child(2) {
+  /* Recipient */
   width: 15%;
 }
-.data-table th:nth-child(3), .data-table td:nth-child(3) { /* Unit */
-  width: 18%;
+
+.data-table th:nth-child(3),
+.data-table td:nth-child(3) {
+  /* Date */
+  width: 12%;
 }
-.data-table th:nth-child(4), .data-table td:nth-child(4) { /* Role */
+
+.data-table th:nth-child(4),
+.data-table td:nth-child(4) {
+  /* Unit */
   width: 15%;
 }
-.data-table th:nth-child(5), .data-table td:nth-child(5) { /* Description */
-  width: 20%;
+
+/* For Conditional Role Column */
+.data-table th:nth-child(5),
+.data-table td:nth-child(5) {
+  width: 10%;
+}
+
+/* Description and others shift based on Role visibility */
+.data-table td.description-cell {
+  max-width: 250px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
-}
-.data-table th:nth-child(6), .data-table td:nth-child(6) { /* Total Price */
-  width: 14%;
-}
-.data-table th:nth-child(7), .data-table td:nth-child(7) { /* Action */
-  width: 20%;
 }
 
-.data-table td:nth-child(5):hover {
+.data-table td.description-cell:hover {
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
-  z-index: 1;
+  z-index: 10;
   background: #f9fafb;
   position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .data-table tr:hover {
@@ -628,6 +643,106 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Item-wise report card */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Section header with toggle button */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #03203c;
+  margin: 0;
+}
+
+.toggle-btn {
+  background: linear-gradient(145deg, #ffffff, #e6e9ed);
+  border: 1px solid #5a6a85;
+  color: #03203c;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.toggle-btn:hover {
+  background: linear-gradient(145deg, #e6e9ed, #d1d5db);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Table container for item-wise report */
+.card .table-container {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+.card .data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.card .data-table thead {
+  background: linear-gradient(145deg, #03203c, #0a4b78);
+  color: #ffffff;
+}
+
+.card .data-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.card .data-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+}
+
+.card .data-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.card .data-table td {
+  padding: 12px;
+  color: #374151;
+}
+
+.card .no-data {
+  text-align: center;
+  padding: 24px;
+  color: #6b7280;
+  font-style: italic;
 }

@@ -10,8 +10,20 @@ import { environment } from '../../../../environments/environment';
 })
 export class MaintenanceFinishedForClientComponent implements OnInit {
   maintenanceRequests: any[] = [];
+  filteredRequests: any[] = [];
+  paginatedRequests: any[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
+
+  // Search & Filter
+  searchTerm: string = '';
+  searchType: string = 'worksOrderNumber';
+  selectedMaintenanceType: string = '';
+  selectedStatus: string = '';
+
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 20;
 
   // Delivery Form State
   showDeliveryForm: boolean = false;
@@ -21,7 +33,130 @@ export class MaintenanceFinishedForClientComponent implements OnInit {
 
   userRole: string = '';
 
+  maintenanceTypes: string[] = ['POWER', 'OFFICE_MACHINE', 'VHF_RADIO', 'HF_RADIO'];
+  statuses: string[] = ['Pending', 'On Maintaining', 'Quality Check', 'Maintenance Finished', 'Client Received'];
+
   constructor(private http: HttpClient, private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.loadUserRole();
+    this.fetchMaintenanceRequests();
+  }
+
+  private loadUserRole(): void {
+    const role = this.authService.getRole()?.trim();
+    this.userRole = role ? role.toUpperCase() : '';
+  }
+
+  fetchMaintenanceRequests(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    let url = '';
+
+    if (this.userRole === 'QUALITY') {
+      url = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/Qualify`;
+    } else if (this.userRole === 'PPC') {
+      url = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/finished`;
+    } else {
+      this.maintenanceRequests = [];
+      this.isLoading = false;
+      return;
+    }
+
+    this.http.get<any[]>(url).subscribe(
+      (data) => {
+        if (this.userRole === 'QUALITY') {
+          this.maintenanceRequests = data.filter(req => req.status === 'Quality Check');
+        } else if (this.userRole === 'PPC') {
+          this.maintenanceRequests = data;
+        }
+        this.filteredRequests = [...this.maintenanceRequests];
+        this.currentPage = 1;
+        this.applyPagination();
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching maintenance requests:', error);
+        this.errorMessage = 'Waiting For Maintained Materials!';
+        this.isLoading = false;
+      }
+    );
+  }
+
+  /** ================= SEARCH & FILTER ================= */
+  applySearch(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    this.filteredRequests = this.maintenanceRequests.filter(req => {
+      // Search filter
+      let matchesSearch = true;
+      if (this.searchTerm.trim()) {
+        const searchValue = String(req[this.searchType] ?? '').toLowerCase();
+        matchesSearch = searchValue.includes(this.searchTerm.toLowerCase());
+      }
+
+      // Maintenance type filter
+      let matchesType = true;
+      if (this.selectedMaintenanceType) {
+        matchesType = req.statusStage === this.selectedMaintenanceType;
+      }
+
+      // Status filter
+      let matchesStatus = true;
+      if (this.selectedStatus) {
+        matchesStatus = req.status === this.selectedStatus;
+      }
+
+      return matchesSearch && matchesType && matchesStatus;
+    });
+
+    this.applyPagination();
+  }
+
+  resetFilters(): void {
+    this.searchTerm = '';
+    this.selectedMaintenanceType = '';
+    this.selectedStatus = '';
+    this.currentPage = 1;
+    this.filteredRequests = [...this.maintenanceRequests];
+    this.applyPagination();
+  }
+
+  /** ================= PAGINATION ================= */
+  get totalPages(): number {
+    return Math.ceil(this.filteredRequests.length / this.pageSize);
+  }
+
+  applyPagination(): void {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedRequests = this.filteredRequests.slice(start, end);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.applyPagination();
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.applyPagination();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.applyPagination();
+    }
+  }
 
   ngOnInit(): void {
     this.loadUserRole();

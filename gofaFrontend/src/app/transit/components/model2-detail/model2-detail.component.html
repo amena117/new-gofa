@@ -1,142 +1,273 @@
-<style>
-  .custom-bg {
-    background-color: #03203c;
-    color: white;
-  }
-  .custom-text {
-    color: #02172a;
-  }
-  .section-header {
-    font-size: 1.2rem;
-    font-weight: 600;
-    border-left: 4px solid #03203c;
-    padding-left: 8px;
-    margin-bottom: 12px;
-    margin-top: 20px;
-  }
-  .detail-group {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid #e9ecef;
-  }
-  .detail-label {
-    font-weight: 600;
-    color: #03203c;
-  }
-  .btn-custom {
-    border-radius: 25px;
-    padding: 8px 18px;
-  }
-  .accessory-list, .extra-list {
-    margin-top: 10px;
-  }
-  .accessory-item, .extra-item {
-    background: #f8f9fa;
-    padding: 8px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-  }
-</style>
+<div class="item-details">
+  <div class="header">
+    <h1 class="title">Transaction Record Details / የግብይት መዝገብ ዝርዝር</h1>
+    <div class="button-group">
+      <button class="action-btn secondary" routerLink="/transit/model2-list" aria-label="Go back to transaction records list">
+        Back / ተመለስ
+      </button>
 
-<div class="content-container">
-  <div class="container mt-4">
-    <div class="card shadow-lg border-0 rounded-3" id="printable-card">
-      <div class="card-header custom-bg text-center">
-        <h4 class="card-title mb-0">Model 2 Details / የመረጃ ዝርዝር</h4>
-      </div>
+      <!-- Edit Button -->
+      <button class="action-btn primary" *ngIf="item" [routerLink]="['/transit/model2-edit', item.model2Id]" aria-label="Edit transaction record">
+        Edit / አርትዕ
+      </button>
 
-      <div class="card-body">
-        <!-- Error -->
-        <div *ngIf="errorMessage" class="alert alert-danger">
-          {{ errorMessage }}
-        </div>
+      <button class="action-btn primary" (click)="downloadAsPDF()" aria-label="Download as PDF">
+        Download PDF / እንደ PDF አውርድ
+      </button>
+    </div>
+  </div>
 
-        <div *ngIf="item && !isLoading">
-          <!-- GENERAL INFO -->
-          <div class="section-header">General Information / አጠቃላይ መረጃ</div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="detail-group"><span class="detail-label">Date:</span> <span>{{ item.date }}</span></div>
-              <div class="detail-group"><span class="detail-label">Issue Voucher No:</span> <span>{{ item.issueVocNo }}</span></div>
-              <div class="detail-group"><span class="detail-label">Voucher Number:</span> <span>{{ item.voucherNumber }}</span></div>
-              <div class="detail-group"><span class="detail-label">Transaction Type:</span> <span>{{ item.transType }}</span></div>
-              <div class="detail-group"><span class="detail-label">Requesting Unit:</span> <span>{{ item.requestingUnit }}</span></div>
-            </div>
-            <div class="col-md-6">
-              <div class="detail-group"><span class="detail-label">Issuing Store:</span> <span>{{ item.issuingStore }}</span></div>
-              <div class="detail-group"><span class="detail-label">Make & Model:</span> <span>{{ item.model }}</span></div>
-              <div class="detail-group"><span class="detail-label">Registered By:</span> <span>{{ item.registeredBy }}</span></div>
-              <div class="detail-group"><span class="detail-label">Status:</span> <span>{{ item.status }}</span></div>
-              <div class="detail-group"><span class="detail-label">Category:</span> <span>{{ item.category }}</span></div>
-            </div>
-          </div>
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="message error-message" role="alert">
+    {{ errorMessage }}
+  </div>
 
-          <!-- ITEM DETAILS -->
-          <div class="section-header">Item Details / የዕቃ ዝርዝር</div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="detail-group"><span class="detail-label">Stock Number:</span> <span>{{ item.stockNumber }}</span></div>
-              <div class="detail-group"><span class="detail-label">Description:</span> <span>{{ item.description }}</span></div>
-              <div class="detail-group"><span class="detail-label">Unit of Measurement:</span> <span>{{ item.unitOfMeasurment }}</span></div>
-              <div class="detail-group"><span class="detail-label">On Hand:</span> <span>{{ item.onHand }}</span></div>
-            </div>
-            <div class="col-md-6">
-              <div class="detail-group"><span class="detail-label">Request:</span> <span>{{ item.request }}</span></div>
-              <div class="detail-group"><span class="detail-label">Issued:</span> <span>{{ item.issued }}</span></div>
-              <div class="detail-group"><span class="detail-label">DO:</span> <span>{{ item.do }}</span></div>
-              <div class="detail-group"><span class="detail-label">Unit Price:</span> <span>{{ item.unitPrice }}</span></div>
-              <div class="detail-group"><span class="detail-label">Total Price:</span> <span>{{ item.totalPrice }}</span></div>
-              <div class="detail-group"><span class="detail-label">Currency:</span> <span>{{ item.currency }}</span></div>
-            </div>
-          </div>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <span>Loading transaction details... / የግብይት ዝርዝሮችን በመጫን ላይ...</span>
+  </div>
 
-          <!-- ACCESSORIES -->
-          <div class="section-header" *ngIf="item.hasAccessories">Accessories / ተጨማሪ መሳሪያዎች</div>
-          <div class="accessory-list" *ngIf="item.hasAccessories && item.accessories && item.accessories.length > 0">
-            <div *ngFor="let acc of item.accessories" class="accessory-item">
-              <strong>Name:</strong> {{ acc.name }} | <strong>Quantity:</strong> {{ acc.quantity }}
-            </div>
-          </div>
-
-          <!-- EXTRA ITEMS -->
-          <div class="section-header" *ngIf="item.hasExtraItems">Extra Items / ተጨማሪ እቃዎች</div>
-          <div class="extra-list" *ngIf="item.hasExtraItems && item.extraItems && item.extraItems.length > 0">
-            <div *ngFor="let ex of item.extraItems" class="extra-item">
-              <strong>Name:</strong> {{ ex.name }} | <strong>Quantity:</strong> {{ ex.quantity }} |
-              <strong>Store:</strong> {{ ex.store }} | <strong>Status:</strong> {{ ex.extraStatus }} |
-              <strong>Issued By:</strong> {{ ex.extraIssuedByName || 'N/A' }}
-            </div>
-          </div>
-
-          <!-- APPROVAL INFO -->
-          <div class="section-header">Approval Information / የማረጋገጫ መረጃ</div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="detail-group"><span class="detail-label">Prepared By:</span> <span>{{ item.preparedBy }}</span></div>
-              <div class="detail-group"><span class="detail-label">Prepared Title:</span> <span>{{ item.pTitle }}</span></div>
-              <div class="detail-group"><span class="detail-label">Checked By:</span> <span>{{ item.checkedBy }}</span></div>
-              <div class="detail-group"><span class="detail-label">Checked Title:</span> <span>{{ item.cTitle }}</span></div>
-              <div class="detail-group"><span class="detail-label">Approved By:</span> <span>{{ item.approvedBy }}</span></div>
-              <div class="detail-group"><span class="detail-label">Approved Title:</span> <span>{{ item.aTitle }}</span></div>
-            </div>
-            <div class="col-md-6">
-              <div class="detail-group"><span class="detail-label">Issued/Turn By:</span> <span>{{ item.issuedTurnBy }}</span></div>
-              <div class="detail-group"><span class="detail-label">Issued/Turn Title:</span> <span>{{ item.iTitle }}</span></div>
-              <div class="detail-group"><span class="detail-label">Issued By:</span> <span>{{ item.issBy }}</span></div>
-              <div class="detail-group"><span class="detail-label">Issued Title:</span> <span>{{ item.isTitle }}</span></div>
-              <div class="detail-group"><span class="detail-label">Received By:</span> <span>{{ item.receivedBy }}</span></div>
-              <div class="detail-group"><span class="detail-label">Received Title:</span> <span>{{ item.rTitle }}</span></div>
-            </div>
-          </div>
+  <!-- Transaction Details (Read-only View) -->
+  <div *ngIf="item && !isLoading" class="details-container">
+    
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="summary-icon request-icon">📋</div>
+        <div class="summary-content">
+          <div class="summary-label">Requested Quantity / የተጠየቀ ብዛት</div>
+          <div class="summary-value">{{ item.request || 0 }}</div>
         </div>
       </div>
+      
+      <div class="summary-card">
+        <div class="summary-icon issued-icon">📤</div>
+        <div class="summary-content">
+          <div class="summary-label">Issued Quantity / የወጣ ብዛት</div>
+          <div class="summary-value">{{ item.issued || 0 }}</div>
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <div class="summary-icon price-icon">💰</div>
+        <div class="summary-content">
+          <div class="summary-label">Total Value / ጠቅላላ ዋጋ</div>
+          <div class="summary-value">{{ formatPrice(item.totalPrice, item.currency) }}</div>
+        </div>
+      </div>
+      
+      <div class="summary-card">
+        <div class="summary-icon status-icon">📊</div>
+        <div class="summary-content">
+          <div class="summary-label">Status / ሁኔታ</div>
+          <div class="summary-value">{{ item.status || 'Pending' }}</div>
+        </div>
+      </div>
+    </div>
 
-      <!-- Buttons -->
-      <div class="text-center mb-4 no-print">
-        <a *ngIf="item" class="btn custom-bg btn-custom me-2" [routerLink]="['/transit/model2-edit', item.model2Id]">Edit / አስተካክል</a>
-        <button class="btn btn-info btn-custom me-2" (click)="printDetails()">Print</button>
-        <button class="btn btn-secondary btn-custom" routerLink="/transit/model2-list">Back to List</button>
+    <!-- General Information -->
+    <div class="form-section">
+      <h2 class="section-title">General Information / አጠቃላይ መረጃ</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label">Date / ቀን:</label>
+          <span class="info-value">{{ item.date || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Issue Voucher No / የመውጫ ሰነድ ቁጥር:</label>
+          <span class="info-value">{{ item.issueVocNo || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Voucher Number / የሰነድ ቁጥር:</label>
+          <span class="info-value">{{ item.voucherNumber || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Transaction Type / የግብይት አይነት:</label>
+          <span class="info-value">{{ item.transType || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Requesting Unit / ጠያቂ ክፍል:</label>
+          <span class="info-value">{{ item.requestingUnit || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Issuing Store / አቅራቢ ግምጃ ቤት:</label>
+          <span class="info-value">{{ item.issuingStore || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Make & Model / ሰሪ እና ሞዴል:</label>
+          <span class="info-value">{{ item.model || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Registered By / የመዘገበው:</label>
+          <span class="info-value">{{ item.registeredBy || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Status / ሁኔታ:</label>
+          <span class="info-value">{{ item.status || 'Pending / በመጠባበቅ ላይ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Category / ምድብ:</label>
+          <span class="info-value">{{ item.category || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item Details -->
+    <div class="form-section">
+      <h2 class="section-title">Item Details / የእቃ ዝርዝር</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label">Stock Number / የእቃ ቁጥር:</label>
+          <span class="info-value">{{ item.stockNumber || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Description / መግለጫ:</label>
+          <span class="info-value">{{ item.description || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Unit of Measurement / የመለኪያ አሃድ:</label>
+          <span class="info-value">{{ item.unitOfMeasurment || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">On Hand / በእጅ ያለ:</label>
+          <span class="info-value">{{ item.onHand || '0' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Request / ጥያቄ:</label>
+          <span class="info-value">{{ item.request || '0' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Issued / የወጣ:</label>
+          <span class="info-value">{{ item.issued || '0' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">DO:</label>
+          <span class="info-value">{{ item.do || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Unit Price / የነጠላ ዋጋ:</label>
+          <span class="info-value">{{ formatPrice(item.unitPrice, item.currency) }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Total Price / ጠቅላላ ዋጋ:</label>
+          <span class="info-value">{{ formatPrice(item.totalPrice, item.currency) }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">VAT:</label>
+          <span class="info-value">{{ formatPrice(item.vat, item.currency) }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Grand Total / ጠቅላላ ድምር:</label>
+          <span class="info-value">{{ formatPrice(item.grandTotal, item.currency) }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Currency / መገበያያ:</label>
+          <span class="info-value">{{ item.currency || 'ETB' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accessories -->
+    <div class="form-section" *ngIf="item.hasAccessories && item.accessories && item.accessories.length > 0">
+      <h2 class="section-title">Accessories / ተጨማሪ መሳሪያዎች</h2>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name / ስም</th>
+              <th>Quantity / ብዛት</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let accessory of item.accessories">
+              <td data-label="Name">{{ accessory.name || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Quantity">{{ accessory.quantity || 0 }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Extra Items -->
+    <div class="form-section" *ngIf="item.hasExtraItems && item.extraItems && item.extraItems.length > 0">
+      <h2 class="section-title">Extra Items / ተጨማሪ እቃዎች</h2>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name / ስም</th>
+              <th>Quantity / ብዛት</th>
+              <th>Store / ግምጃ ቤት</th>
+              <th>Status / ሁኔታ</th>
+              <th>Issued By / የወጣው በ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let extraItem of item.extraItems">
+              <td data-label="Name">{{ extraItem.name || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Quantity">{{ extraItem.quantity || 0 }}</td>
+              <td data-label="Store">{{ extraItem.store || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Status">{{ extraItem.extraStatus || 'Unknown / ያልታወቀ' }}</td>
+              <td data-label="Issued By">{{ extraItem.extraIssuedByName || 'N/A' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Approval Information -->
+    <div class="form-section">
+      <h2 class="section-title">Approval Information / የማረጋገጫ መረጃ</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label">Prepared By / የተዘጋጀው በ:</label>
+          <span class="info-value">{{ item.preparedBy || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Prepared Title / የዝግጅት ማዕረግ:</label>
+          <span class="info-value">{{ item.pTitle || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Checked By / የተመረመረው በ:</label>
+          <span class="info-value">{{ item.checkedBy || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Checked Title / የመርመራ ማዕረግ:</label>
+          <span class="info-value">{{ item.cTitle || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Approved By / የተፈቀደው በ:</label>
+          <span class="info-value">{{ item.approvedBy || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Approved Title / የፈቃድ ማዕረግ:</label>
+          <span class="info-value">{{ item.aTitle || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Issued/Turn By / የወጣው/የተመለሰው በ:</label>
+          <span class="info-value">{{ item.issuedTurnBy || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Issued/Turn Title / የመውጫ/መመለሻ ማዕረግ:</label>
+          <span class="info-value">{{ item.iTitle || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Issued By / የወጣው በ:</label>
+          <span class="info-value">{{ item.issBy || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Issued Title / የመውጫ ማዕረግ:</label>
+          <span class="info-value">{{ item.isTitle || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Received By / የተቀበለው በ:</label>
+          <span class="info-value">{{ item.receivedBy || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Received Title / የመቀበያ ማዕረግ:</label>
+          <span class="info-value">{{ item.rTitle || 'Unknown / ያልታወቀ' }}</span>
+        </div>
       </div>
     </div>
   </div>

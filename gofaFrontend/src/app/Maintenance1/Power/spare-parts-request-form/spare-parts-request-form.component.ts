@@ -137,46 +137,45 @@ export class SparePartsRequestFormComponent implements OnInit {
 
 async submitRequest(): Promise<void> {
   try {
-    // First update maintenance request
-    await this.updateMaintenanceRequest();
-
+    // Validate spare parts first before updating maintenance request
     const userRoleKey = this.formData.requestedBy.toLowerCase();
     const config = this.ROLE_CONFIG[userRoleKey];
 
-    // Ensure every object is a fresh literal and does not have Id
     const payload = this.formData.spareParts
-  .filter((p: SparePartForm) => p.stockNumber && p.quantityAsked > 0 && p.reason)
-  .map((part: SparePartForm) => ({
-    Id: 0, // let EF Core auto-generate
-    WorksOrderNumber: this.formData.worksOrderNumber,
-    SerialNoOfEquip: this.formData.serialNoOfEquip,
-    Model: this.formData.model,
-    RequestedBy: this.formData.requestedBy,
-    StockNumber: part.stockNumber,
-    QuantityAsked: part.quantityAsked,
-    Reason: part.reason,
-    RequestType: this.formData.requestType,
-    CurrentStage: config.currentStage,
-    
-  }));
-
-
+      .filter((p: SparePartForm) => p.stockNumber && p.quantityAsked > 0 && p.reason)
+      .map((part: SparePartForm) => ({
+        Id: 0,
+        WorksOrderNumber: this.formData.worksOrderNumber,
+        SerialNoOfEquip: this.formData.serialNoOfEquip,
+        Model: this.formData.model,
+        RequestedBy: this.formData.requestedBy,
+        StockNumber: part.stockNumber,
+        QuantityAsked: part.quantityAsked,
+        Reason: part.reason,
+        RequestType: this.formData.requestType,
+        CurrentStage: 'MAINTENANCE_LEADER', // Route to maintenance leader first
+      }));
 
     if (!payload.length) {
       alert('Please add at least one spare part with a valid stock number.');
       return;
     }
 
-    await this.http.post(
+    // Submit spare parts request first
+    const response = await this.http.post(
       `${environment.apiBaseUrl}/api/SparePartsRequest/bulk`,
       payload
     ).toPromise();
 
+    // Only update maintenance request if spare parts submission succeeds
+    await this.updateMaintenanceRequest();
+
     alert('Spare parts request submitted successfully.');
     this.resetForm();
+    this.router.navigate(['/maintenance/spare-parts-requests']);
 
   } catch (err) {
-    alert('Failed to submit spare parts request.');
+    alert('Failed to submit spare parts request. Please try again.');
     console.error('Error submitting spare parts request:', err);
   }
 }

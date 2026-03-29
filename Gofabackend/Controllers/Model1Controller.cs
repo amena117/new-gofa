@@ -23,66 +23,81 @@ namespace UserManagment.Controllers
         }
 
         // GET: api/Model1
+        // GET: api/Model1
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Model1Dto>>> GetModel1()
         {
-            var models = await _context.Model1
-                .Include(m => m.Accessories)
-                .Include(m => m.ExtraItems)  // Include ExtraItems
-                .ToListAsync();
-
-            var dtoList = models.Select(model => new Model1Dto
+            try 
             {
-                Model1Id = model.Model1Id,
-                Supplier = model.Supplier,
-                Category = model.Category,
-                PRNO = model.PRNO,
-                Date = model.Date,
-                InvoiceNo = model.InvoiceNo,
-                ItemType = model.ItemType,
-                ContactNumber = model.ContactNumber,
-                Number = model.Number,
-                RegisteredBy = model.RegisteredBy,
-                SerialNumber = model.SerialNumber,
-                Description = model.Description,
-                UnitOfMeasurment = model.UnitOfMeasurment,
-                Ordered = model.Ordered,
-                Received = model.Received,
-                UnitOfPrice = model.UnitOfPrice,
-                Amount = model.Amount,
-                Currency = model.Currency,
-                Location = model.Location,
-                Remark = model.Remark,
-                CheckedByName = model.CheckedByName,
-                CTitle = model.CTitle,
-                RecivedByName = model.RecivedByName,
-                RTitle = model.RTitle,
-                AuthorizedByName = model.AuthorizedByName,
-                ATitle = model.ATitle,
-                Model19Ref = model.Model19Ref,
-                Status = model.Status,
-                StoreType = model.StoreType,
-                HasAccessories = model.HasAccessories,
-                Accessories = model.Accessories?.Select(a => new AccessoryDto
-                {
-                    Id = a.Id,
-                    Name = a.Name,
-                    Quantity = a.Quantity,
-                    Model1Id = a.Model1Id
-                }).ToList(),
-                ExtraItems = model.ExtraItems?.Select(e => new ExtraItemDto
-                {
-                    Id = e.Id,
-                    Name = e.Name,
-                    Quantity = e.Quantity,
-                    Store = e.Store,
-                    ExtraStatus = e.ExtraStatus,
-                    ExtraRecivedByName = e.ExtraRecivedByName,
-                    Model1Id = e.Model1Id
-                }).ToList()
-            });
+                var models = await _context.Model1
+                    .Include(m => m.Accessories)
+                    .Include(m => m.ExtraItems)  // Include ExtraItems
+                    .ToListAsync();
 
-            return Ok(dtoList);
+                var dtoList = models.Select(model => new Model1Dto
+                {
+                    Model1Id = model.Model1Id,
+                    Supplier = model.Supplier,
+                    Category = model.Category,
+                    PRNO = model.PRNO,
+                    Date = model.Date,
+                    InvoiceNo = model.InvoiceNo,
+                    ItemType = model.ItemType,
+                    ContactNumber = model.ContactNumber,
+                    Number = model.Number,
+                    RegisteredBy = model.RegisteredBy,
+                    SerialNumber = model.SerialNumber,
+                    Description = model.Description,
+                    UnitOfMeasurment = model.UnitOfMeasurment,
+                    Ordered = model.Ordered,
+                    Received = model.Received,
+                    UnitOfPrice = model.UnitOfPrice,
+                    Amount = model.Amount,
+                    Currency = model.Currency,
+                    Location = model.Location,
+                    Remark = model.Remark,
+                    CheckedByName = model.CheckedByName,
+                    CTitle = model.CTitle,
+                    RecivedByName = model.RecivedByName,
+                    RTitle = model.RTitle,
+                    AuthorizedByName = model.AuthorizedByName,
+                    ATitle = model.ATitle,
+                    Model19Ref = model.Model19Ref,
+                    Status = model.Status,
+                    StoreType = model.StoreType,
+                    HasAccessories = model.HasAccessories,
+                    Accessories = model.Accessories?.Select(a => new AccessoryDto
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        Quantity = a.Quantity,
+                        Model1Id = a.Model1Id
+                    }).ToList(),
+                    ExtraItems = model.ExtraItems?.Select(e => new ExtraItemDto
+                    {
+                        Id = e.Id,
+                        Name = e.Name,
+                        Quantity = e.Quantity,
+                        Store = e.Store,
+                        ExtraStatus = e.ExtraStatus,
+                        ExtraRecivedByName = e.ExtraRecivedByName,
+                        Model1Id = e.Model1Id
+                    }).ToList(),
+                    Vat = model.Vat,
+                    GrandTotal = model.GrandTotal
+                });
+
+                return Ok(dtoList);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    message = "An error occurred while fetching Model1.", 
+                    detailedMessage = ex.Message,
+                    innerException = ex.InnerException?.Message 
+                });
+            }
         }
         // GET: api/Model1/filter-by-date?period=1month
 [HttpGet("filter-by-date")]
@@ -181,7 +196,9 @@ public async Task<ActionResult<IEnumerable<Model1Dto>>> GetModel1sByDateRange([F
                     ExtraStatus = e.ExtraStatus,
                     ExtraRecivedByName = e.ExtraRecivedByName,
                     Model1Id = e.Model1Id
-                }).ToList()
+                }).ToList(),
+                Vat = model.Vat,
+                GrandTotal = model.GrandTotal
             })
             .ToList();
 
@@ -269,6 +286,7 @@ private static bool TryParseEthiopianDate(string ethiopianDate, out DateTime gre
         {
             var model = await _context.Model1
                 .Include(m => m.Accessories)
+                    .ThenInclude(a => a.SubAccessories)
                 .Include(m => m.ExtraItems)  // Include ExtraItems
                 .FirstOrDefaultAsync(m => m.Model1Id == id);
 
@@ -313,7 +331,17 @@ private static bool TryParseEthiopianDate(string ethiopianDate, out DateTime gre
                     Id = a.Id,
                     Name = a.Name,
                     Quantity = a.Quantity,
-                    Model1Id = a.Model1Id
+                    Model1Id = a.Model1Id,
+                    UnitPrice = a.UnitPrice,
+                    Currency = a.Currency,
+                    SubAccessories = a.SubAccessories?.Select(sa => new SubAccessoryDto
+                    {
+                        Id = sa.Id,
+                        Name = sa.Name,
+                        Quantity = sa.Quantity,
+                        UnitPrice = sa.UnitPrice,
+                        Currency = sa.Currency
+                    }).ToList() ?? new List<SubAccessoryDto>()
                 }).ToList(),
                 ExtraItems = model.ExtraItems?.Select(e => new ExtraItemDto
                 {
@@ -324,7 +352,9 @@ private static bool TryParseEthiopianDate(string ethiopianDate, out DateTime gre
                     ExtraStatus = e.ExtraStatus,
                     ExtraRecivedByName = e.ExtraRecivedByName,
                     Model1Id = e.Model1Id
-                }).ToList()
+                }).ToList(),
+                Vat = model.Vat,
+                GrandTotal = model.GrandTotal
             };
 
             return Ok(dto);
@@ -372,7 +402,16 @@ public async Task<ActionResult<Model1Dto>> PostModel1(Model1Dto dto)
         Accessories = dto.Accessories?.Select(a => new Accessories
         {
             Name = a.Name,
-            Quantity = a.Quantity
+            Quantity = a.Quantity,
+            UnitPrice = a.UnitPrice,
+            Currency = a.Currency,
+            SubAccessories = a.SubAccessories?.Select(sa => new Model1AccessorySubAccessory
+            {
+                Name = sa.Name,
+                Quantity = sa.Quantity,
+                UnitPrice = sa.UnitPrice,
+                Currency = sa.Currency
+            }).ToList() ?? new List<Model1AccessorySubAccessory>()
         }).ToList(),
         ExtraItems = dto.ExtraItems?.Select(e => new ExtraItem
         {
@@ -381,7 +420,9 @@ public async Task<ActionResult<Model1Dto>> PostModel1(Model1Dto dto)
             Store = e.Store,
             ExtraStatus = e.ExtraStatus,
             ExtraRecivedByName = e.ExtraRecivedByName
-        }).ToList()
+        }).ToList(),
+        Vat = dto.Vat,
+        GrandTotal = dto.GrandTotal
     };
 
     _context.Model1.Add(model1);
@@ -420,11 +461,26 @@ public async Task<IActionResult> PutModel1(int id, Model1Dto updatedModel)
     {
         foreach (var accessoryDto in updatedModel.Accessories)
         {
-            existingModel.Accessories.Add(new Accessories
+            var accessory = new Accessories
             {
                 Name = accessoryDto.Name,
-                Quantity = accessoryDto.Quantity
-            });
+                Quantity = accessoryDto.Quantity,
+                UnitPrice = accessoryDto.UnitPrice,
+                Currency = accessoryDto.Currency
+            };
+            
+            if (accessoryDto.SubAccessories != null && accessoryDto.SubAccessories.Any())
+            {
+                accessory.SubAccessories = accessoryDto.SubAccessories.Select(sa => new Model1AccessorySubAccessory
+                {
+                    Name = sa.Name,
+                    Quantity = sa.Quantity,
+                    UnitPrice = sa.UnitPrice,
+                    Currency = sa.Currency
+                }).ToList();
+            }
+            
+            existingModel.Accessories.Add(accessory);
         }
     }
 

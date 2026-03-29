@@ -1,0 +1,1202 @@
+[2026-02-12 17:30:58 WRN] The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+[2026-02-12 17:30:58 WRN] Network IP 10.20.38.171 not available. Only localhost bindings will be active.
+[2026-02-12 17:30:58 WRN] Network IP 10.20.38.51 not available. Bindings for this IP will not be active.
+[2026-02-12 17:30:59 WRN] The WebRootPath was not found: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend\wwwroot". Static files may be unavailable.
+[2026-02-12 17:31:00 WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+[2026-02-12 17:31:00 WRN] The property '"Model22Item"."SerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-02-12 17:31:00 WRN] The property '"Model22ItemAccessory"."WithdrawnSerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-02-12 17:31:00 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Item"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 17:31:00 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"MasterCardItemDetails"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 17:31:00 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Model22ItemAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 17:31:00 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"TransactionEntry"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 17:31:01 INF] Executed DbCommand ("16"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-02-12 17:31:01 INF] Executed DbCommand ("69"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-02-12 17:31:01 INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-02-12 17:31:01 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-02-12 17:31:01 INF] Executed DbCommand ("33"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];"
+[2026-02-12 17:31:01 INF] No migrations were applied. The database is already up to date.
+[2026-02-12 17:31:01 INF] Executed DbCommand ("19"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[Role] = N'SUPER_ADMIN') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END"
+[2026-02-12 17:31:01 INF] Database migrated and seeded successfully.
+[2026-02-12 17:31:01 INF] Application starting up in Development mode...
+[2026-02-12 17:31:01 INF] Available endpoints:
+[2026-02-12 17:31:01 INF] - http://localhost:5000
+[2026-02-12 17:31:01 INF] - https://localhost:5001
+[2026-02-12 17:31:01 INF] - https://localhost:7112
+[2026-02-12 17:31:01 INF] - http://10.20.38.171:2024
+[2026-02-12 17:31:01 INF] - http://10.20.38.51:2024
+[2026-02-12 17:31:01 INF] - https://10.20.38.171:2025
+[2026-02-12 17:31:01 INF] User profile is available. Using '"C:\Users\Josiah\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+[2026-02-12 17:31:01 WRN] Overriding address(es) '"http://localhost:5000, http://10.20.38.171:2024, http://10.20.38.51:2024, http://localhost:2024"'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+[2026-02-12 17:31:02 INF] Now listening on: "http://localhost:5000"
+[2026-02-12 17:31:02 INF] Now listening on: "http://localhost:2024"
+[2026-02-12 17:31:02 INF] Now listening on: "https://localhost:5001"
+[2026-02-12 17:31:02 INF] Now listening on: "https://localhost:7112"
+[2026-02-12 17:31:02 INF] Application started. Press Ctrl+C to shut down.
+[2026-02-12 17:31:02 INF] Hosting environment: "Development"
+[2026-02-12 17:31:02 INF] Content root path: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend"
+[2026-02-12 17:39:30 INF] Application is shutting down...
+[2026-02-12 17:39:41 WRN] The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+[2026-02-12 17:39:41 WRN] Network IP 10.20.38.171 not available. Only localhost bindings will be active.
+[2026-02-12 17:39:41 WRN] Network IP 10.20.38.51 not available. Bindings for this IP will not be active.
+[2026-02-12 17:39:41 WRN] The WebRootPath was not found: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend\wwwroot". Static files may be unavailable.
+[2026-02-12 17:39:43 WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+[2026-02-12 17:39:43 WRN] The property '"Model22Item"."SerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-02-12 17:39:43 WRN] The property '"Model22ItemAccessory"."WithdrawnSerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-02-12 17:39:43 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Item"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 17:39:43 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"MasterCardItemDetails"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 17:39:43 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Model22ItemAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 17:39:43 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"TransactionEntry"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 17:39:43 INF] Executed DbCommand ("21"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-02-12 17:39:44 INF] Executed DbCommand ("31"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-02-12 17:39:44 INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-02-12 17:39:44 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-02-12 17:39:44 INF] Executed DbCommand ("8"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];"
+[2026-02-12 17:39:44 INF] No migrations were applied. The database is already up to date.
+[2026-02-12 17:39:44 INF] Executed DbCommand ("11"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[Role] = N'SUPER_ADMIN') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END"
+[2026-02-12 17:39:44 INF] Database migrated and seeded successfully.
+[2026-02-12 17:39:44 INF] Application starting up in Development mode...
+[2026-02-12 17:39:44 INF] Available endpoints:
+[2026-02-12 17:39:44 INF] - http://localhost:5000
+[2026-02-12 17:39:44 INF] - https://localhost:5001
+[2026-02-12 17:39:44 INF] - https://localhost:7112
+[2026-02-12 17:39:44 INF] - http://10.20.38.171:2024
+[2026-02-12 17:39:44 INF] - http://10.20.38.51:2024
+[2026-02-12 17:39:44 INF] - https://10.20.38.171:2025
+[2026-02-12 17:39:44 INF] User profile is available. Using '"C:\Users\Josiah\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+[2026-02-12 17:39:44 WRN] Overriding address(es) '"http://localhost:5000, http://10.20.38.171:2024, http://10.20.38.51:2024, http://localhost:2024"'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+[2026-02-12 17:39:44 INF] Now listening on: "http://localhost:5000"
+[2026-02-12 17:39:44 INF] Now listening on: "http://localhost:2024"
+[2026-02-12 17:39:44 INF] Now listening on: "https://localhost:5001"
+[2026-02-12 17:39:44 INF] Now listening on: "https://localhost:7112"
+[2026-02-12 17:39:44 INF] Application started. Press Ctrl+C to shut down.
+[2026-02-12 17:39:44 INF] Hosting environment: "Development"
+[2026-02-12 17:39:44 INF] Content root path: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend"
+[2026-02-12 17:40:09 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - null null
+[2026-02-12 17:40:09 INF] CORS policy execution successful.
+[2026-02-12 17:40:09 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - 204 null null 110.6304ms
+[2026-02-12 17:40:09 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - "application/json" 48
+[2026-02-12 17:40:09 INF] CORS policy execution successful.
+[2026-02-12 17:40:09 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-02-12 17:40:09 INF] Route matched with "{action = \"Login\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Gofabackend.Controllers.LoginRequestDto)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-02-12 17:40:09 INF] Executed DbCommand ("31"ms) [Parameters=["@__loginRequest_Username_0='vhftester1' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(2) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginRequest_Username_0"
+[2026-02-12 17:40:09 INF] Executing "UnauthorizedObjectResult", writing value of type '"<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 17:40:10 INF] Executed action "Gofabackend.Controllers.AuthController.Login (Gofabackend)" in 367.2628ms
+[2026-02-12 17:40:10 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-02-12 17:40:10 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - 401 null "application/json; charset=utf-8" 529.6675ms
+[2026-02-12 17:40:20 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - null null
+[2026-02-12 17:40:20 INF] CORS policy execution successful.
+[2026-02-12 17:40:20 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - 204 null null 6.0659ms
+[2026-02-12 17:40:20 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - "application/json" 45
+[2026-02-12 17:40:20 INF] CORS policy execution successful.
+[2026-02-12 17:40:20 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-02-12 17:40:20 INF] Route matched with "{action = \"Login\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Gofabackend.Controllers.LoginRequestDto)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-02-12 17:40:20 INF] Executed DbCommand ("2"ms) [Parameters=["@__loginRequest_Username_0='eyosi12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(2) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginRequest_Username_0"
+[2026-02-12 17:40:20 INF] Session created for user "eyosi12" at 02/12/2026 14:40:20 +00:00, expires at 02/12/2026 14:50:20 +00:00
+[2026-02-12 17:40:20 INF] AuthenticationScheme: "Cookies" signed in.
+[2026-02-12 17:40:20 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType1`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:20 INF] Executed action "Gofabackend.Controllers.AuthController.Login (Gofabackend)" in 603.2ms
+[2026-02-12 17:40:20 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-02-12 17:40:20 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - 200 null "application/json; charset=utf-8" 622.171ms
+[2026-02-12 17:40:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2026-02-12 17:40:20 INF] CORS policy execution successful.
+[2026-02-12 17:40:20 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-02-12 17:40:20 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-02-12 17:40:20 INF] Cookies received in /api/auth/me: "auth_token: CfDJ8Gzx4NkfqdBDuo8ThPub2QvIO3flumcDoe8ipSH_nwh_bUTxcs7dgt9jvI8BMAqCrbhuVRtictWc8k1tMwPm3pq4Rki1Mafxyw1ZU8xBpSXf60fQT0ZlHYvnwq2VwOd62mLfEoXu7Fy8Br2vZQVrhv8cMDq7GHwF9HDcZfUsd6YcAq7yYGIrk-OlKxIylAwM1cg4jTiXl7Uo3_yoDDKm3Dm7cb8kMGOit-0TMNSCp7KJAeP8pGz21Jy8es32XdjvSosJwq0zSm4ESBMY33R_MPl85beMnqcBsyScvesoPH0IAhiv_8Xuk3_HPZ1ef7Oa591gTY5hWghHZCcHNZAQQuuzmVwVzdImChe3vlOAJ2uKg33E_BzeEoQt-xHjLCgbcqIhjODV6NPOn9MjmitJ3XuUgruXvK0S9n9XlWfNRcWpXiSJcuan_kw5RQFS6hJbYTNiiDhmD6npM4r5abG9QZHtSLVxH1Jgcf989Jz-zbUxnOdPeql_kMnvcPJBZGbsvnKv9sUqs7rSkRw6G8X1FJE"
+[2026-02-12 17:40:21 INF] Executed DbCommand ("6"ms) [Parameters=["@__p_0='2'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Id] = @__p_0"
+[2026-02-12 17:40:21 INF] Session validated for user "eyosi12" at 02/12/2026 14:40:21 +00:00
+[2026-02-12 17:40:21 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 17:40:21 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 70.8396ms
+[2026-02-12 17:40:21 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-02-12 17:40:21 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 200 null "application/json; charset=utf-8" 96.597ms
+[2026-02-12 17:40:21 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - null null
+[2026-02-12 17:40:21 INF] CORS policy execution successful.
+[2026-02-12 17:40:21 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 204 null null 5.0015ms
+[2026-02-12 17:40:21 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - "application/json" null
+[2026-02-12 17:40:21 INF] CORS policy execution successful.
+[2026-02-12 17:40:21 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2026-02-12 17:40:21 INF] Route matched with "{action = \"GetItemsByRoles\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Controllers.ItemListingDto]]] GetItemsByRoles(System.String[])" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 17:40:21 INF] GetItemsByRoles called with roles: "VHF"
+[2026-02-12 17:40:21 INF] Querying items with uppercase roles: "VHF"
+[2026-02-12 17:40:21 INF] Executed DbCommand ("68"ms) [Parameters=["@__upperRoles_0='[\"VHF\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Description], [i].[Category], [i].[Model], [i].[Quantity], [i].[WarehouseId], [i].[Role], [i].[RegistrationDate], [i].[RegisteredBy], [i].[UnitPrice], [i].[Currency], [i].[Source], [i].[Shelf], [i].[ItemColumn], [i].[ItemRow], [i].[Condition], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accessories] AS [a]
+        WHERE [i].[ItemId] = [a].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END AS [HasAccessories], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ItemSerialNumbers] AS [i0]
+        WHERE [i].[ItemId] = [i0].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END AS [HasSerialNumbers], (
+    SELECT COUNT(*)
+    FROM [ItemSerialNumbers] AS [i1]
+    WHERE [i].[ItemId] = [i1].[ItemId]) AS [SerialNumbersCount], (
+    SELECT TOP(1) [t0].[GregorianDate]
+    FROM [TransactionEntries] AS [t0]
+    WHERE [i].[ItemId] = [t0].[ItemId]
+    ORDER BY [t0].[GregorianDate] DESC) AS [LatestTransactionDate]
+FROM [Items] AS [i]
+WHERE EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__upperRoles_0) WITH ([value] nvarchar(max) '$') AS [u]
+    WHERE [u].[value] = UPPER([i].[Role]))
+ORDER BY (
+    SELECT TOP(1) [t].[GregorianDate]
+    FROM [TransactionEntries] AS [t]
+    WHERE [i].[ItemId] = [t].[ItemId]
+    ORDER BY [t].[GregorianDate] DESC) DESC"
+[2026-02-12 17:40:21 INF] Optimized fetch: 38 items for roles: "VHF"
+[2026-02-12 17:40:21 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Controllers.ItemListingDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:21 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)" in 368.6709ms
+[2026-02-12 17:40:21 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2026-02-12 17:40:21 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 200 null "application/json; charset=utf-8" 404.6564ms
+[2026-02-12 17:40:21 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=VHF" - null null
+[2026-02-12 17:40:21 INF] CORS policy execution successful.
+[2026-02-12 17:40:21 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=VHF" - 204 null null 4.9175ms
+[2026-02-12 17:40:21 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=VHF" - "application/json" null
+[2026-02-12 17:40:21 INF] CORS policy execution successful.
+[2026-02-12 17:40:21 INF] Executing endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2026-02-12 17:40:21 INF] Route matched with "{action = \"GetModel22s\", controller = \"Model22\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Model22]]] GetModel22s(System.String)" on controller "Gofabackend.Controllers.Model22Controller" ("Gofabackend").
+[2026-02-12 17:40:22 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+[2026-02-12 17:40:22 INF] Executed DbCommand ("19"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='180']"
+""SELECT [m].[Model22Id], [m].[Department], [m].[EthiopianDate], [m].[RecipientName], [m].[RecipientOrganization], [m].[RegisteredBy], [m].[Role], [m].[VoucherNumber], [t].[Model22ItemId], [t].[Currency], [t].[Description], [t].[Model], [t].[Model22Id], [t].[Quantity], [t].[SerialNumber], [t].[SerialNumbers], [t].[UnitPrice], [t].[VoucherNumber], [t].[Model22ItemAccessoryId], [t].[AccessoryId], [t].[Currency0], [t].[Model0], [t].[Model22ItemId0], [t].[Name], [t].[Quantity0], [t].[UnitPrice0], [t].[WithdrawnSerialNumbers]
+FROM [Model22s] AS [m]
+LEFT JOIN (
+    SELECT [m0].[Model22ItemId], [m0].[Currency], [m0].[Description], [m0].[Model], [m0].[Model22Id], [m0].[Quantity], [m0].[SerialNumber], [m0].[SerialNumbers], [m0].[UnitPrice], [m0].[VoucherNumber], [m1].[Model22ItemAccessoryId], [m1].[AccessoryId], [m1].[Currency] AS [Currency0], [m1].[Model] AS [Model0], [m1].[Model22ItemId] AS [Model22ItemId0], [m1].[Name], [m1].[Quantity] AS [Quantity0], [m1].[UnitPrice] AS [UnitPrice0], [m1].[WithdrawnSerialNumbers]
+    FROM [Model22Items] AS [m0]
+    LEFT JOIN [Model22ItemAccessories] AS [m1] ON [m0].[Model22ItemId] = [m1].[Model22ItemId]
+) AS [t] ON [m].[Model22Id] = [t].[Model22Id]
+WHERE [m].[Role] = @__role_0
+ORDER BY [m].[Model22Id], [t].[Model22ItemId]"
+[2026-02-12 17:40:22 INF] Fetched 31 Model22 records with role filter '"VHF"'
+[2026-02-12 17:40:22 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Model22, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:22 INF] Executed action "Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)" in 261.515ms
+[2026-02-12 17:40:22 INF] Executed endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2026-02-12 17:40:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=VHF" - 200 null "application/json; charset=utf-8" 281.9411ms
+[2026-02-12 17:40:22 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/transactions""" - null null
+[2026-02-12 17:40:22 INF] CORS policy execution successful.
+[2026-02-12 17:40:22 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/transactions""" - 204 null null 5.0001ms
+[2026-02-12 17:40:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/transactions""" - "application/json" null
+[2026-02-12 17:40:22 INF] CORS policy execution successful.
+[2026-02-12 17:40:22 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)"'
+[2026-02-12 17:40:22 INF] Route matched with "{action = \"GetAllTransactionHistories\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.TransactionEntryDto]]] GetAllTransactionHistories()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 17:40:22 INF] Executed DbCommand ("5"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [t].[Id], [t].[ItemId], [i].[Category], [i].[Description], [t].[Action], [t].[Quantity], [t].[VoucherNumber], [t].[Details], [t].[Date], [t].[Model22Id]
+FROM [TransactionEntries] AS [t]
+INNER JOIN [Items] AS [i] ON [t].[ItemId] = [i].[ItemId]"
+[2026-02-12 17:40:22 INF] Fetched 139 transaction entries
+[2026-02-12 17:40:22 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.TransactionEntryDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:22 INF] Executed action "Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)" in 61.787ms
+[2026-02-12 17:40:22 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)"'
+[2026-02-12 17:40:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/transactions""" - 200 null "application/json; charset=utf-8" 81.6448ms
+[2026-02-12 17:40:26 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2026-02-12 17:40:26 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2026-02-12 17:40:26 INF] CORS policy execution successful.
+[2026-02-12 17:40:26 INF] CORS policy execution successful.
+[2026-02-12 17:40:26 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 7.2479ms
+[2026-02-12 17:40:26 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 6.3664ms
+[2026-02-12 17:40:26 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - null null
+[2026-02-12 17:40:26 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - null null
+[2026-02-12 17:40:26 INF] CORS policy execution successful.
+[2026-02-12 17:40:26 INF] CORS policy execution successful.
+[2026-02-12 17:40:26 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - 204 null null 17.2798ms
+[2026-02-12 17:40:26 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - 204 null null 10.8193ms
+[2026-02-12 17:40:26 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 17:40:26 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 17:40:26 INF] CORS policy execution successful.
+[2026-02-12 17:40:26 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/sources""" - "application/json" null
+[2026-02-12 17:40:26 INF] CORS policy execution successful.
+[2026-02-12 17:40:26 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - "application/json" null
+[2026-02-12 17:40:26 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 17:40:26 INF] CORS policy execution successful.
+[2026-02-12 17:40:26 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 17:40:26 INF] CORS policy execution successful.
+[2026-02-12 17:40:26 INF] Executing endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 17:40:26 INF] Executing endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 17:40:26 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 17:40:26 INF] Executed endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 17:40:26 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 17:40:26 INF] Route matched with "{action = \"GetWarehouses\", controller = \"Warehouses\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.WarehouseDto]]] GetWarehouses()" on controller "Gofabackend.Controller.WarehousesController" ("Gofabackend").
+[2026-02-12 17:40:26 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/index.html""" - 404 0 null 23.5064ms
+[2026-02-12 17:40:26 INF] Fetched 5 currencies
+[2026-02-12 17:40:26 INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: "GET" "http"://"localhost:5000""""/index.html", Response status code: 404
+[2026-02-12 17:40:26 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 17:40:26 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 33.0735ms
+[2026-02-12 17:40:26 INF] Executed DbCommand ("8"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 17:40:26 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 17:40:26 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 67.8835ms
+[2026-02-12 17:40:26 INF] Executed DbCommand ("5"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [w].[WarehouseId], [w].[Location], [w].[Name]
+FROM [Warehouses] AS [w]"
+[2026-02-12 17:40:26 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:26 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 67.9134ms
+[2026-02-12 17:40:26 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 17:40:26 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 102.8049ms
+[2026-02-12 17:40:26 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.WarehouseDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:26 INF] Executed action "Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)" in 89.6163ms
+[2026-02-12 17:40:26 INF] Executed endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 17:40:26 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - 200 null "application/json; charset=utf-8" 121.296ms
+[2026-02-12 17:40:27 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2026-02-12 17:40:27 INF] CORS policy execution successful.
+[2026-02-12 17:40:27 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 4.6157ms
+[2026-02-12 17:40:27 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 17:40:27 INF] CORS policy execution successful.
+[2026-02-12 17:40:27 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 17:40:27 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 17:40:27 INF] Executed DbCommand ("5"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 17:40:27 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:27 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 39.6953ms
+[2026-02-12 17:40:27 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 17:40:27 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 57.5619ms
+[2026-02-12 17:40:29 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 17:40:29 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 17:40:29 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 17:40:29 INF] CORS policy execution successful.
+[2026-02-12 17:40:29 INF] CORS policy execution successful.
+[2026-02-12 17:40:29 INF] CORS policy execution successful.
+[2026-02-12 17:40:29 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 17:40:29 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 17:40:29 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 17:40:29 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 17:40:29 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 17:40:29 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 17:40:29 INF] Fetched 5 currencies
+[2026-02-12 17:40:29 INF] Executed DbCommand ("2"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 17:40:29 INF] Executed DbCommand ("9"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 17:40:29 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 17:40:29 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:29 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:29 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 14.8216ms
+[2026-02-12 17:40:29 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 31.1884ms
+[2026-02-12 17:40:29 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 34.5956ms
+[2026-02-12 17:40:29 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 17:40:29 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 17:40:29 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 17:40:29 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - null null
+[2026-02-12 17:40:29 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 67.5384ms
+[2026-02-12 17:40:29 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 77.3674ms
+[2026-02-12 17:40:29 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 82.2784ms
+[2026-02-12 17:40:29 INF] CORS policy execution successful.
+[2026-02-12 17:40:29 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - 204 null null 61.094ms
+[2026-02-12 17:40:29 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - "application/json" null
+[2026-02-12 17:40:29 INF] CORS policy execution successful.
+[2026-02-12 17:40:29 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 17:40:29 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Controllers.ItemListingDto]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 17:40:29 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+[2026-02-12 17:40:29 INF] Executed DbCommand ("77"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Description], [i].[Category], [i].[Model], [i].[Quantity], [i].[WarehouseId], [i].[Role], [i].[RegistrationDate], [i].[RegisteredBy], [i].[UnitPrice], [i].[Currency], [i].[Source], [i].[Shelf], [i].[ItemColumn], [i].[ItemRow], [i].[Condition], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accessories] AS [a]
+        WHERE [i].[ItemId] = [a].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ItemSerialNumbers] AS [i0]
+        WHERE [i].[ItemId] = [i0].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, [i1].[Id], [i1].[AddedDate], [i1].[ItemId], [i1].[SerialNumber], (
+    SELECT COUNT(*)
+    FROM [ItemSerialNumbers] AS [i2]
+    WHERE [i].[ItemId] = [i2].[ItemId]), [t0].[Id], [t0].[Name], [t0].[Model], [t0].[Quantity], [t0].[UnitPrice], [t0].[Currency], [t0].[RequiresSerialNumbers], [t0].[ItemId], [t0].[Id0], [t0].[AccessoryId], [t0].[SerialNumber], (
+    SELECT TOP(1) [t1].[GregorianDate]
+    FROM [TransactionEntries] AS [t1]
+    WHERE [i].[ItemId] = [t1].[ItemId]
+    ORDER BY [t1].[GregorianDate] DESC)
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[Name], [a0].[Model], [a0].[Quantity], [a0].[UnitPrice], [a0].[Currency], [a0].[RequiresSerialNumbers], [a0].[ItemId], [a1].[Id] AS [Id0], [a1].[AccessoryId], [a1].[SerialNumber]
+    FROM [Accessories] AS [a0]
+    LEFT JOIN [AccessorySerialNumbers] AS [a1] ON [a0].[Id] = [a1].[AccessoryId]
+) AS [t0] ON [i].[ItemId] = [t0].[ItemId]
+ORDER BY (
+    SELECT TOP(1) [t].[GregorianDate]
+    FROM [TransactionEntries] AS [t]
+    WHERE [i].[ItemId] = [t].[ItemId]
+    ORDER BY [t].[GregorianDate] DESC) DESC, [i].[ItemId], [i1].[Id], [t0].[Id]"
+[2026-02-12 17:40:29 INF] Optimized fetch: 66 items with search '"none"'
+[2026-02-12 17:40:29 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Controllers.ItemListingDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:29 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 213.9074ms
+[2026-02-12 17:40:29 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 17:40:29 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - 200 null "application/json; charset=utf-8" 257.0026ms
+[2026-02-12 17:40:30 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 17:40:30 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 17:40:30 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/sources""" - "application/json" null
+[2026-02-12 17:40:30 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - "application/json" null
+[2026-02-12 17:40:30 INF] CORS policy execution successful.
+[2026-02-12 17:40:30 INF] CORS policy execution successful.
+[2026-02-12 17:40:30 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 17:40:30 INF] CORS policy execution successful.
+[2026-02-12 17:40:30 INF] CORS policy execution successful.
+[2026-02-12 17:40:30 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 17:40:30 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 17:40:30 INF] Executing endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 17:40:30 INF] Executing endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 17:40:30 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 17:40:30 INF] Route matched with "{action = \"GetWarehouses\", controller = \"Warehouses\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.WarehouseDto]]] GetWarehouses()" on controller "Gofabackend.Controller.WarehousesController" ("Gofabackend").
+[2026-02-12 17:40:30 INF] Executed endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 17:40:30 INF] Executed DbCommand ("1"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 17:40:30 INF] Fetched 5 currencies
+[2026-02-12 17:40:30 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/index.html""" - 404 0 null 37.45ms
+[2026-02-12 17:40:30 INF] Executed DbCommand ("4"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [w].[WarehouseId], [w].[Location], [w].[Name]
+FROM [Warehouses] AS [w]"
+[2026-02-12 17:40:30 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:30 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 17:40:30 INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: "GET" "http"://"localhost:5000""""/index.html", Response status code: 404
+[2026-02-12 17:40:30 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.WarehouseDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:30 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 36.8838ms
+[2026-02-12 17:40:30 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 31.642ms
+[2026-02-12 17:40:30 INF] Executed action "Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)" in 36.2712ms
+[2026-02-12 17:40:30 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 17:40:30 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 17:40:30 INF] Executed endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 17:40:30 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 78.0665ms
+[2026-02-12 17:40:30 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 82.5252ms
+[2026-02-12 17:40:30 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - 200 null "application/json; charset=utf-8" 87.0551ms
+[2026-02-12 17:40:30 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 17:40:30 INF] CORS policy execution successful.
+[2026-02-12 17:40:30 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 17:40:30 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 17:40:30 INF] Executed DbCommand ("2"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 17:40:30 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 17:40:30 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 13.3989ms
+[2026-02-12 17:40:30 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 17:40:30 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 24.1698ms
+[2026-02-12 19:35:21 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2026-02-12 19:35:21 INF] CORS policy execution successful.
+[2026-02-12 19:35:21 INF] "Cookies" was not authenticated. Failure message: "Ticket expired"
+[2026-02-12 19:35:21 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-02-12 19:35:21 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-02-12 19:35:21 INF] Cookies received in /api/auth/me: "auth_token: CfDJ8Gzx4NkfqdBDuo8ThPub2QvIO3flumcDoe8ipSH_nwh_bUTxcs7dgt9jvI8BMAqCrbhuVRtictWc8k1tMwPm3pq4Rki1Mafxyw1ZU8xBpSXf60fQT0ZlHYvnwq2VwOd62mLfEoXu7Fy8Br2vZQVrhv8cMDq7GHwF9HDcZfUsd6YcAq7yYGIrk-OlKxIylAwM1cg4jTiXl7Uo3_yoDDKm3Dm7cb8kMGOit-0TMNSCp7KJAeP8pGz21Jy8es32XdjvSosJwq0zSm4ESBMY33R_MPl85beMnqcBsyScvesoPH0IAhiv_8Xuk3_HPZ1ef7Oa591gTY5hWghHZCcHNZAQQuuzmVwVzdImChe3vlOAJ2uKg33E_BzeEoQt-xHjLCgbcqIhjODV6NPOn9MjmitJ3XuUgruXvK0S9n9XlWfNRcWpXiSJcuan_kw5RQFS6hJbYTNiiDhmD6npM4r5abG9QZHtSLVxH1Jgcf989Jz-zbUxnOdPeql_kMnvcPJBZGbsvnKv9sUqs7rSkRw6G8X1FJE"
+[2026-02-12 19:35:21 WRN] No user ID found in claims
+[2026-02-12 19:35:21 INF] Executing "UnauthorizedObjectResult", writing value of type '"<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 19:35:21 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 6.0841ms
+[2026-02-12 19:35:21 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-02-12 19:35:21 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 401 null "application/json; charset=utf-8" 29.4934ms
+[2026-02-12 19:35:21 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2026-02-12 19:35:21 INF] CORS policy execution successful.
+[2026-02-12 19:35:21 INF] "Cookies" was not authenticated. Failure message: "Ticket expired"
+[2026-02-12 19:35:21 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-02-12 19:35:21 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-02-12 19:35:21 INF] Cookies received in /api/auth/me: "auth_token: CfDJ8Gzx4NkfqdBDuo8ThPub2QvIO3flumcDoe8ipSH_nwh_bUTxcs7dgt9jvI8BMAqCrbhuVRtictWc8k1tMwPm3pq4Rki1Mafxyw1ZU8xBpSXf60fQT0ZlHYvnwq2VwOd62mLfEoXu7Fy8Br2vZQVrhv8cMDq7GHwF9HDcZfUsd6YcAq7yYGIrk-OlKxIylAwM1cg4jTiXl7Uo3_yoDDKm3Dm7cb8kMGOit-0TMNSCp7KJAeP8pGz21Jy8es32XdjvSosJwq0zSm4ESBMY33R_MPl85beMnqcBsyScvesoPH0IAhiv_8Xuk3_HPZ1ef7Oa591gTY5hWghHZCcHNZAQQuuzmVwVzdImChe3vlOAJ2uKg33E_BzeEoQt-xHjLCgbcqIhjODV6NPOn9MjmitJ3XuUgruXvK0S9n9XlWfNRcWpXiSJcuan_kw5RQFS6hJbYTNiiDhmD6npM4r5abG9QZHtSLVxH1Jgcf989Jz-zbUxnOdPeql_kMnvcPJBZGbsvnKv9sUqs7rSkRw6G8X1FJE"
+[2026-02-12 19:35:21 WRN] No user ID found in claims
+[2026-02-12 19:35:21 INF] Executing "UnauthorizedObjectResult", writing value of type '"<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 19:35:21 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 10.5824ms
+[2026-02-12 19:35:21 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-02-12 19:35:21 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 401 null "application/json; charset=utf-8" 24.8115ms
+[2026-02-12 23:24:44 WRN] The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+[2026-02-12 23:24:44 WRN] Network IP 10.20.38.171 not available. Only localhost bindings will be active.
+[2026-02-12 23:24:44 WRN] Network IP 10.20.38.51 not available. Bindings for this IP will not be active.
+[2026-02-12 23:24:44 WRN] The WebRootPath was not found: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend\wwwroot". Static files may be unavailable.
+[2026-02-12 23:24:45 WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+[2026-02-12 23:24:45 WRN] The property '"Model22Item"."SerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-02-12 23:24:45 WRN] The property '"Model22ItemAccessory"."WithdrawnSerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-02-12 23:24:45 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Item"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 23:24:45 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"MasterCardItemDetails"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 23:24:45 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Model22ItemAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 23:24:45 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"TransactionEntry"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-02-12 23:24:46 INF] Executed DbCommand ("19"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-02-12 23:24:46 INF] Executed DbCommand ("27"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-02-12 23:24:46 INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-02-12 23:24:46 INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-02-12 23:24:46 INF] Executed DbCommand ("13"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];"
+[2026-02-12 23:24:46 INF] No migrations were applied. The database is already up to date.
+[2026-02-12 23:24:47 INF] Executed DbCommand ("8"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[Role] = N'SUPER_ADMIN') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END"
+[2026-02-12 23:24:47 INF] Database migrated and seeded successfully.
+[2026-02-12 23:24:47 INF] Application starting up in Development mode...
+[2026-02-12 23:24:47 INF] Available endpoints:
+[2026-02-12 23:24:47 INF] - http://localhost:5000
+[2026-02-12 23:24:47 INF] - https://localhost:5001
+[2026-02-12 23:24:47 INF] - https://localhost:7112
+[2026-02-12 23:24:47 INF] - http://10.20.38.171:2024
+[2026-02-12 23:24:47 INF] - http://10.20.38.51:2024
+[2026-02-12 23:24:47 INF] - https://10.20.38.171:2025
+[2026-02-12 23:24:47 INF] User profile is available. Using '"C:\Users\Josiah\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+[2026-02-12 23:24:47 WRN] Overriding address(es) '"http://localhost:5000, http://10.20.38.171:2024, http://10.20.38.51:2024, http://localhost:2024"'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+[2026-02-12 23:24:47 INF] Now listening on: "http://localhost:5000"
+[2026-02-12 23:24:47 INF] Now listening on: "http://localhost:2024"
+[2026-02-12 23:24:47 INF] Now listening on: "https://localhost:5001"
+[2026-02-12 23:24:47 INF] Now listening on: "https://localhost:7112"
+[2026-02-12 23:24:47 INF] Application started. Press Ctrl+C to shut down.
+[2026-02-12 23:24:47 INF] Hosting environment: "Development"
+[2026-02-12 23:24:47 INF] Content root path: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend"
+[2026-02-12 23:30:14 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - null null
+[2026-02-12 23:30:14 INF] CORS policy execution successful.
+[2026-02-12 23:30:14 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - 204 null null 91.8704ms
+[2026-02-12 23:30:14 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - "application/json" 45
+[2026-02-12 23:30:14 INF] CORS policy execution successful.
+[2026-02-12 23:30:14 INF] "Cookies" was not authenticated. Failure message: "Ticket expired"
+[2026-02-12 23:30:14 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-02-12 23:30:14 INF] Route matched with "{action = \"Login\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Gofabackend.Controllers.LoginRequestDto)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-02-12 23:30:15 INF] Executed DbCommand ("34"ms) [Parameters=["@__loginRequest_Username_0='eyosi12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(2) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginRequest_Username_0"
+[2026-02-12 23:30:15 INF] Session created for user "eyosi12" at 02/12/2026 20:30:15 +00:00, expires at 02/12/2026 20:40:15 +00:00
+[2026-02-12 23:30:15 INF] AuthenticationScheme: "Cookies" signed in.
+[2026-02-12 23:30:15 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType1`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:15 INF] Executed action "Gofabackend.Controllers.AuthController.Login (Gofabackend)" in 744.2616ms
+[2026-02-12 23:30:15 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-02-12 23:30:15 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - 200 null "application/json; charset=utf-8" 897.5415ms
+[2026-02-12 23:30:15 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2026-02-12 23:30:15 INF] CORS policy execution successful.
+[2026-02-12 23:30:15 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-02-12 23:30:15 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-02-12 23:30:15 INF] Cookies received in /api/auth/me: "auth_token: CfDJ8Gzx4NkfqdBDuo8ThPub2Qs_YUyloGzaGu7kaHD990_r5MiTIhV4iZWkqDnnGYADZm0CpzJaa339V8nSo968Qi8_JP6Maihg-axJ9cL9x1D-WKh-qm_swartZvJMEoni7yZKlyBGnHx830QI4WdOGOTjP3hlJOvu_S4hgff-L74yRPWMc0G-Al9sA97_yiWxXD0KODruwyAXDiZClGABTF80HFq6il09ibPGk9o15xDJt8ot9L_AJLUVgHKZ-u5GI6rshGhW-SnGFKsuWONuQ2kwu7NNY6Anw8wNSckGbAZOYqMg1e_NI8TVbHJF5FU0_D6Fyz0VUoqILDvU-kPCu9DMO7MtQ3oBMFqnOOgj0wqEE0t-zsqtGZnsq909uA3mMCosGqEATNq07y-ySXRNFsmtfcxw6hoa88G7wU0F18ykH9-6lJUm1WX1OrGtHzJbo7ksnzC7PkqFqbOGzKo4Cr52MB9xr8_2OfkYgSxcpp2-Fq1owKuQpzO8v2PrKzmbfnB0D-LCgtvflI7WaVj3fXs"
+[2026-02-12 23:30:15 INF] Executed DbCommand ("3"ms) [Parameters=["@__p_0='2'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Id] = @__p_0"
+[2026-02-12 23:30:15 INF] Session validated for user "eyosi12" at 02/12/2026 20:30:15 +00:00
+[2026-02-12 23:30:15 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 23:30:15 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 138.9704ms
+[2026-02-12 23:30:15 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-02-12 23:30:15 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 200 null "application/json; charset=utf-8" 167.3256ms
+[2026-02-12 23:30:15 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - null null
+[2026-02-12 23:30:15 INF] CORS policy execution successful.
+[2026-02-12 23:30:15 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 204 null null 8.342ms
+[2026-02-12 23:30:15 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - "application/json" null
+[2026-02-12 23:30:15 INF] CORS policy execution successful.
+[2026-02-12 23:30:15 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2026-02-12 23:30:15 INF] Route matched with "{action = \"GetItemsByRoles\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Controllers.ItemListingDto]]] GetItemsByRoles(System.String[])" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:30:15 INF] GetItemsByRoles called with roles: "VHF"
+[2026-02-12 23:30:15 INF] Querying items with uppercase roles: "VHF"
+[2026-02-12 23:30:16 INF] Executed DbCommand ("100"ms) [Parameters=["@__upperRoles_0='[\"VHF\"]' (Size = 4000)"], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Description], [i].[Category], [i].[Model], [i].[Quantity], [i].[WarehouseId], [i].[Role], [i].[RegistrationDate], [i].[RegisteredBy], [i].[UnitPrice], [i].[Currency], [i].[Source], [i].[Shelf], [i].[ItemColumn], [i].[ItemRow], [i].[Condition], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accessories] AS [a]
+        WHERE [i].[ItemId] = [a].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END AS [HasAccessories], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ItemSerialNumbers] AS [i0]
+        WHERE [i].[ItemId] = [i0].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END AS [HasSerialNumbers], (
+    SELECT COUNT(*)
+    FROM [ItemSerialNumbers] AS [i1]
+    WHERE [i].[ItemId] = [i1].[ItemId]) AS [SerialNumbersCount], (
+    SELECT TOP(1) [t0].[GregorianDate]
+    FROM [TransactionEntries] AS [t0]
+    WHERE [i].[ItemId] = [t0].[ItemId]
+    ORDER BY [t0].[GregorianDate] DESC) AS [LatestTransactionDate]
+FROM [Items] AS [i]
+WHERE EXISTS (
+    SELECT 1
+    FROM OPENJSON(@__upperRoles_0) WITH ([value] nvarchar(max) '$') AS [u]
+    WHERE [u].[value] = UPPER([i].[Role]))
+ORDER BY (
+    SELECT TOP(1) [t].[GregorianDate]
+    FROM [TransactionEntries] AS [t]
+    WHERE [i].[ItemId] = [t].[ItemId]
+    ORDER BY [t].[GregorianDate] DESC) DESC"
+[2026-02-12 23:30:16 INF] Optimized fetch: 38 items for roles: "VHF"
+[2026-02-12 23:30:16 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Controllers.ItemListingDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:16 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)" in 434.5494ms
+[2026-02-12 23:30:16 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItemsByRoles (Gofabackend)"'
+[2026-02-12 23:30:16 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/by-roles""?roles=VHF" - 200 null "application/json; charset=utf-8" 471.4787ms
+[2026-02-12 23:30:16 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=VHF" - null null
+[2026-02-12 23:30:16 INF] CORS policy execution successful.
+[2026-02-12 23:30:16 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model22""?role=VHF" - 204 null null 3.9095ms
+[2026-02-12 23:30:16 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=VHF" - "application/json" null
+[2026-02-12 23:30:16 INF] CORS policy execution successful.
+[2026-02-12 23:30:16 INF] Executing endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2026-02-12 23:30:16 INF] Route matched with "{action = \"GetModel22s\", controller = \"Model22\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Model22]]] GetModel22s(System.String)" on controller "Gofabackend.Controllers.Model22Controller" ("Gofabackend").
+[2026-02-12 23:30:16 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+[2026-02-12 23:30:16 INF] Executed DbCommand ("23"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='180']"
+""SELECT [m].[Model22Id], [m].[Department], [m].[EthiopianDate], [m].[RecipientName], [m].[RecipientOrganization], [m].[RegisteredBy], [m].[Role], [m].[VoucherNumber], [t].[Model22ItemId], [t].[Currency], [t].[Description], [t].[Model], [t].[Model22Id], [t].[Quantity], [t].[SerialNumber], [t].[SerialNumbers], [t].[UnitPrice], [t].[VoucherNumber], [t].[Model22ItemAccessoryId], [t].[AccessoryId], [t].[Currency0], [t].[Model0], [t].[Model22ItemId0], [t].[Name], [t].[Quantity0], [t].[UnitPrice0], [t].[WithdrawnSerialNumbers]
+FROM [Model22s] AS [m]
+LEFT JOIN (
+    SELECT [m0].[Model22ItemId], [m0].[Currency], [m0].[Description], [m0].[Model], [m0].[Model22Id], [m0].[Quantity], [m0].[SerialNumber], [m0].[SerialNumbers], [m0].[UnitPrice], [m0].[VoucherNumber], [m1].[Model22ItemAccessoryId], [m1].[AccessoryId], [m1].[Currency] AS [Currency0], [m1].[Model] AS [Model0], [m1].[Model22ItemId] AS [Model22ItemId0], [m1].[Name], [m1].[Quantity] AS [Quantity0], [m1].[UnitPrice] AS [UnitPrice0], [m1].[WithdrawnSerialNumbers]
+    FROM [Model22Items] AS [m0]
+    LEFT JOIN [Model22ItemAccessories] AS [m1] ON [m0].[Model22ItemId] = [m1].[Model22ItemId]
+) AS [t] ON [m].[Model22Id] = [t].[Model22Id]
+WHERE [m].[Role] = @__role_0
+ORDER BY [m].[Model22Id], [t].[Model22ItemId]"
+[2026-02-12 23:30:16 INF] Fetched 31 Model22 records with role filter '"VHF"'
+[2026-02-12 23:30:16 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Model22, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:16 INF] Executed action "Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)" in 307.5049ms
+[2026-02-12 23:30:16 INF] Executed endpoint '"Gofabackend.Controllers.Model22Controller.GetModel22s (Gofabackend)"'
+[2026-02-12 23:30:16 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model22""?role=VHF" - 200 null "application/json; charset=utf-8" 330.3747ms
+[2026-02-12 23:30:16 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/transactions""" - null null
+[2026-02-12 23:30:16 INF] CORS policy execution successful.
+[2026-02-12 23:30:16 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/transactions""" - 204 null null 4.7471ms
+[2026-02-12 23:30:16 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/transactions""" - "application/json" null
+[2026-02-12 23:30:16 INF] CORS policy execution successful.
+[2026-02-12 23:30:16 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)"'
+[2026-02-12 23:30:16 INF] Route matched with "{action = \"GetAllTransactionHistories\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.TransactionEntryDto]]] GetAllTransactionHistories()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:30:16 INF] Executed DbCommand ("4"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [t].[Id], [t].[ItemId], [i].[Category], [i].[Description], [t].[Action], [t].[Quantity], [t].[VoucherNumber], [t].[Details], [t].[Date], [t].[Model22Id]
+FROM [TransactionEntries] AS [t]
+INNER JOIN [Items] AS [i] ON [t].[ItemId] = [i].[ItemId]"
+[2026-02-12 23:30:16 INF] Fetched 139 transaction entries
+[2026-02-12 23:30:16 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.TransactionEntryDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:16 INF] Executed action "Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)" in 57.5985ms
+[2026-02-12 23:30:16 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetAllTransactionHistories (Gofabackend)"'
+[2026-02-12 23:30:16 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/transactions""" - 200 null "application/json; charset=utf-8" 79.3333ms
+[2026-02-12 23:30:20 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2026-02-12 23:30:20 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2026-02-12 23:30:20 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - null null
+[2026-02-12 23:30:20 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2026-02-12 23:30:20 INF] CORS policy execution successful.
+[2026-02-12 23:30:20 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 20.2858ms
+[2026-02-12 23:30:20 INF] CORS policy execution successful.
+[2026-02-12 23:30:20 INF] CORS policy execution successful.
+[2026-02-12 23:30:20 INF] CORS policy execution successful.
+[2026-02-12 23:30:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 23:30:20 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - 204 null null 26.0035ms
+[2026-02-12 23:30:20 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 27.603ms
+[2026-02-12 23:30:20 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 30.6509ms
+[2026-02-12 23:30:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - "application/json" null
+[2026-02-12 23:30:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 23:30:20 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 23:30:20 INF] CORS policy execution successful.
+[2026-02-12 23:30:20 INF] CORS policy execution successful.
+[2026-02-12 23:30:20 INF] CORS policy execution successful.
+[2026-02-12 23:30:20 INF] CORS policy execution successful.
+[2026-02-12 23:30:20 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:30:20 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:30:20 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:30:20 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:30:20 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:30:20 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Controllers.ItemListingDto]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:30:20 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 23:30:20 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 23:30:20 INF] Fetched 5 currencies
+[2026-02-12 23:30:20 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 23:30:20 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 19.4155ms
+[2026-02-12 23:30:20 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:30:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 128.663ms
+[2026-02-12 23:30:20 INF] Executed DbCommand ("6"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 23:30:20 INF] Executed DbCommand ("7"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 23:30:20 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:20 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 75.7318ms
+[2026-02-12 23:30:20 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+[2026-02-12 23:30:20 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:30:20 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 172.3104ms
+[2026-02-12 23:30:20 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 104.1963ms
+[2026-02-12 23:30:20 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:30:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 251.01ms
+[2026-02-12 23:30:20 INF] Executed DbCommand ("83"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Description], [i].[Category], [i].[Model], [i].[Quantity], [i].[WarehouseId], [i].[Role], [i].[RegistrationDate], [i].[RegisteredBy], [i].[UnitPrice], [i].[Currency], [i].[Source], [i].[Shelf], [i].[ItemColumn], [i].[ItemRow], [i].[Condition], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accessories] AS [a]
+        WHERE [i].[ItemId] = [a].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ItemSerialNumbers] AS [i0]
+        WHERE [i].[ItemId] = [i0].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, [i1].[Id], [i1].[AddedDate], [i1].[ItemId], [i1].[SerialNumber], (
+    SELECT COUNT(*)
+    FROM [ItemSerialNumbers] AS [i2]
+    WHERE [i].[ItemId] = [i2].[ItemId]), [t0].[Id], [t0].[Name], [t0].[Model], [t0].[Quantity], [t0].[UnitPrice], [t0].[Currency], [t0].[RequiresSerialNumbers], [t0].[ItemId], [t0].[Id0], [t0].[AccessoryId], [t0].[SerialNumber], (
+    SELECT TOP(1) [t1].[GregorianDate]
+    FROM [TransactionEntries] AS [t1]
+    WHERE [i].[ItemId] = [t1].[ItemId]
+    ORDER BY [t1].[GregorianDate] DESC)
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[Name], [a0].[Model], [a0].[Quantity], [a0].[UnitPrice], [a0].[Currency], [a0].[RequiresSerialNumbers], [a0].[ItemId], [a1].[Id] AS [Id0], [a1].[AccessoryId], [a1].[SerialNumber]
+    FROM [Accessories] AS [a0]
+    LEFT JOIN [AccessorySerialNumbers] AS [a1] ON [a0].[Id] = [a1].[AccessoryId]
+) AS [t0] ON [i].[ItemId] = [t0].[ItemId]
+ORDER BY (
+    SELECT TOP(1) [t].[GregorianDate]
+    FROM [TransactionEntries] AS [t]
+    WHERE [i].[ItemId] = [t].[ItemId]
+    ORDER BY [t].[GregorianDate] DESC) DESC, [i].[ItemId], [i1].[Id], [t0].[Id]"
+[2026-02-12 23:30:20 INF] Optimized fetch: 66 items with search '"none"'
+[2026-02-12 23:30:20 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Controllers.ItemListingDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:20 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 245.2828ms
+[2026-02-12 23:30:20 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:30:20 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - 200 null "application/json; charset=utf-8" 370.6068ms
+[2026-02-12 23:30:25 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""?description=c" - null null
+[2026-02-12 23:30:25 INF] CORS policy execution successful.
+[2026-02-12 23:30:25 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""?description=c" - 204 null null 4.4439ms
+[2026-02-12 23:30:25 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""?description=c" - "application/json" null
+[2026-02-12 23:30:25 INF] CORS policy execution successful.
+[2026-02-12 23:30:25 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:30:25 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Controllers.ItemListingDto]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:30:25 INF] Executed DbCommand ("12"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Description], [i].[Category], [i].[Model], [i].[Quantity], [i].[WarehouseId], [i].[Role], [i].[RegistrationDate], [i].[RegisteredBy], [i].[UnitPrice], [i].[Currency], [i].[Source], [i].[Shelf], [i].[ItemColumn], [i].[ItemRow], [i].[Condition], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accessories] AS [a]
+        WHERE [i].[ItemId] = [a].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ItemSerialNumbers] AS [i0]
+        WHERE [i].[ItemId] = [i0].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, [i1].[Id], [i1].[AddedDate], [i1].[ItemId], [i1].[SerialNumber], (
+    SELECT COUNT(*)
+    FROM [ItemSerialNumbers] AS [i2]
+    WHERE [i].[ItemId] = [i2].[ItemId]), [t0].[Id], [t0].[Name], [t0].[Model], [t0].[Quantity], [t0].[UnitPrice], [t0].[Currency], [t0].[RequiresSerialNumbers], [t0].[ItemId], [t0].[Id0], [t0].[AccessoryId], [t0].[SerialNumber], (
+    SELECT TOP(1) [t1].[GregorianDate]
+    FROM [TransactionEntries] AS [t1]
+    WHERE [i].[ItemId] = [t1].[ItemId]
+    ORDER BY [t1].[GregorianDate] DESC)
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[Name], [a0].[Model], [a0].[Quantity], [a0].[UnitPrice], [a0].[Currency], [a0].[RequiresSerialNumbers], [a0].[ItemId], [a1].[Id] AS [Id0], [a1].[AccessoryId], [a1].[SerialNumber]
+    FROM [Accessories] AS [a0]
+    LEFT JOIN [AccessorySerialNumbers] AS [a1] ON [a0].[Id] = [a1].[AccessoryId]
+) AS [t0] ON [i].[ItemId] = [t0].[ItemId]
+ORDER BY (
+    SELECT TOP(1) [t].[GregorianDate]
+    FROM [TransactionEntries] AS [t]
+    WHERE [i].[ItemId] = [t].[ItemId]
+    ORDER BY [t].[GregorianDate] DESC) DESC, [i].[ItemId], [i1].[Id], [t0].[Id]"
+[2026-02-12 23:30:25 INF] Optimized fetch: 66 items with search '"none"'
+[2026-02-12 23:30:25 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Controllers.ItemListingDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:25 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 32.5515ms
+[2026-02-12 23:30:25 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:30:25 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""?description=c" - 200 null "application/json; charset=utf-8" 47.5381ms
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - null null
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - null null
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - 204 null null 18.4196ms
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 18.4039ms
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 18.2612ms
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/sources""" - "application/json" null
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - 204 null null 46.7634ms
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - "application/json" null
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:30:55 INF] Executing endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:30:55 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 23:30:55 INF] Executing endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 23:30:55 INF] Executed endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 23:30:55 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/index.html""" - 404 0 null 50.1179ms
+[2026-02-12 23:30:55 INF] Fetched 5 currencies
+[2026-02-12 23:30:55 INF] Route matched with "{action = \"GetWarehouses\", controller = \"Warehouses\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.WarehouseDto]]] GetWarehouses()" on controller "Gofabackend.Controller.WarehousesController" ("Gofabackend").
+[2026-02-12 23:30:55 INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: "GET" "http"://"localhost:5000""""/index.html", Response status code: 404
+[2026-02-12 23:30:55 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 23:30:55 INF] Executed DbCommand ("20"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 23:30:55 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 18.0823ms
+[2026-02-12 23:30:55 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:55 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:30:55 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 37.6432ms
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 81.8018ms
+[2026-02-12 23:30:55 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:30:55 INF] Executed DbCommand ("17"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [w].[WarehouseId], [w].[Location], [w].[Name]
+FROM [Warehouses] AS [w]"
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 110.6512ms
+[2026-02-12 23:30:55 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.WarehouseDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:55 INF] Executed action "Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)" in 93.7633ms
+[2026-02-12 23:30:55 INF] Executed endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - 200 null "application/json; charset=utf-8" 145.1961ms
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 5.1426ms
+[2026-02-12 23:30:55 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 23:30:55 INF] CORS policy execution successful.
+[2026-02-12 23:30:55 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:30:55 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 23:30:55 INF] Executed DbCommand ("5"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 23:30:55 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:30:55 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 22.1046ms
+[2026-02-12 23:30:55 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:30:55 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 47.1046ms
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 6.6722ms
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - null null
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - null null
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 15.1575ms
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - 204 null null 15.0065ms
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - 204 null null 13.4068ms
+[2026-02-12 23:32:57 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - "application/json" null
+[2026-02-12 23:32:57 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/sources""" - "application/json" null
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:32:57 INF] Executing endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 23:32:57 INF] Executing endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 23:32:57 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:32:57 INF] Route matched with "{action = \"GetWarehouses\", controller = \"Warehouses\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.WarehouseDto]]] GetWarehouses()" on controller "Gofabackend.Controller.WarehousesController" ("Gofabackend").
+[2026-02-12 23:32:57 INF] Executed endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 23:32:57 INF] Fetched 5 currencies
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/index.html""" - 404 0 null 23.2417ms
+[2026-02-12 23:32:57 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 23:32:57 INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: "GET" "http"://"localhost:5000""""/index.html", Response status code: 404
+[2026-02-12 23:32:57 INF] Executed DbCommand ("5"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [w].[WarehouseId], [w].[Location], [w].[Name]
+FROM [Warehouses] AS [w]"
+[2026-02-12 23:32:57 INF] Executed DbCommand ("20"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 23:32:57 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 9.6661ms
+[2026-02-12 23:32:57 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.WarehouseDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:32:57 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:32:57 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:32:57 INF] Executed action "Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)" in 18.8995ms
+[2026-02-12 23:32:57 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 36.1185ms
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 50.9036ms
+[2026-02-12 23:32:57 INF] Executed endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - 200 null "application/json; charset=utf-8" 66.4882ms
+[2026-02-12 23:32:57 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 95.0213ms
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 5.6325ms
+[2026-02-12 23:32:57 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 23:32:57 INF] CORS policy execution successful.
+[2026-02-12 23:32:57 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:32:57 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 23:32:57 INF] Executed DbCommand ("6"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 23:32:57 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:32:57 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 13.5205ms
+[2026-02-12 23:32:57 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:32:57 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 35.1754ms
+[2026-02-12 23:33:32 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2026-02-12 23:33:32 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2026-02-12 23:33:32 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2026-02-12 23:33:32 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - null null
+[2026-02-12 23:33:32 INF] CORS policy execution successful.
+[2026-02-12 23:33:32 INF] CORS policy execution successful.
+[2026-02-12 23:33:32 INF] CORS policy execution successful.
+[2026-02-12 23:33:32 INF] CORS policy execution successful.
+[2026-02-12 23:33:32 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 19.6883ms
+[2026-02-12 23:33:32 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 19.7812ms
+[2026-02-12 23:33:32 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 19.6117ms
+[2026-02-12 23:33:32 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - 204 null null 19.5897ms
+[2026-02-12 23:33:32 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 23:33:32 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 23:33:32 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - "application/json" null
+[2026-02-12 23:33:32 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 23:33:32 INF] CORS policy execution successful.
+[2026-02-12 23:33:32 INF] CORS policy execution successful.
+[2026-02-12 23:33:32 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:33:32 INF] CORS policy execution successful.
+[2026-02-12 23:33:32 INF] CORS policy execution successful.
+[2026-02-12 23:33:32 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:33:32 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 23:33:32 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:33:32 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:33:32 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 23:33:32 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:33:32 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Controllers.ItemListingDto]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:33:32 INF] Executed DbCommand ("4"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 23:33:32 INF] Fetched 5 currencies
+[2026-02-12 23:33:32 INF] Executed DbCommand ("4"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 23:33:32 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:33:32 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 23:33:32 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:33:32 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 25.2453ms
+[2026-02-12 23:33:32 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 15.4439ms
+[2026-02-12 23:33:32 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 20.3634ms
+[2026-02-12 23:33:32 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:33:32 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:33:32 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:33:32 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 67.7104ms
+[2026-02-12 23:33:32 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 65.9867ms
+[2026-02-12 23:33:32 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 71.4381ms
+[2026-02-12 23:33:32 INF] Executed DbCommand ("77"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Description], [i].[Category], [i].[Model], [i].[Quantity], [i].[WarehouseId], [i].[Role], [i].[RegistrationDate], [i].[RegisteredBy], [i].[UnitPrice], [i].[Currency], [i].[Source], [i].[Shelf], [i].[ItemColumn], [i].[ItemRow], [i].[Condition], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accessories] AS [a]
+        WHERE [i].[ItemId] = [a].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ItemSerialNumbers] AS [i0]
+        WHERE [i].[ItemId] = [i0].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, [i1].[Id], [i1].[AddedDate], [i1].[ItemId], [i1].[SerialNumber], (
+    SELECT COUNT(*)
+    FROM [ItemSerialNumbers] AS [i2]
+    WHERE [i].[ItemId] = [i2].[ItemId]), [t0].[Id], [t0].[Name], [t0].[Model], [t0].[Quantity], [t0].[UnitPrice], [t0].[Currency], [t0].[RequiresSerialNumbers], [t0].[ItemId], [t0].[Id0], [t0].[AccessoryId], [t0].[SerialNumber], (
+    SELECT TOP(1) [t1].[GregorianDate]
+    FROM [TransactionEntries] AS [t1]
+    WHERE [i].[ItemId] = [t1].[ItemId]
+    ORDER BY [t1].[GregorianDate] DESC)
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[Name], [a0].[Model], [a0].[Quantity], [a0].[UnitPrice], [a0].[Currency], [a0].[RequiresSerialNumbers], [a0].[ItemId], [a1].[Id] AS [Id0], [a1].[AccessoryId], [a1].[SerialNumber]
+    FROM [Accessories] AS [a0]
+    LEFT JOIN [AccessorySerialNumbers] AS [a1] ON [a0].[Id] = [a1].[AccessoryId]
+) AS [t0] ON [i].[ItemId] = [t0].[ItemId]
+ORDER BY (
+    SELECT TOP(1) [t].[GregorianDate]
+    FROM [TransactionEntries] AS [t]
+    WHERE [i].[ItemId] = [t].[ItemId]
+    ORDER BY [t].[GregorianDate] DESC) DESC, [i].[ItemId], [i1].[Id], [t0].[Id]"
+[2026-02-12 23:33:32 INF] Optimized fetch: 66 items with search '"none"'
+[2026-02-12 23:33:32 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Controllers.ItemListingDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:33:32 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 109.0079ms
+[2026-02-12 23:33:32 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:33:32 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - 200 null "application/json; charset=utf-8" 151.3396ms
+[2026-02-12 23:35:00 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2026-02-12 23:35:00 INF] CORS policy execution successful.
+[2026-02-12 23:35:00 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 5.789ms
+[2026-02-12 23:35:00 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2026-02-12 23:35:00 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2026-02-12 23:35:00 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - null null
+[2026-02-12 23:35:00 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 23:35:00 INF] CORS policy execution successful.
+[2026-02-12 23:35:00 INF] CORS policy execution successful.
+[2026-02-12 23:35:00 INF] CORS policy execution successful.
+[2026-02-12 23:35:00 INF] CORS policy execution successful.
+[2026-02-12 23:35:00 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 17.8757ms
+[2026-02-12 23:35:00 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 18.9274ms
+[2026-02-12 23:35:00 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - 204 null null 19.277ms
+[2026-02-12 23:35:00 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 23:35:00 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:35:00 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - "application/json" null
+[2026-02-12 23:35:00 INF] CORS policy execution successful.
+[2026-02-12 23:35:00 INF] CORS policy execution successful.
+[2026-02-12 23:35:00 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 23:35:00 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 23:35:00 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:35:00 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:35:00 INF] CORS policy execution successful.
+[2026-02-12 23:35:00 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 23:35:00 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Controllers.ItemListingDto]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:35:00 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:35:00 INF] Executed DbCommand ("12"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 23:35:00 INF] Executed DbCommand ("4"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 23:35:00 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:35:00 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:35:00 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:35:00 INF] Fetched 5 currencies
+[2026-02-12 23:35:00 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 42.238ms
+[2026-02-12 23:35:00 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 29.9626ms
+[2026-02-12 23:35:00 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 23:35:00 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:35:00 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:35:00 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 15.3811ms
+[2026-02-12 23:35:00 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 99.158ms
+[2026-02-12 23:35:00 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 83.5638ms
+[2026-02-12 23:35:00 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:35:00 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 87.1549ms
+[2026-02-12 23:35:00 INF] Executed DbCommand ("78"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Description], [i].[Category], [i].[Model], [i].[Quantity], [i].[WarehouseId], [i].[Role], [i].[RegistrationDate], [i].[RegisteredBy], [i].[UnitPrice], [i].[Currency], [i].[Source], [i].[Shelf], [i].[ItemColumn], [i].[ItemRow], [i].[Condition], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accessories] AS [a]
+        WHERE [i].[ItemId] = [a].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ItemSerialNumbers] AS [i0]
+        WHERE [i].[ItemId] = [i0].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, [i1].[Id], [i1].[AddedDate], [i1].[ItemId], [i1].[SerialNumber], (
+    SELECT COUNT(*)
+    FROM [ItemSerialNumbers] AS [i2]
+    WHERE [i].[ItemId] = [i2].[ItemId]), [t0].[Id], [t0].[Name], [t0].[Model], [t0].[Quantity], [t0].[UnitPrice], [t0].[Currency], [t0].[RequiresSerialNumbers], [t0].[ItemId], [t0].[Id0], [t0].[AccessoryId], [t0].[SerialNumber], (
+    SELECT TOP(1) [t1].[GregorianDate]
+    FROM [TransactionEntries] AS [t1]
+    WHERE [i].[ItemId] = [t1].[ItemId]
+    ORDER BY [t1].[GregorianDate] DESC)
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[Name], [a0].[Model], [a0].[Quantity], [a0].[UnitPrice], [a0].[Currency], [a0].[RequiresSerialNumbers], [a0].[ItemId], [a1].[Id] AS [Id0], [a1].[AccessoryId], [a1].[SerialNumber]
+    FROM [Accessories] AS [a0]
+    LEFT JOIN [AccessorySerialNumbers] AS [a1] ON [a0].[Id] = [a1].[AccessoryId]
+) AS [t0] ON [i].[ItemId] = [t0].[ItemId]
+ORDER BY (
+    SELECT TOP(1) [t].[GregorianDate]
+    FROM [TransactionEntries] AS [t]
+    WHERE [i].[ItemId] = [t].[ItemId]
+    ORDER BY [t].[GregorianDate] DESC) DESC, [i].[ItemId], [i1].[Id], [t0].[Id]"
+[2026-02-12 23:35:00 INF] Optimized fetch: 66 items with search '"none"'
+[2026-02-12 23:35:00 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Controllers.ItemListingDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:35:00 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 111.862ms
+[2026-02-12 23:35:00 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:35:00 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - 200 null "application/json; charset=utf-8" 160.5945ms
+[2026-02-12 23:36:12 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2026-02-12 23:36:12 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2026-02-12 23:36:12 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2026-02-12 23:36:12 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - null null
+[2026-02-12 23:36:12 INF] CORS policy execution successful.
+[2026-02-12 23:36:12 INF] CORS policy execution successful.
+[2026-02-12 23:36:12 INF] CORS policy execution successful.
+[2026-02-12 23:36:12 INF] CORS policy execution successful.
+[2026-02-12 23:36:12 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 14.9914ms
+[2026-02-12 23:36:12 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 16.39ms
+[2026-02-12 23:36:12 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 18.3215ms
+[2026-02-12 23:36:12 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items""" - 204 null null 22.8832ms
+[2026-02-12 23:36:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 23:36:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 23:36:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 23:36:12 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - "application/json" null
+[2026-02-12 23:36:12 INF] CORS policy execution successful.
+[2026-02-12 23:36:12 INF] CORS policy execution successful.
+[2026-02-12 23:36:12 INF] CORS policy execution successful.
+[2026-02-12 23:36:12 INF] CORS policy execution successful.
+[2026-02-12 23:36:12 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:36:12 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:36:12 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:36:12 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:36:12 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 23:36:12 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 23:36:12 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:36:12 INF] Route matched with "{action = \"GetItems\", controller = \"Items\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Controllers.ItemListingDto]]] GetItems(System.String)" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:36:12 INF] Fetched 5 currencies
+[2026-02-12 23:36:12 INF] Executed DbCommand ("8"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 23:36:12 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 23:36:12 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:36:12 INF] Executed DbCommand ("11"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 23:36:12 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 8.2886ms
+[2026-02-12 23:36:12 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 18.7167ms
+[2026-02-12 23:36:12 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:36:12 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:36:12 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:36:12 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 29.5934ms
+[2026-02-12 23:36:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 65.9477ms
+[2026-02-12 23:36:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 69.6627ms
+[2026-02-12 23:36:12 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:36:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 82.9165ms
+[2026-02-12 23:36:12 INF] Executed DbCommand ("112"ms) [Parameters=[""], CommandType='Text', CommandTimeout='120']"
+""SELECT [i].[ItemId], [i].[Description], [i].[Category], [i].[Model], [i].[Quantity], [i].[WarehouseId], [i].[Role], [i].[RegistrationDate], [i].[RegisteredBy], [i].[UnitPrice], [i].[Currency], [i].[Source], [i].[Shelf], [i].[ItemColumn], [i].[ItemRow], [i].[Condition], CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Accessories] AS [a]
+        WHERE [i].[ItemId] = [a].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ItemSerialNumbers] AS [i0]
+        WHERE [i].[ItemId] = [i0].[ItemId]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END, [i1].[Id], [i1].[AddedDate], [i1].[ItemId], [i1].[SerialNumber], (
+    SELECT COUNT(*)
+    FROM [ItemSerialNumbers] AS [i2]
+    WHERE [i].[ItemId] = [i2].[ItemId]), [t0].[Id], [t0].[Name], [t0].[Model], [t0].[Quantity], [t0].[UnitPrice], [t0].[Currency], [t0].[RequiresSerialNumbers], [t0].[ItemId], [t0].[Id0], [t0].[AccessoryId], [t0].[SerialNumber], (
+    SELECT TOP(1) [t1].[GregorianDate]
+    FROM [TransactionEntries] AS [t1]
+    WHERE [i].[ItemId] = [t1].[ItemId]
+    ORDER BY [t1].[GregorianDate] DESC)
+FROM [Items] AS [i]
+LEFT JOIN [ItemSerialNumbers] AS [i1] ON [i].[ItemId] = [i1].[ItemId]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[Name], [a0].[Model], [a0].[Quantity], [a0].[UnitPrice], [a0].[Currency], [a0].[RequiresSerialNumbers], [a0].[ItemId], [a1].[Id] AS [Id0], [a1].[AccessoryId], [a1].[SerialNumber]
+    FROM [Accessories] AS [a0]
+    LEFT JOIN [AccessorySerialNumbers] AS [a1] ON [a0].[Id] = [a1].[AccessoryId]
+) AS [t0] ON [i].[ItemId] = [t0].[ItemId]
+ORDER BY (
+    SELECT TOP(1) [t].[GregorianDate]
+    FROM [TransactionEntries] AS [t]
+    WHERE [i].[ItemId] = [t].[ItemId]
+    ORDER BY [t].[GregorianDate] DESC) DESC, [i].[ItemId], [i1].[Id], [t0].[Id]"
+[2026-02-12 23:36:12 INF] Optimized fetch: 66 items with search '"none"'
+[2026-02-12 23:36:12 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Controllers.ItemListingDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:36:12 INF] Executed action "Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)" in 137.3174ms
+[2026-02-12 23:36:12 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetItems (Gofabackend)"'
+[2026-02-12 23:36:12 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items""" - 200 null "application/json; charset=utf-8" 177.0801ms
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - null null
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - null null
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - null null
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - null null
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/warehouses""" - 204 null null 15.7517ms
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/items/currencies""" - 204 null null 12.1886ms
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/sources""" - 204 null null 13.9186ms
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/categories""?role=VHF" - 204 null null 10.9565ms
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - "application/json" null
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - "application/json" null
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/sources""" - "application/json" null
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - "application/json" null
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] Executing endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:36:23 INF] Executing endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:36:23 INF] Executing endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 23:36:23 INF] Executing endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 23:36:23 INF] Route matched with "{action = \"GetCategories\", controller = \"Categories\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.Models.Category]]] GetCategories(System.String)" on controller "Gofabackend.Controllers.CategoriesController" ("Gofabackend").
+[2026-02-12 23:36:23 INF] Route matched with "{action = \"GetCurrencies\", controller = \"Items\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[System.String]] GetCurrencies()" on controller "Gofabackend.Controllers.ItemsController" ("Gofabackend").
+[2026-02-12 23:36:23 INF] Executed endpoint '"Fallback {*path:nonfile}"'
+[2026-02-12 23:36:23 INF] Route matched with "{action = \"GetWarehouses\", controller = \"Warehouses\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.WarehouseDto]]] GetWarehouses()" on controller "Gofabackend.Controller.WarehousesController" ("Gofabackend").
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/index.html""" - 404 0 null 43.8225ms
+[2026-02-12 23:36:23 INF] Fetched 5 currencies
+[2026-02-12 23:36:23 INF] Executed DbCommand ("5"ms) [Parameters=["@__role_0='VHF' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [c].[Id], [c].[CreatedAt], [c].[CreatedBy], [c].[Description], [c].[Name], [c].[Role]
+FROM [Categories] AS [c]
+WHERE [c].[Role] = @__role_0"
+[2026-02-12 23:36:23 INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: "GET" "http"://"localhost:5000""""/index.html", Response status code: 404
+[2026-02-12 23:36:23 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-02-12 23:36:23 INF] Executed DbCommand ("4"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [w].[WarehouseId], [w].[Location], [w].[Name]
+FROM [Warehouses] AS [w]"
+[2026-02-12 23:36:23 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.Models.Category, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:36:23 INF] Executed action "Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)" in 16.8135ms
+[2026-02-12 23:36:23 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.WarehouseDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:36:23 INF] Executed action "Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)" in 24.6379ms
+[2026-02-12 23:36:23 INF] Executed endpoint '"Gofabackend.Controllers.ItemsController.GetCurrencies (Gofabackend)"'
+[2026-02-12 23:36:23 INF] Executed action "Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)" in 19.6461ms
+[2026-02-12 23:36:23 INF] Executed endpoint '"Gofabackend.Controllers.CategoriesController.GetCategories (Gofabackend)"'
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/items/currencies""" - 200 null "application/json; charset=utf-8" 68.4771ms
+[2026-02-12 23:36:23 INF] Executed endpoint '"Gofabackend.Controller.WarehousesController.GetWarehouses (Gofabackend)"'
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/categories""?role=VHF" - 200 null "application/json; charset=utf-8" 74.2338ms
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/warehouses""" - 200 null "application/json; charset=utf-8" 75.5238ms
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - null null
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 204 null null 5.0847ms
+[2026-02-12 23:36:23 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - "application/json" null
+[2026-02-12 23:36:23 INF] CORS policy execution successful.
+[2026-02-12 23:36:23 INF] Executing endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:36:23 INF] Route matched with "{action = \"GetShelvesByWarehouse\", controller = \"Shelves\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Gofabackend.DTO.ShelfDto]]] GetShelvesByWarehouse(System.String)" on controller "Gofabackend.Controllers.ShelvesController" ("Gofabackend").
+[2026-02-12 23:36:23 INF] Executed DbCommand ("5"ms) [Parameters=["@__warehouseId_0='VHF' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [s].[ShelfId], [s].[Column], [s].[Name], [s].[Row], [s].[WarehouseId]
+FROM [Shelves] AS [s]
+WHERE [s].[WarehouseId] = @__warehouseId_0"
+[2026-02-12 23:36:23 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[Gofabackend.DTO.ShelfDto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-02-12 23:36:23 INF] Executed action "Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)" in 21.2453ms
+[2026-02-12 23:36:23 INF] Executed endpoint '"Gofabackend.Controllers.ShelvesController.GetShelvesByWarehouse (Gofabackend)"'
+[2026-02-12 23:36:23 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/shelves/by-warehouse/VHF""" - 200 null "application/json; charset=utf-8" 34.4259ms

@@ -38,11 +38,16 @@ export class MaintenanceRequestViewComponent implements OnInit {
   /** Fetch all maintenance requests from API */
   fetchMaintenanceRequests(): void {
     this.isLoading = true;
-    const apiUrl = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister`;
+    // Fetch only finished/completed maintenance requests
+    const apiUrl = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/by-status?status=Client Received`;
 
     this.http.get<any[]>(apiUrl).subscribe(
       (response) => {
         this.maintenanceRequests = Array.isArray(response) ? response : [];
+        // Additional filter to ensure we only show completed items
+        this.maintenanceRequests = this.maintenanceRequests.filter(req => 
+          req.status === 'Client Received' || req.status === 'Maintenance Finished'
+        );
         this.filteredRequests = [...this.maintenanceRequests];
         this.currentPage = 1;
         this.applyPagination();
@@ -50,7 +55,7 @@ export class MaintenanceRequestViewComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching maintenance requests:', error);
-        this.errorMessage = 'Failed to load maintenance requests.';
+        this.errorMessage = 'Failed to load finished maintenance requests.';
         this.isLoading = false;
       }
     );

@@ -1,0 +1,176 @@
+<div class="accessory-list-container">
+  <div class="header">
+    <h1 class="title">Accessories List / አባሪዎች ዝርዝር</h1>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards" *ngIf="!isLoading">
+    <div class="summary-card">
+      <div class="card-content">
+        <div class="card-label">Total Accessories / ጠቅላላ አባሪዎች</div>
+        <div class="card-value">{{ totalAccessories }}</div>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-content">
+        <div class="card-label">Total Quantity / ጠቅላላ ብዛት</div>
+        <div class="card-value">{{ totalQuantity }}</div>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-content">
+        <div class="card-label">Total Value / ጠቅላላ ዋጋ</div>
+        <div class="card-value multi-currency">{{ totalValue }}</div>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-content">
+        <div class="card-label">Parent Items / ዋና እቃዎች</div>
+        <div class="card-value">{{ uniqueParentItems }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="controls-container">
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search accessories... / አባሪዎችን ፈልግ..."
+        class="search-input"
+      />
+    </div>
+    
+    <!-- Role Filter (Only for Team Leader) -->
+    <div class="filter-container" *ngIf="isTeamLeader">
+      <label class="filter-label">Store / ግምጃ ቤት:</label>
+      <select 
+        [(ngModel)]="selectedRoleFilter" 
+        (change)="onRoleFilterChange()"
+        class="filter-select"
+      >
+        <option value="all">All Stores / ሁሉም ግምጃ ቤቶች</option>
+        <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+      </select>
+    </div>
+    
+    <div class="filter-container">
+      <label class="filter-label">Parent Item / ዋና እቃ:</label>
+      <select 
+        [(ngModel)]="selectedParentItem" 
+        (change)="onParentItemFilterChange()"
+        class="filter-select"
+      >
+        <option value="all">All Items / ሁሉም እቃዎች ({{ accessories.length }})</option>
+        <option *ngFor="let item of parentItems" [value]="item.id">
+          {{ item.description }} ({{ item.count }})
+        </option>
+      </select>
+    </div>
+    <div class="filter-container">
+      <label class="filter-label">Serial Numbers / ተከታታይ ቁጥሮች:</label>
+      <select 
+        [(ngModel)]="serialNumberFilter" 
+        (change)="onSerialNumberFilterChange()"
+        class="filter-select"
+      >
+        <option value="all">All / ሁሉም ({{ accessories.length }})</option>
+        <option value="with">With Serial Numbers / ከተከታታይ ቁጥር ጋር ({{ accessoriesWithSerialNumbers }})</option>
+        <option value="without">Without Serial Numbers / ያለ ተከታታይ ቁጥር ({{ accessoriesWithoutSerialNumbers }})</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading accessories... / አባሪዎችን በመጫን ላይ...</p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredAccessories.length === 0" class="no-data">
+    <p>No accessories found / ምንም አብራጭ አልተገኘም</p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredAccessories.length > 0" class="table-container">
+    <table class="accessories-table">
+      <thead>
+        <tr>
+          <th>Name / ስም</th>
+          <th>Model / ሞዴል</th>
+          <th>Quantity / ብዛት</th>
+          <th>Unit Price / ነጠላ ዋጋ</th>
+          <th>Parent Item / ዋና እቃ</th>
+          <th>Category / ምድብ</th>
+          <th>Serial Numbers / ተከታታይ ቁጥሮች</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let accessory of paginatedAccessories">
+          <td>{{ accessory.name }}</td>
+          <td>{{ accessory.model }}</td>
+          <td>
+            <span class="quantity-badge" [class.low-stock]="accessory.quantity < 5">
+              {{ accessory.quantity }}
+            </span>
+          </td>
+          <td>{{ accessory.unitPrice | number:'1.2-2' }} {{ accessory.currency }}</td>
+          <td>
+            <a (click)="viewParentItem(accessory.parentItemId)" class="link">
+              {{ accessory.parentItemDescription }}
+            </a>
+          </td>
+          <td>{{ accessory.parentItemCategory }}</td>
+          <td>
+            <span *ngIf="accessory.requiresSerialNumbers">
+              {{ accessory.serialNumbersCount }} serial(s)
+            </span>
+            <span *ngIf="!accessory.requiresSerialNumbers" class="text-muted">
+              N/A
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <div class="pagination-info">
+        Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredAccessories.length) }} of {{ filteredAccessories.length }} accessories
+      </div>
+      <div class="pagination-controls">
+        <button 
+          class="pagination-btn" 
+          (click)="previousPage()" 
+          [disabled]="currentPage === 1"
+        >
+          ‹ Previous / ቀዳሚ
+        </button>
+        
+        <button 
+          *ngFor="let page of pageNumbers" 
+          class="pagination-btn page-number" 
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+        
+        <button 
+          class="pagination-btn" 
+          (click)="nextPage()" 
+          [disabled]="currentPage === totalPages"
+        >
+          Next / ቀጣይ ›
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

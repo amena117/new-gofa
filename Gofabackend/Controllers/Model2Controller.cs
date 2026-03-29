@@ -23,33 +23,58 @@ namespace Gofabackend.Controllers
         }
 
         // GET: api/Model2
+        // GET: api/Model2
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Model2Dto>>> GetAll()
         {
-            var model2s = await _context.Model2s
-                .Include(m => m.Accessories)
-                .Include(m => m.ExtraItems)
-                .ToListAsync();
-
-            var model2Dtos = model2s.Select(m => MapToDto(m)).ToList();
-            return Ok(model2Dtos);
+            try
+            {
+                var model2s = await _context.Model2s
+                    .Include(m => m.Accessories)
+                    .Include(m => m.ExtraItems)
+                    .ToListAsync();
+    
+                var model2Dtos = model2s.Select(m => MapToDto(m)).ToList();
+                return Ok(model2Dtos);
+            }
+            catch (Exception ex)
+            {
+                 return StatusCode(500, new 
+                { 
+                    message = "An error occurred while fetching Model2 list.", 
+                    detailedMessage = ex.Message,
+                    innerException = ex.InnerException?.Message 
+                });
+            }
         }
 
         // GET: api/Model2/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Model2Dto>> GetById(int id)
         {
-            var model2 = await _context.Model2s
-                .Include(m => m.Accessories)
-                .Include(m => m.ExtraItems)
-                .FirstOrDefaultAsync(m => m.Model2Id == id);
-
-            if (model2 == null)
+            try
             {
-                return NotFound(new { message = "Record not found" });
+                var model2 = await _context.Model2s
+                    .Include(m => m.Accessories)
+                    .Include(m => m.ExtraItems)
+                    .FirstOrDefaultAsync(m => m.Model2Id == id);
+    
+                if (model2 == null)
+                {
+                    return NotFound(new { message = "Record not found" });
+                }
+    
+                return Ok(MapToDto(model2));
             }
-
-            return Ok(MapToDto(model2));
+            catch (Exception ex)
+            {
+                 return StatusCode(500, new 
+                { 
+                    message = $"An error occurred while fetching Model2 with ID {id}.", 
+                    detailedMessage = ex.Message,
+                    innerException = ex.InnerException?.Message 
+                });
+            }
         }
 
         // POST: api/Model2
@@ -199,6 +224,8 @@ namespace Gofabackend.Controllers
                 isTitle = model2.isTitle,
                 ReceivedBy = model2.ReceivedBy,
                 rTitle = model2.rTitle,
+                Vat = model2.Vat,
+                GrandTotal = model2.GrandTotal,
                 HasAccessories = model2.HasAccessories,
                 Accessories = model2.Accessories?.Select(a => new M2AccessoryDto
                 {
@@ -254,6 +281,8 @@ namespace Gofabackend.Controllers
                 isTitle = model2Dto.isTitle,
                 ReceivedBy = model2Dto.ReceivedBy,
                 rTitle = model2Dto.rTitle,
+                Vat = model2Dto.Vat,
+                GrandTotal = model2Dto.GrandTotal,
                 HasAccessories = model2Dto.HasAccessories,
                 Accessories = model2Dto.Accessories?.Select(a => new Model2Accessory
                 {
@@ -324,6 +353,8 @@ namespace Gofabackend.Controllers
             entity.isTitle = dto.isTitle;
             entity.ReceivedBy = dto.ReceivedBy;
             entity.rTitle = dto.rTitle;
+            entity.Vat = dto.Vat;
+            entity.GrandTotal = dto.GrandTotal;
             entity.HasAccessories = dto.HasAccessories;
             entity.HasExtraItems = dto.HasExtraItems;
 

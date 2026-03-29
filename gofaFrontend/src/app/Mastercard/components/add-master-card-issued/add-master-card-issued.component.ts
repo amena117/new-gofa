@@ -149,7 +149,7 @@ export class AddMasterCardIssuedComponent implements OnInit {
   private isLeapYear(year: number): boolean {
     return year % 4 === 0;
   }
-
+availableStores = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
   private createEmptyItem(): MasterCardItemIssued {
     return {
       id: 0,

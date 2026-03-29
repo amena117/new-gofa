@@ -17,8 +17,13 @@ export class LoginComponent {
   loginModel: LoginRequest = { username: '', password: '' };
   isLoading: boolean = false;
   errorMessage: string = '';
+  showPassword: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   onLogin() {
     this.isLoading = true;

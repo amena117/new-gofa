@@ -20,6 +20,7 @@ export interface Item {
   quantity: number;
   numOfBox?: number;
   source: string; // Added
+  history: string; // New history field
   registeredBy: string;
   role: string;
   model: string;
@@ -31,6 +32,11 @@ export interface Item {
   serialNumbers?: ItemSerialNumber[];
   units: ItemUnit[];
   accessories: Accessory[];
+  
+  // Properties for standalone accessories
+  isStandaloneAccessory?: boolean;
+  parentItemId?: number;
+  parentItemName?: string;
 }
 
 export interface ItemSerialNumber {
@@ -72,6 +78,7 @@ export interface ItemReceiveRequest {
   receivedFrom: string;
   condition: string;
   source: string; // Added
+  history: string; // New history field
   quantity: number;
   numOfBox?: number;
   registeredBy: string;
@@ -90,6 +97,8 @@ export interface AccessoryRequest {
   quantity: number;
   unitPrice?: number; // Optional unit price
   currency?: string; // Optional currency
+  requiresSerialNumbers?: boolean; // Whether this accessory requires serial numbers
+  serialNumbers?: string[]; // Serial numbers for this accessory
 }
 
 export interface Accessory {
@@ -100,6 +109,25 @@ export interface Accessory {
   quantity: number;
   unitPrice?: number; // Optional unit price
   currency?: string; // Optional currency
+  requiresSerialNumbers?: boolean; // Whether this accessory requires serial numbers
+  serialNumbers?: AccessorySerialNumber[]; // Serial numbers for this accessory
+  subAccessories?: AccessorySubAccessory[]; // ✅ NEW: Sub-accessories attached to this accessory
+}
+
+export interface AccessorySerialNumber {
+  id?: number;
+  accessoryId: number;
+  serialNumber: string;
+}
+
+// ✅ NEW: Sub-accessory interface
+export interface AccessorySubAccessory {
+  id?: number;
+  accessoryId: number;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  currency: string;
 }
 export interface ItemListingDto {
   itemId: number;
@@ -122,6 +150,11 @@ export interface ItemListingDto {
   hasSerialNumbers: boolean;
   serialNumbersCount: number;
   latestTransactionDate: string | null;
+  
+  // Properties for standalone accessories
+  isStandaloneAccessory?: boolean;
+  parentItemId?: number;
+  parentItemName?: string;
 }
 export interface DashboardItem {
   itemId: number;
@@ -149,6 +182,8 @@ export interface TransactionEntry {
   unitPrice?: number; // Added for receive transactions
   currency?: string; // Added for receive transactions
   totalAmount?: number;
+  history?: string; // History note for this transaction
+  isAccessoryOnly?: boolean; // Flag for accessory-only transactions
   
 }
 export interface WarehouseSummaryDto {
@@ -168,6 +203,8 @@ export interface TransactionEntryDto {
   description: string;
   action: string;
   quantity: number;
+  unitPrice: number;        // Added for multi-currency valuation
+  currency: string;         // Added for multi-currency valuation
   voucherNumber?: string;
   details: string;
   date: string;
@@ -186,13 +223,30 @@ export interface ReportEntry {
   id: number;
   description: string;
   department: string;
-  model: string;  // ✅ Add this missing property
+  model: string;
   ethiopianDate: string;
   recipientName: string;
+  voucherNumber?: string;
   totalQuantity: number;
   unitPrice: number;
   currency: string;
   totalPrice: number;
+  isAccessoryOnly?: boolean;
+  accessories?: Array<{
+    name: string;
+    model: string;
+    quantity: number;
+    unitPrice: number;
+    currency: string;
+    totalPrice: number;
+    serialNumbers?: string[];
+    subAccessories?: Array<{
+      name: string;
+      quantity: number;
+      unitPrice: number;
+      currency: string;
+    }>;
+  }>;
 }
 
 
@@ -253,8 +307,26 @@ export interface ReceiveHistoryDto {
   voucherNumber?: string;
   receivedFrom: string;
   registeredBy: string;
-  source: string; // Added
+  source: string;
   date: string;
+  unitPrice: number;
+  currency: string;
+  accessories?: ReceivedAccessoryDto[];
+}
+
+export interface ReceivedAccessoryDto {
+  name: string;
+  model: string;
+  quantity: number;
+  unitPrice: number;
+  currency: string;
+  serialNumbers?: string[];
+  subAccessories?: ReceivedSubAccessoryDto[];
+}
+
+export interface ReceivedSubAccessoryDto {
+  name: string;
+  quantity: number;
   unitPrice: number;
   currency: string;
 }

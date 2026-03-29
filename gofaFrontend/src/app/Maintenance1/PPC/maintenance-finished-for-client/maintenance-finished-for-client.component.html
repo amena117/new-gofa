@@ -1,6 +1,51 @@
 <div class="container">
   <h2>Maintained Lists   /  (ጥገና ተጠናቀቀ )</h2>
 
+  <!-- Search & Filter Section -->
+  <div class="search-filter-section mb-4">
+    <div class="row g-3">
+      <!-- Search Input -->
+      <div class="col-md-4">
+        <div class="input-group">
+          <select class="form-select" [(ngModel)]="searchType" (change)="applySearch()">
+            <option value="worksOrderNumber">Works Order #</option>
+            <option value="serialNoOfEquip">Serial Number</option>
+            <option value="nomenclature">Model</option>
+            <option value="requestedBy">Requested By</option>
+          </select>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Search..." 
+            [(ngModel)]="searchTerm"
+            (input)="applySearch()"
+          />
+        </div>
+      </div>
+
+      <!-- Maintenance Type Filter -->
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="selectedMaintenanceType" (change)="applyFilters()">
+          <option value="">All Maintenance Types</option>
+          <option *ngFor="let type of maintenanceTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="selectedStatus" (change)="applyFilters()">
+          <option value="">All Statuses</option>
+          <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+        </select>
+      </div>
+
+      <!-- Reset Button -->
+      <div class="col-md-2">
+        <button class="btn btn-secondary w-100" (click)="resetFilters()">Reset</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Loading Indicator -->
   <div *ngIf="isLoading" class="loading-indicator">
     Loading maintenance requests... / የጥገና ጥያቄዎችን በመጫን ላይ...
@@ -12,52 +57,73 @@
   </div>
 
   <!-- Table -->
-  <!-- Table -->
-<table class="request-table" *ngIf="!isLoading && !errorMessage && maintenanceRequests.length > 0">
-  <thead>
-    <tr>
-      <th>Works Order Number</th>
-      <th>Maintenance Type</th>
-      <th>Serial Number</th>
-      <th>Repair Start Date</th>
-      <th>Repair Finish Date</th>
-      <th>Maintained By</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let request of maintenanceRequests">
-      <td data-label="Works Order Number">{{ request.worksOrderNumber }}</td>
-      <td data-label="Maintenance Type">{{ request.maintenanceType || 'N/A' }}</td>
-      <td data-label="Serial Number">{{ request.serialNoOfEquip || 'N/A' }}</td>
-      <td data-label="Repair Start Date">{{ request.repairStartDate ? (request.repairStartDate | date:'medium') : 'N/A' }}</td>
-      <td data-label="Repair Finish Date">{{ request.repairFinishDate ? (request.repairFinishDate | date:'medium') : 'N/A' }}</td>
-      <td data-label="Maintained By">{{ request.maintainedBy || 'N/A' }}</td>
-      <td data-label="Status">{{ request.status || 'N/A' }}</td>
-      <td data-label="Actions" class="text-end">
-        <button 
-          *ngIf="userRole === 'PPC'" 
-          (click)="giveForClients(request)" 
-          class="action-button give-button">
-          Give for Clients / ለደንበኞች ስጥ
-        </button>
+<div class="table-responsive" *ngIf="!isLoading && !errorMessage && paginatedRequests.length > 0">
+  <table class="request-table table table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Works Order Number</th>
+        <th>Maintenance Type</th>
+        <th>Serial Number</th>
+        <th>Repair Start Date</th>
+        <th>Repair Finish Date</th>
+        <th>Maintained By</th>
+        <th>Status</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let request of paginatedRequests; let i = index">
+        <td><strong>{{ (currentPage - 1) * pageSize + i + 1 }}</strong></td>
+        <td>{{ request.worksOrderNumber }}</td>
+        <td><span class="badge bg-info">{{ request.statusStage || 'N/A' }}</span></td>
+        <td><code>{{ request.serialNoOfEquip || 'N/A' }}</code></td>
+        <td>{{ request.repairStartDate ? (request.repairStartDate | date:'short') : 'N/A' }}</td>
+        <td>{{ request.repairFinishDate ? (request.repairFinishDate | date:'short') : 'N/A' }}</td>
+        <td>{{ request.maintainedBy || 'N/A' }}</td>
+        <td>
+          <span class="badge" [ngClass]="request.status === 'Client Received' ? 'bg-success' : 'bg-warning'">
+            {{ request.status || 'N/A' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button 
+            *ngIf="userRole === 'PPC' && request.status !== 'Client Received'" 
+            (click)="giveForClients(request)" 
+            class="btn btn-sm btn-primary">
+            Deliver
+          </button>
+          <button 
+            *ngIf="userRole === 'QUALITY' && request.status === 'Quality Check'" 
+            (click)="qualify(request)" 
+            class="btn btn-sm btn-success">
+            Qualify
+          </button>
+          <span *ngIf="request.status === 'Client Received'" class="badge bg-success">Delivered</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-        <button 
-          *ngIf="userRole === 'QUALITY'" 
-          (click)="qualify(request)" 
-          class="action-button give-button">
-          Qualify / አረጋግጥ
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <!-- Pagination -->
+  <nav *ngIf="totalPages > 1" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link" (click)="previousPage()" style="cursor: pointer;">Previous</a>
+      </li>
+      <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === i + 1">
+        <a class="page-link" (click)="goToPage(i + 1)" style="cursor: pointer;">{{ i + 1 }}</a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link" (click)="nextPage()" style="cursor: pointer;">Next</a>
+      </li>
+    </ul>
+  </nav>
 
   <!-- No Data -->
-  <div *ngIf="!isLoading && !errorMessage && maintenanceRequests.length === 0" class="no-data">
-    No maintenance requests found with Status: Maintenance Finished. <br>
-    ምንም የጠናቀቀ ጥገና ጥያቄ አልተገኘም።
+  <div *ngIf="!isLoading && !errorMessage && filteredRequests.length === 0" class="alert alert-info text-center mt-4">
+    No maintenance requests found matching your filters. / ከፊልተርዎ ጋር የሚዛመዱ ምንም የጥገና ጥያቄዎች አልተገኙም።
   </div>
 
   <!-- Delivery Form -->

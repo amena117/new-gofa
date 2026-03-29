@@ -25,6 +25,7 @@ namespace Gofabackend.Models
         public decimal UnitPrice { get; set; } // Mandatory
         public string Currency { get; set; } = "ETB"; // Default to ETB
         public string Source { get; set; } = "Purchase";
+        public string History { get; set; } = string.Empty; // Item history/notes
         public List<TransactionEntry> TransactionHistory { get; set; } = new List<TransactionEntry>();
         public List<ItemSerialNumber> SerialNumbers { get; set; } = new List<ItemSerialNumber>();
         public List<ItemUnit> Units { get; set; } = new List<ItemUnit>();

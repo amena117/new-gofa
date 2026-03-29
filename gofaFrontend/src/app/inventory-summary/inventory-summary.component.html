@@ -4,7 +4,12 @@
     <h1>Inventory Dashboard / የክምችት ዳሽቦርድ</h1>
     <div class="header-actions">
       <button class="refresh-btn" (click)="refreshData()">
-        <span class="refresh-icon">↻</span> Refresh / አድስ
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+        Refresh / አድስ
       </button>
     </div>
   </div>
@@ -27,21 +32,50 @@
     <!-- Summary Cards -->
     <div class="summary-cards" [@fadeIn]>
       <div class="summary-card">
-        <div class="card-icon">📦</div>
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
         <div class="card-content">
           <h3>{{ summaryData.totalItems }}</h3>
           <p>Total Items / ጠቅላላ እቃዎች</p>
         </div>
       </div>
       <div class="summary-card">
-        <div class="card-icon">🔢</div>
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+        </div>
         <div class="card-content">
           <h3>{{ summaryData.totalQuantity }}</h3>
           <p>Total Quantity / ጠቅላላ ብዛት</p>
         </div>
       </div>
       <div class="summary-card">
-        <div class="card-icon">⚠️</div>
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3 class="value-text">{{ getTotalValueFormatted() }}</h3>
+          <p>Total Value / ጠቅላላ ዋጋ</p>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
         <div class="card-content">
           <h3>{{ summaryData.lowStockItems.length }}</h3>
           <p>Low Stock Items / ዝቅተኛ ክምችት እቃዎች</p>
@@ -54,15 +88,20 @@
 
       <!-- Items by Category with Search -->
       <div class="data-card">
-        <h3>Items by Category / እቃዎች በመጠሪያ</h3>
+        <h3>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+          Items by Category / እቃዎች በመጠሪያ
+        </h3>
         <div class="search-container">
-          <input
-            type="text"
-            placeholder="Search categories... / የመጠሪያ ፍለጋ"
-            (input)="onCategorySearch($event)"
-            class="search-input"
-            [value]="categorySearchTerm"
-          />
+          <input type="text" placeholder="Search categories... / የመጠሪያ ፍለጋ" (input)="onCategorySearch($event)"
+            class="search-input" [value]="categorySearchTerm" />
         </div>
         <div class="card-grid">
           <div *ngFor="let category of displayedCategories" class="category-card">
@@ -77,35 +116,23 @@
         </div>
 
         <!-- Show More / Less Button -->
-        <button
-          *ngIf="shouldShowToggle()"
-          (click)="toggleShowAll()"
-          class="show-more-btn">
+        <button *ngIf="shouldShowToggle()" (click)="toggleShowAll()" class="show-more-btn">
           {{ showAllCategories ? 'Show Less / ያነስ አሳይ' : 'Show All (' + filteredCategories.length + ') / ሁሉንም አሳይ' }}
         </button>
-      </div>
-
-      <!-- Inventory by Warehouse -->
-      <div class="data-card">
-        <h3>Total number of Items / በመጋዘን ውስጥ ያለ ጠቅላላ እቃ</h3>
-        <div class="card-grid">
-          <div *ngFor="let warehouse of summaryData.itemsByWarehouse" class="warehouse-card">
-            <div class="card-content">
-              <h4>{{ warehouse.name }}</h4>
-              <p>Quantity / ብዛት: {{ warehouse.quantity }}</p>
-            </div>
-          </div>
-          <div *ngIf="summaryData.itemsByWarehouse.length === 0" class="no-data">
-            No warehouse data available / የመጋዘን ውሂቖ የለም
-          </div>
-        </div>
       </div>
     </div>
 
     <!-- Data Tables Section -->
     <div class="data-section" [@fadeIn]>
       <div class="data-card">
-        <h3>Low Stock Alert / ዝቅተኛ ክምችት ማስጠንቀቂያ ⚠️</h3>
+        <h3>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          Low Stock Alert / ዝቅተኛ ክምችት ማስጠንቀቂያ
+        </h3>
         <div class="table-container">
           <table>
             <thead>
@@ -117,12 +144,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of summaryData.lowStockItems" 
-                  (click)="onItemClick(item.itemId)"
-                  class="clickable-row">
+              <tr *ngFor="let item of summaryData.lowStockItems" (click)="onItemClick(item.itemId)"
+                class="clickable-row">
                 <td>{{ item.description }}</td>
                 <td>{{ item.model }}</td>
-                <td>{{ item.quantity }}</td>
+                <td><strong>{{ item.quantity }}</strong></td>
                 <td>
                   <span class="status-badge critical" *ngIf="item.isCriticallyLow">Critically Low / በጣም ዝቅተኛ</span>
                   <span class="status-badge low" *ngIf="item.isLow">Low / ዝቅተኛ</span>

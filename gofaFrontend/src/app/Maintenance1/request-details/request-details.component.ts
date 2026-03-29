@@ -1,20 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MaintenanceRequestService } from '../../services/maintenance-request.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-request-details',
   templateUrl: './request-details.component.html',
-  styleUrls: ['./request-details.component.css'],
-  imports: [
-  CommonModule,
-  FormsModule,
-  ReactiveFormsModule // if needed
-],
-standalone: true,
-  providers: [MaintenanceRequestService]
+  styleUrls: ['./request-details.component.css']
 })
 export class RequestDetailsComponent implements OnInit {
   request: any = null; // Holds the selected request details
@@ -30,7 +21,12 @@ export class RequestDetailsComponent implements OnInit {
   ngOnInit(): void {
     // Get the worksOrderNumber from the route parameters
     const worksOrderNumber = +this.route.snapshot.paramMap.get('id')!;
-    this.fetchRequestDetails(worksOrderNumber);
+    if (worksOrderNumber) {
+      this.fetchRequestDetails(worksOrderNumber);
+    } else {
+      this.error = 'Invalid request ID';
+      this.isLoading = false;
+    }
   }
 
   fetchRequestDetails(worksOrderNumber: number): void {

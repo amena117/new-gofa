@@ -13,6 +13,7 @@ namespace Gofabackend.Models
         public string Currency { get; set; } = "ETB"; // Default to ETB
         public string VoucherNumber { get; set; } = string.Empty;
         public string Details { get; set; } = string.Empty;
+        public string? History { get; set; } // History note for this transaction (nullable for backward compatibility)
         public Item Item { get; set; } = null!;
         public ItemUnit? ItemUnit { get; set; }
         public int? Model22Id { get; set; } // Nullable for linking to Model22 withdrawals

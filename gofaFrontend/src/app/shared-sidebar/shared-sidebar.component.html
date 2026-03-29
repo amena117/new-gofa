@@ -1,22 +1,34 @@
-<!-- Toggle Button -->
-<button class="sidebar-toggle" (click)="toggleSidebar()">
-  <i class="fas" [ngClass]="{'fa-bars': !showSidebar, 'fa-times': showSidebar}"></i>
+<!-- Toggle Button (only shows when sidebar is closed) -->
+<button class="sidebar-toggle" (click)="toggleSidebar()" *ngIf="!showSidebar">
+  <span class="toggle-icon">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </span>
 </button>
 
-<!-- Backdrop for mobile -->
+<!-- Backdrop -->
 <div class="sidebar-backdrop" *ngIf="showSidebar" (click)="toggleSidebar()"></div>
 
 <div class="sidebar" [ngClass]="{ 'closed': !showSidebar }">
+    <!-- Profile Section with Close Button -->
     <div class="profile-section">
       <div class="profile-info">
         <p class="username">{{ firstname }} {{ lastname }}</p>
         <p class="role">{{ role }}</p>
       </div>
+      <button class="close-btn" (click)="toggleSidebar()">×</button>
     </div>
   
+    <!-- Navigation Menu -->
     <ul>
       <li *ngFor="let item of filteredMenuItems">
-        <a [routerLink]="item.link" routerLinkActive="active">{{ item.label }}</a>
+        <a [routerLink]="item.link" routerLinkActive="active" class="menu-link-wrapper" (click)="onNavigate()">
+          {{ item.label }}
+          <span *ngIf="item.link === '/from-transit' && pendingItemsCount > 0" class="notification-badge">
+            {{ pendingItemsCount }}
+          </span>
+        </a>
       </li>
       <li>
         <button class="logout-btn" (click)="onLogout()">

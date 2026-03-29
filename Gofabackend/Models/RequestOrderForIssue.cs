@@ -19,6 +19,12 @@ namespace Gofabackend.Models
         public Person PreparedBy { get; set; }
         public Person VerifiedBy { get; set; }
         public Person ApprovedBy { get; set; }
+
+        public string Status { get; set; } = "Pending"; // "Pending", "Accepted", "Rejected"   
+        public string? AcceptedBy { get; set; }
+        public DateTime? AcceptedAt { get; set; }
+        public string? RejectedBy { get; set; }
+        public DateTime? RejectedAt { get; set; }
     }
     
   public class Person

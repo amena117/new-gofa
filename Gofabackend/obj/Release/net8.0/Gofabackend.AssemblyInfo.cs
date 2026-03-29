@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Gofabackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8b46bec554d8b91089b3f5465f768383bc34c881")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+79ad4fb80ef459ec4ecef6feb4985adf787ab695")]
 [assembly: System.Reflection.AssemblyProductAttribute("Gofabackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Gofabackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

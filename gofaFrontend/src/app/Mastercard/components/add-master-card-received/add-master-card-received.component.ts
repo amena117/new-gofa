@@ -220,7 +220,7 @@ export class AddMasterCardReceivedComponent implements OnInit {
     this.newOrganizationName = '';
     this.organizationModalError = null;
   }
-
+availableStores = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
   closeOrganizationModal(): void {
     this.showOrganizationModal = false;
     this.newOrganizationName = '';

@@ -42,10 +42,46 @@ export class MaintenanceRequestService {
     );
   }
 
-  getMaintenanceRequestById(worksOrderNumber: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/${worksOrderNumber}`).pipe(
+  getPendingDeliveries(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/api/MaintenanceRequestRegister/pending-delivery`).pipe(
+      catchError(err => {
+        console.error('Error fetching pending deliveries:', err);
+        return throwError(() => new Error('Failed to fetch pending deliveries.'));
+      })
+    );
+  }
+
+  getByStatus(status: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/api/MaintenanceRequestRegister/by-status/${status}`).pipe(
+      catchError(err => {
+        console.error('Error fetching requests by status:', err);
+        return throwError(() => new Error('Failed to fetch requests by status.'));
+      })
+    );
+  }
+
+  updateMaintenanceStatus(worksOrderNumber: number, status: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/update-status/${worksOrderNumber}`, { status }).pipe(
+      catchError(err => {
+        console.error('Error updating maintenance status:', err);
+        return throwError(() => new Error('Failed to update maintenance status.'));
+      })
+    );
+  }
+
+  getMaintenanceRequestById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/${id}`).pipe(
       catchError(err => {
         console.error('Error fetching maintenance request by ID:', err);
+        return throwError(() => new Error('Failed to fetch maintenance request.'));
+      })
+    );
+  }
+
+  getMaintenanceRequestByWorksOrder(worksOrderNumber: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/by-worksorder/${worksOrderNumber}`).pipe(
+      catchError(err => {
+        console.error('Error fetching maintenance request by works order:', err);
         return throwError(() => new Error('Failed to fetch maintenance request.'));
       })
     );
@@ -61,10 +97,28 @@ export class MaintenanceRequestService {
   }
 
   updateMaintenanceRequest(worksOrderNumber: number, data: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/${worksOrderNumber}`, data).pipe(
+    return this.http.put<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/update/${worksOrderNumber}`, data).pipe(
       catchError(err => {
         console.error('Error updating maintenance request:', err);
         return throwError(() => new Error('Failed to update maintenance request.'));
+      })
+    );
+  }
+
+  updateMaintenanceRequestById(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/${id}`, data).pipe(
+      catchError(err => {
+        console.error('Error updating maintenance request by ID:', err);
+        return throwError(() => new Error('Failed to update maintenance request.'));
+      })
+    );
+  }
+
+  deleteMaintenanceRequest(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/${id}`).pipe(
+      catchError(err => {
+        console.error('Error deleting maintenance request:', err);
+        return throwError(() => new Error('Failed to delete maintenance request.'));
       })
     );
   }

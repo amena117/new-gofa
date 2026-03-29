@@ -1,9 +1,9 @@
-// view-details.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TransitService } from '../../services/transit.service';
 import { Item } from '../../models/item.model';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import { AuthService } from '../../../services/auth.service';
 
@@ -13,18 +13,20 @@ import { AuthService } from '../../../services/auth.service';
   styleUrls: ['./view-details.component.css']
 })
 export class ViewDetailsComponent implements OnInit {
-  item: Item | null = null; // Initialize as null
-  isLoading = true; // Track loading state
-  errorMessage: string | null = null; // Track errors
+  item: Item | null = null;
+  isLoading = true;
+  errorMessage: string | null = null;
+  isCapturing = false; // hides buttons during PDF capture
 
   constructor(
     private route: ActivatedRoute,
     private transitService: TransitService,
-    private authService: AuthService
-  ) {}
+    private authService: AuthService,
+    private el: ElementRef
+  ) { }
 
   ngOnInit() {
-    const itemId = this.route.snapshot.paramMap.get('id')!; // Use non-null assertion
+    const itemId = this.route.snapshot.paramMap.get('id')!;
     this.loadItemDetails(itemId);
   }
 
@@ -37,89 +39,157 @@ export class ViewDetailsComponent implements OnInit {
         if (item) {
           this.item = item;
         } else {
-          this.errorMessage = 'Item not found.'; // Handle case where item is undefined
+          this.errorMessage = 'Item not found.';
         }
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Error loading item details:', err);
-        this.errorMessage = 'Failed to load item details.'; // Handle errors
+        this.errorMessage = 'Failed to load item details.';
         this.isLoading = false;
       }
     });
   }
+
   canEdit(): boolean {
-  return !this.authService.hasRole('PROPERTY_CONTROL');
-}
-  printDetails() {
-  const data = document.getElementById('printable-card');
-  if (!data) {
-    console.warn('Printable element not found');
-    return;
+    const role = this.authService.getRole();
+    return role === 'TRANSIT' || role === 'SUPER_ADMIN';
   }
-  
 
-  // Hide non-printable elements (buttons)
-  const noPrintElements = data.querySelectorAll('.no-print');
-  noPrintElements.forEach(el => (el as HTMLElement).style.display = 'none');
+  isStoreUser(): boolean {
+    const role = this.authService.getRole();
+    return role === 'VHF' || role === 'HF' || role === 'ELECTRONICS' || role === 'SPAREPART';
+  }
 
-  // Add export class for print styling
-  data.classList.add('pdf-export');
+  expandedSubAccessories = new Set<number>();
 
-  // Capture the card with html2canvas
-  html2canvas(data, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    logging: false // optional: reduce console noise
-  })
-  .then(canvas => {
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = pdf.internal.pageSize.getWidth();   // 210mm
-    const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+  toggleSubAccessories(index: number): void {
+    if (this.expandedSubAccessories.has(index)) {
+      this.expandedSubAccessories.delete(index);
+    } else {
+      this.expandedSubAccessories.add(index);
+    }
+  }
 
-    const imgData = canvas.toDataURL('image/png');
-    const imgWidth = 190; // leave 10mm left/right margin
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  isSubAccessoriesOpen(index: number): boolean {
+    return this.expandedSubAccessories.has(index);
+  }
 
-    let position = 10; // Start near top
-    let heightLeft = imgHeight;
+  getStatusForCurrentUser(): string {
+    if (!this.item) return 'Unknown';
+    
+    const userRole = this.authService.getRole()?.toLowerCase();
+    
+    // Check if main item is for this store
+    if (this.item.storeType?.toLowerCase() === userRole) {
+      return this.item.status || 'Waiting For Stores';
+    }
+    
+    // Check if there's an extra item for this store
+    const extraForThisStore = this.item.extraItems?.find(
+      extra => extra.store?.toLowerCase() === userRole
+    );
+    
+    if (extraForThisStore) {
+      return extraForThisStore.extraStatus || 'Waiting For Stores';
+    }
+    
+    return this.item.status || 'Unknown';
+  }
 
-    // Add image to first page
-    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+  formatPrice(price: number | string | null | undefined, currency: string | null | undefined): string {
+    if (!price || price === 0) {
+      return '0.00 ' + (currency || 'ETB');
+    }
+    
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+    if (isNaN(numPrice)) {
+      return '0.00 ' + (currency || 'ETB');
+    }
+    
+    return numPrice.toFixed(2) + ' ' + (currency || 'ETB');
+  }
 
-    // Handle overflow onto new pages
-    heightLeft -= pageHeight - position - 10; // 10mm bottom margin
-
-    while (heightLeft > 0) {
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 10, 10 - heightLeft, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+  getTotalValue(): string {
+    if (!this.item) {
+      return '0.00 ETB';
     }
 
-    // Optional: Add confidential footer
-    const pageCount = pdf.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      pdf.setPage(i);
-      pdf.setFontSize(10);
-      pdf.setTextColor(180);
-      pdf.text('Confidential - Internal Use Only', 105, pageHeight - 10, { align: 'center' });
-      pdf.setTextColor(0);
+    let totalValue = 0;
+    
+    if (this.item.grandTotal && this.item.grandTotal > 0) {
+      totalValue = this.item.grandTotal;
+    } else if (this.item.amount && this.item.amount > 0) {
+      totalValue = this.item.amount;
+    } else if (this.item.unitOfPrice && this.item.received) {
+      const unitPrice = typeof this.item.unitOfPrice === 'string' ? parseFloat(this.item.unitOfPrice) : this.item.unitOfPrice;
+      if (!isNaN(unitPrice)) {
+        totalValue = unitPrice * this.item.received;
+      }
     }
 
-    // Save PDF
-    const fileName = `ItemDetails_${this.item?.model1Id || 'Report'}.pdf`;
-    pdf.save(fileName);
+    return this.formatPrice(totalValue, this.item.currency);
+  }
 
-    // Restore UI
-    noPrintElements.forEach(el => (el as HTMLElement).style.display = '');
-    data.classList.remove('pdf-export');
-  })
-  .catch(error => {
-    console.error('Error generating PDF:', error);
-    alert('Failed to generate PDF. Please try again.');
-    data.classList.remove('pdf-export');
-  });
-}
+  async downloadAsPDF() {
+    if (!this.item) return;
 
+    // Expand all sub-accessories so they appear in the capture
+    const prevExpanded = new Set(this.expandedSubAccessories);
+    this.item.accessories?.forEach((_, i) => this.expandedSubAccessories.add(i));
+
+    // Hide interactive elements during capture
+    this.isCapturing = true;
+    await new Promise(r => setTimeout(r, 150));
+
+    try {
+      const container: HTMLElement = this.el.nativeElement.querySelector('.details-container')
+                                  || this.el.nativeElement;
+
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false
+      });
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const usableW = pageWidth - margin * 2;
+      const usableH = pageHeight - margin * 2;
+
+      // Total rendered height in mm
+      const totalHeightMm = (canvas.height * usableW) / canvas.width;
+      const totalPages = Math.ceil(totalHeightMm / usableH);
+
+      for (let page = 0; page < totalPages; page++) {
+        if (page > 0) pdf.addPage();
+
+        // Slice the canvas for this page
+        const srcY = Math.round((page * usableH * canvas.width) / usableW);
+        const srcH = Math.round((usableH * canvas.width) / usableW);
+
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = Math.min(srcH, canvas.height - srcY);
+        const ctx = pageCanvas.getContext('2d')!;
+        ctx.drawImage(canvas, 0, srcY, pageCanvas.width, pageCanvas.height, 0, 0, pageCanvas.width, pageCanvas.height);
+
+        const pageImg = pageCanvas.toDataURL('image/png');
+        const sliceHeightMm = (pageCanvas.height * usableW) / canvas.width;
+        pdf.addImage(pageImg, 'PNG', margin, margin, usableW, sliceHeightMm);
+      }
+
+      pdf.save(`ItemDetails_${this.item.model1Id || 'Report'}.pdf`);
+    } finally {
+      this.isCapturing = false;
+      this.expandedSubAccessories = prevExpanded;
+    }
+  }
+
+  printDetails() {
+    window.print();
+  }
 }

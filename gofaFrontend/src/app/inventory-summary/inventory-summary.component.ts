@@ -24,6 +24,7 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
   summaryData: {
     totalItems: number;
     totalQuantity: number;
+    totalValueByCurrency: { [currency: string]: number };
     lowStockItems: { itemId: number | undefined; description: string; model: string; quantity: number; isCriticallyLow: boolean; isLow: boolean }[];
     recentWithdrawals: (Model22Dto & { dateFormatted: string })[];
     itemsByCategory: { name: string; count: number }[];
@@ -33,6 +34,7 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
   } = {
     totalItems: 0,
     totalQuantity: 0,
+    totalValueByCurrency: {},
     lowStockItems: [],
     recentWithdrawals: [],
     itemsByCategory: [],
@@ -148,6 +150,77 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
     this.summaryData.totalItems = roleFilteredItems.length;
     this.summaryData.totalQuantity = roleFilteredItems.reduce((sum, item) => sum + item.quantity, 0);
 
+    // ✅ CALCULATE TOTAL VALUE BY CURRENCY (using average transaction price per currency)
+    this.summaryData.totalValueByCurrency = {};
+    
+    // For each item, calculate value using average price per currency
+    roleFilteredItems.forEach(item => {
+      // Get all receive transactions for this item
+      const receiveTransactions = transactions.filter(t => 
+        t.itemId === item.itemId && 
+        t.action.toLowerCase().includes('receive') &&
+        t.unitPrice != null &&
+        t.currency != null &&
+        t.currency.toUpperCase() !== 'FOC'
+      );
+      
+      // If no paid transactions found, use item's current price (if not FOC)
+      if (receiveTransactions.length === 0) {
+        const currency = (item.currency || 'ETB').toUpperCase();
+        if (currency === 'FOC') {
+          return; // Skip items that have always been FOC
+        }
+        
+        const itemValue = (item.unitPrice || 0) * item.quantity;
+        if (!this.summaryData.totalValueByCurrency[currency]) {
+          this.summaryData.totalValueByCurrency[currency] = 0;
+        }
+        this.summaryData.totalValueByCurrency[currency] += itemValue;
+        return;
+      }
+      
+      // Calculate total value and quantity received per currency
+      const valuesByCurrency = new Map<string, { totalValue: number; totalQty: number }>();
+      
+      receiveTransactions.forEach(t => {
+        const currency = t.currency!.toUpperCase();
+        const qty = t.quantity || 0;
+        const price = t.unitPrice || 0;
+        
+        if (!valuesByCurrency.has(currency)) {
+          valuesByCurrency.set(currency, { totalValue: 0, totalQty: 0 });
+        }
+        
+        const currencyData = valuesByCurrency.get(currency)!;
+        currencyData.totalValue += qty * price;
+        currencyData.totalQty += qty;
+      });
+      
+      // Calculate total quantity received across all currencies
+      let totalReceivedQty = 0;
+      valuesByCurrency.forEach((data) => {
+        totalReceivedQty += data.totalQty;
+      });
+      
+      // Calculate current stock value per currency using proportional allocation
+      valuesByCurrency.forEach((data, currency) => {
+        if (data.totalQty > 0 && totalReceivedQty > 0) {
+          // Calculate the proportion of current stock that should be valued in this currency
+          const proportionInCurrency = data.totalQty / totalReceivedQty;
+          const qtyInCurrency = Math.round(item.quantity * proportionInCurrency);
+          
+          // Use average price for this currency (total value / total qty)
+          const avgPrice = data.totalValue / data.totalQty;
+          const stockValue = qtyInCurrency * avgPrice;
+          
+          if (!this.summaryData.totalValueByCurrency[currency]) {
+            this.summaryData.totalValueByCurrency[currency] = 0;
+          }
+          this.summaryData.totalValueByCurrency[currency] += stockValue;
+        }
+      });
+    });
+
     // ✅ LOW STOCK ITEMS (quantity < 5)
     this.summaryData.lowStockItems = roleFilteredItems
       .filter(item => item.quantity < 5)
@@ -248,7 +321,7 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
       return;
     }
     console.log('InventorySummary: Navigating to item details for itemId:', itemId);
-    this.router.navigate(['/items', itemId]);
+    this.router.navigate(['/item', itemId]);
   }
 
   // 🔗 Navigate to withdrawal details
@@ -266,6 +339,20 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
   // 🔄 Refresh all data
   refreshData(): void {
     this.loadInventorySummary();
+  }
+
+  // 💰 Get formatted total value
+  getTotalValueFormatted(): string {
+    const values: string[] = [];
+    
+    Object.keys(this.summaryData.totalValueByCurrency).forEach(currency => {
+      const value = this.summaryData.totalValueByCurrency[currency];
+      if (value > 0) {
+        values.push(`${value.toFixed(2)} ${currency}`);
+      }
+    });
+    
+    return values.join(' | ') || '0.00 ETB';
   }
 
   // 📅 Ethiopian Date Formatting

@@ -56,8 +56,10 @@ namespace Gofabackend.Models
         // ✅ New: Quality of repair or inspection
         public QualityStatus? Quality { get; set; }
 
-        // ✅ New: Who maintained this request
-        public string? MaintainedBy { get; set; }
+        // ✅ Technician tracking - who maintained this request
+        public string? MaintainedBy { get; set; }  // Username of technician
+        public int? MaintainedByUserId { get; set; }  // User ID for reference
+        public string? TechnicianRole { get; set; }  // Role of technician (VHF_MAINTENANCE, etc.)
 
         // ✅ New: Computed field for Total Cost (not mapped to DB)
         [NotMapped]
@@ -65,7 +67,7 @@ namespace Gofabackend.Models
         {
             get
             {
-                return (decimal?)(ManHours * 50) ?? 0; // same hourly rate logic
+                return (decimal?)(ManHours * 250) ?? 0; // Updated hourly rate to 250
             }
         }
 

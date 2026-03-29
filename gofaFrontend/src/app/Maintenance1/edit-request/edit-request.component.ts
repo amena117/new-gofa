@@ -68,9 +68,20 @@ export class EditRequestComponent implements OnInit {
       return;
     }
 
-    console.log('Submitting form data:', this.editForm.value);
+    const id = this.maintenanceRequest.id;
+    const updateData = {
+      nomenclature: this.editForm.get('nomenclature')?.value,
+      quantity: this.editForm.get('quantity')?.value,
+      requestedBy: this.editForm.get('requestedBy')?.value,
+      serialNoOfEquip: this.editForm.get('serialNoOfEquip')?.value,
+      briefDescriptionOfWork: this.editForm.get('briefDescriptionOfWork')?.value,
+      dateWorkOrderReceived: this.editForm.get('dateWorkOrderReceived')?.value,
+      equipmentTypeId: this.maintenanceRequest.equipmentTypeId
+    };
 
-    this.maintenanceRequestService.submitMaintenanceRequest(this.editForm.value).subscribe(
+    console.log('Updating maintenance request with ID:', id, 'Data:', updateData);
+
+    this.maintenanceRequestService.updateMaintenanceRequestById(id, updateData).subscribe(
       () => {
         alert('Maintenance request updated successfully!');
         this.router.navigate(['/maintenance/request-list']);
@@ -78,6 +89,7 @@ export class EditRequestComponent implements OnInit {
       (error) => {
         this.error = 'Failed to update maintenance request.';
         console.error('Error updating maintenance request:', error);
+        alert('Failed to update maintenance request. Please try again.');
       }
     );
   }

@@ -8,6 +8,8 @@ namespace Gofabackend.Models
         public string Description { get; set; } = string.Empty; // Renamed from ItemName
         public string Action { get; set; } = string.Empty; // "receive" or "Withdrawn"
         public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; } // Added for multi-currency valuation
+        public string Currency { get; set; } = "ETB"; // Added for multi-currency valuation
         public string VoucherNumber { get; set; } = string.Empty;
         public string Details { get; set; } = string.Empty;
         public string Date { get; set; } = string.Empty;

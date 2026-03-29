@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { ItemService } from '../../services/item.service';
 import { AuthService } from '../../services/auth.service';
 import { Item } from '../../model/item.model';
@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import Kenat from 'kenat';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-listing',
@@ -13,6 +15,7 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
   styleUrls: ['./listing.component.css']
 })
 export class ListingComponent implements OnInit, OnDestroy {
+  @ViewChild('listingContent', { static: false }) listingContent!: ElementRef;
   Math = Math;
   items: Item[] = [];
   filteredItems: Item[] = [];
@@ -25,6 +28,12 @@ export class ListingComponent implements OnInit, OnDestroy {
   availableRoles = ['VHF', 'HF', 'Electronics', 'Sparepart'];
   dropdownOpen = false;
   searchTerm = '';
+  selectedCategory = ''; // Add category filter
+  availableCategories: string[] = []; // Store unique categories
+  categoryCounts: Map<string, number> = new Map(); // Store item count per category
+  selectedSource = ''; // Add source filter
+  availableSources: string[] = []; // Store unique sources
+  sourceCounts: Map<string, number> = new Map(); // Store item count per source
 
   // User cache for registeredBy names
   private userCache: Map<string, string> = new Map();
@@ -106,6 +115,12 @@ export class ListingComponent implements OnInit, OnDestroy {
         // 👇 SORT BY ETHIOPIAN DATE — NEWEST FIRST
         this.items.sort((a, b) => this.parseDate(b.registrationDate) - this.parseDate(a.registrationDate));
 
+        // Extract unique categories for filter
+        this.extractCategories();
+        
+        // Extract unique sources for filter
+        this.extractSources();
+
         // 🧪 DEBUG: Log registeredBy values
         console.log('✅ RegisteredBy values in items:');
         this.items.forEach((item, index) => {
@@ -160,6 +175,7 @@ export class ListingComponent implements OnInit, OnDestroy {
       if (item.registeredBy && 
           item.registeredBy !== 'Unknown' && 
           item.registeredBy !== 'anonymous' &&
+          !item.registeredBy.includes(' ') && // Skip full names
           !this.userCache.has(item.registeredBy) &&
           !this.pendingUserRequests.has(item.registeredBy)) {
         this.fetchUserDetails(item.registeredBy);
@@ -204,7 +220,8 @@ export class ListingComponent implements OnInit, OnDestroy {
     }
 
     // If not in cache and not pending, fetch it (lazy loading)
-    if (!this.pendingUserRequests.has(registeredBy)) {
+    // Skip if it looks like a full name (contains space)
+    if (!this.pendingUserRequests.has(registeredBy) && !registeredBy.includes(' ')) {
       this.fetchUserDetails(registeredBy);
     }
 
@@ -289,13 +306,34 @@ export class ListingComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(): void {
-    if (!this.searchTerm) {
-      this.filteredItems = [...this.items]; // Simple copy if no search
-    } else {
-      this.filteredItems = this.items.filter(item =>
-        item.description.toLowerCase().includes(this.searchTerm)
+    let filtered = [...this.items];
+
+    // Apply search filter - search across multiple fields
+    if (this.searchTerm) {
+      const searchLower = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(item =>
+        item.description?.toLowerCase().includes(searchLower) ||
+        item.model?.toLowerCase().includes(searchLower) ||
+        item.voucherNumber?.toLowerCase().includes(searchLower) ||
+        item.receivedFrom?.toLowerCase().includes(searchLower)
       );
     }
+
+    // Apply category filter
+    if (this.selectedCategory) {
+      filtered = filtered.filter(item =>
+        item.category === this.selectedCategory
+      );
+    }
+
+    // Apply source filter
+    if (this.selectedSource) {
+      filtered = filtered.filter(item =>
+        item.source === this.selectedSource
+      );
+    }
+
+    this.filteredItems = filtered;
 
     // ✅ Keep filtered results sorted too — newest first
     this.filteredItems.sort((a, b) => this.parseDate(b.registrationDate) - this.parseDate(a.registrationDate));
@@ -305,6 +343,107 @@ export class ListingComponent implements OnInit, OnDestroy {
     
     // Pre-fetch user details for new visible items
     this.prefetchVisibleUserDetails();
+  }
+
+  // Check if any filters are active
+  hasActiveFilters(): boolean {
+    return !!(this.searchTerm || this.selectedCategory || this.selectedSource);
+  }
+
+  // Clear all filters
+  clearAllFilters(): void {
+    this.searchTerm = '';
+    this.selectedCategory = '';
+    this.selectedSource = '';
+    this.applyFilter();
+  }
+
+  // Get active filter count
+  getActiveFilterCount(): number {
+    let count = 0;
+    if (this.searchTerm) count++;
+    if (this.selectedCategory) count++;
+    if (this.selectedSource) count++;
+    return count;
+  }
+
+  // Export filtered items to PDF
+  exportToPDF(): void {
+    if (!this.listingContent || !this.listingContent.nativeElement) {
+      console.error('Listing content element not available for PDF generation');
+      return;
+    }
+
+    const element = this.listingContent.nativeElement;
+
+    // Add print-mode class and hide buttons
+    document.body.classList.add('print-mode');
+    const buttons = element.querySelectorAll('.action-btn, .header-actions, .filters-header');
+    buttons.forEach((btn: Element) => btn.classList.add('hide-for-pdf'));
+
+    setTimeout(() => {
+      html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        scrollX: 0,
+        scrollY: -window.scrollY,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+        logging: false,
+        imageTimeout: 0,
+        removeContainer: true,
+        onclone: (clonedDoc) => {
+          // Ensure all content is visible in the clone
+          const clonedElement = clonedDoc.querySelector('.item-listing');
+          if (clonedElement) {
+            (clonedElement as HTMLElement).style.maxHeight = 'none';
+            (clonedElement as HTMLElement).style.overflow = 'visible';
+          }
+        }
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const contentWidth = pageWidth - 2 * margin;
+        const contentHeight = pageHeight - 2 * margin;
+        
+        // Calculate image dimensions
+        const imgWidth = contentWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        // Calculate number of pages needed
+        const totalPages = Math.ceil(imgHeight / contentHeight);
+        
+        // Add pages with proper content splitting
+        for (let page = 0; page < totalPages; page++) {
+          if (page > 0) {
+            pdf.addPage();
+          }
+          
+          const yOffset = -(page * contentHeight);
+          pdf.addImage(imgData, 'PNG', margin, yOffset + margin, imgWidth, imgHeight);
+        }
+
+        // Save PDF
+        const fileName = this.hasActiveFilters() 
+          ? `items-filtered-${new Date().getTime()}.pdf`
+          : `items-all-${new Date().getTime()}.pdf`;
+        pdf.save(fileName);
+
+        // Clean up
+        document.body.classList.remove('print-mode');
+        buttons.forEach((btn: Element) => btn.classList.remove('hide-for-pdf'));
+      }).catch(error => {
+        console.error('Error generating PDF:', error);
+
+        // Clean up on error
+        document.body.classList.remove('print-mode');
+        buttons.forEach((btn: Element) => btn.classList.remove('hide-for-pdf'));
+      });
+    }, 500);
   }
 
   setPage(page: number): void {
@@ -347,6 +486,62 @@ export class ListingComponent implements OnInit, OnDestroy {
       this.selectedRoles = this.selectedRoles.filter(r => r !== role);
     }
     this.loadItems();
+  }
+
+  onCategoryChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.selectedCategory = select.value;
+    this.applyFilter();
+  }
+
+  onSourceChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.selectedSource = select.value;
+    this.applyFilter();
+  }
+
+  // Extract unique categories from loaded items
+  private extractCategories(): void {
+    const categoryMap = new Map<string, number>();
+    
+    this.items.forEach(item => {
+      if (item.category && item.category !== 'Unknown') {
+        const count = categoryMap.get(item.category) || 0;
+        categoryMap.set(item.category, count + 1);
+      }
+    });
+    
+    this.categoryCounts = categoryMap;
+    this.availableCategories = Array.from(categoryMap.keys()).sort();
+    
+    console.log('Available categories with counts:', Array.from(categoryMap.entries()));
+  }
+
+  // Extract unique sources from loaded items
+  private extractSources(): void {
+    const sourceMap = new Map<string, number>();
+    
+    this.items.forEach(item => {
+      if (item.source && item.source !== 'Unknown') {
+        const count = sourceMap.get(item.source) || 0;
+        sourceMap.set(item.source, count + 1);
+      }
+    });
+    
+    this.sourceCounts = sourceMap;
+    this.availableSources = Array.from(sourceMap.keys()).sort();
+    
+    console.log('Available sources with counts:', Array.from(sourceMap.entries()));
+  }
+
+  // Get item count for a specific category
+  getCategoryCount(category: string): number {
+    return this.categoryCounts.get(category) || 0;
+  }
+
+  // Get item count for a specific source
+  getSourceCount(source: string): number {
+    return this.sourceCounts.get(source) || 0;
   }
 
   viewItemDetails(itemId: number): void {

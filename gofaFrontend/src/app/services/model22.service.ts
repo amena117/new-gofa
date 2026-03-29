@@ -3,7 +3,14 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { Model22, Model22Request, Model22Dto, ApiResponse, Model22WithAccessoriesRequest } from '../model/model22';
+import {
+  Model22,
+  Model22Item,
+  Model22ItemAccessory,
+  ApiResponse,
+  Model22WithAccessoriesRequest,
+  Model22Dto
+} from '../model/model22';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +18,7 @@ import { Model22, Model22Request, Model22Dto, ApiResponse, Model22WithAccessorie
 export class Model22Service {
   private readonly apiUrl = `${environment.apiBaseUrl}/api/Model22`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Get all Model22 records, optionally filtered by role
   getModel22s(role?: string): Observable<Model22Dto[]> {
@@ -20,26 +27,27 @@ export class Model22Service {
       headers: this.getHeaders(),
       withCredentials: true
     }).pipe(
+      map(model22s => this.ensureModel22DataStructure(model22s)),
       catchError(this.handleError)
     );
   }
 
   // Get a single Model22 record by ID, optionally filtered by role
-  // In your model22.service.ts
- getModel22(id: number, role?: string): Observable<Model22Dto> {
+  getModel22(id: number, role?: string): Observable<Model22Dto> {
     const url = role ? `${this.apiUrl}/${id}?role=${encodeURIComponent(role)}` : `${this.apiUrl}/${id}`;
     return this.http.get<Model22Dto>(url, {
       headers: this.getHeaders(),
       withCredentials: true
     }).pipe(
+      map(model22 => this.ensureModel22DataStructure([model22])[0]),
       tap(response => {
         console.log('🔍 Model22 API Response:', {
           id: response.model22Id,
           itemsCount: response.items?.length,
-          hasAccessories: response.items?.some(item => 
+          hasAccessories: response.items?.some(item =>
             item.withdrawnAccessories && item.withdrawnAccessories.length > 0
           ),
-          itemsWithAccessories: response.items?.filter(item => 
+          itemsWithAccessories: response.items?.filter(item =>
             item.withdrawnAccessories && item.withdrawnAccessories.length > 0
           ).map(item => ({
             description: item.description,
@@ -51,13 +59,12 @@ export class Model22Service {
     );
   }
 
-
   // Create a new Model22 record
   create(model22: any): Observable<ApiResponse<{ model22Id: number }>> {
     const url = `${this.apiUrl}`;
     console.log('Sending POST to:', url);
     console.log('Payload:', model22);
-    
+
     return this.http.post<ApiResponse<{ model22Id: number }>>(
       url,
       model22,
@@ -74,7 +81,7 @@ export class Model22Service {
   }
 
   // Update an existing Model22 record
-  update(id: number, model22: Model22Request): Observable<ApiResponse<void>> {
+  update(id: number, model22: any): Observable<ApiResponse<void>> {
     return this.http.put<ApiResponse<void>>(
       `${this.apiUrl}/${id}`,
       model22,
@@ -97,12 +104,12 @@ export class Model22Service {
     console.log('📤 Payload structure:', {
       voucherNumber: request.voucherNumber,
       itemsCount: request.items.length,
-      itemsWithAccessories: request.items.filter(item => 
+      itemsWithAccessories: request.items.filter(item =>
         item.selectedAccessories && item.selectedAccessories.length > 0
       ).length
     });
     console.log('📤 Full payload:', JSON.stringify(request, null, 2));
-    
+
     return this.http.post<ApiResponse<{ model22Id: number }>>(
       url,
       request,
@@ -142,6 +149,7 @@ export class Model22Service {
       headers: this.getHeaders(),
       withCredentials: true
     }).pipe(
+      map(model22s => this.ensureModel22DataStructure(model22s)),
       catchError(this.handleError)
     );
   }
@@ -180,8 +188,42 @@ export class Model22Service {
       headers: this.getHeaders(),
       withCredentials: true
     }).pipe(
+      map(model22s => this.ensureModel22DataStructure(model22s)),
       catchError(this.handleError)
     );
+  }
+
+  // Helper method to ensure proper data structure
+  private ensureModel22DataStructure(model22s: Model22Dto[]): Model22Dto[] {
+    return model22s.map(model22 => ({
+      ...model22,
+      items: this.ensureItemsStructure(model22.items)
+    }));
+  }
+
+  // Helper method to ensure items have proper structure
+  private ensureItemsStructure(items?: Model22Item[]): Model22Item[] {
+    if (!items) return [];
+
+    return items.map(item => ({
+      ...item,
+      withdrawnAccessories: this.ensureAccessoriesStructure(item.withdrawnAccessories),
+      serialNumbers: item.serialNumbers || []
+    }));
+  }
+
+  // Helper method to ensure accessories have proper structure
+  private ensureAccessoriesStructure(accessories?: Model22ItemAccessory[]): Model22ItemAccessory[] {
+    if (!accessories) return [];
+
+    return accessories.map(accessory => ({
+      ...accessory,
+      withdrawnSerialNumbers: accessory.withdrawnSerialNumbers || [],
+      unitPrice: accessory.unitPrice || 0,
+      currency: accessory.currency || 'ETB',
+      model22ItemAccessoryId: accessory.model22ItemAccessoryId || 0,
+      model22ItemId: accessory.model22ItemId || 0
+    }));
   }
 
   private getHeaders(): HttpHeaders {
@@ -204,6 +246,15 @@ export class Model22Service {
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
+    console.error('❌ Model22 Service Error Details:', {
+      status: error.status,
+      statusText: error.statusText,
+      url: error.url,
+      message: error.message,
+      error: error.error,
+      fullError: JSON.stringify(error, null, 2)
+    });
+
     let errorMessage = 'An unknown error occurred!';
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Client-side error: ${error.error.message}`;

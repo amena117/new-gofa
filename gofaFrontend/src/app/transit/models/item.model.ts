@@ -1,7 +1,18 @@
+export interface SubAccessory {
+  id: number;
+  name: string;
+  quantity: number;
+  unitPrice?: number;
+  currency?: string;
+}
+
 export interface Accessory {
   id: number;
   name: string;
   quantity: number;
+  unitPrice?: number;
+  currency?: string;
+  subAccessories?: SubAccessory[];
 }
 
 export interface Item {
@@ -41,6 +52,8 @@ export interface Item {
   Warranty: string;
   ExpiryDate: Date;
   BatchNumber: string;
+  vat: number;
+  grandTotal: number;
 
   DateSentForInspection?: Date;
   DateReceivedByInspection?: Date;
@@ -51,7 +64,7 @@ export interface Item {
   hasAccessories?: boolean;
   accessories?: Accessory[];
   hasExtraItems?: boolean;
-  extraItems?: {name: string; quantity: number; store: string; extraStatus: string; extraRecivedByName?: string;}[];
+  extraItems?: { name: string; quantity: number; store: string; extraStatus: string; extraRecivedByName?: string; }[];
 
 }
 

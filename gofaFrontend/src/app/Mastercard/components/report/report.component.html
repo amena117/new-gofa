@@ -70,6 +70,14 @@
       <p class="card-subtitle">Filtered inventory details</p>
     </div>
     <div class="card-body">
+      <!-- Add this right after the card-body opens -->
+<button 
+  type="button" 
+  class="btn btn-success mb-3" 
+  (click)="exportToCSV()" 
+  [disabled]="reportItems.length === 0">
+  Export to CSV / ወደ CSV ደረጃ
+</button>
       <table class="table table-bordered table-striped">
         <thead>
           <tr>

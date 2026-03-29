@@ -61,6 +61,7 @@ import { Model22RegistrationComponent } from './Model22/model22-registration/mod
 import { Model22ListComponent } from './Model22/model22-list/model22-list.component';
 import { Model22DetailComponent } from './Model22/model22-detail/model22-detail.component';
 import { Model22ReportComponent } from './Model22/model22-report/model22-report.component';
+import { ItemDistributionReportComponent } from './Model22/item-distribution-report/item-distribution-report.component';
 
 // Shared Components
 import { UnauthorizedComponent } from './Shared/unauthorized/unauthorized.component';
@@ -88,9 +89,11 @@ import { TransactionReportComponent } from './Warehose/transaction-report/transa
 import { MatNativeDateModule } from '@angular/material/core';
 import { TeamLeaderDashboardComponent } from './team-leader-dashboard/team-leader-dashboard.component';
 import { FromTransitComponent } from './Warehose/from-transit/from-transit.component';
-import { RequestOrdersReportComponent } from './request-orders-report/request-orders-report.component';
+import { RequestOrdersReportComponent } from './Mastercard/components/request-orders-report/request-orders-report.component';
 import { ReportComponent } from './Mastercard/components/report/report.component';
 import { ChartDirective } from './team-leader-dashboard/chart.directive';
+import { AccessoryListComponent } from './Warehose/accessory-list/accessory-list.component';
+import { AccessoryWithdrawalComponent } from './Model22/accessory-withdrawal/accessory-withdrawal.component';
 
 @NgModule({
   declarations: [
@@ -129,6 +132,7 @@ import { ChartDirective } from './team-leader-dashboard/chart.directive';
     Model22ListComponent,
     Model22DetailComponent,
     Model22ReportComponent,
+    ItemDistributionReportComponent,
     UnauthorizedComponent,
     SharedSidebarComponent,
     RequestOrderForIssueComponent,
@@ -145,7 +149,9 @@ import { ChartDirective } from './team-leader-dashboard/chart.directive';
     TeamLeaderDashboardComponent,
     FromTransitComponent,
     RequestOrdersReportComponent,
-    ReportComponent
+    ReportComponent,
+    AccessoryListComponent,
+    AccessoryWithdrawalComponent
   ],
   imports: [
     BrowserModule,

@@ -1,229 +1,327 @@
-<div class="transaction-report">
-  <h3 class="mb-4 text-center border-bottom pb-2">
-    የኢ.ፌ.ዲ.ሪ መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን መምሪያ
-    <br />
-    የእቃ መቀበያ ሪፖርት
-  </h3>
-
+<div class="report-container">
   <div class="header">
-    <h1 class="title">Receive Report / የእቃ መቀበያ ሪፖርት</h1>
+    <div class="header-left">
+      <h1 class="title">Receive Transaction Report / የእቃ መቀበያ ሪፖርት</h1>
+      <p class="subtitle">Comprehensive item receipt tracking and analysis</p>
+    </div>
+    <div class="header-actions">
+      <button class="action-btn primary" (click)="exportToExcel()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export to Excel
+      </button>
+    </div>
   </div>
 
   <!-- Info Banner for Team Leader -->
   <div *ngIf="isSupplyAndDistributionLeader" class="info-banner">
-    <span> የሁሉም ሚናዎች የመቀበያ መዝገቦችን ትመልከታለህ / Viewing all roles: VHF, HF, Sparepart, Electronics</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    Viewing all warehouses: {{ selectedRoles.join(', ') }} | የሁሉም መጋዘኖች ሪፖርት
   </div>
 
-  <!-- Loading -->
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        Search / ፈልግ
+      </label>
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (ngModelChange)="onSearchChange($event)"
+        placeholder="Search by description, model, or recipient..."
+        class="filter-input">
+    </div>
+
+    <div class="filter-group">
+      <label>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        Date Range / የቀን ክልል
+      </label>
+      <select [(ngModel)]="selectedPeriod" (change)="applyFilters()" class="filter-select">
+        <option value="">All Time / ሁሉም ጊዜ</option>
+        <option value="1week">Last Week / ያለፈው ሳምንት</option>
+        <option value="1month">Last Month / ያለፈው ወር</option>
+        <option value="3months">Last 3 Months / ያለፉት 3 ወሮች</option>
+        <option value="6months">Last 6 Months / ያለፉት 6 ወሮች</option>
+        <option value="12months">Last Year / ያለፈው ዓመት</option>
+      </select>
+    </div>
+
+    <div class="filter-group" *ngIf="isSupplyAndDistributionLeader">
+      <label>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        </svg>
+        Select Warehouses / መጋዘኖች
+      </label>
+      <div class="role-selector">
+        <button class="role-dropdown-btn" (click)="toggleRoleDropdown()">
+          {{ selectedRoles.length === availableRoles.length ? 'All Warehouses' : selectedRoles.join(', ') }}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div *ngIf="isRoleDropdownOpen" class="role-dropdown-menu">
+          <label *ngFor="let role of availableRoles" class="role-option">
+            <input 
+              type="checkbox" 
+              [checked]="selectedRoles.includes(role)"
+              (change)="onRoleChange($event, role)">
+            <span>{{ role }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
     <div class="loading-spinner"></div>
-    <p>Loading transactions... / ግብይቶችን በመጫን ላይ...</p>
+    <p>Loading receive transactions...</p>
   </div>
 
-  <!-- Error -->
-  <div *ngIf="errorMessage && !isLoading" class="error-message">
-    <strong>Error:</strong> {{ errorMessage }}
+  <!-- Error State -->
+  <div *ngIf="errorMessage && !isLoading" class="error-state">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <h3>Error Loading Data</h3>
+    <p>{{ errorMessage }}</p>
   </div>
 
-  <!-- Content -->
-  <ng-container *ngIf="!isLoading">
-    <!-- Filters -->
-    <div class="filter-container">
-      <div class="search-date-wrapper">
-        <div class="search-wrapper">
-          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input
-            type="text"
-            [ngModel]="searchQuery"
-            (ngModelChange)="onSearchChange($event)"
-            placeholder="Search by description, department, or recipient... / በመግለጫ፣ ዲፓርትመንት ወይም አቅራቢ ፈልግ..."
-            class="search-input"
-            aria-label="Search transactions"
-          />
-          <span *ngIf="isSearching" class="searching-hint" style="margin-left: 8px; color: #007bff; font-size: 0.9em;">
-            Searching...
-          </span>
-        </div>
-        <div class="date-filter-wrapper">
-          <label for="dateFilter">Date Filter / በቀን ማጣሪያ:</label>
-          <select [(ngModel)]="selectedPeriod" (change)="applyFilters()" id="dateFilter" aria-label="Filter by date range">
-            <option value="">All Dates / ሁሉም ቀናት</option>
-            <option value="1week">Last 1 Week / ያለፈው 1 ሳምንት</option>
-            <option value="1month">Last 1 Month / ያለፈው 1 ወር</option>
-            <option value="3months">Last 3 Months / ያለፉት 3 ወሮች</option>
-            <option value="6months">Last 6 Months / ያለፉት 6 ወሮች</option>
-            <option value="12months">Last 12 Months / ያለፉት 12 ወሮች</option>
-          </select>
-        </div>
+  <!-- Summary Stats -->
+  <div *ngIf="!isLoading && !errorMessage" class="summary-stats">
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="8.5" cy="7" r="4"></circle>
+          <polyline points="17 11 19 13 23 9"></polyline>
+        </svg>
       </div>
-      
-      <!-- Export Dropdown -->
-      <div class="export-dropdown">
-        <button class="action-btn primary" (click)="toggleExportDropdown()" aria-label="Export options">
-          Export / ላክ
-          <span class="arrow">{{ isExportDropdownOpen ? '▲' : '▼' }}</span>
-        </button>
-        <div *ngIf="isExportDropdownOpen" class="export-dropdown-menu">
-          <button class="export-option" (click)="exportToExcel()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M5.5 7a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-5z"/>
-              <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h11A1.5 1.5 0 0 1 15 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5v-11zM2.5 2a.5.5 0 0 0-.5.5V13a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V2.5a.5.5 0 0 0-.5-.5h-11z"/>
+      <div class="stat-content">
+        <div class="stat-label">Total Transactions / ጠቅላላ ግብይቶች</div>
+        <div class="stat-value">{{ filteredTransactions.length }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-label">Total Items Received / ጠቅላላ የተቀበሉ እቃዎች</div>
+        <div class="stat-value">{{ getTotalQuantity() }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon purple">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-label">Total Value / ጠቅላላ ዋጋ</div>
+        <div class="stat-value">{{ calculateGrandTotal() }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions List -->
+  <div *ngIf="!isLoading && !errorMessage" class="transactions-list">
+    <div class="list-header">
+      <h2>Receive Transactions by Voucher ({{ groupedByVoucher.length }} vouchers)</h2>
+      <div class="pagination-info">
+        Page {{ currentPage }} of {{ getTotalPages() }}
+      </div>
+    </div>
+
+    <!-- Voucher Groups -->
+    <div class="voucher-group" [class.no-voucher]="!group.hasVoucher" *ngFor="let group of pagedVoucherGroups; let i = index">
+      <!-- Voucher Header -->
+      <div class="voucher-header">
+        <div class="voucher-info">
+          <div class="voucher-number">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
             </svg>
-            Excel (.xlsx) / ኤክሴል
-          </button>
-          <button class="export-option" (click)="exportToCsv()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-            </svg>
-            CSV (.csv) / ሲኤስቪ
-          </button>
+            <span class="voucher-label" *ngIf="group.hasVoucher">Voucher:</span>
+            <span class="voucher-label" *ngIf="!group.hasVoucher">Individual Receipt:</span>
+            <strong>{{ group.hasVoucher ? group.voucherNumber : group.items[0].description }}</strong>
+          </div>
+          <div class="voucher-meta">
+            <span class="voucher-date">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              {{ formatEthiopianDate(group.date) }}
+            </span>
+            <span class="voucher-count" *ngIf="group.hasVoucher">{{ group.items.length }} items</span>
+            <span class="voucher-total">Total: {{ getVoucherTotalByCurrency(group.items) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items in this voucher -->
+      <div class="voucher-items">
+        <div class="transaction-card" *ngFor="let t of group.items">
+          <div class="card-header">
+            <div class="card-title">
+              <h3>{{ t.description }}</h3>
+              <span class="model-badge">{{ t.model }}</span>
+              <span class="accessory-only-badge" *ngIf="t.isAccessoryOnly">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                Accessories Only
+              </span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="info-grid" *ngIf="!t.isAccessoryOnly">
+              <div class="info-item">
+                <span class="info-label">Received From / ከ</span>
+                <span class="info-value">{{ t.recipientName }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Quantity / ብዛት</span>
+                <span class="info-value quantity">{{ t.totalQuantity }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Unit Price / የነጠላ ዋጋ</span>
+                <span class="info-value">{{ t.unitPrice | number:'1.2-2' }} {{ t.currency }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Total Price / ጠቅላላ ዋጋ</span>
+                <span class="info-value price">{{ t.totalPrice | number:'1.2-2' }} {{ t.currency }}</span>
+              </div>
+            </div>
+
+            <div class="info-grid" *ngIf="t.isAccessoryOnly">
+              <div class="info-item">
+                <span class="info-label">Received From / ከ</span>
+                <span class="info-value">{{ t.recipientName }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Total Accessories / ጠቅላላ አባሪዎች</span>
+                <span class="info-value quantity">{{ t.accessories?.length || 0 }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Total Value / ጠቅላላ ዋጋ</span>
+                <span class="info-value price">{{ t.totalPrice | number:'1.2-2' }} {{ t.currency }}</span>
+              </div>
+            </div>
+
+            <!-- Accessories Section -->
+            <div *ngIf="t.accessories && t.accessories.length > 0" class="accessories-section">
+              <div class="accessories-header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                <span>Received Accessories ({{ t.accessories.length }})</span>
+              </div>
+              
+              <div class="accessories-list">
+                <div class="accessory-item" *ngFor="let acc of t.accessories">
+                  <div class="accessory-main">
+                    <div class="accessory-name">
+                      <strong>{{ acc.name }}</strong>
+                      <span class="accessory-model">{{ acc.model }}</span>
+                    </div>
+                    <div class="accessory-details">
+                      <span class="accessory-qty">Qty: {{ acc.quantity }}</span>
+                      <span class="accessory-price">{{ acc.unitPrice | number:'1.2-2' }} {{ acc.currency }}</span>
+                      <span class="accessory-total">Total: {{ acc.totalPrice | number:'1.2-2' }} {{ acc.currency }}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Serial Numbers -->
+                  <div *ngIf="acc.serialNumbers && acc.serialNumbers.length > 0" class="serial-numbers">
+                    <span class="serial-label">Serial Numbers:</span>
+                    <span class="serial-value">{{ acc.serialNumbers.join(', ') }}</span>
+                  </div>
+
+                  <!-- Sub-Accessories -->
+                  <div *ngIf="acc.subAccessories && acc.subAccessories.length > 0" class="sub-accessories">
+                    <div class="sub-acc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                      Sub-Accessories:
+                    </div>
+                    <div class="sub-acc-list">
+                      <span *ngFor="let subAcc of acc.subAccessories" class="sub-acc-badge">
+                        {{ subAcc.name }}: {{ subAcc.quantity }} &#64; {{ subAcc.unitPrice | number:'1.2-2' }} {{ subAcc.currency }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Role Dropdown Selector (Only for Team Leader) -->
-    <div *ngIf="isSupplyAndDistributionLeader" class="role-filter-container">
-      <button class="action-btn secondary small" (click)="toggleRoleDropdown()">
-        {{ selectedRoles.length === 0 ? 'Select Roles' : selectedRoles.join(', ') }}
-        <span class="arrow">{{ isRoleDropdownOpen ? '▲' : '▼' }}</span>
-      </button>
-      <div *ngIf="isRoleDropdownOpen" class="role-dropdown-menu">
-        <div class="role-item" *ngFor="let role of availableRoles">
-          <input
-            type="checkbox"
-            [id]="'role-' + role"
-            [checked]="selectedRoles.includes(role)"
-            (change)="onRoleChange($event, role)"
-          />
-          <label [for]="'role-' + role">{{ role }}</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Category Dropdown Selector -->
-    <div class="category-filter-container">
-      <button class="action-btn secondary small" (click)="toggleCategoryDropdown()">
-        {{ selectedCategories.length === 0 ? 'Select Categories' : selectedCategories.join(', ') }}
-        <span class="arrow">{{ isCategoryDropdownOpen ? '▲' : '▼' }}</span>
-      </button>
-      <div *ngIf="isCategoryDropdownOpen" class="category-dropdown-menu">
-        <div class="category-item" *ngFor="let category of availableCategories">
-          <input
-            type="checkbox"
-            [id]="'category-' + category"
-            [checked]="selectedCategories.includes(category)"
-            (change)="onCategoryChange($event, category)"
-          />
-          <label [for]="'category-' + category">{{ category }}</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Table -->
-    <div class="table-container" *ngIf="filteredTransactions.length > 0; else noResults">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Description / መግለጫ</th>
-            <th>Model / ሞዴል</th>
-            <th (click)="sortTable('ethiopianDate')" class="sortable">
-              Date / ቀን 
-              <span *ngIf="sortColumn === 'ethiopianDate'">
-                {{ sortDirection === 'asc' ? '↑' : '↓' }}
-              </span>
-            </th>
-            <th>Recipient / አቅራቢ</th>
-            <th (click)="sortTable('totalQuantity')" class="sortable">
-              Qty / ብዛት
-              <span *ngIf="sortColumn === 'totalQuantity'">
-                {{ sortDirection === 'asc' ? '↑' : '↓' }}
-              </span>
-            </th>
-            <th (click)="sortTable('unitPrice')" class="sortable">
-              Unit Price / የነጠላ ዋጋ
-              <span *ngIf="sortColumn === 'unitPrice'">
-                {{ sortDirection === 'asc' ? '↑' : '↓' }}
-              </span>
-            </th>
-            <th (click)="sortTable('totalPrice')" class="sortable">
-              Total Price / ጠቅላላ ዋጋ
-              <span *ngIf="sortColumn === 'totalPrice'">
-                {{ sortDirection === 'asc' ? '↑' : '↓' }}
-              </span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="pagedTransactions.length === 0">
-            <td colspan="8" class="no-data">
-              No records found on this page. / በዚህ ገጽ ላይ ምንም መዝገቦች አልተገኙም።
-            </td>
-          </tr>
-          <tr *ngFor="let t of pagedTransactions; let i = index">
-            <td data-label="No">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-            <td data-label="Description">{{ t.description }}</td>
-            <td data-label="Model">{{ t.model }}</td>
-            <td data-label="Date">{{ formatEthiopianDate(t.ethiopianDate) }}</td>
-            <td data-label="Recipient">{{ t.recipientName }}</td>
-            <td data-label="Qty">{{ t.totalQuantity }}</td>
-            <td data-label="Unit Price">{{ t.unitPrice | number:'1.2-2' }} {{ t.currency }}</td>
-            <td data-label="Total Price">{{ t.totalPrice | number:'1.2-2' }} {{ t.currency }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Grand Total Display -->
-    <div class="grand-total" *ngIf="filteredTransactions.length > 0">
-      <strong>Grand Total / ግራንድ ጠቅላላ: {{ calculateGrandTotal() }}</strong>
+    <!-- Empty State -->
+    <div *ngIf="pagedVoucherGroups.length === 0" class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h3>No Transactions Found</h3>
+      <p>Try adjusting your filters or search criteria</p>
     </div>
 
     <!-- Pagination -->
-    <!-- Updated Pagination Controls -->
-<div class="pagination-controls" *ngIf="getTotalPages() > 1">
-  <div class="page-info">
-    Page {{ currentPage }} of {{ getTotalPages() }} / ገጽ {{ currentPage }} ለ {{ getTotalPages() }}
-  </div>
-  <div class="page-size">
-    Items per page / በገጽ:
-    <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
-      <option [value]="5">5</option>
-      <option [value]="10">10</option>
-      <option [value]="20">20</option>
-      <option [value]="50">50</option>
-    </select>
-  </div>
-  <div class="nav-buttons">
-    <button
-      class="action-btn secondary small"
-      [disabled]="currentPage === 1"
-      (click)="previousPage()">
-      Prev / ቀዳሚ
-    </button>
-    <button
-      class="action-btn primary small"
-      [disabled]="currentPage >= getTotalPages()"
-      (click)="nextPage()">
-      Next / ቀጣይ
-    </button>
-  </div>
-</div>
-
-    <!-- No Results -->
-    <ng-template #noResults>
-      <div class="empty-state">
-        <div *ngIf="!searchQuery && !selectedPeriod && !selectedRoles.length && !selectedCategories.length" class="no-data">
-          No transaction records available. / የግብይት መዝገቦች የሉም።
-        </div>
-        <div *ngIf="(searchQuery || selectedPeriod || selectedRoles.length || selectedCategories.length) && filteredTransactions.length === 0" class="no-data">
-          No records found matching criteria. / መስፈርቶችን የሚያሟሉ መዝገቦች አልተገኙም።
-        </div>
+    <div *ngIf="getTotalPages() > 1" class="pagination">
+      <button class="page-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Previous
+      </button>
+      
+      <div class="page-numbers">
+        <span class="page-info">Page {{ currentPage }} of {{ getTotalPages() }}</span>
       </div>
-    </ng-template>
-  </ng-container>
+      
+      <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === getTotalPages()">
+        Next
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
 </div>

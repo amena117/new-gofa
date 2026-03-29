@@ -1,41 +1,195 @@
-<div class="container">
-    <h2 class="text-center">Maintenance Request Details</h2>
-  
-    <!-- Loading Indicator -->
-    <div *ngIf="isLoading" class="text-center">
-      <p>Loading...</p>
-    </div>
-  
-    <!-- Error Message -->
-    <div *ngIf="error" class="alert alert-danger text-center">
-      {{ error }}
-    </div>
-  
-    <!-- Display Request Details -->
-    <div *ngIf="!isLoading && request" class="card">
-      <div class="card-body">
-        <h5 class="card-title">Works Order Number: {{ request.worksOrderNumber }}</h5>
-        <ul class="list-group">
-          <li class="list-group-item"><strong>Nomenclature:</strong> {{ request.nomenclature }}</li>
-          <li class="list-group-item"><strong>Quantity:</strong> {{ request.quantity }}</li>
-          <li class="list-group-item"><strong>Requested By:</strong> {{ request.requestedBy }}</li>
-          <li class="list-group-item"><strong>Serial No:</strong> {{ request.serialNoOfEquip }}</li>
-          <li class="list-group-item"><strong>Date Received:</strong> {{ request.dateWorkOrderReceived | date }}</li>
-          <li class="list-group-item"><strong>Repair Start Date:</strong> {{ request.repairStartDate | date }}</li>
-          <li class="list-group-item"><strong>Repair Finish Date:</strong> {{ request.repairFinishDate | date }}</li>
-          <li class="list-group-item"><strong>Man Hours:</strong> {{ request.manHours }}</li>
-          <li class="list-group-item"><strong>Parts Cost:</strong> {{ request.partsCost | currency }}</li>
-          <li class="list-group-item"><strong>Remark:</strong> {{ request.remark || 'N/A' }}</li>
-          <li class="list-group-item"><strong>Status:</strong>
-            <span *ngIf="request.repairFinishDate" class="badge badge-success">Completed</span>
-            <span *ngIf="!request.repairFinishDate" class="badge badge-warning">In Progress</span>
-          </li>
-        </ul>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+          <i class="bi bi-file-text"></i> Maintenance Request Details / የጥገና መጠየቂያ ዝርዝር
+        </h2>
+        <button class="btn btn-secondary" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Back / ተመለስ
+        </button>
       </div>
     </div>
-  
-    <!-- Back Button -->
-    <div class="text-center mt-3">
-      <button class="btn btn-secondary" (click)="goBack()">Back</button>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading request details... / መረጃ በመጫን ላይ...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Error:</strong> {{ error }}
+    <button type="button" class="btn-close" (click)="error = null"></button>
+  </div>
+
+  <!-- Display Request Details -->
+  <div *ngIf="!isLoading && request" class="row">
+    <!-- Basic Information Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-info-circle"></i> Basic Information / መሰረታዊ መረጃ</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="text-muted small">Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
+            <h4 class="text-primary">{{ request.worksOrderNumber }}</h4>
+          </div>
+          <hr>
+          <div class="row mb-2">
+            <div class="col-6">
+              <strong>Serial Number:</strong>
+            </div>
+            <div class="col-6">
+              <code>{{ request.serialNoOfEquip || 'N/A' }}</code>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-6">
+              <strong>Nomenclature:</strong>
+            </div>
+            <div class="col-6">
+              {{ request.nomenclature || 'N/A' }}
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-6">
+              <strong>Quantity:</strong>
+            </div>
+            <div class="col-6">
+              <span class="badge bg-info">{{ request.quantity }}</span>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-6">
+              <strong>Requested By:</strong>
+            </div>
+            <div class="col-6">
+              {{ request.requestedBy || 'N/A' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status & Dates Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Status & Timeline / ሁኔታ እና ጊዜ</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="text-muted small">Current Status / የአሁኑ ሁኔታ</label>
+            <h5>
+              <span *ngIf="request.repairFinishDate" class="badge bg-success px-3 py-2">
+                <i class="bi bi-check-circle"></i> Completed / ተጠናቋል
+              </span>
+              <span *ngIf="!request.repairFinishDate && request.repairStartDate" class="badge bg-warning px-3 py-2">
+                <i class="bi bi-tools"></i> In Progress / በሂደት ላይ
+              </span>
+              <span *ngIf="!request.repairStartDate" class="badge bg-secondary px-3 py-2">
+                <i class="bi bi-clock"></i> Pending / በመጠባበቅ ላይ
+              </span>
+            </h5>
+          </div>
+          <hr>
+          <div class="row mb-2">
+            <div class="col-6">
+              <strong>Date Received:</strong>
+            </div>
+            <div class="col-6">
+              {{ request.dateWorkOrderReceived | date:'medium' }}
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-6">
+              <strong>Repair Start Date:</strong>
+            </div>
+            <div class="col-6">
+              {{ request.repairStartDate ? (request.repairStartDate | date:'medium') : 'Not Started' }}
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-6">
+              <strong>Repair Finish Date:</strong>
+            </div>
+            <div class="col-6">
+              {{ request.repairFinishDate ? (request.repairFinishDate | date:'medium') : 'Not Completed' }}
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-6">
+              <strong>Maintained By:</strong>
+            </div>
+            <div class="col-6">
+              {{ request.maintainedBy || 'Not Assigned' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Description Card -->
+    <div class="col-12 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0"><i class="bi bi-file-text"></i> Work Description / የስራ መግለጫ</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">{{ request.briefDescriptionOfWork || 'No description provided.' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost & Resources Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="mb-0"><i class="bi bi-currency-dollar"></i> Cost & Resources / ወጪ እና ግብዓት</h5>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-6">
+              <strong>Man Hours:</strong>
+            </div>
+            <div class="col-6">
+              <span class="badge bg-primary">{{ request.manHours || 0 }} hours</span>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6">
+              <strong>Parts Cost:</strong>
+            </div>
+            <div class="col-6">
+              <span class="badge bg-success">{{ request.partsCost | currency:'ETB':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Information Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0"><i class="bi bi-chat-left-text"></i> Additional Information / ተጨማሪ መረጃ</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <strong>Remark / ማስታወሻ:</strong>
+            <p class="mt-2">{{ request.remark || 'No remarks.' }}</p>
+          </div>
+          <div *ngIf="request.status">
+            <strong>Status Details:</strong>
+            <p class="mt-2">{{ request.status }}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+</div>

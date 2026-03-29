@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Model22Service } from '../../services/model22.service';
-import { Model22Dto, Model22Item } from '../../model/model22';
+import { Model22, Model22Dto, Model22Item, Model22ItemAccessory } from '../../model/model22';
 import { AuthService } from '../../services/auth.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -17,6 +17,8 @@ export class Model22ListComponent implements OnInit, OnDestroy {
   filteredModel22List: Model22Dto[] = [];
   searchTerm: string = '';
   dateFilter: string = '';
+  categoryFilter: string = ''; // Add category filter
+  categories: string[] = []; // Add categories list
   itemsPerPage: number = 5;
   currentPage: number = 1;
   errorMessage: string | null = null;
@@ -35,12 +37,12 @@ export class Model22ListComponent implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const userRole = this.authService.getRole()?.toUpperCase();
     this.isSupplyAndDistributionLeader = userRole === 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER' || userRole === 'PROPERTY_CONTROL';
-    
+
     if (this.isSupplyAndDistributionLeader) {
       this.selectedRoles = [...this.availableRoles];
     } else {
@@ -66,7 +68,7 @@ export class Model22ListComponent implements OnInit, OnDestroy {
 
   private parseEthiopianDate(ethiopianDate: string): Date {
     if (!ethiopianDate) return new Date(0);
-    
+
     if (this.dateCache.has(ethiopianDate)) {
       return new Date(this.dateCache.get(ethiopianDate)!);
     }
@@ -77,17 +79,17 @@ export class Model22ListComponent implements OnInit, OnDestroy {
         'መስከረም', 'ጥቅምት', 'ህዳር', 'ታህሳስ', 'ጥር', 'የካቲት',
         'መጋቢት', 'ሚያዚያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜ'
       ];
-      
+
       const monthIndex = ethMonths.indexOf(monthStr);
       if (monthIndex === -1 || !day || !year) {
         this.dateCache.set(ethiopianDate, 0);
         return new Date(0);
       }
-      
+
       const gregorianYear = parseInt(year) + 7;
       const gregorianDate = new Date(gregorianYear, monthIndex, parseInt(day));
       const result = isNaN(gregorianDate.getTime()) ? new Date(0) : gregorianDate;
-      
+
       this.dateCache.set(ethiopianDate, result.getTime());
       return result;
     } catch (error) {
@@ -98,6 +100,13 @@ export class Model22ListComponent implements OnInit, OnDestroy {
   }
 
   loadModel22List(): void {
+    console.log('🔄 Loading Model22 list...', {
+      selectedRoles: this.selectedRoles,
+      searchTerm: this.searchTerm,
+      dateFilter: this.dateFilter,
+      isSupplyAndDistributionLeader: this.isSupplyAndDistributionLeader
+    });
+
     if (!this.selectedRoles.length && this.isSupplyAndDistributionLeader) {
       this.errorMessage = 'እባክዎ ቢያንስ አንድ ሚና ይምረጡ።';
       this.filteredModel22List = [];
@@ -110,11 +119,36 @@ export class Model22ListComponent implements OnInit, OnDestroy {
 
     this.model22Service.getFilteredModel22s(this.searchTerm, this.dateFilter, this.selectedRoles).subscribe({
       next: (data: Model22Dto[]) => {
-        this.model22List = data.map(model22 => ({
-          ...model22,
-          description: this.generateDescription(model22.items),
-          totalPrice: this.calculateTotalPrice(model22.items)
-        }));
+        console.log('✅ Model22 data received:', {
+          count: data.length,
+          firstItem: data[0] ? {
+            id: data[0].model22Id,
+            voucher: data[0].voucherNumber,
+            itemsCount: data[0].items?.length,
+            hasAccessories: data[0].items?.some(i => (i.withdrawnAccessories?.length || 0) > 0)
+          } : 'No data'
+        });
+
+        // Process the data to ensure all fields are properly initialized
+        this.model22List = data.map(model22 => {
+          const processedModel22: Model22Dto = {
+            ...model22,
+            model22Id: model22.model22Id || 0,
+            voucherNumber: model22.voucherNumber || '',
+            department: model22.department || '',
+            recipientName: model22.recipientName || '',
+            recipientOrganization: model22.recipientOrganization || '',
+            ethiopianDate: model22.ethiopianDate || '',
+            role: model22.role || '',
+            registeredBy: model22.registeredBy || '',
+            items: this.processItems(model22.items || []),
+            totalItems: model22.totalItems || (model22.items?.length || 0),
+            date: model22.date || model22.ethiopianDate,
+            description: this.getDescription(model22),
+            totalPrice: this.getTotalPrice(model22)
+          };
+          return processedModel22;
+        });
 
         this.filteredModel22List = [...this.model22List].sort((a, b) => {
           const dateA = this.parseEthiopianDate(a.ethiopianDate || '').getTime();
@@ -122,43 +156,143 @@ export class Model22ListComponent implements OnInit, OnDestroy {
           return dateB - dateA;
         });
 
+        // Extract categories from the loaded Model22 data
+        const categorySet = new Set<string>();
+        this.model22List.forEach(model22 => {
+          model22.items.forEach(item => {
+            if (item.category && item.category.trim() !== '') {
+              categorySet.add(item.category);
+            }
+          });
+        });
+        this.categories = Array.from(categorySet).sort();
+        
+        console.log('✅ Categories extracted:', this.categories);
+
+        // Apply category filter if set
+        this.applyCategoryFilter();
+
+        console.log('✅ Model22 list processed:', {
+          totalCount: this.model22List.length,
+          filteredCount: this.filteredModel22List.length
+        });
+
         this.currentPage = 1;
         this.cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error('[Model22List] Error fetching records:', err);
-        this.errorMessage = 'ሞዴል 22 መዝገቦችን መጫን አልተሳካም፡ ' + (err.message || 'Unknown error');
+        console.error('❌ [Model22List] Error fetching records:', {
+          message: err.message,
+          error: err,
+          stack: err.stack
+        });
+
+        if (err.message?.includes('WithdrawnSerialNumbers')) {
+          this.errorMessage = 'ሞዴል 22 መዝገቦችን መጫን አልተሳካም፡ የውሂብ መዋቅር ስህተት። እባክዎ ስርዓት አስተዳዳሪዎን ያነጋግሩ።';
+        } else {
+          this.errorMessage = 'ሞዴል 22 መዝገቦችን መጫን አልተሳካም፡ ' + (err.message || 'Unknown error');
+        }
+
         this.filteredModel22List = [];
         this.cdr.detectChanges();
       }
     });
   }
 
-  private generateDescription(items: Model22Item[] = []): string {
-    if (!items || items.length === 0) {
+  private processItems(items: Model22Item[]): Model22Item[] {
+    return items.map(item => ({
+      ...item,
+      model22ItemId: item.model22ItemId || 0,
+      model22Id: item.model22Id || 0,
+      description: item.description || '',
+      model: item.model || '',
+      category: item.category || '', // Preserve category field
+      quantity: item.quantity || 0,
+      unitPrice: item.unitPrice || 0,
+      currency: item.currency || 'ETB',
+      serialNumbers: item.serialNumbers || [],
+      serialNumber: item.serialNumber || '',
+      voucherNumber: item.voucherNumber || '',
+      withdrawnAccessories: this.processAccessories(item.withdrawnAccessories || [])
+    }));
+  }
+
+  private processAccessories(accessories: Model22ItemAccessory[]): Model22ItemAccessory[] {
+    return accessories.map(accessory => ({
+      ...accessory,
+      model22ItemAccessoryId: accessory.model22ItemAccessoryId || 0,
+      model22ItemId: accessory.model22ItemId || 0,
+      accessoryId: accessory.accessoryId || 0,
+      name: accessory.name || '',
+      model: accessory.model || '',
+      quantity: accessory.quantity || 0,
+      unitPrice: accessory.unitPrice || 0,
+      currency: accessory.currency || 'ETB',
+      withdrawnSerialNumbers: accessory.withdrawnSerialNumbers || []
+    }));
+  }
+
+  getDescription(model22: Model22 | Model22Dto): string {
+    if (!model22.items || model22.items.length === 0) {
       return 'No description / ምንም መግለጫ የለም';
     }
-    
-    const descriptions = items
+
+    const descriptions = model22.items
       .slice(0, 3)
-      .map(item => item.description)
+      .map(item => {
+        let desc = item.description;
+        // Add accessories info if present
+        if (item.withdrawnAccessories && item.withdrawnAccessories.length > 0) {
+          const accessoryNames = item.withdrawnAccessories
+            .map(acc => `${acc.name}(${acc.quantity})`)
+            .join(', ');
+          desc += ` [Accessories: ${accessoryNames}]`;
+        }
+        return desc;
+      })
       .filter(desc => desc && desc.trim() !== '')
       .join(', ');
-      
+
     return descriptions || 'No description / ምንም መግለጫ የለም';
   }
 
-  private calculateTotalPrice(items: Model22Item[] = []): string {
-    if (!items || items.length === 0) {
+  getTotalPrice(model22: Model22 | Model22Dto): string {
+    if (!model22.items || model22.items.length === 0) {
       return '0.00 ETB';
     }
-    
-    const total = items.reduce((sum, item) => {
-      return sum + ((item.unitPrice || 0) * (item.quantity || 0));
-    }, 0);
-    
-    const currency = items[0]?.currency || 'ETB';
-    return `${total.toFixed(2)} ${currency}`;
+
+    // Group totals by currency
+    const totalsByCurrency = new Map<string, number>();
+
+    model22.items.forEach(item => {
+      // If accessory-only, don't include item price, only accessories
+      const itemTotal = (item as any).isAccessoryOnly ? 0 : ((item.unitPrice || 0) * (item.quantity || 0));
+      
+      // Add accessories total
+      let accTotal = 0;
+      if (item.withdrawnAccessories && item.withdrawnAccessories.length > 0) {
+        accTotal = item.withdrawnAccessories.reduce((sum, acc) => 
+          sum + ((acc.unitPrice || 0) * (acc.quantity || 0)), 0
+        );
+      }
+      
+      const total = itemTotal + accTotal;
+      const currency = item.currency || 'ETB';
+      
+      // Skip FOC currency
+      if (currency === 'FOC') return;
+      
+      const currentTotal = totalsByCurrency.get(currency) || 0;
+      totalsByCurrency.set(currency, currentTotal + total);
+    });
+
+    // Format as "10,000.00 ETB + 2,000.00 USD"
+    const parts: string[] = [];
+    totalsByCurrency.forEach((value, currency) => {
+      parts.push(`${value.toFixed(2)} ${currency}`);
+    });
+
+    return parts.join(' + ') || '0.00';
   }
 
   get grandTotal(): string {
@@ -167,33 +301,42 @@ export class Model22ListComponent implements OnInit, OnDestroy {
     }
 
     const totalsByCurrency = new Map<string, number>();
-    const currencyOrder: string[] = [];
 
     this.filteredModel22List.forEach(model22 => {
-      if (!model22.totalPrice) return;
+      const totalPrice = this.getTotalPrice(model22);
+      if (!totalPrice) return;
 
-      const match = model22.totalPrice.match(/^(\d+\.\d{2})\s*(\w+)$/);
-      if (!match) return;
-
-      const [, amount, currency] = match;
-      const numAmount = parseFloat(amount);
-      if (isNaN(numAmount)) return;
-
-      if (!totalsByCurrency.has(currency)) {
-        totalsByCurrency.set(currency, 0);
-        currencyOrder.push(currency);
-      }
+      // Parse format like "10,000.00 ETB + 2,000.00 USD"
+      const parts = totalPrice.split(' + ');
       
-      totalsByCurrency.set(currency, totalsByCurrency.get(currency)! + numAmount);
+      parts.forEach(part => {
+        const match = part.trim().match(/^([\d,]+\.\d{2})\s*(\w+)$/);
+        if (!match) return;
+
+        const [, amount, currency] = match;
+        
+        // Skip FOC currency
+        if (currency === 'FOC') return;
+        
+        const numAmount = parseFloat(amount.replace(/,/g, ''));
+        if (isNaN(numAmount)) return;
+
+        const currentTotal = totalsByCurrency.get(currency) || 0;
+        totalsByCurrency.set(currency, currentTotal + numAmount);
+      });
     });
 
-    if (currencyOrder.length === 0) {
+    if (totalsByCurrency.size === 0) {
       return '0.00 ETB';
     }
 
-    return currencyOrder
-      .map(currency => `${currency}: ${totalsByCurrency.get(currency)!.toFixed(2)}`)
-      .join(' | ');
+    // Format as "ETB: 50,000.00 | USD: 10,000.00"
+    const parts: string[] = [];
+    totalsByCurrency.forEach((value, currency) => {
+      parts.push(`${currency}: ${value.toFixed(2)}`);
+    });
+
+    return parts.join(' | ');
   }
 
   get paginatedList(): Model22Dto[] {
@@ -228,15 +371,46 @@ export class Model22ListComponent implements OnInit, OnDestroy {
     this.loadModel22List();
   }
 
+  onCategoryFilterChange(): void {
+    // Reset to full list first, then apply category filter
+    this.filteredModel22List = [...this.model22List].sort((a, b) => {
+      const dateA = this.parseEthiopianDate(a.ethiopianDate || '').getTime();
+      const dateB = this.parseEthiopianDate(b.ethiopianDate || '').getTime();
+      return dateB - dateA;
+    });
+    
+    this.applyCategoryFilter();
+    this.currentPage = 1;
+  }
+
+  private applyCategoryFilter(): void {
+    if (this.categoryFilter) {
+      this.filteredModel22List = this.filteredModel22List.filter(model22 => {
+        return model22.items.some(item => {
+          const itemCategory = (item.category || '').trim();
+          const filterCategory = this.categoryFilter.trim();
+          return itemCategory === filterCategory;
+        });
+      });
+      
+      console.log('✅ Category filter applied:', {
+        category: this.categoryFilter,
+        filteredCount: this.filteredModel22List.length
+      });
+    }
+  }
+
   viewDetails(id: number): void {
-    if (id === undefined || id === null) {
+    if (id === undefined || id === null || id === 0) {
       this.errorMessage = 'ልክ ያልሆነ ሞዴል 22 መለያ።';
       return;
     }
-    
+
     const userRole = this.authService.getRole()?.toUpperCase();
     const roleFilter = this.isSupplyAndDistributionLeader ? undefined : userRole;
-    
+
+    console.log('🔍 Viewing Model22 details:', { id, roleFilter });
+
     this.router.navigate(['/model22-detail', id], {
       queryParams: { role: roleFilter }
     });
@@ -259,10 +433,10 @@ export class Model22ListComponent implements OnInit, OnDestroy {
   exportToExcel(): void {
     try {
       this.isExportDropdownOpen = false;
-      
+
       const worksheetData = this.prepareExcelData();
       const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-      
+
       const wscols = [
         { wch: 15 }, // Voucher
         { wch: 25 }, // Recipient
@@ -273,19 +447,19 @@ export class Model22ListComponent implements OnInit, OnDestroy {
         { wch: 20 }  // Total Price
       ];
       worksheet['!cols'] = wscols;
-      
+
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Model22 Report');
-      
+
       this.addSummarySheet(workbook);
-      
+
       const timestamp = new Date().toISOString().slice(0, 19).replace(/[:]/g, '-');
       const filename = `Model22_Report_${timestamp}.xlsx`;
       XLSX.writeFile(workbook, filename);
-      
-      console.log('Model22 Excel file exported successfully');
+
+      console.log('✅ Model22 Excel file exported successfully');
     } catch (error) {
-      console.error('Error exporting to Excel:', error);
+      console.error('❌ Error exporting to Excel:', error);
       this.errorMessage = 'Failed to export Excel file. Please try again.';
     }
   }
@@ -297,8 +471,8 @@ export class Model22ListComponent implements OnInit, OnDestroy {
       'Date': model22.ethiopianDate || '',
       'Organization': model22.recipientOrganization || '',
       'Role': model22.role || '',
-      'Description': model22.description || 'No description / ምንም መግለጫ የለም',
-      'Total Price': model22.totalPrice || '0.00 ETB'
+      'Description': this.getDescription(model22),
+      'Total Price': this.getTotalPrice(model22)
     }));
   }
 
@@ -315,16 +489,16 @@ export class Model22ListComponent implements OnInit, OnDestroy {
       ['Date Period', this.dateFilter || 'All Dates'],
       ['Selected Roles', this.selectedRoles.join(', ') || 'All']
     ];
-    
+
     const summaryWorksheet = XLSX.utils.aoa_to_sheet(summaryData);
     summaryWorksheet['!cols'] = [{ wch: 25 }, { wch: 25 }];
-    
+
     XLSX.utils.book_append_sheet(workbook, summaryWorksheet, 'Summary');
   }
 
   exportToCsv(): void {
     this.isExportDropdownOpen = false;
-    
+
     const headers = ['Voucher', 'Recipient', 'Date', 'Organization', 'Role', 'Description', 'Total Price'];
     const rows = this.filteredModel22List.map(model22 => [
       model22.voucherNumber || 'N/A',
@@ -332,13 +506,13 @@ export class Model22ListComponent implements OnInit, OnDestroy {
       model22.ethiopianDate,
       model22.recipientOrganization,
       model22.role,
-      model22.description || 'No description / ምንም መግለጫ የለም',
-      model22.totalPrice || '0.00 ETB'
+      this.getDescription(model22),
+      this.getTotalPrice(model22)
     ]);
 
     const csvLines = [headers.join(','), ...rows.map(row => row.join(','))];
     const csvContent = csvLines.join('\n');
-    
+
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -352,5 +526,24 @@ export class Model22ListComponent implements OnInit, OnDestroy {
 
   trackByModel22Id(index: number, model22: Model22Dto): number {
     return model22.model22Id || index;
+  }
+
+  getAccessoriesSummary(model22: Model22Dto): string {
+    if (!model22.items || model22.items.length === 0) return '';
+
+    const allAccessories: string[] = [];
+    model22.items.forEach(item => {
+      if (item.withdrawnAccessories && item.withdrawnAccessories.length > 0) {
+        item.withdrawnAccessories.forEach(acc => {
+          allAccessories.push(`${acc.name}(${acc.quantity})`);
+        });
+      }
+    });
+
+    return allAccessories.length > 0 ? `[${allAccessories.join(', ')}]` : '';
+  }
+
+  getItemsCount(model22: Model22Dto): number {
+    return model22.items?.length || 0;
   }
 }

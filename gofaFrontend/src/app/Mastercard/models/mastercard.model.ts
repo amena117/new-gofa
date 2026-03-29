@@ -103,6 +103,11 @@ export interface RequestOrderForIssue {
   preparedBy?: Person; // Optional
   verifiedBy?: Person; // Optional
   approvedBy?: Person; // Optional
+   status?: 'Pending' | 'Accepted' | 'Rejected';
+  acceptedAt?: string;
+  acceptedBy?: string;
+  rejectedAt?: string;
+  rejectedBy?: string;
 }
 
 export interface IssuedItem {

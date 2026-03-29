@@ -44,6 +44,9 @@ export class ReceivedItemsListComponent implements OnInit {
 
 
 
+  // Math reference for template
+  Math = Math;
+
   ngOnInit() {
     this.loadItems();
   }
@@ -58,6 +61,56 @@ export class ReceivedItemsListComponent implements OnInit {
       },
       error: (err) => console.error('Error loading items:', err)
     });
+  }
+
+  // Helper methods for stats
+  getReceivedCount(): number {
+    return this.filteredItems.filter(item => 
+      item.status === 'Stores Recieved' || item.status?.toLowerCase().includes('received')
+    ).length;
+  }
+
+  getPendingCount(): number {
+    return this.filteredItems.filter(item => 
+      item.status === 'Waiting For Stores' || !item.status || item.status?.toLowerCase().includes('waiting')
+    ).length;
+  }
+
+  // Status display methods
+  getDisplayStatus(status: string | undefined): string {
+    if (!status) return 'Waiting For Stores';
+    const statusLower = status.toLowerCase();
+    
+    // Normalize all variations of "received" to "Received by Store"
+    if (statusLower.includes('received') || statusLower.includes('recieved')) {
+      return 'Received by Store';
+    }
+    
+    // Normalize all variations of "waiting" to "Waiting for Store"
+    if (statusLower.includes('waiting for store') || statusLower.includes('waiting for stores')) {
+      return 'Waiting for Store';
+    }
+    
+    return status;
+  }
+
+  getStatusClass(status: string | undefined): string {
+    if (!status) return 'waiting';
+    const statusLower = status.toLowerCase();
+    
+    if (statusLower.includes('received') || statusLower.includes('recieved')) return 'stores-received';
+    if (statusLower.includes('waiting')) return 'waiting';
+    
+    return 'waiting';
+  }
+
+  getExtraStatusClass(status: string | undefined): string {
+    return this.getStatusClass(status);
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.onSearch();
   }
 
 
@@ -243,5 +296,10 @@ export class ReceivedItemsListComponent implements OnInit {
   onItemsPerPageChange() {
     this.currentPage = 1; // Reset to the first page
     this.updatePagination(); // Update pagination
+  }
+
+  // TrackBy function for performance optimization
+  trackByItemId(index: number, item: Item): any {
+    return item.model1Id || index;
   }
 }

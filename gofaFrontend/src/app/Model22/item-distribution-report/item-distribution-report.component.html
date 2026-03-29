@@ -1,0 +1,478 @@
+<div class="report-container">
+  <div class="header">
+    <div class="header-left">
+      <h1 class="title">Distribution Analytics Report / የእቃ ስርጭት ትንተና ሪፖርት</h1>
+      <p class="subtitle">Comprehensive item withdrawal tracking and analysis</p>
+    </div>
+    <div class="header-actions">
+      <button class="action-btn" (click)="toggleViewMode()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        {{ viewMode === 'cards' ? 'Table View' : 'Card View' }}
+      </button>
+      <button class="action-btn primary" (click)="exportToExcel()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export to Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- Info Banner for Team Leader -->
+  <div *ngIf="isSupplyAndDistributionLeader" class="info-banner">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    Viewing all warehouses: {{ selectedRoles.join(', ') }} | የሁሉም መጋዘኖች ሪፖርት
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        Search Items / እቃዎችን ፈልግ
+      </label>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="onSearchChange()"
+        placeholder="Search by description or model..."
+        class="filter-input">
+    </div>
+
+    <div class="filter-group">
+      <label>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        Date Range / የቀን ክልል
+      </label>
+      <select [(ngModel)]="dateFilter" (change)="onDateFilterChange()" class="filter-select">
+        <option value="">All Time / ሁሉም ጊዜ</option>
+        <option value="1week">Last Week / ያለፈው ሳምንት</option>
+        <option value="1month">Last Month / ያለፈው ወር</option>
+        <option value="3months">Last 3 Months / ያለፉት 3 ወሮች</option>
+        <option value="6months">Last 6 Months / ያለፉት 6 ወሮች</option>
+        <option value="9months">Last 9 Months / ያለፉት 9 ወሮች</option>
+        <option value="1year">Last Year / ያለፈው ዓመት</option>
+      </select>
+    </div>
+
+    <div class="filter-group" *ngIf="!isSupplyAndDistributionLeader">
+      <label>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Warehouse / መጋዘን
+      </label>
+      <input 
+        type="text" 
+        [value]="userRole" 
+        readonly
+        class="filter-input readonly-input">
+    </div>
+
+    <div class="filter-group" *ngIf="isSupplyAndDistributionLeader">
+      <label>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Select Warehouses / መጋዘኖች ይምረጡ
+      </label>
+      <div class="role-selector">
+        <button class="role-dropdown-btn" (click)="toggleRoleDropdown()">
+          {{ selectedRoles.length === 0 ? 'Select Roles' : selectedRoles.join(', ') }}
+          <span class="arrow">{{ isRoleDropdownOpen ? '▲' : '▼' }}</span>
+        </button>
+        
+        <div *ngIf="isRoleDropdownOpen" class="role-dropdown-menu">
+          <div class="role-item" *ngFor="let role of availableRoles">
+            <input 
+              type="checkbox" 
+              [id]="'role-' + role" 
+              [checked]="selectedRoles.includes(role)"
+              (change)="onRoleChange($event, role)" />
+            <label [for]="'role-' + role">{{ role }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <span>Loading report data...</span>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+  <!-- Report Content -->
+  <div *ngIf="!isLoading && !errorMessage" class="report-content">
+    <!-- Summary Statistics -->
+    <div class="summary-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Total Value / ጠቅላላ ዋጋ</div>
+          <div class="stat-value-small">{{ getTotalValueFormatted() }}</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Total Items Withdrawn / የተወሰዱ የእቃ ዓይነቶች</div>
+          <div class="stat-value">{{ reportSummary.totalItems }}</div>
+          <div class="stat-helper">Different item types</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Total Quantity Withdrawn / ጠቅላላ የተወሰደ ብዛት</div>
+          <div class="stat-value">{{ reportSummary.totalQuantityDistributed }}</div>
+          <div class="stat-helper">Total units</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Items & Recent Activity -->
+    <div class="insights-grid">
+      <div class="insight-card">
+        <h3 class="insight-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Top 5 Most Distributed Items / ከፍተኛ 5 የተሰራጩ እቃዎች
+        </h3>
+        <div class="top-items-list">
+          <div *ngFor="let item of reportSummary.topItems; let i = index" class="top-item">
+            <span class="rank">{{ i + 1 }}</span>
+            <div class="item-info-compact">
+              <div class="item-name">{{ item.description }}</div>
+              <div class="item-model-small">Model: {{ item.model }}</div>
+            </div>
+            <span class="item-qty-badge">{{ item.quantity }} units</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <h3 class="insight-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          Recent 10 Distribution Activities / የቅርብ ጊዜ 10 ስርጭት እንቅስቃሴዎች
+        </h3>
+        <div class="activity-list">
+          <div *ngFor="let activity of reportSummary.recentActivity" class="activity-item">
+            <span class="activity-date">{{ activity.date }}</span>
+            <div class="activity-bar">
+              <div class="activity-bar-fill" [style.width.%]="(activity.count / reportSummary.totalWithdrawals) * 100"></div>
+            </div>
+            <span class="activity-count">{{ activity.count }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sorting Controls -->
+    <div class="controls-bar">
+      <div class="sort-controls">
+        <span class="control-label">Sort by / ደርድር በ:</span>
+        <button 
+          class="sort-btn" 
+          [class.active]="sortBy === 'quantity'"
+          (click)="onSortChange('quantity')">
+          Units / ብዛት {{ sortBy === 'quantity' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+        </button>
+        <button 
+          class="sort-btn" 
+          [class.active]="sortBy === 'value'"
+          (click)="onSortChange('value')">
+          Value / ዋጋ {{ sortBy === 'value' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+        </button>
+        <button 
+          class="sort-btn" 
+          [class.active]="sortBy === 'withdrawals'"
+          (click)="onSortChange('withdrawals')">
+          Transactions / ግብይቶች {{ sortBy === 'withdrawals' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+        </button>
+        <button 
+          class="sort-btn" 
+          [class.active]="sortBy === 'name'"
+          (click)="onSortChange('name')">
+          Name / ስም {{ sortBy === 'name' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+        </button>
+      </div>
+      <div class="pagination-info">
+        <label class="items-per-page">
+          <span>Items per page / በገጽ:</span>
+          <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()" class="page-size-select">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+            <option [value]="100">100</option>
+          </select>
+        </label>
+        <div class="result-count">
+          Showing {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredDistributions.length) }} of {{ filteredDistributions.length }} items
+        </div>
+      </div>
+    </div>
+
+    <!-- Card View -->
+    <div *ngIf="viewMode === 'cards'" class="distribution-list">
+      <div *ngFor="let dist of paginatedDistributions" class="distribution-card">
+        <!-- Item Header -->
+        <div class="item-header">
+          <div class="item-info" (click)="toggleItemExpansion(dist.description, dist.model)">
+            <h3>{{ dist.description }}</h3>
+            <span class="item-model">Model: {{ dist.model }}</span>
+          </div>
+            <div class="item-stats">
+              <div class="stat-pill">
+                <span class="stat-pill-label">Units / ብዛት</span>
+                <span class="stat-pill-value">{{ dist.totalQuantity }}</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-pill-label">Value / ዋጋ</span>
+                <span class="stat-pill-value">{{ getItemValueFormatted(dist) }}</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-pill-label">Transactions / ግብይቶች</span>
+                <span class="stat-pill-value">{{ dist.withdrawalCount }}</span>
+              </div>
+              <button class="download-item-btn" (click)="downloadItemPDF(dist, $event)" title="Download PDF">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </button>
+              <span class="expand-icon" (click)="toggleItemExpansion(dist.description, dist.model)">{{ isItemExpanded(dist.description, dist.model) ? '▼' : '▶' }}</span>
+            </div>
+        </div>
+
+        <!-- Withdrawals Table (Expandable) -->
+        <div *ngIf="isItemExpanded(dist.description, dist.model)" class="withdrawals-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Voucher No. / ሰነድ ቁጥር</th>
+                <th>Transaction Date / የግብይት ቀን</th>
+                <th>Recipient / ተቀባይ</th>
+                <th>Organization / ድርጅት</th>
+                <th>Quantity / ብዛት</th>
+                <th>Unit Price / የአንድ ዋጋ</th>
+                <th>Total Amount / ጠቅላላ ዋጋ</th>
+                <th>Serial Numbers / ተከታታይ ቁጥሮች</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let w of dist.withdrawals">
+                <td><span class="voucher-badge">{{ w.voucherNumber }}</span></td>
+                <td>{{ w.date }}</td>
+                <td>{{ w.recipient }}</td>
+                <td>{{ w.organization }}</td>
+                <td><strong>{{ w.quantity }}</strong></td>
+                <td>{{ w.unitPrice.toFixed(2) }} {{ w.currency }}</td>
+                <td><strong>{{ w.totalPrice.toFixed(2) }} {{ w.currency }}</strong></td>
+                <td class="serial-cell">
+                  <span *ngIf="w.serialNumbers.length > 0">{{ w.serialNumbers.join(', ') }}</span>
+                  <span *ngIf="w.serialNumbers.length === 0" class="no-data-text">-</span>
+                </td>
+              </tr>
+              <!-- Accessories Row (if any) -->
+              <tr *ngFor="let w of dist.withdrawals" class="accessories-row" style="background: #fef3c7;">
+                <td colspan="8" *ngIf="w.accessories && w.accessories.length > 0" style="padding: 12px;">
+                  <div style="font-weight: 600; color: #92400e; margin-bottom: 8px;">
+                    📦 Withdrawn Accessories / የወጡ አባሪዎች:
+                  </div>
+                  <table style="width: 100%; font-size: 12px; background: white; border-radius: 4px;">
+                    <thead>
+                      <tr style="background: #fbbf24; color: white;">
+                        <th style="padding: 6px; text-align: left;">Name / ስም</th>
+                        <th style="padding: 6px; text-align: left;">Model / ሞዴል</th>
+                        <th style="padding: 6px; text-align: center;">Qty / ብዛት</th>
+                        <th style="padding: 6px; text-align: right;">Unit Price / ዋጋ</th>
+                        <th style="padding: 6px; text-align: right;">Total / ጠቅላላ</th>
+                        <th style="padding: 6px; text-align: left;">Serial Numbers / ቁጥሮች</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let acc of w.accessories" style="border-bottom: 1px solid #e5e7eb;">
+                        <td style="padding: 6px;"><strong>{{ acc.name }}</strong></td>
+                        <td style="padding: 6px;">{{ acc.model }}</td>
+                        <td style="padding: 6px; text-align: center;">{{ acc.quantity }}</td>
+                        <td style="padding: 6px; text-align: right;">{{ acc.unitPrice.toFixed(2) }} {{ acc.currency }}</td>
+                        <td style="padding: 6px; text-align: right;"><strong>{{ acc.totalPrice.toFixed(2) }} {{ acc.currency }}</strong></td>
+                        <td style="padding: 6px; font-size: 11px;">
+                          <span *ngIf="acc.withdrawnSerialNumbers && acc.withdrawnSerialNumbers.length > 0">
+                            {{ acc.withdrawnSerialNumbers.join(', ') }}
+                          </span>
+                          <span *ngIf="!acc.withdrawnSerialNumbers || acc.withdrawnSerialNumbers.length === 0" style="color: #9ca3af;">-</span>
+                        </td>
+                      </tr>
+                      <!-- Sub-accessories (if any) -->
+                      <tr *ngFor="let acc of w.accessories">
+                        <td colspan="6" *ngIf="acc.subAccessories && acc.subAccessories.length > 0" style="padding: 8px; background: #fef9e7;">
+                          <div style="font-size: 11px; color: #92400e; font-weight: 600; margin-bottom: 4px;">
+                            ↳ Sub-Accessories / ንዑስ አባሪዎች:
+                          </div>
+                          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span *ngFor="let subAcc of acc.subAccessories" style="background: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; border: 1px solid #fbbf24;">
+                              {{ subAcc.name }}: <strong>{{ subAcc.quantity }}</strong> &#64; {{ subAcc.unitPrice.toFixed(2) }} {{ subAcc.currency }}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <div *ngIf="viewMode === 'table'" class="table-view">
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th>Item Description / የእቃ መግለጫ</th>
+            <th>Model Number / ሞዴል ቁጥር</th>
+            <th>Total Units / ጠቅላላ ብዛት</th>
+            <th>Total Value / ጠቅላላ ዋጋ</th>
+            <th>Transactions / ግብይቶች</th>
+            <th>Actions / ድርጊቶች</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dist of paginatedDistributions">
+            <td><strong>{{ dist.description }}</strong></td>
+            <td>{{ dist.model }}</td>
+            <td><span class="qty-badge">{{ dist.totalQuantity }}</span></td>
+            <td>{{ getItemValueFormatted(dist) }}</td>
+            <td>{{ dist.withdrawalCount }}</td>
+            <td>
+              <button class="view-details-btn" (click)="toggleItemExpansion(dist.description, dist.model)">
+                {{ isItemExpanded(dist.description, dist.model) ? 'Hide' : 'View' }} Details
+              </button>
+            </td>
+          </tr>
+          <tr *ngFor="let dist of paginatedDistributions" [hidden]="!isItemExpanded(dist.description, dist.model)">
+            <td colspan="6" class="details-row">
+              <div class="details-content">
+                <h4>Withdrawal History for {{ dist.description }}</h4>
+                <table class="nested-table">
+                  <thead>
+                    <tr>
+                      <th>Voucher</th>
+                      <th>Date</th>
+                      <th>Recipient</th>
+                      <th>Organization</th>
+                      <th>Qty</th>
+                      <th>Price</th>
+                      <th>Serial Numbers</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let w of dist.withdrawals">
+                      <td>{{ w.voucherNumber }}</td>
+                      <td>{{ w.date }}</td>
+                      <td>{{ w.recipient }}</td>
+                      <td>{{ w.organization }}</td>
+                      <td>{{ w.quantity }}</td>
+                      <td>{{ w.totalPrice.toFixed(2) }} {{ w.currency }}</td>
+                      <td>{{ w.serialNumbers.join(', ') || '-' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- No Data -->
+    <div *ngIf="filteredDistributions.length === 0" class="no-data">
+      No items found matching the selected criteria / ከተመረጠው መስፈርት ጋር የሚዛመድ ምንም እቃ አልተገኘም
+    </div>
+
+    <!-- Pagination Controls -->
+    <div *ngIf="filteredDistributions.length > 0 && totalPages > 1" class="pagination-container">
+      <button 
+        class="pagination-btn" 
+        [disabled]="currentPage === 1"
+        (click)="onPageChange(currentPage - 1)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Previous / ቀዳሚ
+      </button>
+      
+      <div class="pagination-numbers">
+        <button 
+          *ngFor="let page of getPageNumbers()"
+          class="page-number-btn"
+          [class.active]="page === currentPage"
+          [class.ellipsis]="page === -1"
+          [disabled]="page === -1"
+          (click)="page !== -1 && onPageChange(page)">
+          {{ page === -1 ? '...' : page }}
+        </button>
+      </div>
+      
+      <button 
+        class="pagination-btn" 
+        [disabled]="currentPage === totalPages"
+        (click)="onPageChange(currentPage + 1)">
+        Next / ቀጣይ
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

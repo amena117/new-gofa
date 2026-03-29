@@ -23,6 +23,7 @@ export class AddItemQuantityComponent implements OnInit {
   items: Item[] = [];
   categories: string[] = [];
   currencies: string[] = ['ETB', 'USD', 'EURO', 'POUND'];
+  sources: string[] = []; // Add sources array
   shelves: ShelfDto[] = [];
   filteredItems: Observable<Item[]>;
   filteredBulkItems: Observable<Item[]>[] = [];
@@ -32,8 +33,16 @@ export class AddItemQuantityComponent implements OnInit {
   showBulkAccessories: boolean[] = [];
   isLoadingCategories = false;
   isLoadingCurrencies = false;
+  isLoadingSources = false; // Add loading state for sources
   isLoadingShelves = false;
   isSearching = false;
+  selectedItemId: number | null = null; // Track selected item for accessory search
+  existingAccessories: any[] = []; // Store existing accessories for the selected item
+  existingSerialNumbers: string[] = []; // Store existing serial numbers for SPAREPART items
+  filteredAccessories: Observable<any[]>[] = []; // For accessory autocomplete
+  filteredBulkAccessories: Observable<any[]>[][] = []; // For bulk mode accessory autocomplete
+  filteredSerialNumbers: Observable<string[]>[] = []; // For serial number autocomplete
+  filteredBulkSerialNumbers: Observable<string[]>[][] = []; // For bulk mode serial number autocomplete
 
   constructor(
     private fb: FormBuilder,
@@ -63,10 +72,12 @@ export class AddItemQuantityComponent implements OnInit {
       voucherNumber: [''],
       hasVoucherNumber: [false],
       receivedFrom: ['', Validators.required],
+      source: ['', Validators.required], // Add source field
       registeredBy: [{ value: registeredBy, disabled: true }, Validators.required],
       warehouseId: [{ value: userRole, disabled: true }, Validators.required],
       unitPrice: [0, [Validators.required, Validators.min(0)]],
       currency: ['ETB', Validators.required],
+      history: [''],
       transactionDate: [{ value: currentEthiopianDate, disabled: true }],
       serialNumbers: this.fb.array([]),
       accessories: this.fb.array([])
@@ -76,6 +87,7 @@ export class AddItemQuantityComponent implements OnInit {
       voucherNumber: [''],
       hasVoucherNumber: [false],
       receivedFrom: ['', Validators.required],
+      source: ['', Validators.required], // Add source field
       registeredBy: [{ value: registeredBy, disabled: true }, Validators.required],
       transactionDate: [{ value: currentEthiopianDate, disabled: true }],
       items: this.fb.array([])
@@ -136,6 +148,22 @@ this.itemService.getAllCategories().subscribe({
       }
     });
 
+    // Load sources
+    this.isLoadingSources = true;
+    this.itemService.getSources().subscribe({
+      next: (sources) => {
+        this.sources = sources;
+        this.isLoadingSources = false;
+        const defaultSource = this.sources[0] || 'Purchase';
+        this.itemForm.patchValue({ source: defaultSource });
+        this.bulkForm.patchValue({ source: defaultSource });
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to load sources: ' + err.message;
+        this.isLoadingSources = false;
+      }
+    });
+
     this.itemService.getItems().subscribe({
       next: (items) => {
         this.items = items;
@@ -162,15 +190,22 @@ this.itemService.getAllCategories().subscribe({
     if (!value.trim()) {
       return of([]);
     }
+    const userRole = this.authService.getRole() || 'SPAREPART';
     return this.itemService.getItems(value).pipe(
       map(items => items.filter(item =>
-        item.description.toLowerCase().includes(value.toLowerCase()) ||
-        item.model.toLowerCase().includes(value.toLowerCase())
+        (item.description.toLowerCase().includes(value.toLowerCase()) ||
+        item.model.toLowerCase().includes(value.toLowerCase())) &&
+        item.warehouseId === userRole // Only show items from user's warehouse
       ))
     );
   }
 
   selectItem(item: Item): void {
+  this.selectedItemId = item.itemId ?? null; // Store the selected item ID, handle undefined
+  this.existingAccessories = item.accessories || []; // Store existing accessories
+  // Extract serial number strings from ItemSerialNumber objects
+  this.existingSerialNumbers = (item.serialNumbers || []).map(sn => sn.serialNumber);
+  
   this.itemForm.patchValue({
     description: item.description,
     category: item.category,
@@ -191,15 +226,10 @@ this.itemService.getAllCategories().subscribe({
   });
   this.serialNumbers.clear();
   this.accessories.clear();
-  item.accessories.forEach(acc => {
-    this.accessories.push(this.fb.group({
-      name: [acc.name, Validators.required],
-      model: [acc.model, Validators.required],
-      quantity: [acc.quantity, [Validators.required, Validators.min(1)]],
-      unitPrice: [acc.unitPrice || 0, [Validators.min(0)]],
-      currency: [acc.currency || this.currencies[0] || 'ETB']
-    }));
-  });
+  this.filteredAccessories = []; // Clear filtered accessories
+  this.filteredSerialNumbers = []; // Clear filtered serial numbers
+  
+  // Don't pre-fill accessories - let user add them manually or search
   this.updateSerialNumbers();
 }
 
@@ -219,17 +249,29 @@ this.itemService.getAllCategories().subscribe({
     unitPrice: item.unitPrice || 0,
     currency: item.currency || 'ETB'
   });
+  
+  // Store item ID, existing accessories, and serial numbers for this bulk item
+  // Extract serial number strings from ItemSerialNumber objects
+  const existingSerialNumbers = (item.serialNumbers || []).map(sn => sn.serialNumber);
+  this.itemsFormArray.at(index).patchValue({ 
+    itemId: item.itemId,
+    existingSerialNumbers: existingSerialNumbers
+  });
+  
   this.getSerialNumbersForItem(index).clear();
   this.getAccessoriesForItem(index).clear();
-  item.accessories.forEach(acc => {
-    this.getAccessoriesForItem(index).push(this.fb.group({
-      name: [acc.name, Validators.required],
-      model: [acc.model, Validators.required],
-      quantity: [acc.quantity, [Validators.required, Validators.min(1)]],
-      unitPrice: [acc.unitPrice || 0, [Validators.min(0)]],
-      currency: [acc.currency || this.currencies[0] || 'ETB']
-    }));
-  });
+  
+  // Initialize filtered accessories for this item
+  if (!this.filteredBulkAccessories[index]) {
+    this.filteredBulkAccessories[index] = [];
+  }
+  
+  // Initialize filtered serial numbers for this item
+  if (!this.filteredBulkSerialNumbers[index]) {
+    this.filteredBulkSerialNumbers[index] = [];
+  }
+  
+  // Don't pre-fill accessories - let user add them manually or search
   this.updateBulkSerialNumbers(index);
 }
 
@@ -276,7 +318,18 @@ this.itemService.getAllCategories().subscribe({
   addSerialNumber(): void {
     const role = this.itemForm.get('role')?.value || 'SPAREPART';
     if (role === 'SPAREPART' && this.serialNumbers.length < 2) {
-      this.serialNumbers.push(this.fb.control('', Validators.required));
+      const serialControl = this.fb.group({
+        serialSearch: [''], // Search field for existing serial numbers
+        serialNumber: ['', Validators.required]
+      });
+      this.serialNumbers.push(serialControl);
+      
+      // Setup autocomplete for this serial number (SPAREPART only)
+      const index = this.serialNumbers.length - 1;
+      this.filteredSerialNumbers[index] = serialControl.get('serialSearch')!.valueChanges.pipe(
+        startWith(''),
+        map(value => this.filterSerialNumbers(value || ''))
+      );
     }
   }
 
@@ -284,29 +337,136 @@ this.itemService.getAllCategories().subscribe({
     const role = this.itemForm.get('role')?.value || 'SPAREPART';
     if (role === 'SPAREPART') {
       this.serialNumbers.removeAt(index);
+      this.filteredSerialNumbers.splice(index, 1);
     }
+  }
+
+  // Filter serial numbers based on search term
+  private filterSerialNumbers(value: string): string[] {
+    if (!value || !this.existingSerialNumbers.length) {
+      return this.existingSerialNumbers;
+    }
+    const filterValue = value.toLowerCase();
+    return this.existingSerialNumbers.filter(serial =>
+      serial.toLowerCase().includes(filterValue)
+    );
+  }
+
+  // Select an existing serial number from autocomplete
+  selectExistingSerialNumber(serialNumber: string, index: number): void {
+    const serialGroup = this.serialNumbers.at(index) as FormGroup;
+    serialGroup.patchValue({
+      serialSearch: serialNumber,
+      serialNumber: serialNumber
+    });
   }
 
   addAccessory(): void {
   const defaultCurrency = this.currencies[0] || 'ETB';
-  this.accessories.push(this.fb.group({
+  const accessoryGroup = this.fb.group({
+    accessoryId: [null], // Store accessory ID when selecting existing accessory
+    accessorySearch: [''], // Search field for existing accessories
     name: ['', Validators.required],
     model: ['', Validators.required],
     quantity: [1, [Validators.required, Validators.min(1)]],
-    unitPrice: [0, [Validators.min(0)]], // Optional, with validation
-    currency: [defaultCurrency] // Optional, with default
-  }));
+    unitPrice: [0, [Validators.min(0)]],
+    currency: [defaultCurrency],
+    requiresSerialNumbers: [false],
+    serialNumbers: this.fb.array([])
+  });
+  
+  this.accessories.push(accessoryGroup);
+  
+  // Setup autocomplete for this accessory
+  const index = this.accessories.length - 1;
+  this.filteredAccessories[index] = accessoryGroup.get('accessorySearch')!.valueChanges.pipe(
+    startWith(''),
+    map(value => this.filterAccessories(value || ''))
+  );
 }
 
   removeAccessory(index: number): void {
     this.accessories.removeAt(index);
+    this.filteredAccessories.splice(index, 1);
+  }
+
+  // Filter accessories based on search term
+  private filterAccessories(value: string | any): any[] {
+    if (!value || !this.existingAccessories.length) {
+      return [];
+    }
+    
+    // If value is an object (selected accessory), return empty array
+    if (typeof value !== 'string') {
+      return [];
+    }
+    
+    const filterValue = value.toLowerCase();
+    return this.existingAccessories.filter(acc =>
+      acc.name?.toLowerCase().includes(filterValue) ||
+      acc.model?.toLowerCase().includes(filterValue)
+    );
+  }
+
+  // Select an existing accessory from autocomplete
+  selectExistingAccessory(accessory: any, index: number): void {
+    const accessoryGroup = this.accessories.at(index) as FormGroup;
+    accessoryGroup.patchValue({
+      accessoryId: accessory.id, // Store the accessory ID for viewing transactions
+      accessorySearch: `${accessory.name} - ${accessory.model}`,
+      name: accessory.name,
+      model: accessory.model,
+      unitPrice: accessory.unitPrice || 0,
+      currency: accessory.currency || 'ETB',
+      requiresSerialNumbers: accessory.requiresSerialNumbers || false,
+      quantity: 1 // User will specify new quantity
+    });
+    
+    // Clear serial numbers - user will add new ones for the new quantity
+    const serialNumbers = accessoryGroup.get('serialNumbers') as FormArray;
+    serialNumbers.clear();
+  }
+
+  // View transactions for a selected accessory
+  viewAccessoryTransactions(accessoryId: number): void {
+    if (!accessoryId) {
+      console.warn('No accessory ID provided');
+      return;
+    }
+    
+    // Navigate to accessory details page (similar to item details)
+    this.router.navigate(['/accessory-details', accessoryId]);
+  }
+
+  // Get accessory display name for autocomplete
+  displayAccessory(accessory: any): string {
+    return accessory ? `${accessory.name} - ${accessory.model}` : '';
   }
 
   addSerialNumberToItem(itemIndex: number): void {
     const role = this.itemsFormArray.at(itemIndex).get('role')?.value || 'SPAREPART';
     const serials = this.getSerialNumbersForItem(itemIndex);
     if (role === 'SPAREPART' && serials.length < 2) {
-      serials.push(this.fb.control('', Validators.required));
+      const serialControl = this.fb.group({
+        serialSearch: [''],
+        serialNumber: ['', Validators.required]
+      });
+      serials.push(serialControl);
+      
+      // Setup autocomplete for this bulk serial number
+      const serialIndex = serials.length - 1;
+      if (!this.filteredBulkSerialNumbers[itemIndex]) {
+        this.filteredBulkSerialNumbers[itemIndex] = [];
+      }
+      
+      // Get existing serial numbers for this item
+      const itemGroup = this.itemsFormArray.at(itemIndex);
+      const existingSerialNumbers = itemGroup.get('existingSerialNumbers')?.value || [];
+      
+      this.filteredBulkSerialNumbers[itemIndex][serialIndex] = serialControl.get('serialSearch')!.valueChanges.pipe(
+        startWith(''),
+        map(value => this.filterBulkSerialNumbers(value || '', existingSerialNumbers))
+      );
     }
   }
 
@@ -314,26 +474,134 @@ this.itemService.getAllCategories().subscribe({
     const role = this.itemsFormArray.at(itemIndex).get('role')?.value || 'SPAREPART';
     if (role === 'SPAREPART') {
       this.getSerialNumbersForItem(itemIndex).removeAt(serialIndex);
+      if (this.filteredBulkSerialNumbers[itemIndex]) {
+        this.filteredBulkSerialNumbers[itemIndex].splice(serialIndex, 1);
+      }
     }
+  }
+
+  // Filter bulk serial numbers
+  private filterBulkSerialNumbers(value: string, existingSerialNumbers: string[]): string[] {
+    if (!value || !existingSerialNumbers.length) {
+      return existingSerialNumbers;
+    }
+    const filterValue = value.toLowerCase();
+    return existingSerialNumbers.filter(serial =>
+      serial.toLowerCase().includes(filterValue)
+    );
+  }
+
+  // Select existing serial number for bulk item
+  selectExistingSerialNumberForItem(serialNumber: string, itemIndex: number, serialIndex: number): void {
+    const serialGroup = this.getSerialNumbersForItem(itemIndex).at(serialIndex) as FormGroup;
+    serialGroup.patchValue({
+      serialSearch: serialNumber,
+      serialNumber: serialNumber
+    });
   }
 
   addAccessoryToItem(index: number): void {
   const defaultCurrency = this.currencies[0] || 'ETB';
-  this.getAccessoriesForItem(index).push(this.fb.group({
+  const accessoryGroup = this.fb.group({
+    accessorySearch: [''],
     name: ['', Validators.required],
     model: ['', Validators.required],
     quantity: [1, [Validators.required, Validators.min(1)]],
-    unitPrice: [0, [Validators.min(0)]], // Optional, with validation
-    currency: [defaultCurrency] // Optional, with default
-  }));
+    unitPrice: [0, [Validators.min(0)]],
+    currency: [defaultCurrency],
+    requiresSerialNumbers: [false],
+    serialNumbers: this.fb.array([])
+  });
+  
+  this.getAccessoriesForItem(index).push(accessoryGroup);
+  
+  // Setup autocomplete for this bulk accessory
+  const accessoryIndex = this.getAccessoriesForItem(index).length - 1;
+  if (!this.filteredBulkAccessories[index]) {
+    this.filteredBulkAccessories[index] = [];
+  }
+  
+  // Get existing accessories for this item
+  const itemGroup = this.itemsFormArray.at(index);
+  const itemId = itemGroup.get('itemId')?.value;
+  
+  if (itemId) {
+    // Find the item to get its accessories
+    const selectedItem = this.items.find(i => i.itemId === itemId);
+    const existingAccessories = selectedItem?.accessories || [];
+    
+    this.filteredBulkAccessories[index][accessoryIndex] = accessoryGroup.get('accessorySearch')!.valueChanges.pipe(
+      startWith(''),
+      map(value => this.filterBulkAccessories(value || '', existingAccessories))
+    );
+  }
 }
 
   removeAccessoryFromItem(itemIndex: number, accessoryIndex: number): void {
     this.getAccessoriesForItem(itemIndex).removeAt(accessoryIndex);
+    if (this.filteredBulkAccessories[itemIndex]) {
+      this.filteredBulkAccessories[itemIndex].splice(accessoryIndex, 1);
+    }
+  }
+
+  // Filter bulk accessories
+  private filterBulkAccessories(value: string, existingAccessories: any[]): any[] {
+    if (!value || !existingAccessories.length) {
+      return [];
+    }
+    const filterValue = value.toLowerCase();
+    return existingAccessories.filter(acc =>
+      acc.name.toLowerCase().includes(filterValue) ||
+      acc.model.toLowerCase().includes(filterValue)
+    );
+  }
+
+  // Select existing accessory for bulk item
+  selectExistingAccessoryForItem(accessory: any, itemIndex: number, accessoryIndex: number): void {
+    const accessoryGroup = this.getAccessoriesForItem(itemIndex).at(accessoryIndex) as FormGroup;
+    accessoryGroup.patchValue({
+      accessorySearch: `${accessory.name} - ${accessory.model}`,
+      name: accessory.name,
+      model: accessory.model,
+      unitPrice: accessory.unitPrice || 0,
+      currency: accessory.currency || 'ETB',
+      requiresSerialNumbers: accessory.requiresSerialNumbers || false,
+      quantity: 1
+    });
+    
+    const serialNumbers = accessoryGroup.get('serialNumbers') as FormArray;
+    serialNumbers.clear();
   }
 
   toggleSerialNumbers(): void {
     this.showSerialNumbers = !this.showSerialNumbers;
+    
+    // When showing serial numbers, ensure FormArray is properly initialized
+    if (this.showSerialNumbers) {
+      const quantity = this.itemForm.get('quantity')?.value || 0;
+      const role = this.itemForm.get('role')?.value || 'SPAREPART';
+      const currentSerialCount = this.serialNumbers.length;
+      
+      // For non-SPAREPART roles, serial numbers must match quantity
+      if (role !== 'SPAREPART' && role !== 'ELECTRONICS') {
+        // Clear existing serial numbers
+        while (this.serialNumbers.length > 0) {
+          this.serialNumbers.removeAt(0);
+        }
+        
+        // Add the correct number of serial number controls
+        for (let i = 0; i < quantity; i++) {
+          const serialControl = this.fb.group({
+            serialSearch: [''],
+            serialNumber: ['', Validators.required]
+          });
+          this.serialNumbers.push(serialControl);
+        }
+      } else if (role === 'SPAREPART' && currentSerialCount === 0) {
+        // For SPAREPART, add one serial number control if none exist
+        this.addSerialNumber();
+      }
+    }
   }
 
   toggleAccessories(): void {
@@ -346,6 +614,103 @@ this.itemService.getAllCategories().subscribe({
 
   toggleBulkAccessories(index: number): void {
     this.showBulkAccessories[index] = !this.showBulkAccessories[index];
+  }
+
+  // Accessory serial number methods (matching registration form)
+  getAccessorySerialNumbers(accessoryIndex: number): FormArray {
+    return this.accessories.at(accessoryIndex).get('serialNumbers') as FormArray;
+  }
+
+  getAccessorySerialNumbersForItem(itemIndex: number, accessoryIndex: number): FormArray {
+    return this.getAccessoriesForItem(itemIndex).at(accessoryIndex).get('serialNumbers') as FormArray;
+  }
+
+  addAccessorySerialNumber(accessoryIndex: number): void {
+    this.getAccessorySerialNumbers(accessoryIndex).push(this.fb.control('', Validators.required));
+  }
+
+  removeAccessorySerialNumber(accessoryIndex: number, serialIndex: number): void {
+    this.getAccessorySerialNumbers(accessoryIndex).removeAt(serialIndex);
+  }
+
+  addAccessorySerialNumberToItem(itemIndex: number, accessoryIndex: number): void {
+    this.getAccessorySerialNumbersForItem(itemIndex, accessoryIndex).push(this.fb.control('', Validators.required));
+  }
+
+  removeAccessorySerialNumberFromItem(itemIndex: number, accessoryIndex: number, serialIndex: number): void {
+    this.getAccessorySerialNumbersForItem(itemIndex, accessoryIndex).removeAt(serialIndex);
+  }
+
+  onAccessoryRequiresSerialNumbersChange(accessoryIndex: number): void {
+    const accessoryGroup = this.accessories.at(accessoryIndex);
+    const requiresSerialNumbers = accessoryGroup.get('requiresSerialNumbers')?.value;
+    const quantity = accessoryGroup.get('quantity')?.value || 1;
+    const serialNumbers = this.getAccessorySerialNumbers(accessoryIndex);
+
+    if (requiresSerialNumbers) {
+      serialNumbers.clear();
+      for (let i = 0; i < quantity; i++) {
+        serialNumbers.push(this.fb.control('', Validators.required));
+      }
+    } else {
+      serialNumbers.clear();
+    }
+  }
+
+  onAccessoryRequiresSerialNumbersChangeForItem(itemIndex: number, accessoryIndex: number): void {
+    const accessoryGroup = this.getAccessoriesForItem(itemIndex).at(accessoryIndex);
+    const requiresSerialNumbers = accessoryGroup.get('requiresSerialNumbers')?.value;
+    const quantity = accessoryGroup.get('quantity')?.value || 1;
+    const serialNumbers = this.getAccessorySerialNumbersForItem(itemIndex, accessoryIndex);
+
+    if (requiresSerialNumbers) {
+      serialNumbers.clear();
+      for (let i = 0; i < quantity; i++) {
+        serialNumbers.push(this.fb.control('', Validators.required));
+      }
+    } else {
+      serialNumbers.clear();
+    }
+  }
+
+  onAccessoryQuantityChange(accessoryIndex: number): void {
+    const accessoryGroup = this.accessories.at(accessoryIndex);
+    const requiresSerialNumbers = accessoryGroup.get('requiresSerialNumbers')?.value;
+    const quantity = accessoryGroup.get('quantity')?.value || 1;
+    const serialNumbers = this.getAccessorySerialNumbers(accessoryIndex);
+
+    if (requiresSerialNumbers) {
+      const currentCount = serialNumbers.length;
+      if (quantity > currentCount) {
+        for (let i = currentCount; i < quantity; i++) {
+          serialNumbers.push(this.fb.control('', Validators.required));
+        }
+      } else if (quantity < currentCount) {
+        for (let i = currentCount - 1; i >= quantity; i--) {
+          serialNumbers.removeAt(i);
+        }
+      }
+    }
+  }
+
+  onAccessoryQuantityChangeForItem(itemIndex: number, accessoryIndex: number): void {
+    const accessoryGroup = this.getAccessoriesForItem(itemIndex).at(accessoryIndex);
+    const requiresSerialNumbers = accessoryGroup.get('requiresSerialNumbers')?.value;
+    const quantity = accessoryGroup.get('quantity')?.value || 1;
+    const serialNumbers = this.getAccessorySerialNumbersForItem(itemIndex, accessoryIndex);
+
+    if (requiresSerialNumbers) {
+      const currentCount = serialNumbers.length;
+      if (quantity > currentCount) {
+        for (let i = currentCount; i < quantity; i++) {
+          serialNumbers.push(this.fb.control('', Validators.required));
+        }
+      } else if (quantity < currentCount) {
+        for (let i = currentCount - 1; i >= quantity; i--) {
+          serialNumbers.removeAt(i);
+        }
+      }
+    }
   }
 
   toggleMode(): void {
@@ -378,6 +743,7 @@ this.itemService.getAllCategories().subscribe({
       warehouseId: [{ value: userRole, disabled: true }, Validators.required],
       unitPrice: [0, [Validators.required, Validators.min(0)]],
       currency: ['ETB', Validators.required],
+      history: [''],
       transactionDate: [{ value: currentEthiopianDate, disabled: true }],
       serialNumbers: this.fb.array([]),
       accessories: this.fb.array([])
@@ -437,13 +803,42 @@ this.itemService.getAllCategories().subscribe({
             this.errorMessage = 'SPAREPART items can have up to 2 serial numbers.';
             return;
           }
-          if (role !== 'SPAREPART' && this.serialNumbers.length !== quantity) {
+          // Only non-SPAREPART and non-ELECTRONICS items must have serial numbers equal to quantity
+          if (role !== 'SPAREPART' && role !== 'ELECTRONICS' && this.serialNumbers.length !== quantity) {
             this.errorMessage = 'Non-SPAREPART items must have serial numbers equal to quantity.';
             return;
           }
-          if (this.serialNumbers.controls.some(control => !control.value || !control.value.trim())) {
+          // Check if serial numbers are filled (handle both string and FormGroup)
+          const hasEmptySerials = this.serialNumbers.controls.some(control => {
+            const value = control.value;
+            if (typeof value === 'string') {
+              return !value || !value.trim();
+            } else {
+              return !value.serialNumber || !value.serialNumber.trim();
+            }
+          });
+          if (hasEmptySerials) {
             this.errorMessage = 'All serial number fields must be filled.';
             return;
+          }
+        }
+
+        // Validate accessory serial numbers
+        for (let i = 0; i < this.accessories.length; i++) {
+          const accessory = this.accessories.at(i);
+          const requiresSerialNumbers = accessory.get('requiresSerialNumbers')?.value;
+          const accessoryQuantity = accessory.get('quantity')?.value || 0;
+          const serialNumbers = this.getAccessorySerialNumbers(i);
+
+          if (requiresSerialNumbers) {
+            if (accessoryQuantity !== serialNumbers.length) {
+              this.errorMessage = `Accessory "${accessory.get('name')?.value}" quantity (${accessoryQuantity}) must match serial numbers count (${serialNumbers.length}).`;
+              return;
+            }
+            if (serialNumbers.controls.some(control => !control.value || control.value.trim() === '')) {
+              this.errorMessage = `All serial number fields for accessory "${accessory.get('name')?.value}" must be filled.`;
+              return;
+            }
           }
         }
 
@@ -471,14 +866,43 @@ this.itemService.getAllCategories().subscribe({
     this.itemForm.get('role')?.enable();
     this.itemForm.get('transactionDate')?.enable();
 
+    // Format accessories with serial numbers
+    const formattedAccessories = this.accessories.value.map((accessory: any) => ({
+      name: accessory.name,
+      model: accessory.model,
+      quantity: accessory.quantity,
+      unitPrice: accessory.unitPrice,
+      currency: accessory.currency,
+      requiresSerialNumbers: accessory.requiresSerialNumbers,
+      serialNumbers: accessory.requiresSerialNumbers ? accessory.serialNumbers : []
+    }));
+
+    // Extract serial numbers from FormGroup structure (for SPAREPART)
+    const role = this.itemForm.get('role')?.value || 'SPAREPART';
+    let serialNumbersArray: string[] = [];
+    
+    // Always extract serial numbers properly, regardless of role
+    serialNumbersArray = this.serialNumbers.value.map((serial: any) => {
+      if (typeof serial === 'string') {
+        return serial;
+      } else if (serial && serial.serialNumber) {
+        return serial.serialNumber;
+      } else {
+        return '';
+      }
+    }).filter((sn: string) => sn.trim() !== ''); // Remove empty strings
+
     const request: AddItemQuantityRequest = {
       ...this.itemForm.getRawValue(),
       voucherNumber: this.itemForm.get('hasVoucherNumber')?.value ? this.itemForm.get('voucherNumber')?.value : null,
       numOfBox: this.itemForm.get('numOfBox')?.value ? parseInt(this.itemForm.get('numOfBox')?.value, 10) : null,
-      serialNumbers: this.serialNumbers.value,
+      serialNumbers: serialNumbersArray,
       transactionDate: this.itemForm.get('transactionDate')?.value,
-      accessories: this.accessories.value
+      accessories: formattedAccessories
     };
+
+    console.log('🔍 DEBUG: Request payload being sent:', JSON.stringify(request, null, 2));
+    console.log('🔍 DEBUG: Serial numbers array:', serialNumbersArray);
 
     this.itemService.addItemQuantity(request).subscribe({
       next: (response) => {
@@ -543,13 +967,43 @@ this.itemService.getAllCategories().subscribe({
           this.errorMessage = `SPAREPART items can have up to 2 serial numbers for item ${i + 1}.`;
           return;
         }
-        if (role !== 'SPAREPART' && serials.length !== quantity) {
+        // Only non-SPAREPART and non-ELECTRONICS items must have serial numbers equal to quantity
+        if (role !== 'SPAREPART' && role !== 'ELECTRONICS' && serials.length !== quantity) {
           this.errorMessage = `Non-SPAREPART items must have serial numbers equal to quantity for item ${i + 1}.`;
           return;
         }
-        if (serials.controls.some(control => !control.value || !control.value.trim())) {
+        // Check if serial numbers are filled (handle both string and FormGroup)
+        const hasEmptySerials = serials.controls.some(control => {
+          const value = control.value;
+          if (typeof value === 'string') {
+            return !value || !value.trim();
+          } else {
+            return !value.serialNumber || !value.serialNumber.trim();
+          }
+        });
+        if (hasEmptySerials) {
           this.errorMessage = `All serial number fields for item ${i + 1} must be filled.`;
           return;
+        }
+      }
+
+      // Validate accessory serial numbers for this item
+      const accessories = this.getAccessoriesForItem(i);
+      for (let j = 0; j < accessories.length; j++) {
+        const accessory = accessories.at(j);
+        const requiresSerialNumbers = accessory.get('requiresSerialNumbers')?.value;
+        const accessoryQuantity = accessory.get('quantity')?.value || 0;
+        const accessorySerialNumbers = this.getAccessorySerialNumbersForItem(i, j);
+
+        if (requiresSerialNumbers) {
+          if (accessoryQuantity !== accessorySerialNumbers.length) {
+            this.errorMessage = `Item ${i + 1}: Accessory "${accessory.get('name')?.value}" quantity (${accessoryQuantity}) must match serial numbers count (${accessorySerialNumbers.length}).`;
+            return;
+          }
+          if (accessorySerialNumbers.controls.some(control => !control.value || control.value.trim() === '')) {
+            this.errorMessage = `Item ${i + 1}: All serial number fields for accessory "${accessory.get('name')?.value}" must be filled.`;
+            return;
+          }
         }
       }
     }
@@ -572,14 +1026,39 @@ this.itemService.getAllCategories().subscribe({
       registeredBy,
       transactionDate: this.bulkForm.get('transactionDate')?.value,
       performedBy: registeredBy,
-      items: this.itemsFormArray.getRawValue().map((item: any) => ({
-        ...item,
-        voucherNumber: item.hasVoucherNumber ? item.voucherNumber : null,
-        numOfBox: item.numOfBox ? parseInt(item.numOfBox, 10) : null,
-        serialNumbers: item.serialNumbers,
-        transactionDate: item.transactionDate,
-        accessories: item.accessories
-      }))
+      items: this.itemsFormArray.getRawValue().map((item: any) => {
+        // Extract serial numbers from FormGroup structure
+        // Always extract properly, regardless of role
+        let serialNumbersArray: string[] = [];
+        if (item.serialNumbers && Array.isArray(item.serialNumbers)) {
+          serialNumbersArray = item.serialNumbers.map((serial: any) => {
+            if (typeof serial === 'string') {
+              return serial;
+            } else if (serial && serial.serialNumber) {
+              return serial.serialNumber;
+            } else {
+              return '';
+            }
+          }).filter((sn: string) => sn.trim() !== ''); // Remove empty strings
+        }
+        
+        return {
+          ...item,
+          voucherNumber: item.hasVoucherNumber ? item.voucherNumber : null,
+          numOfBox: item.numOfBox ? parseInt(item.numOfBox, 10) : null,
+          serialNumbers: serialNumbersArray,
+          transactionDate: item.transactionDate,
+          accessories: item.accessories.map((acc: any) => ({
+            name: acc.name,
+            model: acc.model,
+            quantity: acc.quantity,
+            unitPrice: acc.unitPrice,
+            currency: acc.currency,
+            requiresSerialNumbers: acc.requiresSerialNumbers,
+            serialNumbers: acc.requiresSerialNumbers ? acc.serialNumbers : []
+          }))
+        };
+      })
     };
 
     this.itemService.bulkAddItemQuantity(bulkRequest).subscribe({
@@ -604,18 +1083,21 @@ this.itemService.getAllCategories().subscribe({
     const role = this.itemForm.get('role')?.value || 'SPAREPART';
     const serials = this.serialNumbers;
 
-    if (role !== 'SPAREPART') {
+    // SPAREPART and ELECTRONICS don't require serial numbers to match quantity
+    if (role !== 'SPAREPART' && role !== 'ELECTRONICS') {
       while (serials.length < quantity) {
         serials.push(this.fb.control('', Validators.required));
       }
       while (serials.length > quantity) {
         serials.removeAt(serials.length - 1);
       }
-    } else {
+    } else if (role === 'SPAREPART') {
+      // SPAREPART can have up to 2 serial numbers
       while (serials.length > 2) {
         serials.removeAt(serials.length - 1);
       }
     }
+    // ELECTRONICS has no limit on serial numbers
   }
 
   updateBulkSerialNumbers(index: number): void {
@@ -623,18 +1105,21 @@ this.itemService.getAllCategories().subscribe({
     const role = this.itemsFormArray.at(index).get('role')?.value || 'SPAREPART';
     const serials = this.getSerialNumbersForItem(index);
 
-    if (role !== 'SPAREPART') {
+    // SPAREPART and ELECTRONICS don't require serial numbers to match quantity
+    if (role !== 'SPAREPART' && role !== 'ELECTRONICS') {
       while (serials.length < quantity) {
         serials.push(this.fb.control('', Validators.required));
       }
       while (serials.length > quantity) {
         serials.removeAt(serials.length - 1);
       }
-    } else {
+    } else if (role === 'SPAREPART') {
+      // SPAREPART can have up to 2 serial numbers
       while (serials.length > 2) {
         serials.removeAt(serials.length - 1);
       }
     }
+    // ELECTRONICS has no limit on serial numbers
   }
 
   public resetSingleForm(): void {
@@ -665,6 +1150,61 @@ this.itemService.getAllCategories().subscribe({
     this.accessories.clear();
     this.showSerialNumbers = false;
     this.showAccessories = false;
+  }
+
+  public debugForm(): void {
+    console.log('🔍 Form Valid:', this.itemForm.valid);
+    console.log('🔍 Form Invalid:', this.itemForm.invalid);
+    console.log('🔍 Form Value:', this.itemForm.value);
+    console.log('🔍 Form Errors:', this.itemForm.errors);
+    
+    const invalidControls: string[] = [];
+    Object.keys(this.itemForm.controls).forEach(key => {
+      const control = this.itemForm.get(key);
+      if (control && control.invalid) {
+        invalidControls.push(key);
+        console.log(`❌ Invalid field: ${key}`, {
+          value: control.value,
+          errors: control.errors,
+          touched: control.touched,
+          dirty: control.dirty,
+          disabled: control.disabled
+        });
+        
+        // If it's a FormArray, check each control
+        if (control instanceof FormArray) {
+          console.log(`  📋 FormArray "${key}" has ${control.length} controls:`);
+          control.controls.forEach((arrayControl, index) => {
+            console.log(`    [${index}]:`, {
+              valid: arrayControl.valid,
+              invalid: arrayControl.invalid,
+              value: arrayControl.value,
+              errors: arrayControl.errors
+            });
+            
+            // If it's a FormGroup, check each field
+            if (arrayControl instanceof FormGroup) {
+              Object.keys(arrayControl.controls).forEach(fieldKey => {
+                const fieldControl = arrayControl.get(fieldKey);
+                if (fieldControl && fieldControl.invalid) {
+                  console.log(`      ❌ Invalid field in group: ${fieldKey}`, {
+                    value: fieldControl.value,
+                    errors: fieldControl.errors,
+                    touched: fieldControl.touched
+                  });
+                }
+              });
+            }
+          });
+        }
+      }
+    });
+    
+    if (invalidControls.length === 0) {
+      console.log('✅ All fields are valid!');
+    } else {
+      console.log('❌ Invalid fields:', invalidControls);
+    }
   }
 
   public resetBulkForm(): void {

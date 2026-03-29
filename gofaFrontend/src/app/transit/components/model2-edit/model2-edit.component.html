@@ -1,289 +1,439 @@
-<style>
-  .custom-bg {
-    background-color: #02172a;
-    color: white;
-  }
-  .custom-btn {
-    background-color: #02172a;
-    border-color: #02172a;
-    color: white;
-    border-radius: 0.6rem;
-    padding: 0.45rem 1.2rem;
-    font-weight: 500;
-  }
-  .custom-btn:hover {
-    background-color: #033c73;
-    border-color: #033c73;
-  }
-  .card {
-    border-radius: 1rem;
-    border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    margin-bottom: 1.5rem;
-  }
-  .card-header {
-    font-weight: 600;
-    font-size: 1.1rem;
-    border-radius: 1rem 1rem 0 0 !important;
-  }
-  .lig {
-    background-color: #f1f3f5 !important;
-  }
-  .card-body {
-    background-color: #ffffff !important;
-    border-radius: 0 0 1rem 1rem;
-    padding: 1.2rem;
-  }
-  label {
-    font-weight: 600;
-    color: #02172a;
-    font-size: 0.95rem;
-    margin-bottom: 0.3rem;
-  }
-  .form-control.ng-touched.ng-invalid,
-  .form-select.ng-touched.ng-invalid {
-    border: 1px solid red;
-  }
-  small.text-danger {
-    display: block;
-    margin-top: 2px;
-  }
-  .form-check-input {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    border: 2px solid #02172a;
-  }
-  .form-check-input:checked {
-    background-color: #02172a;
-    border-color: #02172a;
-  }
-  .form-check-label {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-left: 8px;
-    cursor: pointer;
-  }
-</style>
+<div class="item-detail">
+  <div class="header">
+    <h1 class="title">Edit Model 2 / ሞዴል 2 ማስተካከያ</h1>
+    <button class="action-btn secondary" [routerLink]="['/transit/model2-list']" aria-label="Go back to model2 list">
+      Back / ተመለስ
+    </button>
+  </div>
 
-<div class="content-container container">
-  <button class="btn btn-secondary btn-sm mb-3" [routerLink]="['/transit/model2-list']">← Back</button>
+  <!-- Status Messages -->
+  <div *ngIf="submissionStatus && submissionStatus.includes('Failed')" class="message error-message" role="alert">
+    {{ submissionStatus }}
+  </div>
+  <div *ngIf="submissionStatus && submissionStatus.includes('successfully')" class="message success-message" role="alert">
+    {{ submissionStatus }}
+  </div>
 
-  <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="receive-form">
-    <div class="card">
-      <div class="card-header custom-bg text-center">
-        <h4 class="mb-0">Edit Model 2 / ሞዴል 2 ማስተካከያ</h4>
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="form-container">
+    
+    <!-- General Information Section -->
+    <div class="section-title">General Information / አጠቃላይ መረጃ</div>
+    <div class="table-container">
+      <div class="table-row">
+        <div class="table-label">Transaction Date / የግብይት ቀን</div>
+        <div class="table-input">
+          <input formControlName="transactionDate" readonly />
+        </div>
       </div>
-
-      <div class="p-4">
-        <!-- 🧾 General Information -->
-        <div class="card mb-4">
-          <div class="card-header lig">General Information</div>
-          <div class="card-body">
-            <div class="row g-3">
-              <ng-container *ngFor="let field of [
-                {name: 'transactionDate', label: 'Transaction Date / የግብይት ቀን'},
-                {name: 'issueVocNo', label: 'Issue Voucher No / የወጪ ሠ/ቁ'},
-                {name: 'voucherNumber', label: 'Voucher Number / የጠያቂ/መላሽ ሠ/ቁ'},
-                {name: 'transType', label: 'Transaction Type / የጥያቄው አይነት'},
-                {name: 'requestingUnit', label: 'Requesting Unit / ጠያቂው ክፍል'},
-                {name: 'issuingStore', label: 'Issuing Store / አዳዩ/ተረካቢው ግ/ቤት'},
-                {name: 'model', label: 'Make and Model / የንብረቱ አይነት'},
-                {name: 'registeredBy', label: 'Registered By / የመዘገበው'},
-                {name: 'status', label: 'Status / የንብረቱ ሁኔታ'},
-                {name: 'category', label: 'Category / ምድብ'}
-              ]">
-                <div class="col-md-4">
-                  <label>{{field.label}}</label>
-                  <ng-container [ngSwitch]="field.name">
-                    <select *ngSwitchCase="'transType'" formControlName="{{field.name}}" class="form-select">
-                      <option value="Issue">Issue / ወጪ</option>
-                      <option value="Turn In">Turn In / ተመላሽ</option>
-                    </select>
-                    <select *ngSwitchCase="'status'" formControlName="{{field.name}}" class="form-select">
-                      <option value="Unserviceable">Unserviceable / የማያገለግል</option>
-                      <option value="Repairable">Repairable / ሊጠገን የሚችል</option>
-                      <option value="Condemnation">Condemnation / ከጥቅም ውጪ</option>
-                      <option value="Incomplete">Incomplete / ዝግጁ ያልሆነ</option>
-                    </select>
-                    <input *ngSwitchCase="'transactionDate'" formControlName="{{field.name}}" class="form-control" readonly />
-                    <input *ngSwitchDefault formControlName="{{field.name}}" class="form-control" />
-                  </ng-container>
-                  <small class="text-danger" *ngIf="editForm.get(field.name)?.touched && editForm.get(field.name)?.hasError('required')">
-                    {{field.label}} is required
-                  </small>
-                </div>
-              </ng-container>
-            </div>
-          </div>
-        </div>
-
-        <!-- 📦 Item Details -->
-        <div formArrayName="itemDetails">
-          <div *ngFor="let item of itemDetails.controls; let i = index" [formGroupName]="i" class="card mb-4">
-            <div class="card-header lig d-flex justify-content-between">
-              <span>Item {{ i + 1 }} Details</span>
-              <button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)" *ngIf="itemDetails.length > 1">Remove</button>
-            </div>
-            <div class="card-body">
-              <div class="row g-3">
-                <ng-container *ngFor="let f of [
-                  {name: 'stockNumber', label: 'Stock Number / መለያ ቁጥር'},
-                  {name: 'description', label: 'Description / የንብረቱ ስም'},
-                  {name: 'unitOfMeasurment', label: 'Unit of Measurement / መለኪያ'},
-                  {name: 'onHand', label: 'On Hand / በእጅ ያለ'},
-                  {name: 'request', label: 'Request / የተጠየቀ'},
-                  {name: 'issued', label: 'Issued / የተሰጠ'},
-                  {name: 'do', label: 'DO / ያልተገኘ'},
-                  {name: 'unitPrice', label: 'Unit Price / ያንዱ ዋጋ'},
-                  {name: 'totalPrice', label: 'Total Price / ጠቅላላ ዋጋ'},
-                  {name: 'currency', label: 'Currency / ምንዛሬ'}
-                ]">
-                  <div class="col-md-4">
-                    <label>{{f.label}}</label>
-                    <ng-container [ngSwitch]="f.name">
-                      <select *ngSwitchCase="'currency'" formControlName="{{f.name}}" class="form-select">
-                        <option value="Birr">BIRR</option>
-                        <option value="USD">USD</option>
-                        <option value="Euro">EURO</option>
-                        <option value="Foc">Free Of Charge</option>
-                      </select>
-                      <input *ngSwitchDefault formControlName="{{f.name}}" class="form-control" [type]="f.name === 'onHand' || f.name === 'request' || f.name === 'issued' || f.name === 'do' || f.name === 'unitPrice' || f.name === 'totalPrice' ? 'number' : 'text'" />
-                    </ng-container>
-                    <small class="text-danger" *ngIf="item.get(f.name)?.touched && item.get(f.name)?.hasError('required')">
-                      {{f.label}} is required
-                    </small>
-                  </div>
-                </ng-container>
-
-                <div class="col-md-4 d-flex align-items-center">
-                  <input type="checkbox" formControlName="hasAccessories" class="form-check-input" id="acc{{i}}" />
-                  <label class="form-check-label ms-2" for="acc{{i}}">Has Accessories</label>
-                </div>
-                <div class="col-md-4 d-flex align-items-center">
-                  <input type="checkbox" formControlName="hasExtraItems" class="form-check-input" id="ex{{i}}" />
-                  <label class="form-check-label ms-2" for="ex{{i}}">Has Extra Items</label>
-                </div>
-
-                <!-- Accessories Section -->
-                <div *ngIf="item.get('hasAccessories')?.value" class="mt-3">
-                  <label class="fw-bold">Accessory Details</label>
-                  <div formArrayName="accessories">
-                    <div *ngFor="let acc of getAccessories(i).controls; let j = index" [formGroupName]="j" class="row g-2 mb-2">
-                      <div class="col-md-5">
-                        <input formControlName="name" class="form-control" placeholder="Accessory Name / ስም" />
-                        <small class="text-danger" *ngIf="acc.get('name')?.touched && acc.get('name')?.hasError('required')">
-                          Accessory Name is required
-                        </small>
-                      </div>
-                      <div class="col-md-4">
-                        <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity / ብዛት" />
-                        <small class="text-danger" *ngIf="acc.get('quantity')?.touched && acc.get('quantity')?.hasError('required')">
-                          Quantity is required
-                        </small>
-                      </div>
-                      <div class="col-md-3">
-                        <button type="button" class="btn btn-danger btn-sm w-100" (click)="removeAccessory(i,j)">Remove</button>
-                      </div>
-                    </div>
-                    <button type="button" class="btn btn-info btn-sm" (click)="addAccessory(i)">+ Add Accessory</button>
-                  </div>
-                </div>
-
-                <!-- Extra Items Section -->
-                <div *ngIf="item.get('hasExtraItems')?.value" class="mt-3">
-                  <label class="fw-bold">Extra Item Details</label>
-                  <div formArrayName="extraItems">
-                    <div *ngFor="let ex of getExtraItems(i).controls; let j = index" [formGroupName]="j" class="row g-2 mb-2">
-                      <div class="col-md-3">
-                        <input formControlName="name" class="form-control" placeholder="Extra Item Name / ተጨማሪ እቃ ስም" />
-                        <small class="text-danger" *ngIf="ex.get('name')?.touched && ex.get('name')?.hasError('required')">
-                          Name is required
-                        </small>
-                      </div>
-                      <div class="col-md-2">
-                        <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity / ብዛት" />
-                        <small class="text-danger" *ngIf="ex.get('quantity')?.touched && ex.get('quantity')?.hasError('required')">
-                          Quantity is required
-                        </small>
-                      </div>
-                      <div class="col-md-3">
-                        <select formControlName="store" class="form-select">
-                          <option value="" disabled>Select Store / ግምጃ ቤት</option>
-                          <option *ngFor="let type of storeTypes" [value]="type">{{type}}</option>
-                        </select>
-                        <small class="text-danger" *ngIf="ex.get('store')?.touched && ex.get('store')?.hasError('required')">
-                          Store is required
-                        </small>
-                      </div>
-                      <div class="col-md-2">
-                        <input formControlName="extraStatus" class="form-control" readonly />
-                      </div>
-                      <div class="col-md-2">
-                        <input formControlName="extraIssuedByName" class="form-control" placeholder="Issued By" />
-                      </div>
-                      <div class="col-md-2">
-                        <button type="button" class="btn btn-danger btn-sm" (click)="removeExtraItem(i,j)">Remove</button>
-                      </div>
-                    </div>
-                    <button type="button" class="btn btn-info btn-sm" (click)="addExtraItem(i)">+ Add Extra Item</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <button type="button" class="btn btn-success btn-sm mb-4" (click)="addItem()">+ Add Item</button>
-        </div>
-
-        <!-- 👤 Approval Information -->
-        <div class="card mb-4">
-          <div class="card-header lig">Approval Information</div>
-          <div class="card-body">
-            <div class="row g-3">
-              <ng-container *ngFor="let f of [
-                {name: 'preparedBy', label: 'Prepared By / ያዘጋጀው'},
-                {name: 'pTitle', label: 'Prepared By Title / ያዘጋጀው ማዕረግ'},
-                {name: 'checkedBy', label: 'Checked By / ያረጋገጠው ሃላፊ'},
-                {name: 'cTitle', label: 'Checked By Title / ያረጋገጠው ሃላፊ ማዕረግ'},
-                {name: 'approvedBy', label: 'Approved By / ያጸደቀው'},
-                {name: 'aTitle', label: 'Approved By Title / ያጸደቀው ማዕረግ'},
-                {name: 'issuedTurnBy', label: 'Issued/Turned By / ወጪ / ተመላሽ ያደረገው'},
-                {name: 'iTitle', label: 'Issued/Turned By Title / ወጪ / ተመላሽ ያደረገው ማዕረግ'},
-                {name: 'issBy', label: 'Issued By / ያረካከበው'},
-                {name: 'isTitle', label: 'Issued By Title / ያረካከበው ማዕረግ'},
-                {name: 'receivedBy', label: 'Received By / የተረከበው / የመለሰው'},
-                {name: 'rTitle', label: 'Received By Title / የተረከበው / የመለሰው ማዕረግ'}
-              ]">
-                <div class="col-md-4">
-                  <label>{{f.label}}</label>
-                  <input formControlName="{{f.name}}" class="form-control" />
-                  <small class="text-danger" *ngIf="editForm.get(f.name)?.touched && editForm.get(f.name)?.hasError('required')">
-                    {{f.label}} is required
-                  </small>
-                </div>
-              </ng-container>
-            </div>
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="text-center mt-4">
-          <button type="submit" class="btn custom-btn me-2" [disabled]="isSubmitting">
-            Update / አሻሽል
-          </button>
-          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" routerLink="/transit/model2-list">
-            Cancel
-          </button>
-        </div>
-
-        <!-- Submission Status -->
-        <div class="mt-3 text-center" *ngIf="submissionStatus">
-          <small [class.text-success]="!isSubmitting && submissionStatus.includes('successfully')"
-                 [class.text-danger]="submissionStatus.includes('Failed')">
-            {{ submissionStatus }}
+      <div class="table-row">
+        <div class="table-label">Issue Voucher No / የወጪ ሠ/ቁ</div>
+        <div class="table-input">
+          <input formControlName="issueVocNo" />
+          <small class="error" *ngIf="editForm.get('issueVocNo')?.touched && editForm.get('issueVocNo')?.hasError('required')">
+            Issue Voucher No is required
           </small>
         </div>
       </div>
+      <div class="table-row">
+        <div class="table-label">Voucher Number / የጠያቂ/መላሽ ሠ/ቁ</div>
+        <div class="table-input">
+          <input formControlName="voucherNumber" />
+          <small class="error" *ngIf="editForm.get('voucherNumber')?.touched && editForm.get('voucherNumber')?.hasError('required')">
+            Voucher Number is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Transaction Type / የጥያቄው አይነት</div>
+        <div class="table-input">
+          <select formControlName="transType">
+            <option value="Issue">Issue / ወጪ</option>
+            <option value="Turn In">Turn In / ተመላሽ</option>
+          </select>
+          <small class="error" *ngIf="editForm.get('transType')?.touched && editForm.get('transType')?.hasError('required')">
+            Transaction Type is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Requesting Unit / ጠያቂው ክፍል</div>
+        <div class="table-input">
+          <input formControlName="requestingUnit" />
+          <small class="error" *ngIf="editForm.get('requestingUnit')?.touched && editForm.get('requestingUnit')?.hasError('required')">
+            Requesting Unit is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Issuing Store / አዳዩ/ተረካቢው ግ/ቤት</div>
+        <div class="table-input">
+          <input formControlName="issuingStore" />
+          <small class="error" *ngIf="editForm.get('issuingStore')?.touched && editForm.get('issuingStore')?.hasError('required')">
+            Issuing Store is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Make and Model / የንብረቱ አይነት</div>
+        <div class="table-input">
+          <input formControlName="model" />
+          <small class="error" *ngIf="editForm.get('model')?.touched && editForm.get('model')?.hasError('required')">
+            Make and Model is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Registered By / የመዘገበው</div>
+        <div class="table-input">
+          <input formControlName="registeredBy" />
+          <small class="error" *ngIf="editForm.get('registeredBy')?.touched && editForm.get('registeredBy')?.hasError('required')">
+            Registered By is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Status / የንብረቱ ሁኔታ</div>
+        <div class="table-input">
+          <select formControlName="status">
+            <option value="Unserviceable">Unserviceable / የማያገለግል</option>
+            <option value="Repairable">Repairable / ሊጠገን የሚችል</option>
+            <option value="Condemnation">Condemnation / ከጥቅም ውጪ</option>
+            <option value="Incomplete">Incomplete / ዝግጁ ያልሆነ</option>
+          </select>
+          <small class="error" *ngIf="editForm.get('status')?.touched && editForm.get('status')?.hasError('required')">
+            Status is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Category / ምድብ</div>
+        <div class="table-input">
+          <input formControlName="category" />
+          <small class="error" *ngIf="editForm.get('category')?.touched && editForm.get('category')?.hasError('required')">
+            Category is required
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item Details Section -->
+    <div formArrayName="itemDetails">
+      <div *ngFor="let item of itemDetails.controls; let i = index" [formGroupName]="i">
+        <div class="section-title">
+          Item Details / የእቃ ዝርዝር
+          <button type="button" class="action-btn danger small" style="float: right;" (click)="removeItem(i)" *ngIf="itemDetails.length > 1">
+            Remove Item
+          </button>
+        </div>
+        
+        <div class="table-container">
+          <div class="table-row">
+            <div class="table-label">Stock Number / መለያ ቁጥር</div>
+            <div class="table-input">
+              <input formControlName="stockNumber" />
+              <small class="error" *ngIf="item.get('stockNumber')?.touched && item.get('stockNumber')?.hasError('required')">
+                Stock Number is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">Description / የንብረቱ ስም</div>
+            <div class="table-input">
+              <input formControlName="description" />
+              <small class="error" *ngIf="item.get('description')?.touched && item.get('description')?.hasError('required')">
+                Description is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">Unit of Measurement / መለኪያ</div>
+            <div class="table-input">
+              <input formControlName="unitOfMeasurment" />
+              <small class="error" *ngIf="item.get('unitOfMeasurment')?.touched && item.get('unitOfMeasurment')?.hasError('required')">
+                Unit of Measurement is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">On Hand / በእጅ ያለ</div>
+            <div class="table-input">
+              <input type="number" formControlName="onHand" />
+              <small class="error" *ngIf="item.get('onHand')?.touched && item.get('onHand')?.hasError('required')">
+                On Hand is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">Request / የተጠየቀ</div>
+            <div class="table-input">
+              <input type="number" formControlName="request" />
+              <small class="error" *ngIf="item.get('request')?.touched && item.get('request')?.hasError('required')">
+                Request is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">Issued / የተሰጠ</div>
+            <div class="table-input">
+              <input type="number" formControlName="issued" />
+              <small class="error" *ngIf="item.get('issued')?.touched && item.get('issued')?.hasError('required')">
+                Issued is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">DO / ያልተገኘ</div>
+            <div class="table-input">
+              <input type="number" formControlName="do" />
+              <small class="error" *ngIf="item.get('do')?.touched && item.get('do')?.hasError('required')">
+                DO is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">Unit Price / ያንዱ ዋጋ</div>
+            <div class="table-input">
+              <input type="number" formControlName="unitPrice" />
+              <small class="error" *ngIf="item.get('unitPrice')?.touched && item.get('unitPrice')?.hasError('required')">
+                Unit Price is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">Total Price / ጠቅላላ ዋጋ</div>
+            <div class="table-input">
+              <input type="number" formControlName="totalPrice" readonly />
+              <div class="help-text">Auto-calculated from Issued × Unit Price</div>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">VAT / ቫት</div>
+            <div class="table-input">
+              <input type="number" formControlName="vat" />
+              <small class="error" *ngIf="item.get('vat')?.touched && item.get('vat')?.hasError('required')">
+                VAT is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">Grand Total / ጠቅላላ ድምር (ከቫት ጋር)</div>
+            <div class="table-input">
+              <input type="number" formControlName="grandTotal" readonly />
+              <div class="help-text">Auto-calculated from Total Price + VAT</div>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label">Currency / ምንዛሬ</div>
+            <div class="table-input">
+              <select formControlName="currency">
+                <option value="Birr">BIRR</option>
+                <option value="USD">USD</option>
+                <option value="Euro">EURO</option>
+                <option value="Foc">Free Of Charge</option>
+              </select>
+              <small class="error" *ngIf="item.get('currency')?.touched && item.get('currency')?.hasError('required')">
+                Currency is required
+              </small>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label"></div>
+            <div class="table-input">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="hasAccessories" class="toggle-switch-input" />
+                <span class="toggle-switch-slider"></span>
+              </label>
+              <span class="toggle-label">Has Accessories / ተጨማሪ መሳሪያዎች አሉ</span>
+            </div>
+          </div>
+          <div class="table-row">
+            <div class="table-label"></div>
+            <div class="table-input">
+              <label class="toggle-switch">
+                <input type="checkbox" formControlName="hasExtraItems" class="toggle-switch-input" />
+                <span class="toggle-switch-slider"></span>
+              </label>
+              <span class="toggle-label">Has Extra Items / ተጨማሪ እቃዎች አሉ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accessories Section -->
+        <div *ngIf="item.get('hasAccessories')?.value" class="subsection">
+          <div class="subsection-title">Accessories / ተጨማሪ መሳሪያዎች</div>
+          <div formArrayName="accessories">
+            <div *ngFor="let acc of getAccessories(i).controls; let j = index" [formGroupName]="j" class="accessory-row">
+              <div class="input-group">
+                <input formControlName="name" placeholder="Accessory Name / ስም" />
+                <input type="number" formControlName="quantity" placeholder="Quantity / ብዛት" min="1" />
+                <button type="button" class="action-btn danger small" (click)="removeAccessory(i,j)">Remove</button>
+              </div>
+              <small class="error" *ngIf="acc.get('name')?.touched && acc.get('name')?.hasError('required')">
+                Accessory Name is required
+              </small>
+              <small class="error" *ngIf="acc.get('quantity')?.touched && acc.get('quantity')?.hasError('required')">
+                Quantity is required
+              </small>
+            </div>
+            <button type="button" class="action-btn secondary small" (click)="addAccessory(i)">+ Add Accessory</button>
+          </div>
+        </div>
+
+        <!-- Extra Items Section -->
+        <div *ngIf="item.get('hasExtraItems')?.value" class="subsection">
+          <div class="subsection-title">Extra Items / ተጨማሪ እቃዎች</div>
+          <div formArrayName="extraItems">
+            <div *ngFor="let ex of getExtraItems(i).controls; let j = index" [formGroupName]="j" class="accessory-row">
+              <div class="input-group">
+                <input formControlName="name" placeholder="Extra Item Name / ስም" />
+                <input type="number" formControlName="quantity" placeholder="Quantity / ብዛት" min="1" />
+                <select formControlName="store">
+                  <option value="" disabled>Select Store / ግምጃ ቤት</option>
+                  <option *ngFor="let type of storeTypes" [value]="type">{{type}}</option>
+                </select>
+                <input formControlName="extraStatus" readonly />
+                <input formControlName="extraIssuedByName" placeholder="Issued By / የወጣው በ" />
+                <button type="button" class="action-btn danger small" (click)="removeExtraItem(i,j)">Remove</button>
+              </div>
+              <small class="error" *ngIf="ex.get('name')?.touched && ex.get('name')?.hasError('required')">
+                Name is required
+              </small>
+              <small class="error" *ngIf="ex.get('quantity')?.touched && ex.get('quantity')?.hasError('required')">
+                Quantity is required
+              </small>
+              <small class="error" *ngIf="ex.get('store')?.touched && ex.get('store')?.hasError('required')">
+                Store is required
+              </small>
+            </div>
+            <button type="button" class="action-btn secondary small" (click)="addExtraItem(i)">+ Add Extra Item</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="action-btn secondary" style="margin-top: 20px;" (click)="addItem()">+ Add Item</button>
+
+    <!-- Approval Information Section -->
+    <div class="section-title">Approval Information / የማረጋገጫ መረጃ</div>
+    <div class="table-container">
+      <div class="table-row">
+        <div class="table-label">Prepared By / ያዘጋጀው</div>
+        <div class="table-input">
+          <input formControlName="preparedBy" />
+          <small class="error" *ngIf="editForm.get('preparedBy')?.touched && editForm.get('preparedBy')?.hasError('required')">
+            Prepared By is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Prepared By Title / ያዘጋጀው ማዕረግ</div>
+        <div class="table-input">
+          <input formControlName="pTitle" />
+          <small class="error" *ngIf="editForm.get('pTitle')?.touched && editForm.get('pTitle')?.hasError('required')">
+            Prepared By Title is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Checked By / ያረጋገጠው ሃላፊ</div>
+        <div class="table-input">
+          <input formControlName="checkedBy" />
+          <small class="error" *ngIf="editForm.get('checkedBy')?.touched && editForm.get('checkedBy')?.hasError('required')">
+            Checked By is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Checked By Title / ያረጋገጠው ሃላፊ ማዕረግ</div>
+        <div class="table-input">
+          <input formControlName="cTitle" />
+          <small class="error" *ngIf="editForm.get('cTitle')?.touched && editForm.get('cTitle')?.hasError('required')">
+            Checked By Title is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Approved By / ያጸደቀው</div>
+        <div class="table-input">
+          <input formControlName="approvedBy" />
+          <small class="error" *ngIf="editForm.get('approvedBy')?.touched && editForm.get('approvedBy')?.hasError('required')">
+            Approved By is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Approved By Title / ያጸደቀው ማዕረግ</div>
+        <div class="table-input">
+          <input formControlName="aTitle" />
+          <small class="error" *ngIf="editForm.get('aTitle')?.touched && editForm.get('aTitle')?.hasError('required')">
+            Approved By Title is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Issued/Turned By / ወጪ / ተመላሽ ያደረገው</div>
+        <div class="table-input">
+          <input formControlName="issuedTurnBy" />
+          <small class="error" *ngIf="editForm.get('issuedTurnBy')?.touched && editForm.get('issuedTurnBy')?.hasError('required')">
+            Issued/Turned By is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Issued/Turned By Title / ወጪ / ተመላሽ ያደረገው ማዕረግ</div>
+        <div class="table-input">
+          <input formControlName="iTitle" />
+          <small class="error" *ngIf="editForm.get('iTitle')?.touched && editForm.get('iTitle')?.hasError('required')">
+            Issued/Turned By Title is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Issued By / ያረካከበው</div>
+        <div class="table-input">
+          <input formControlName="issBy" />
+          <small class="error" *ngIf="editForm.get('issBy')?.touched && editForm.get('issBy')?.hasError('required')">
+            Issued By is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Issued By Title / ያረካከበው ማዕረግ</div>
+        <div class="table-input">
+          <input formControlName="isTitle" />
+          <small class="error" *ngIf="editForm.get('isTitle')?.touched && editForm.get('isTitle')?.hasError('required')">
+            Issued By Title is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Received By / የተረከበው / የመለሰው</div>
+        <div class="table-input">
+          <input formControlName="receivedBy" />
+          <small class="error" *ngIf="editForm.get('receivedBy')?.touched && editForm.get('receivedBy')?.hasError('required')">
+            Received By is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Received By Title / የተረከበው / የመለሰው ማዕረግ</div>
+        <div class="table-input">
+          <input formControlName="rTitle" />
+          <small class="error" *ngIf="editForm.get('rTitle')?.touched && editForm.get('rTitle')?.hasError('required')">
+            Received By Title is required
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button type="button" class="action-btn secondary" routerLink="/transit/model2-list">
+        Cancel / ሰርዝ
+      </button>
+      <button type="submit" class="action-btn primary" [disabled]="isSubmitting || editForm.invalid">
+        {{ isSubmitting ? 'Updating...' : 'Update / አሻሽል' }}
+      </button>
     </div>
   </form>
 </div>

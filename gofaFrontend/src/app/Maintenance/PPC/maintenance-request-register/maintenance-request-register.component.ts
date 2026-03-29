@@ -31,6 +31,7 @@ export class MaintenanceRequestRegisterComponent implements OnInit {
       letterId: ['', Validators.required],
       worksOrderNumber: ['', Validators.required],
       nomenclature: ['', Validators.required],
+      model: ['', Validators.required],
       quantity: [{ value: 1, disabled: true }],
       requestedBy: ['', Validators.required],
       serialNoOfEquip: ['', Validators.required],
@@ -92,6 +93,7 @@ onLetterChange(event: Event): void {
       letterId: this.maintenanceForm.get('letterId')?.value,
       worksOrderNumber: this.maintenanceForm.get('worksOrderNumber')?.value,
       nomenclature: this.maintenanceForm.get('nomenclature')?.value,
+      model: this.maintenanceForm.get('model')?.value,
       quantity: 1,
       requestedBy: this.maintenanceForm.get('requestedBy')?.value,
       serialNoOfEquip: this.maintenanceForm.get('serialNoOfEquip')?.value,
@@ -105,11 +107,18 @@ onLetterChange(event: Event): void {
     this.maintenanceRequestService.submitMaintenanceRequest(formData).subscribe(
       (response) => {
         console.log('Maintenance request submitted successfully:', response);
+        alert('Maintenance request submitted successfully!');
         this.router.navigate(['maintenance/request-list']);
         this.resetForm();
       },
       (error) => {
         console.error('Error submitting maintenance request:', error);
+        if (error.status === 409) {
+          // Conflict - duplicate WorksOrderNumber
+          alert(`Error: A maintenance request with Works Order Number ${formData.worksOrderNumber} already exists. Please use a different Works Order Number.`);
+        } else {
+          alert(`Failed to submit maintenance request: ${error.error?.message || 'Unknown error'}`);
+        }
       }
     );
   }

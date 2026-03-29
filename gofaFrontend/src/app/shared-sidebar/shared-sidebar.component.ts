@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/cor
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
+import { TransitService } from '../transit/services/transit.service';
+import { Subscription, interval } from 'rxjs';
 
 interface MenuItem {
   label: string;
@@ -23,6 +25,8 @@ export class SharedSidebarComponent implements OnInit, OnDestroy {
   lastname: string = '';
   role: string = '';
   isLoginPage: boolean = false;
+  pendingItemsCount: number = 0;
+  private refreshSubscription?: Subscription;
   
 
   menuItems: MenuItem[] = [
@@ -30,11 +34,12 @@ export class SharedSidebarComponent implements OnInit, OnDestroy {
     { label: 'Store Dashboard / የስቶር ዳሽቦርድ', link: '/inventory-summary', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] },
     { label: 'Team Leader Dashboard / የቡድን መሪ ዳሽቦርድ', link: '/team-leader-dashboard', roles: ['SUPPLY_AND_DISTRIBUTION_TEAMLEADER']},
     { label: 'Items / የእቃ ዝርዝር', link: '/items', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER'] },
+    { label: 'Accessories / አባሪዎች', link: '/accessories', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER'] },
     { label: 'Register Item / እቃ ምዝገባ', link: '/register-item', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] },
     { label: 'Existing Item / ነባር እቃ ገቢ ', link: '/add-item-quantity', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] },
     { label: 'Model22 Registration / ሞዴል 22 መዝግብ', link: 'model22register', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] },
     { label: 'Received item report / የገቢ ሪፖርት', link: '/transaction-report', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER'] },
-    { label: 'Model22 Report / ሞዴል 22 ሪፖርት', link: '/model22-list', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL'] },
+    
     
     // { label: 'Received Items List / የገቢ እቃ ዝርዝር', link: '/item-transaction-history', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] },
     
@@ -77,12 +82,11 @@ export class SharedSidebarComponent implements OnInit, OnDestroy {
     { label: 'Mastercard Report /ማስተርካርድ ሪፖርት', link: 'MasterCard/report', roles: ['PROPERTY_CONTROL'] },
 
     { label: 'Model 2 / ሞዴል ሁለት', link: '/MasterCard/request-order-for-issue', roles: ['PROPERTY_CONTROL'] },
-    { label: 'Model 2 list / ሞዴል ሁለት ዝርዝሮች', link: '/MasterCard/request-roder-list', roles: ['PROPERTY_CONTROL'] },
-
+    { label: 'Model 2 list / ሞዴል ሁለት ዝርዝሮች', link: '/MasterCard/request-roder-list', roles: ['PROPERTY_CONTROL','VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] },
     { 
       label: 'details', 
       link: '/ /MasterCard/master-card-details/:id', 
-      roles: ['PROPERTY_CONTROL'], 
+      roles: ['PROPERTY_CONTROL','VHF', 'HF', 'SPAREPART', 'ELECTRONICS'], 
       hideLabel: true // Hide this label in the sidebar
     },
     { 
@@ -91,6 +95,8 @@ export class SharedSidebarComponent implements OnInit, OnDestroy {
       roles: ['PROPERTY_CONTROL'], 
      
     },
+    { label: 'Model22 Report / ሞዴል 22 ሪፖርት', link: '/model22-list', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL'] },
+    { label: 'Item Distribution / የእቃ ስርጭት', link: '/item-distribution-report', roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL'] },
 
 
     
@@ -178,11 +184,11 @@ export class SharedSidebarComponent implements OnInit, OnDestroy {
 
 
 
-//POWER
-{ label: 'የሜንቴናንስ ጥያቄዎች ዝርዝር', link: '/maintenance/power-maintReqList', roles: ['POWER', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE', 'PTEAM_LEADER', 'RTEAM_LEADER', 'OTEAM_LEADER'] },
-{ label: 'የተሰጡ የስፓርፓርቶች', link: '/maintenance/givenSparesto', roles: ['POWER', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE', 'PTEAM_LEADER','HTEAM_LEADER', 'RTEAM_LEADER', 'OTEAM_LEADER'] },
-{ label: 'የተጠገኑ ዝርዝሮች ', link: '/maintenance/Give-maintainedEqupment', roles: ['POWER', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE','PTEAM_LEADER', 'RTEAM_LEADER', 'OTEAM_LEADER'] },
-{ label: 'ሁሉም ጥያቄዎች', link: '/maintenance/MRRListAll', roles: ['POWER', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE'] },
+//POWER, OFFICE_MACHINE, RADIO MAINTENANCE TECHNICIANS
+{ label: 'የሜንቴናንስ ጥያቄዎች ዝርዝር', link: '/maintenance/power-maintReqList', roles: ['POWER_MAINTENANCE', 'OFFICE_MACHINE_MAINTENANCE', 'VHF_MAINTENANCE', 'HF_MAINTENANCE', 'IT_MAINTENANCE', 'RADIO_MAINTENANCE', 'PTEAM_LEADER', 'RTEAM_LEADER', 'OTEAM_LEADER', 'HTEAM_LEADER'] },
+{ label: 'የተሰጡ የስፓርፓርቶች', link: '/maintenance/givenSparesto', roles: ['POWER_MAINTENANCE', 'OFFICE_MACHINE_MAINTENANCE', 'VHF_MAINTENANCE', 'HF_MAINTENANCE', 'IT_MAINTENANCE', 'RADIO_MAINTENANCE', 'PTEAM_LEADER', 'HTEAM_LEADER', 'RTEAM_LEADER', 'OTEAM_LEADER'] },
+{ label: 'የተጠገኑ ዝርዝሮች ', link: '/maintenance/Give-maintainedEqupment', roles: ['POWER_MAINTENANCE', 'OFFICE_MACHINE_MAINTENANCE', 'VHF_MAINTENANCE', 'HF_MAINTENANCE', 'IT_MAINTENANCE', 'RADIO_MAINTENANCE', 'PTEAM_LEADER', 'RTEAM_LEADER', 'OTEAM_LEADER', 'HTEAM_LEADER'] },
+{ label: 'ሁሉም ጥያቄዎች', link: '/maintenance/MRRListAll', roles: ['POWER_MAINTENANCE', 'OFFICE_MACHINE_MAINTENANCE', 'VHF_MAINTENANCE', 'HF_MAINTENANCE', 'IT_MAINTENANCE', 'RADIO_MAINTENANCE'] },
 
 //MINISTORE
 { label: 'ደብዳቤ ይቀበሉ', link: '/maintenance/Add_Letter', roles: ['MAINTENANCE_LEADER']},
@@ -216,10 +222,21 @@ export class SharedSidebarComponent implements OnInit, OnDestroy {
   
   
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router, 
+    private authService: AuthService,
+    private transitService: TransitService
+  ) {}
 
   ngOnInit(): void {
     this.loadUserDetails();
+    this.loadPendingItemsCount();
+    
+    // Refresh pending items count every 30 seconds
+    this.refreshSubscription = interval(30000).subscribe(() => {
+      this.loadPendingItemsCount();
+    });
+    
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -229,11 +246,8 @@ export class SharedSidebarComponent implements OnInit, OnDestroy {
         if (this.isLoginPage) {
           this.showSidebar = false;
           this.sidebarToggle.emit(false);
-        } else {
-          const isAuthenticated = this.authService.isAuthenticated();
-          this.showSidebar = isAuthenticated && this.isSidebarVisible(currentRoute);
-          this.sidebarToggle.emit(this.showSidebar);
         }
+        // Don't automatically show sidebar on navigation - let user control it
         
         this.updateBodyClass();
         this.loadUserDetails();
@@ -248,13 +262,51 @@ export class SharedSidebarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.body.classList.remove('sidebar-open');
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
   }
 
   private loadUserDetails(): void {
     this.firstname = this.authService.getFirstName() || 'Guest';
     this.lastname = this.authService.getLastName() || 'Guest';
     this.role = this.authService.getRole() || 'Unknown Role';
+  }
+
+  private loadPendingItemsCount(): void {
+    const userRole = this.role?.toLowerCase();
+    const storeRoles = ['vhf', 'hf', 'sparepart', 'electronics'];
     
+    if (!storeRoles.includes(userRole)) {
+      this.pendingItemsCount = 0;
+      return;
+    }
+    
+    this.transitService.getReceivedItems().subscribe({
+      next: (items) => {
+        // Count only items with "Waiting For Stores" status for this store
+        this.pendingItemsCount = items.filter(item => {
+          const isForThisStore = (item.storeType || '').toLowerCase() === userRole;
+          const isWaitingStatus = item.status === 'Waiting For Stores';
+          
+          // Check if main item is waiting for this store
+          if (isForThisStore && isWaitingStatus) {
+            return true;
+          }
+          
+          // Check if any extra items are waiting for this store
+          const hasWaitingExtraItems = (item.extraItems ?? []).some(extra => 
+            (extra.store || '').toLowerCase() === userRole && 
+            extra.extraStatus === 'Waiting For Stores'
+          );
+          
+          return hasWaitingExtraItems;
+        }).length;
+      },
+      error: () => {
+        this.pendingItemsCount = 0;
+      }
+    });
   }
 
   get filteredMenuItems(): MenuItem[] {
@@ -306,6 +358,13 @@ export class SharedSidebarComponent implements OnInit, OnDestroy {
   toggleSidebar(): void {
     this.showSidebar = !this.showSidebar;
     this.sidebarToggle.emit(this.showSidebar);
+    this.updateBodyClass();
+  }
+
+  onNavigate(): void {
+    // Close sidebar after navigation
+    this.showSidebar = false;
+    this.sidebarToggle.emit(false);
     this.updateBodyClass();
   }
 }

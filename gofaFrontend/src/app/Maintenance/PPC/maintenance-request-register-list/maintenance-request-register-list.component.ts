@@ -21,8 +21,6 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
   searchSerialNo: string = '';
 
   /** ================= MODALS ================= */
-  selectedRequest: any = null;
-  showFullDetails = false;
   editRequest: any = {};
 
   /** ================= PAGINATION ================= */
@@ -43,35 +41,30 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
 
   /** ================= DATA FETCH ================= */
   fetchMaintenanceRequests(): void {
-  this.isLoading = true;
-  this.maintenanceRequestService.getMaintenanceRequests('In Progress').subscribe({
-    next: (data: any[]) => {
-      console.log('Fetched maintenance requests:', data);
+    this.isLoading = true;
+    this.maintenanceRequestService.getMaintenanceRequests('').subscribe({
+      next: (data: any[]) => {
+        console.log('Fetched maintenance requests:', data);
 
-      // No need to remap unless your API returns inconsistent casing
-      this.maintenanceRequests = data;
+        this.maintenanceRequests = data;
 
-      // Optional: filter only "Pending" or "In Progress"
-      this.filteredRequests = this.maintenanceRequests.filter(
-        req => req.status === 'Pending' || req.status === 'In Progress'
-      );
+        // Sort by latest date
+        this.maintenanceRequests.sort(
+          (a, b) => new Date(b.dateWorkOrderReceived).getTime() - new Date(a.dateWorkOrderReceived).getTime()
+        );
 
-      // Sort by latest date
-      this.filteredRequests.sort(
-        (a, b) => new Date(b.dateWorkOrderReceived).getTime() - new Date(a.dateWorkOrderReceived).getTime()
-      );
-
-      this.currentPage = 1;
-      this.updatePagination();
-      this.isLoading = false;
-    },
-    error: (err) => {
-      console.error('Error fetching maintenance requests:', err);
-      this.error = 'Failed to load maintenance requests.';
-      this.isLoading = false;
-    }
-  });
-}
+        this.filteredRequests = [...this.maintenanceRequests];
+        this.currentPage = 1;
+        this.updatePagination();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching maintenance requests:', err);
+        this.error = 'Failed to load maintenance requests.';
+        this.isLoading = false;
+      }
+    });
+  }
 
 
   /** ================= SEARCH ================= */
@@ -84,17 +77,15 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
   applyFilters(): void {
     let filtered = [...this.maintenanceRequests];
 
-    // Filter by serial number if search term exists
+    // Filter by search term across multiple fields
     const term = this.searchSerialNo.trim().toLowerCase();
     if (term) {
       filtered = filtered.filter(req =>
-        req.serialNoOfEquip?.toLowerCase().includes(term)
+        (req.serialNoOfEquip?.toLowerCase().includes(term)) ||
+        (req.nomenclature?.toLowerCase().includes(term)) ||
+        (req.requestedBy?.toLowerCase().includes(term)) ||
+        (req.worksOrderNumber?.toString().includes(term))
       );
-    }
-
-    // Filter by status
-    if (this.statusFilter) {
-      filtered = filtered.filter(req => req.status === this.statusFilter);
     }
 
     this.filteredRequests = filtered;
@@ -118,15 +109,10 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
     this.updatePagination();
   }
 
-  /** ================= VIEW DETAILS MODAL ================= */
+  /** ================= VIEW DETAILS ================= */
   viewDetails(request: any): void {
-    this.selectedRequest = { ...request };
-    this.showFullDetails = false;
-    this.openModalById('viewModal');
-  }
-
-  toggleFullDetails(): void {
-    this.showFullDetails = !this.showFullDetails;
+    // Navigate to request details page using worksOrderNumber
+    this.router.navigate(['/maintenance/request-details', request.worksOrderNumber]);
   }
 
   /** ================= EDIT MODAL ================= */
@@ -195,16 +181,26 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
   /** ================= STATUS HELPERS ================= */
   getStatusClass(request: any): string {
     if (request.repairFinishDate) return 'badge bg-success';
+    if (request.status === 'Maintenance Finished') return 'badge bg-success';
+    if (request.status === 'Client Received') return 'badge bg-success';
+    if (request.status === 'Quality Check') return 'badge bg-info text-dark';
     if (request.status === 'On Maintaining') return 'badge bg-info text-dark';
     if (request.status === 'In Progress') return 'badge bg-warning text-dark';
+    if (request.status === 'Waiting for Spare Part') return 'badge bg-warning text-dark';
+    if (request.status === 'Pending') return 'badge bg-secondary';
     return 'badge bg-secondary';
   }
 
   getStatusText(request: any): string {
+    // If there's a status field, use it
+    if (request.status) {
+      return request.status;
+    }
+    // Fallback to checking repair dates
     if (request.repairFinishDate) return 'Completed';
-    if (request.status === 'On Maintaining') return 'On Maintaining';
-    if (request.status === 'In Progress') return 'In Progress';
-    return 'Unknown';
+    if (request.repairStartDate) return 'In Progress';
+    // Default status
+    return 'Pending';
   }
 
   isSendRequestDisabled(status: string): boolean {
@@ -213,6 +209,32 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
 
   isDeleteDisabled(status: string): boolean {
     return status !== 'Pending';
+  }
+
+  /** ================= STATISTICS ================= */
+  getTotalRequests(): number {
+    return this.maintenanceRequests.length;
+  }
+
+  getPendingRequests(): number {
+    return this.maintenanceRequests.filter(req => req.status === 'Pending').length;
+  }
+
+  getInProgressRequests(): number {
+    return this.maintenanceRequests.filter(req => 
+      req.status === 'In Progress' || 
+      req.status === 'On Maintaining' || 
+      req.status === 'Quality Check' ||
+      req.status === 'Waiting for Spare Part'
+    ).length;
+  }
+
+  getCompletedRequests(): number {
+    return this.maintenanceRequests.filter(req => 
+      req.status === 'Maintenance Finished' || 
+      req.status === 'Client Received' ||
+      req.repairFinishDate
+    ).length;
   }
 
   /** ================= UTILITIES ================= */

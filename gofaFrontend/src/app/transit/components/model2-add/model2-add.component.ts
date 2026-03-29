@@ -56,6 +56,8 @@ interface Model2Dto {
   accessories: Accessory[];
   hasExtraItems: boolean;
   extraItems: ExtraItem[];
+  vat: number;
+  grandTotal: number;
 }
 
 @Component({
@@ -106,14 +108,14 @@ export class Model2AddComponent implements OnInit {
     this.autoFillRegisteredBy();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   get itemDetails(): FormArray {
     return this.receiveForm.get('itemDetails') as FormArray;
   }
 
   createItem(): FormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       stockNumber: ['', Validators.required],
       description: ['', Validators.required],
       unitOfMeasurment: ['', Validators.required],
@@ -127,8 +129,27 @@ export class Model2AddComponent implements OnInit {
       hasAccessories: [false],
       accessories: this.fb.array([]),
       hasExtraItems: [false],
-      extraItems: this.fb.array([])
+      extraItems: this.fb.array([]),
+      vat: [0, [Validators.required, Validators.min(0)]],
+      grandTotal: [0, [Validators.required, Validators.min(0)]]
     });
+
+    // Auto-calculate totalPrice and grandTotal
+    group.valueChanges.subscribe(val => {
+      const issued = +(val?.issued || 0);
+      const unitPrice = +(val?.unitPrice || 0);
+      const vat = +(val?.vat || 0);
+
+      const totalPrice = issued * unitPrice;
+      const grandTotal = totalPrice + vat;
+
+      group.patchValue({
+        totalPrice: totalPrice,
+        grandTotal: grandTotal
+      }, { emitEvent: false });
+    });
+
+    return group;
   }
 
   addItem(): void {
@@ -273,25 +294,27 @@ export class Model2AddComponent implements OnInit {
         hasAccessories: item.hasAccessories,
         accessories: item.hasAccessories
           ? (item.accessories || []).map((acc: any) => ({
-              name: acc.name || '',
-              quantity: +acc.quantity || 0
-            }))
+            name: acc.name || '',
+            quantity: +acc.quantity || 0
+          }))
           : [],
         hasExtraItems: item.hasExtraItems,
         extraItems: item.hasExtraItems
           ? (item.extraItems || []).map((extra: any) => ({
-              name: extra.name,
-              quantity: +extra.quantity,
-              store: extra.store,
-              extraStatus: extra.extraStatus,
-              extraIssuedByName: extra.extraIssuedByName || ''
-            }))
-          : []
+            name: extra.name,
+            quantity: +extra.quantity,
+            store: extra.store,
+            extraStatus: extra.extraStatus,
+            extraIssuedByName: extra.extraIssuedByName || ''
+          }))
+          : [],
+        vat: +item.vat,
+        grandTotal: +item.grandTotal
       };
       payloads.push(payload);
     }
 
-    
+
 
     this.model2Service.addModel2(payloads).subscribe({
       next: () => {

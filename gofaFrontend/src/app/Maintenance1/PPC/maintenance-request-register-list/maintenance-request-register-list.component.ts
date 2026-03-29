@@ -21,8 +21,6 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
   searchSerialNo: string = '';
 
   // Modals
-  selectedRequest: any = null;
-  showFullDetails = false;
   editRequest: any = {};
 
   // Pagination
@@ -93,32 +91,42 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
 
   /** ================= MODALS ================= */
   viewDetails(request: any): void {
-    this.selectedRequest = { ...request };
-    this.showFullDetails = false;
-    this.openModalById('viewModal');
-  }
-
-  toggleFullDetails(): void {
-    this.showFullDetails = !this.showFullDetails;
+    // Navigate to request details page using worksOrderNumber
+    this.router.navigate(['/maintenance/request-details', request.worksOrderNumber]);
   }
 
   openEditModal(request: any): void {
     this.editRequest = { ...request };
-    this.openModalById('editModal');
+    // Use setTimeout to ensure DOM is ready
+    setTimeout(() => {
+      this.openModalById('editModal');
+    }, 0);
   }
 
   onEditSubmit(): void {
-    const id = this.editRequest.worksOrderNumber;
-    const updatedData = { ...this.editRequest };
+    const id = this.editRequest.id;
+    const updatedData = {
+      nomenclature: this.editRequest.nomenclature,
+      quantity: this.editRequest.quantity,
+      requestedBy: this.editRequest.requestedBy,
+      serialNoOfEquip: this.editRequest.serialNoOfEquip,
+      briefDescriptionOfWork: this.editRequest.briefDescriptionOfWork,
+      dateWorkOrderReceived: this.editRequest.dateWorkOrderReceived,
+      equipmentTypeId: this.editRequest.equipmentTypeId,
+      statusStage: this.editRequest.statusStage,
+      letterId: this.editRequest.letterId,
+      currentHandler: this.editRequest.currentHandler
+    };
 
-    this.maintenanceRequestService.updateMaintenanceRequest(id, updatedData).subscribe(
+    this.maintenanceRequestService.updateMaintenanceRequestById(id, updatedData).subscribe(
       () => {
+        alert('Request updated successfully! / መጠየቂያው በተሳካ ሁኔታ ተዘምኗል!');
         this.fetchMaintenanceRequests();
         this.closeModalById('editModal');
       },
       (error) => {
         console.error('Update failed:', error);
-        alert('Failed to update request.');
+        alert('Failed to update request. Please try again. / መጠየቂያውን ማዘመን አልተሳካም። እባክዎ እንደገና ይሞክሩ።');
       }
     );
   }
@@ -130,18 +138,20 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
     });
   }
 
-  deleteRequest(worksOrderNumber: number): void {
+  deleteRequest(id: number): void {
     if (confirm('Are you sure you want to delete this request?')) {
-      this.maintenanceRequestService.deleteMaintenanceRequest(worksOrderNumber).subscribe(
+      this.maintenanceRequestService.deleteMaintenanceRequest(id).subscribe(
         () => {
           this.maintenanceRequests = this.maintenanceRequests.filter(
-            (req) => req.worksOrderNumber !== worksOrderNumber
+            (req) => req.id !== id
           );
           this.applyFilter();
+          alert('Request deleted successfully.');
         },
         (error) => {
           this.error = 'Failed to delete the request.';
           console.error('Deletion error:', error);
+          alert('Failed to delete the request. Please try again.');
         }
       );
     }

@@ -1,205 +1,274 @@
-<style>
-  .custom-bg {
-    background-color: #03203c;
-    color: white;
-  }
+<div class="item-detail">
+  <div class="header">
+    <h1 class="title">Edit Item / የእቃ ማስተካከያ ሰነድ</h1>
+    <button class="action-btn secondary" routerLink="/transit/received-items" aria-label="Go back to received items list">
+      Back / ተመለስ
+    </button>
+  </div>
 
-  .custom-text {
-    color: #02172a;
-  }
+  <!-- Error/Success Messages -->
+  <div *ngIf="errorMessage" class="message error-message" role="alert">
+    {{ errorMessage }}
+  </div>
+  <div *ngIf="successMessage" class="message success-message" role="alert">
+    {{ successMessage }}
+  </div>
 
-  .custom-btn {
-    background-color: #02172a;
-    border-color: #02172a;
-    color: white;
-    border-radius: 0.6rem;
-    padding: 0.4rem 1.2rem;
-    font-weight: 500;
-  }
-  .custom-btn:hover {
-    background-color: #033c73;
-    border-color: #033c73;
-  }
-
-  .card {
-    border-radius: 1rem;
-    border: none;
-    margin: auto;
-    max-width: 1200px;              /* keep card centered */
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* stronger shadow */
-  }
-  .card-header {
-    border-radius: 1rem 1rem 0 0;
-    text-align: center;
-  }
-
-  .card-body{
-      font-size: 1.2rem !important;
-    }
-
-  .section-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #02172a;
-    margin: 1rem 0 0.6rem;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 0.3rem;
-  }
-
-  .form-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.7rem;
-    gap: 0.6rem;
-  }
-
-  .form-group label {
-    flex: 0 0 40%;     /* label takes 40% */
-    font-weight: 600;
-    margin-bottom: 0;
-    color: #02172a;
-    white-space: nowrap;
-  }
-
-  .form-group input,
-  .form-group select {
-    flex: 1;           /* input expands */
-  }
-
-  .form-control,
-  .form-select {
-    border-radius: 0.5rem;
-  }
-  </style>
-
-  <div class="content-container">
-    <div class="container mt-4">
-      <div class="card">
-        <div class="card-header custom-bg text-white">
-          <h4 class="card-title mb-0">Edit Item / የእቃ ማስተካከያ ሰነድ</h4>
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit(itemId)" class="form-container">
+    
+    <!-- Item Information Section -->
+    <div class="section-title">Item Information / የእቃው መረጃ</div>
+    <div class="table-container">
+      <div class="table-row">
+        <div class="table-label">Supplier / የአቅራቢው ስም</div>
+        <div class="table-input">
+          <input formControlName="Supplier" [readonly]="!isFormEditable" />
         </div>
-
-        <div class="card-body p-4">
-          <form [formGroup]="editForm" (ngSubmit)="onSubmit(itemId)">
-            <div class="row">
-
-              <!-- Left Column -->
-              <div class="col-md-6">
-                <div class="form-group" *ngFor="let field of [
-                  { name: 'Supplier', label: 'Supplier / የአቅራቢው ስም' },
-                  { name: 'Category', label: 'Category / የእቃው ምድብ' },
-
-                  { name: 'PRNO', label: 'PRNO / ግ.መ.ቁ.' },
-
-                  { name: 'InvoiceNo', label: 'Invoice No / ኢንቮይስ ቁጥር' },
-                  { name: 'ItemType', label: 'Make and Model / የእቃው አይነት' },
-                  { name: 'ContactNumber', label: 'PO. (Contract) Number / አድራሻ' },
-                  { name: 'Number', label: 'Number / ቁ.' },
-                  { name: 'RegisteredBy', label: 'Registered By / የመዘገበው ሰው' },
-                  { name: 'SerialNumber', label: 'Model / መለያ ቁ.' },
-                  { name: 'Description', label: 'Description / የዕቃው ስም' },
-                  { name: 'UnitOfMeasurment', label: 'Unit of Measurement / መለኪያ' }
-                ]">
-                  <label>{{ field.label }}</label>
-                  <input [type]="field || 'text'" class="form-control"
-                         [formControlName]="field.name" [readonly]="!isFormEditable" />
-                </div>
-
-                <!-- Currency -->
-                <div class="form-group" *ngIf="isFormEditable">
-                  <label>Currency / ምንዛሬ</label>
-                  <select formControlName="Currency" class="form-select">
-                    <option value="Birr">BIRR</option>
-                    <option value="USD">USD</option>
-                    <option value="Euro">EURO</option>
-                  </select>
-                </div>
-
-                <!-- Accessories -->
-                <div formArrayName="Accessories" class="mt-4">
-                  <div class="section-title">Accessory Details</div>
-                  <div *ngFor="let accCtrl of accessories.controls; let i = index"
-                       [formGroupName]="i" class="input-group mb-2">
-                    <input formControlName="name" class="form-control" placeholder="Accessory Name" [readonly]="!isFormEditable"/>
-                    <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity" min="1" [readonly]="!isFormEditable"/>
-                    <button type="button" class="btn btn-danger" (click)="removeAccessory(i)" [disabled]="!isFormEditable">Remove</button>
-                  </div>
-                  <button type="button" class="btn btn-sm btn-info" (click)="addAccessory()" [disabled]="!isFormEditable">+ Add Accessory</button>
-                </div>
-              </div>
-
-              <!-- Right Column -->
-              <div class="col-md-6">
-                <div class="form-group" *ngFor="let field of [
-                  { name: 'Ordered', label: 'Ordered / የታዘዘ' },
-                  { name: 'Received', label: 'Received / የገባ' },
-                  { name: 'UnitOfPrice', label: 'Unit Price / ያንዱ ዋጋ' },
-                  { name: 'Amount', label: 'Total price / ጠቅላላ ዋጋ', type: 'number' },
-                  { name: 'Location', label: 'Location / ከተማ, ቦታ' },
-                  { name: 'StoreType', label: 'Store Type / ግምጃ ቤት' },
-                  { name: 'Remark', label: 'Remark / መግለጫ' },
-                  { name: 'CheckedByName', label: 'Checked By / የፈተሸው ሰው ስም' },
-                  { name: 'CTitle', label: 'Checked By Title / የፈተሸው ማዕረግ' },
-                  { name: 'RecivedByName', label: 'Received By / የተረካቢው ስም' },
-                  { name: 'RTitle', label: 'Received By Title / የተረካቢው ማዕረግ' },
-                  { name: 'AuthorizedByName', label: 'Authorized By / ያጸደቀው ሰው ስም' },
-                  { name: 'ATitle', label: 'Authorized By Title / ያጸደቀው ማዕረግ' },
-                  { name: 'Model19Ref', label: 'Model19 Ref. / ሞዴል 19 ቁጥር' }
-                ]">
-                  <label>{{ field.label }}</label>
-                  <input [type]="field.type || 'text'" class="form-control"
-                         [formControlName]="field.name" [readonly]="!isFormEditable" />
-                </div>
-
-                <!-- Status -->
-                <div class="form-group" *ngIf="isFormEditable">
-                  <label>Status / እቃው ያለበት ሁኔታ</label>
-                  <select formControlName="Status" class="form-select">
-                    <option value="Waiting For Stores">Waiting For Stores</option>
-                    <option value="Stores Recieved">Stores Recieved</option>
-                  </select>
-                </div>
-
-                <!-- Extra Items -->
-                <div formArrayName="ExtraItems" class="mt-4">
-                  <div class="section-title">Extra Item Details</div>
-                  <div *ngFor="let extraCtrl of extraItems.controls; let i = index"
-                       [formGroupName]="i" class="input-group mb-2">
-                    <input formControlName="name" class="form-control" placeholder="Extra Item Name"
-                           [readonly]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'" />
-                    <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity" min="1"
-                           [readonly]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'" />
-                    <select formControlName="store" class="form-select"
-                            [disabled]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'">
-                      <option value="" disabled>Select Store</option>
-                      <option *ngFor="let type of storeTypes" [value]="type">{{ type }}</option>
-                    </select>
-                    <select formControlName="extraStatus" class="form-select"
-                            [disabled]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'">
-                      <option value="Waiting For Stores">Waiting For Stores</option>
-                      <option value="Stores Recieved">Stores Recieved</option>
-                    </select>
-                    <input formControlName="extraRecivedByName" class="form-control" placeholder="Received By"
-                           [readonly]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'" />
-                    <button type="button" class="btn btn-danger"
-                            (click)="removeExtraItem(i)"
-                            [disabled]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'">
-                      Remove
-                    </button>
-                  </div>
-                  <button type="button" class="btn btn-sm btn-info" (click)="addExtraItem()">+ Add Extra Item</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="text-center mt-4">
-              <button type="submit" class="btn custom-btn me-2" [disabled]="editForm.invalid">Update</button>
-              <button type="button" class="btn btn-secondary"
-                      (click)="router.navigate(['/transit/received-items'])">Cancel</button>
-            </div>
-          </form>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Category / የእቃው ምድብ</div>
+        <div class="table-input">
+          <input formControlName="Category" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">PRNO / ግ.መ.ቁ.</div>
+        <div class="table-input">
+          <input formControlName="PRNO" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Invoice No / ኢንቮይስ ቁጥር</div>
+        <div class="table-input">
+          <input formControlName="InvoiceNo" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Make and Model / የእቃው አይነት</div>
+        <div class="table-input">
+          <input formControlName="ItemType" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">PO. (Contract) Number / ግ.ማ. (ውል) ቁጥር</div>
+        <div class="table-input">
+          <input formControlName="ContactNumber" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Number / ቁ.</div>
+        <div class="table-input">
+          <input formControlName="Number" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Registered By / የመዘገበው</div>
+        <div class="table-input">
+          <input formControlName="RegisteredBy" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Model / መለያ ቁ.</div>
+        <div class="table-input">
+          <input formControlName="SerialNumber" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Description / የዕቃው ስም</div>
+        <div class="table-input">
+          <input formControlName="Description" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Unit of Measurement / መለኪያ</div>
+        <div class="table-input">
+          <input formControlName="UnitOfMeasurment" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row" *ngIf="isFormEditable">
+        <div class="table-label">Currency / ምንዛሬ</div>
+        <div class="table-input">
+          <select formControlName="Currency">
+            <option value="Birr">BIRR</option>
+            <option value="USD">USD</option>
+            <option value="Euro">EURO</option>
+          </select>
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- Transaction Details Section -->
+    <div class="section-title">Transaction Details / የግብይት መረጃ</div>
+    <div class="table-container">
+      <div class="table-row">
+        <div class="table-label">Ordered / የታዘዘ</div>
+        <div class="table-input">
+          <input type="number" formControlName="Ordered" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Received / የገባ</div>
+        <div class="table-input">
+          <input type="number" formControlName="Received" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Unit Price / ያንዱ ዋጋ</div>
+        <div class="table-input">
+          <input type="number" formControlName="UnitOfPrice" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Total Price / ጠቅላላ ዋጋ</div>
+        <div class="table-input">
+          <input type="number" formControlName="Amount" readonly />
+          <div class="help-text">Auto-calculated from Received × Unit Price</div>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">VAT / ቫት</div>
+        <div class="table-input">
+          <input type="number" formControlName="Vat" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Grand Total / ጠቅላላ ድምር</div>
+        <div class="table-input">
+          <input type="number" formControlName="GrandTotal" readonly />
+          <div class="help-text">Auto-calculated from Total Price + VAT</div>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Location / ከተማ, ቦታ</div>
+        <div class="table-input">
+          <input formControlName="Location" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Store Type / ግምጃ ቤት</div>
+        <div class="table-input">
+          <input formControlName="StoreType" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Remark / መግለጫ</div>
+        <div class="table-input">
+          <textarea formControlName="Remark" [readonly]="!isFormEditable"></textarea>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Model19 Ref. / ሞዴል 19 ቁጥር</div>
+        <div class="table-input">
+          <input formControlName="Model19Ref" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row" *ngIf="isFormEditable">
+        <div class="table-label">Status / እቃው ያለበት ሁኔታ</div>
+        <div class="table-input">
+          <select formControlName="Status">
+            <option value="Waiting For Stores">Waiting For Stores</option>
+            <option value="Stores Recieved">Stores Recieved</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approval Information Section -->
+    <div class="section-title">Approval Information / የማረጋገጫ መረጃ</div>
+    <div class="table-container">
+      <div class="table-row">
+        <div class="table-label">Checked By / የፈተሸው</div>
+        <div class="table-input">
+          <input formControlName="CheckedByName" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Checked By Title / የፈተሸው ማዕረግ</div>
+        <div class="table-input">
+          <input formControlName="CTitle" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Received By / የተረካቢው</div>
+        <div class="table-input">
+          <input formControlName="RecivedByName" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Received By Title / የተረካቢው ማዕረግ</div>
+        <div class="table-input">
+          <input formControlName="RTitle" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Authorized By / ያጸደቀው</div>
+        <div class="table-input">
+          <input formControlName="AuthorizedByName" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">Authorized By Title / ያጸደቀው ማዕረግ</div>
+        <div class="table-input">
+          <input formControlName="ATitle" [readonly]="!isFormEditable" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Accessories Section -->
+    <div class="section-title">Accessories / ተጨማሪ እቃዎች</div>
+    <div formArrayName="Accessories">
+      <div *ngFor="let accCtrl of accessories.controls; let i = index" [formGroupName]="i" class="accessory-row">
+        <div class="input-group">
+          <input formControlName="name" placeholder="Accessory Name / ስም" [readonly]="!isFormEditable" />
+          <input type="number" formControlName="quantity" placeholder="Quantity / ብዛት" min="1" [readonly]="!isFormEditable" />
+          <button type="button" class="action-btn danger small" (click)="removeAccessory(i)" [disabled]="!isFormEditable">
+            Remove
+          </button>
+        </div>
+      </div>
+      <button type="button" class="action-btn secondary small" (click)="addAccessory()" [disabled]="!isFormEditable">
+        + Add Accessory
+      </button>
+    </div>
+
+    <!-- Extra Items Section -->
+    <div class="section-title">Extra Items / ተጨማሪ እቃዎች</div>
+    <div formArrayName="ExtraItems">
+      <div *ngFor="let extraCtrl of extraItems.controls; let i = index" [formGroupName]="i" class="accessory-row">
+        <div class="input-group">
+          <input formControlName="name" placeholder="Extra Item Name / ስም" 
+            [readonly]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'" />
+          <input type="number" formControlName="quantity" placeholder="Quantity / ብዛት" min="1"
+            [readonly]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'" />
+          <select formControlName="store" [disabled]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'">
+            <option value="" disabled>Select Store</option>
+            <option *ngFor="let type of storeTypes" [value]="type">{{ type }}</option>
+          </select>
+          <select formControlName="extraStatus" [disabled]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'">
+            <option value="Waiting For Stores">Waiting For Stores</option>
+            <option value="Stores Recieved">Stores Recieved</option>
+          </select>
+          <input formControlName="extraRecivedByName" placeholder="Received By / የተረካቢው"
+            [readonly]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'" />
+          <button type="button" class="action-btn danger small" (click)="removeExtraItem(i)"
+            [disabled]="extraCtrl.get('extraStatus')?.value === 'Stores Recieved'">
+            Remove
+          </button>
+        </div>
+      </div>
+      <button type="button" class="action-btn secondary small" (click)="addExtraItem()">
+        + Add Extra Item
+      </button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button type="button" class="action-btn secondary" routerLink="/transit/received-items">
+        Cancel / ሰርዝ
+      </button>
+      <button type="submit" class="action-btn primary" [disabled]="editForm.invalid || !isFormEditable">
+        Update / አሻሽል
+      </button>
+    </div>
+  </form>
+</div>

@@ -60,9 +60,13 @@ export class MaintenanceRequestRegisterComponent implements OnInit {
     );
   }
 
+  isSubmitting = false;
+
   onSubmit(): void {
     this.submitted = true;
-    if (this.maintenanceForm.invalid) return;
+    if (this.maintenanceForm.invalid || this.isSubmitting) return;
+
+    this.isSubmitting = true;
 
     const formData = {
       letterId: this.maintenanceForm.get('letterId')?.value,
@@ -81,11 +85,19 @@ export class MaintenanceRequestRegisterComponent implements OnInit {
     this.maintenanceRequestService.submitMaintenanceRequest(formData).subscribe(
       (response) => {
         console.log('Maintenance request submitted successfully:', response);
+        alert('Maintenance request submitted successfully!');
         this.router.navigate(['maintenance/request-list']);
         this.resetForm();
+        this.isSubmitting = false;
       },
       (error) => {
         console.error('Error submitting maintenance request:', error);
+        if (error.status === 409) {
+          alert('A maintenance request with this Works Order Number already exists.');
+        } else {
+          alert('Failed to submit maintenance request. Please try again.');
+        }
+        this.isSubmitting = false;
       }
     );
   }

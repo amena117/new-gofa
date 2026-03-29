@@ -147,8 +147,11 @@
 
     <!-- Buttons -->
     <div class="button-container">
-      <button type="submit" class="btn btn-primary">Submit / አስገባ</button>
-      <button type="button" class="btn btn-secondary" (click)="clearForm()">Clear / አጥፋ</button>
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+        <span *ngIf="!isSubmitting">Submit / አስገባ</span>
+        <span *ngIf="isSubmitting">Submitting...</span>
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="clearForm()" [disabled]="isSubmitting">Clear / አጥፋ</button>
     </div>
     
   </form>

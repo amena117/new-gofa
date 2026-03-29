@@ -30,6 +30,7 @@ export class RequestOrderDetailComponent implements OnInit {
     GBP:'£'
      
   };
+  issuingStores: string[] = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
 
   constructor(
     private route: ActivatedRoute,

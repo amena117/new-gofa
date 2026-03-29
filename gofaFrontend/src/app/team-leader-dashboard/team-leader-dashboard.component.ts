@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { ItemService } from '../services/item.service';
 import { AuthService } from '../services/auth.service';
 import { Item } from '../model/item.model';
@@ -22,6 +23,7 @@ interface SummaryData {
 }
 
 interface LowStockItem {
+  itemId: number;
   name: string;
   category: string;
   quantity: number;
@@ -59,7 +61,8 @@ export class TeamLeaderDashboardComponent implements OnInit {
   constructor(
     private itemService: ItemService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -138,6 +141,7 @@ export class TeamLeaderDashboardComponent implements OnInit {
       .filter(item => (item.quantity || 0) < 10)
       .sort((a, b) => (a.quantity || 0) - (b.quantity || 0))
       .map(item => ({
+        itemId: item.itemId || 0,
         name: item.description || 'Unknown Item',
         category: item.category || 'Unknown',
         role: item.role || item.category || 'Unknown',
@@ -340,5 +344,11 @@ export class TeamLeaderDashboardComponent implements OnInit {
     this.lowStockCurrentPage = 1;
     this.updatePagedItems();
     this.cdr.detectChanges();
+  }
+
+  navigateToItemDetails(itemId: number): void {
+    if (itemId) {
+      this.router.navigate(['/item', itemId]);
+    }
   }
 }

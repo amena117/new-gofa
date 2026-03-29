@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-model2-list',
   templateUrl: './model2-list.component.html',
-  styleUrl: './model2-list.component.css'
+  styleUrls: ['./model2-list.component.css']
 })
 export class Model2ListComponent implements OnInit {
   records: Model2Item[] = [];
@@ -29,17 +29,55 @@ export class Model2ListComponent implements OnInit {
   constructor(
     private model2Service: Model2Service,
     public dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadRecords();
   }
 
+  // Helper methods for stats
+  getApprovedCount(): number {
+    return this.filteredRecords.filter(record => 
+      record.status === 'Approved'
+    ).length;
+  }
+
+  getPendingCount(): number {
+    return this.filteredRecords.filter(record => 
+      !record.status || record.status === 'Pending' || record.status !== 'Approved'
+    ).length;
+  }
+
+  // Status display methods
+  getStatusClass(status: string | undefined): string {
+    if (!status || status === 'Pending') return 'pending';
+    if (status === 'Approved') return 'approved';
+    return 'pending';
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.onSearch();
+  }
+
   loadRecords() {
     this.model2Service.getModel2Records().subscribe({
-      next: (data) => {
-        // Debugging line
-        this.records = data.map((d: any) => ({ ...d, model2Id: d.id }));
+      next: (data: any[]) => {
+        this.records = data.map((d: any) => ({
+          ...d,
+          model2Id: d.id || d.Id || d.model2Id,
+          date: d.date || d.Date,
+          voucherNumber: d.voucherNumber || d.VoucherNumber,
+          stockNumber: d.stockNumber || d.StockNumber,
+          description: d.description || d.Description,
+          requestingUnit: d.requestingUnit || d.RequestingUnit,
+          issuingStore: d.issuingStore || d.IssuingStore,
+          issued: d.issued || d.Issued,
+          totalPrice: d.totalPrice || d.TotalPrice,
+          status: d.status || d.Status,
+          accessories: d.accessories || d.Accessories,
+          extraItems: d.extraItems || d.ExtraItems
+        }));
         this.filteredRecords = [...this.records];
         this.sortRecords(this.selectedSort);
         this.updatePagination();
@@ -115,8 +153,10 @@ export class Model2ListComponent implements OnInit {
   }
 
   onPageChange(page: number) {
-    this.currentPage = page;
-    this.updatePagination();
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
   }
 
   getPageNumbers(): number[] {
@@ -126,5 +166,20 @@ export class Model2ListComponent implements OnInit {
   onItemsPerPageChange() {
     this.currentPage = 1;
     this.updatePagination();
+  }
+
+  // Helper method to calculate the end index for displaying records
+  getDisplayEndIndex(): number {
+    return Math.min(this.currentPage * this.itemsPerPage, this.filteredRecords.length);
+  }
+
+  // Helper method to calculate the start index for displaying records
+  getDisplayStartIndex(): number {
+    return (this.currentPage - 1) * this.itemsPerPage + 1;
+  }
+
+  // TrackBy function for performance optimization
+  trackByRecordId(index: number, record: Model2Item): any {
+    return record.model2Id || index;
   }
 }

@@ -1,9 +1,12 @@
 <!-- src/app/Mastercard/components/request-order-list/request-order-list.component.html -->
 <div class="content-container">
   <!-- Add New Request Order Button -->
-  <button class="btn btn-primary btn-sm mb-3" [routerLink]="['/MasterCard/request-order-for-issue']">
-    + Create New Request Order
-  </button>
+  <button 
+  *ngIf="authService.hasRole('PROPERTY_CONTROL')"
+  class="btn btn-primary btn-sm mb-3" 
+  [routerLink]="['/MasterCard/request-order-for-issue']">
+  + Create New Request Order
+</button>
 
   <!-- Card Container -->
   <div class="card shadow-sm mt-4">
@@ -21,6 +24,18 @@
             placeholder="Search by Voucher No, Requesting Unit, etc."
           />
         </div>
+        <!-- Store Filter -->
+    <div class="form-group me-2 mb-2">
+      <select
+  class="form-select"
+  [(ngModel)]="selectedIssuingStore"
+  (change)="onSearch()">
+  <option value="">All Stores</option> <!-- ✅ value="", not [value]="null" -->
+  <option *ngFor="let store of issuingStores" [value]="store">
+    {{ store }}
+  </option>
+</select>
+    </div>
         <div class="form-group mb-2">
           <select
             id="sortSelect"
@@ -49,6 +64,9 @@
               <th>የጠየቀው ክፍል (Requesting Unit)</th>
               <th>የእቃው አይነት (Make and Model)</th>
               <th>መደብ (Category)</th>
+              
+              <th>የሰጠው መጋዘን (Issuing Store)</th>
+              <th>ሁኔታ (Status)</th>
               <th>ድርጊቶች (Actions)</th>
             </tr>
           </thead>
@@ -62,7 +80,48 @@
               <td [routerLink]="['/MasterCard/request-order-detail', order.id]">{{ order.requestingUnit }}</td>
               <td [routerLink]="['/MasterCard/request-order-detail', order.id]">{{ order.makeAndModel }}</td>
               <td [routerLink]="['/MasterCard/request-order-detail', order.id]">{{ order.category }}</td>
-              <td>
+              <td [routerLink]="['/MasterCard/request-order-detail', order.id]">{{ order.issuingStore }}</td>
+              <!-- Actions Column: Only visible to PROPERTY_CONTROL -->
+<!-- Actions Column -->
+<td>
+  <!-- PROPERTY_CONTROL: View-only status -->
+  <div *ngIf="authService.hasRole('PROPERTY_CONTROL')">
+    <span *ngIf="order.status === 'Accepted'" class="badge bg-success">
+      Accepted by {{ order.acceptedBy || '—' }}
+      <br />
+      <small>{{ formatDate(order.acceptedAt) || '—' }}</small>
+    </span>
+    <span *ngIf="order.status === 'Rejected'" class="badge bg-danger">
+      Rejected by {{ order.rejectedBy || '—' }}
+      <br />
+      <small>{{ formatDate(order.rejectedAt) || '—' }}</small>
+    </span>
+    <span *ngIf="order.status === 'Pending' || !order.status" class="badge bg-warning">
+      Pending
+    </span>
+  </div>
+
+  <!-- Store Roles: Show Accept/Reject buttons -->
+  <div *ngIf="!authService.hasRole('PROPERTY_CONTROL')">
+    <span *ngIf="order.status === 'Accepted'" class="badge bg-success">Accepted</span>
+    <span *ngIf="order.status === 'Rejected'" class="badge bg-danger">Rejected</span>
+    
+    <div *ngIf="order.status === 'Pending' || !order.status">
+      <button 
+        *ngIf="order.id"
+        class="btn btn-success btn-sm me-1"
+        (click)="acceptOrder(order.id!); $event.stopPropagation()">
+        Accept
+      </button>
+      <button 
+        *ngIf="order.id"
+        class="btn btn-danger btn-sm"
+        (click)="rejectOrder(order.id!); $event.stopPropagation()">
+        Reject
+      </button>
+    </div>
+  </div>
+</td>              <td>
                 <button style="background-color: #03203c; color: white;" class="btn btn-sm me-1" [routerLink]="['/MasterCard/request-order-detail', order.id]">
                   View Details / ዝርዝር እይታ
                 </button>

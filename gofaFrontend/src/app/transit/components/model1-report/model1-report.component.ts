@@ -3,6 +3,7 @@ import { TransitService } from '../../services/transit.service';
 import { Item } from '../../models/item.model'; // Assuming Accessory is part of Item or not directly used here
 import moment from 'moment';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 
 @Component({
@@ -13,9 +14,24 @@ import html2canvas from 'html2canvas';
 export class Model1ReportComponent implements OnInit {
   records: Item[] = [];
   filteredRecords: Item[] = [];
+  paginatedRecords: Item[] = [];
   selectedRange: string = '0'; // Default to show all records
   isLoading: boolean = false;
   errorMessage: string = '';
+
+  // View mode and sorting
+  viewMode: 'cards' | 'table' = 'cards';
+  sortBy: string = 'date';
+  sortDirection: 'asc' | 'desc' = 'desc';
+  expandedItems: Set<any> = new Set();
+
+  // Pagination properties
+  currentPage: number = 1;
+  itemsPerPage: number = 20;
+  totalPages: number = 1;
+
+  // Math reference for template
+  Math = Math;
 
   ethMonthNames = [
     'መስከረም', 'ጥቅምት', 'ህዳር', 'ታህሳስ', 'ጥር', 'የካቲት',
@@ -76,11 +92,13 @@ export class Model1ReportComponent implements OnInit {
         }));
 
         console.log('Loaded records:', this.records);
+        console.log('Sample record for debugging:', this.records[0]);
         this.records.forEach(record => {
-          console.log(`Record ID: ${record.model1Id}, Date: ${record.date}, Accessories: ${record.accessories ? record.accessories.length : 0}, ExtraItems: ${record.extraItems ? record.extraItems.length : 0}`);
+          console.log(`Record ID: ${record.model1Id}, Date: ${record.date}, Store: ${record.Store}, StoreType: ${record.storeType}, Location: ${record.location}`);
         });
 
         this.filterByRange();
+        this.extractFilterOptions();
         this.isLoading = false;
       },
       error: (err) => {
@@ -89,6 +107,147 @@ export class Model1ReportComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  // View mode and expansion methods
+  currentView: 'grid' | 'list' = 'list'; // Changed default to list
+  searchTerm: string = '';
+  detailsOpenItems: Set<any> = new Set();
+  
+  // New filter properties
+  selectedStore: string = '';
+  selectedStatus: string = '';
+  availableStores: string[] = [];
+  availableStatuses: string[] = [];
+
+  toggleView(): void {
+    this.currentView = this.currentView === 'grid' ? 'list' : 'grid';
+  }
+
+  toggleDetails(itemId: any): void {
+    if (this.detailsOpenItems.has(itemId)) {
+      this.detailsOpenItems.delete(itemId);
+    } else {
+      this.detailsOpenItems.add(itemId);
+    }
+  }
+
+  isDetailsOpen(itemId: any): boolean {
+    return this.detailsOpenItems.has(itemId);
+  }
+
+  // Track expanded sub-accessories per record+accessory index
+  expandedAccessories: Map<string, boolean> = new Map();
+
+  toggleAccessory(recordId: any, accIndex: number): void {
+    const key = `${recordId}_${accIndex}`;
+    this.expandedAccessories.set(key, !this.expandedAccessories.get(key));
+  }
+
+  isAccessoryExpanded(recordId: any, accIndex: number): boolean {
+    return !!this.expandedAccessories.get(`${recordId}_${accIndex}`);
+  }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onStoreFilterChange(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onStatusFilterChange(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  private extractFilterOptions(): void {
+    // Extract unique store types (VHF, HF, SPAREPART, ELECTRONICS)
+    const stores = new Set<string>();
+    this.records.forEach(record => {
+      if (record.storeType && record.storeType.trim()) {
+        stores.add(record.storeType.trim());
+      }
+    });
+    
+    console.log('Extracted store types:', Array.from(stores));
+    this.availableStores = Array.from(stores).sort();
+
+    // Extract unique statuses (normalized)
+    const statuses = new Set<string>();
+    this.records.forEach(record => {
+      if (record.status && record.status.trim()) {
+        const normalizedStatus = this.getDisplayStatus(record.status);
+        statuses.add(normalizedStatus);
+      }
+    });
+    
+    console.log('Extracted statuses:', Array.from(statuses));
+    this.availableStatuses = Array.from(statuses).sort();
+  }
+
+  private applyFilters(): void {
+    let filtered = [...this.records];
+    
+    // Apply search filter
+    if (this.searchTerm.trim()) {
+      const searchLower = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(record => 
+        (record.description || '').toLowerCase().includes(searchLower) ||
+        (record.supplier || '').toLowerCase().includes(searchLower) ||
+        (record.serialNumber || '').toLowerCase().includes(searchLower) ||
+        (record.itemType || '').toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply store type filter
+    if (this.selectedStore) {
+      filtered = filtered.filter(record => 
+        record.storeType === this.selectedStore
+      );
+    }
+
+    // Apply status filter
+    if (this.selectedStatus) {
+      filtered = filtered.filter(record => 
+        this.getDisplayStatus(record.status) === this.selectedStatus
+      );
+    }
+    
+    this.filteredRecords = filtered;
+    this.updatePagination();
+  }
+
+  // Pagination methods for new design
+  getVisiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+    const halfVisible = Math.floor(maxVisiblePages / 2);
+    
+    let startPage = Math.max(1, this.currentPage - halfVisible);
+    let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    if (startPage > 1) {
+      pages.push(1);
+      if (startPage > 2) pages.push(-1); // Ellipsis
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    if (endPage < this.totalPages) {
+      if (endPage < this.totalPages - 1) pages.push(-1); // Ellipsis
+      pages.push(this.totalPages);
+    }
+    
+    return pages;
   }
 
   private ethiopianStringToDate(ethDate: string | null): Date | null {
@@ -213,7 +372,7 @@ export class Model1ReportComponent implements OnInit {
       return 'None';
     }
     return record.extraItems.map(item =>
-      `${item.name}: ${item.quantity} (${item.store}, ${item.extraStatus}${item.extraRecivedByName ? ', ' + item.extraRecivedByName : ''})`
+      `${item.name}: ${item.quantity} (${item.store}, ${this.getDisplayStatus(item.extraStatus)}${item.extraRecivedByName ? ', ' + item.extraRecivedByName : ''})`
     ).join(', ');
   }
 
@@ -236,7 +395,8 @@ export class Model1ReportComponent implements OnInit {
         next: (data: Item[]) => {
           console.log('All records received from backend:');
           data.forEach(record => console.log(`ID: ${record.model1Id}, Date (EC): ${record.date}`));
-          this.filteredRecords = data;
+          this.records = data;
+          this.applyFilters();
         },
         error: (err) => {
           this.errorMessage = 'Failed to load all records: ' + (err.message ?? 'Unknown error');
@@ -258,7 +418,10 @@ export class Model1ReportComponent implements OnInit {
           console.log(`ID: ${record.model1Id}, EC Date: ${record.date}, GC Date: ${gcDate}`);
         });
 
-        this.filteredRecords = data;
+        this.records = data;
+        this.applyFilters();
+        this.extractFilterOptions();
+        this.extractFilterOptions();
         this.isLoading = false;
       },
       error: (err) => {
@@ -268,37 +431,379 @@ export class Model1ReportComponent implements OnInit {
     });
   }
 
+  // Status class method
+  getStatusClass(status: string | undefined): string {
+    if (!status) return 'inactive';
+    const statusLower = status.toLowerCase();
+    
+    // Merge all variations of "received" including "Stores Recieved", "received", etc.
+    if (statusLower.includes('received') || statusLower.includes('recieved')) return 'stores-received';
+    if (statusLower.includes('waiting for store') || statusLower.includes('waiting')) return 'waiting';
+    if (statusLower.includes('active') || statusLower.includes('completed') || statusLower.includes('approved')) return 'active';
+    if (statusLower.includes('pending') || statusLower.includes('processing') || statusLower.includes('inspection')) return 'pending';
+    
+    return 'inactive';
+  }
+
+  // Method to normalize status display text
+  getDisplayStatus(status: string | undefined): string {
+    if (!status) return 'Unknown';
+    const statusLower = status.toLowerCase();
+    
+    // Normalize all variations of "received" to "Received by Store"
+    if (statusLower.includes('received') || statusLower.includes('recieved')) {
+      return 'Received by Store';
+    }
+    
+    // Normalize all variations of "waiting" to "Waiting for Store"
+    if (statusLower.includes('waiting for store') || statusLower.includes('waiting for stores')) {
+      return 'Waiting for Store';
+    }
+    
+    // Return original status for other cases
+    return status;
+  }
+
+  // Pagination methods
+  updatePagination(): void {
+    this.totalPages = Math.ceil(this.filteredRecords.length / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = 1;
+    }
+    this.updatePaginatedRecords();
+  }
+
+  updatePaginatedRecords(): void {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedRecords = this.filteredRecords.slice(startIndex, endIndex);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedRecords();
+    }
+  }
+
+  onItemsPerPageChange(event: any): void {
+    this.itemsPerPage = parseInt(event.target.value, 10);
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  trackByRecordId(index: number, record: Item): any {
+    return record.model1Id || index;
+  }
+
+  clearFilters(): void {
+    this.selectedRange = '0';
+    this.searchTerm = '';
+    this.selectedStore = '';
+    this.selectedStatus = '';
+    this.filterByRange();
+  }
+
+  formatPrice(price: number, currency: string): string {
+    if (!price || price === 0) {
+      return '0.00 ETB';
+    }
+    
+    // Normalize currency - treat ETB and Birr as the same
+    let normalizedCurrency = currency || 'ETB';
+    if (normalizedCurrency.toLowerCase() === 'birr' || normalizedCurrency.toLowerCase() === 'etb') {
+      normalizedCurrency = 'ETB';
+    }
+    
+    const formattedPrice = price.toFixed(2);
+    return `${formattedPrice} ${normalizedCurrency}`;
+  }
+
+  getUnitPrice(record: Item): number {
+    // Try different fields that might contain unit price
+    return record.unitPrice || record.amount || 0;
+  }
+
+  getTotalPrice(record: Item): number {
+    // Try different fields that might contain total price
+    if (record.totalPrice && record.totalPrice > 0) {
+      return record.totalPrice;
+    }
+    // Calculate total price as unit price * received quantity
+    const unitPrice = this.getUnitPrice(record);
+    const quantity = record.received || record.quantity || 0;
+    return unitPrice * quantity;
+  }
+
+  getTotalValue(): number {
+    return this.filteredRecords.reduce((sum, record) => sum + this.getTotalPrice(record), 0);
+  }
+
+  getTotalValueByCurrency(): { [currency: string]: number } {
+    const currencyTotals: { [currency: string]: number } = {};
+    
+    this.filteredRecords.forEach(record => {
+      let currency = record.currency || 'ETB';
+      
+      // Normalize currency - treat ETB and Birr as the same
+      if (currency.toLowerCase() === 'birr' || currency.toLowerCase() === 'etb') {
+        currency = 'ETB';
+      }
+      
+      const totalPrice = this.getTotalPrice(record);
+      
+      if (currencyTotals[currency]) {
+        currencyTotals[currency] += totalPrice;
+      } else {
+        currencyTotals[currency] = totalPrice;
+      }
+    });
+    
+    return currencyTotals;
+  }
+
+  getTotalValueFormatted(): string {
+    const currencyTotals = this.getTotalValueByCurrency();
+    const currencies = Object.keys(currencyTotals);
+    
+    if (currencies.length === 0) {
+      return '0.00 ETB';
+    }
+    
+    if (currencies.length === 1) {
+      const currency = currencies[0];
+      return `${currencyTotals[currency].toFixed(2)} ${currency}`;
+    }
+    
+    // Multiple currencies - show them side by side
+    return currencies
+      .map(currency => `${currencyTotals[currency].toFixed(2)} ${currency}`)
+      .join(' | ');
+  }
+
+  getTotalQuantity(): number {
+    return this.filteredRecords.reduce((sum, record) => sum + (record.received || 0), 0);
+  }
+
   printDetails(): void {
-    const tableElement = document.querySelector('.table-responsive') as HTMLElement;
-    if (!tableElement) {
-      console.error('Table element not found.');
-      this.errorMessage = 'Failed to generate PDF: Table not found.';
+    if (this.filteredRecords.length === 0) {
+      this.errorMessage = 'No records to export';
       return;
     }
 
-    html2canvas(tableElement, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('l', 'mm', 'a4');
+    try {
+      // Create PDF with proper table format
+      const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape orientation
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const marginX = 10;
-      const marginY = 20;
-      const imgWidth = pageWidth - marginX * 2;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      const reportTitle = `Transaction Report - ${this.selectedRange === '0' ? 'ALL' : this.selectedRange + (parseInt(this.selectedRange) <= 7 ? ' Days' : ' Months')} Period`;
-      pdf.setFontSize(16);
-      pdf.text(reportTitle, pageWidth / 2, 15, { align: 'center' });
-      const maxHeight = pageHeight - marginY * 2;
-      if (imgHeight > maxHeight) {
-        const ratio = maxHeight / imgHeight;
-        pdf.addImage(imgData, 'PNG', marginX, marginY, imgWidth * ratio, maxHeight);
-      } else {
-        pdf.addImage(imgData, 'PNG', marginX, marginY, imgWidth, imgHeight);
+      const margin = 15;
+      let yPosition = margin;
+
+      // Add title
+      pdf.setFontSize(18);
+      pdf.setFont('helvetica', 'bold');
+      const title = 'Model 1 Transit Report';
+      const titleWidth = pdf.getTextWidth(title);
+      pdf.text(title, (pageWidth - titleWidth) / 2, yPosition);
+      yPosition += 10;
+
+      // Add subtitle with date range
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      const subtitle = `Report Period: ${this.selectedRange === '0' ? 'All Time' : this.getDateRangeText()}`;
+      const subtitleWidth = pdf.getTextWidth(subtitle);
+      pdf.text(subtitle, (pageWidth - subtitleWidth) / 2, yPosition);
+      yPosition += 8;
+
+      // Add summary statistics
+      pdf.setFontSize(10);
+      const stats = [
+        `Total Records: ${this.filteredRecords.length}`,
+        `Total Quantity: ${this.getTotalQuantity()}`,
+        `Total Value: ${this.getTotalValueFormatted()}`
+      ];
+      
+      const statsText = stats.join(' | ');
+      const statsWidth = pdf.getTextWidth(statsText);
+      pdf.text(statsText, (pageWidth - statsWidth) / 2, yPosition);
+      yPosition += 15;
+
+      // Define table columns
+      const columns = [
+        { header: 'Date', dataKey: 'date', width: 25 },
+        { header: 'Description', dataKey: 'description', width: 45 },
+        { header: 'Supplier', dataKey: 'supplier', width: 30 },
+        { header: 'Serial No', dataKey: 'serialNumber', width: 25 },
+        { header: 'Qty', dataKey: 'quantity', width: 15 },
+        { header: 'Value', dataKey: 'value', width: 25 },
+        { header: 'Status', dataKey: 'status', width: 25 },
+        { header: 'Store Type', dataKey: 'storeType', width: 20 }
+      ];
+
+      // Prepare table data
+      const tableData = this.filteredRecords.map(record => ({
+        date: this.displayDate(record.date),
+        description: this.truncateText(record.description || 'N/A', 30),
+        supplier: this.truncateText(record.supplier || 'N/A', 20),
+        serialNumber: record.serialNumber || 'N/A',
+        quantity: (record.received || 0).toString(),
+        value: this.formatPrice(this.getTotalPrice(record), record.currency),
+        status: this.getDisplayStatus(record.status),
+        storeType: record.storeType || 'N/A'
+      }));
+
+      // Try to use autoTable, fallback to manual table if it fails
+      try {
+        autoTable(pdf, {
+          startY: yPosition,
+          head: [columns.map(col => col.header)],
+          body: tableData.map(row => columns.map(col => row[col.dataKey as keyof typeof row])),
+          styles: {
+            fontSize: 8,
+            cellPadding: 2,
+            overflow: 'linebreak',
+            halign: 'left'
+          },
+          headStyles: {
+            fillColor: [3, 32, 60], // Main color #03203c
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 9
+          },
+          alternateRowStyles: {
+            fillColor: [248, 250, 252] // Light gray
+          },
+          columnStyles: {
+            0: { cellWidth: columns[0].width }, // Date
+            1: { cellWidth: columns[1].width }, // Description
+            2: { cellWidth: columns[2].width }, // Supplier
+            3: { cellWidth: columns[3].width }, // Serial
+            4: { cellWidth: columns[4].width, halign: 'center' }, // Quantity
+            5: { cellWidth: columns[5].width, halign: 'right' }, // Value
+            6: { cellWidth: columns[6].width, halign: 'center' }, // Status
+            7: { cellWidth: columns[7].width, halign: 'center' }  // Store Type
+          },
+          margin: { left: margin, right: margin },
+          didDrawPage: (data: any) => {
+            // Add generation date
+            pdf.setFontSize(8);
+            pdf.text(
+              `Generated: ${new Date().toLocaleDateString()}`,
+              margin,
+              pageHeight - 10
+            );
+          }
+        });
+
+        // Add page numbers after table generation
+        const totalPages = pdf.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+          pdf.setPage(i);
+          pdf.setFontSize(8);
+          pdf.text(
+            `Page ${i} of ${totalPages}`,
+            pageWidth - margin - 25,
+            pageHeight - 10
+          );
+        }
+      } catch (autoTableError) {
+        console.warn('AutoTable failed, using manual table generation:', autoTableError);
+        
+        // Fallback: Manual table generation
+        this.generateManualTable(pdf, columns, tableData, yPosition, margin, pageWidth, pageHeight);
       }
-      pdf.save(`Transaction_Report_${this.selectedRange}.pdf`);
-    }).catch(err => {
-      console.error('Error generating PDF:', err);
-      this.errorMessage = 'Failed to generate PDF: ' + (err.message || 'Unknown error');
+
+      // Save the PDF
+      const fileName = `Model1_Transit_Report_${this.selectedRange}_${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+      
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      this.errorMessage = 'Failed to generate PDF: ' + (error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+
+  private generateManualTable(pdf: jsPDF, columns: any[], tableData: any[], startY: number, margin: number, pageWidth: number, pageHeight: number): void {
+    let yPosition = startY;
+    const rowHeight = 8;
+    const headerHeight = 10;
+    
+    // Draw table header
+    pdf.setFillColor(3, 32, 60); // Main color
+    pdf.rect(margin, yPosition, pageWidth - 2 * margin, headerHeight, 'F');
+    
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'bold');
+    
+    let xPosition = margin + 2;
+    columns.forEach(col => {
+      pdf.text(col.header, xPosition, yPosition + 7);
+      xPosition += col.width;
     });
+    
+    yPosition += headerHeight;
+    
+    // Draw table rows
+    pdf.setTextColor(0, 0, 0);
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'normal');
+    
+    tableData.forEach((row, index) => {
+      // Check if we need a new page
+      if (yPosition + rowHeight > pageHeight - 20) {
+        pdf.addPage();
+        yPosition = margin;
+      }
+      
+      // Alternate row colors
+      if (index % 2 === 1) {
+        pdf.setFillColor(248, 250, 252);
+        pdf.rect(margin, yPosition, pageWidth - 2 * margin, rowHeight, 'F');
+      }
+      
+      xPosition = margin + 2;
+      columns.forEach(col => {
+        const value = row[col.dataKey] || '';
+        pdf.text(value.toString(), xPosition, yPosition + 6);
+        xPosition += col.width;
+      });
+      
+      yPosition += rowHeight;
+    });
+    
+    // Add footer to all pages
+    const totalPages = pdf.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.text(
+        `Generated: ${new Date().toLocaleDateString()}`,
+        margin,
+        pageHeight - 10
+      );
+      pdf.text(
+        `Page ${i} of ${totalPages}`,
+        pageWidth - margin - 25,
+        pageHeight - 10
+      );
+    }
+  }
+
+  private getDateRangeText(): string {
+    switch (this.selectedRange) {
+      case '1week': return 'Last Week';
+      case '1month': return 'Last Month';
+      case '3months': return 'Last 3 Months';
+      case '6months': return 'Last 6 Months';
+      case '9months': return 'Last 9 Months';
+      case '1year': return 'Last Year';
+      default: return 'All Time';
+    }
+  }
+
+  private truncateText(text: string, maxLength: number): string {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;
   }
 }

@@ -1,166 +1,157 @@
-<div class="container">
-  <h2 class="text-center">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Maintenance Request Form / የጥገና ጥያቄ ቅፅ</h2>
-  <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()" class="row g-3">
-    
-    <!-- Column 1 -->
-    <div class="col-md-6">
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Maintenance Request Form / የጥገና ጥያቄ ቅፅ</h1>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()">
       
-      <!-- Works Order Number -->
-      <div class="form-group">
-        <label for="worksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
-        <input type="number" id="worksOrderNumber" formControlName="worksOrderNumber" class="form-control" />
-        <small *ngIf="submitted && maintenanceForm.get('worksOrderNumber')?.invalid" class="text-danger">
-          Works Order Number is required. / የስራ ትዕዛዝ ቁጥር አስፈላጊ ነው።
-        </small>
-      </div>
-
-      <!-- Quantity -->
-      <div class="form-group">
-        <label for="quantity">Quantity / ብዛት</label>
-        <input
-  type="number"
-  id="quantity"
-  formControlName="quantity"
-  class="form-control"
-  [readonly]="true"
-/>
-
-        <small *ngIf="submitted && maintenanceForm.get('quantity')?.invalid" class="text-danger">
-          Quantity is required and must be at least 1. / ብዛት አስፈላጊ ነው እና ቢያንስ 1 መሆን አለበት።
-        </small>
-      </div>
-
-      <!-- Serial No of Equipment -->
-      <div class="form-group">
-        <label for="serialNoOfEquip">Serial No of Equipment / የመሳሪያው ተራ ቁጥር</label>
-        <input type="text" id="serialNoOfEquip" formControlName="serialNoOfEquip" class="form-control" />
-        <small *ngIf="submitted && maintenanceForm.get('serialNoOfEquip')?.invalid" class="text-danger">
-          Serial Number is required. / የተራ ቁጥር አስፈላጊ ነው።
-        </small>
-      </div>
-
-      <!-- Equipment Type -->
-      <div class="col-12">
+      <div class="form-row">
+        <!-- Letter ID -->
         <div class="form-group">
-          <label for="equipmentTypeId">Equipment Type / የመሳሪያ አይነት</label>
+          <label for="letterId">Letter ID / የደብዳቤ መለያ <span class="required">*</span></label>
+          <select 
+            id="letterId" 
+            formControlName="letterId" 
+            class="form-control"
+            (change)="onLetterChange($event)">
+            <option value="" disabled>Select Letter ID / የደብዳቤ መለያ ይምረጡ</option>
+            <option *ngFor="let letter of letters" [value]="letter.letterId">
+              {{ letter.letterId }}
+            </option>
+          </select>
+          <small *ngIf="submitted && maintenanceForm.get('letterId')?.invalid" class="error-text">
+            Letter ID is required / የደብዳቤ መለያ አስፈላጊ ነው
+          </small>
+        </div>
+
+        <!-- Works Order Number -->
+        <div class="form-group">
+          <label for="worksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር <span class="required">*</span></label>
+          <input type="number" id="worksOrderNumber" formControlName="worksOrderNumber" class="form-control" />
+          <small *ngIf="submitted && maintenanceForm.get('worksOrderNumber')?.invalid" class="error-text">
+            Works Order Number is required / የስራ ትዕዛዝ ቁጥር አስፈላጊ ነው
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Equipment Type -->
+        <div class="form-group">
+          <label for="equipmentTypeId">Equipment Type / የመሳሪያ አይነት <span class="required">*</span></label>
           <select id="equipmentTypeId" formControlName="equipmentTypeId" class="form-control">
             <option value="" disabled>Select Equipment Type / የመሳሪያ አይነት ይምረጡ</option>
             <option *ngFor="let type of equipmentTypes" [ngValue]="type.equipmentTypeId">
               {{ type.equipmentTypeName }}
             </option>
           </select>
-          <small *ngIf="submitted && maintenanceForm.get('equipmentTypeId')?.invalid" class="text-danger">
-            Equipment Type is required. / የመሳሪያ አይነት አስፈላጊ ነው።
+          <small *ngIf="submitted && maintenanceForm.get('equipmentTypeId')?.invalid" class="error-text">
+            Equipment Type is required / የመሳሪያ አይነት አስፈላጊ ነው
+          </small>
+        </div>
+
+        <!-- Model Number -->
+        <div class="form-group">
+          <label for="modelNumber">Model Number / የሞዴል ቁጥር <span class="required">*</span></label>
+          <input type="text" id="modelNumber" formControlName="model" class="form-control" placeholder="e.g., HP LaserJet Pro M404n" />
+          <small *ngIf="submitted && maintenanceForm.get('model')?.invalid" class="error-text">
+            Model Number is required / የሞዴል ቁጥር አስፈላጊ ነው
           </small>
         </div>
       </div>
 
-     <div class="form-group">
-  <label for="currentHandler">Current Handler / የህላው ተቋម</label>
-  <input 
-    type="text" 
-    id="currentHandler" 
-    formControlName="currentHandler" 
-    class="form-control" 
-    readonly 
-  />
-  <small *ngIf="submitted && maintenanceForm.get('currentHandler')?.invalid" class="text-danger">
-    Current Handler is required.
-  </small>
-</div>
-    </div>
-
-
-
-
-
-
-    <!-- Column 2 -->
-    <div class="col-md-6">
-      
-      <!-- Nomenclature -->
-      <div class="form-group">
-        <label for="nomenclature">Model / ሞዴል </label>
-        <input type="text" id="nomenclature" formControlName="nomenclature" class="form-control" />
-        <small *ngIf="submitted && maintenanceForm.get('nomenclature')?.invalid" class="text-danger">
-          Nomenclature is required. / ስሙ አስፈላጊ ነው።
-        </small>
+      <div class="form-row">
+        <!-- Nomenclature -->
+        <div class="form-group">
+          <label for="nomenclature">Name / ስም <span class="required">*</span></label>
+          <input type="text" id="nomenclature" formControlName="nomenclature" class="form-control" />
+          <small *ngIf="submitted && maintenanceForm.get('nomenclature')?.invalid" class="error-text">
+            Name is required / ስሙ አስፈላጊ ነው
+          </small>
+        </div>
       </div>
 
-      <!-- Requested By -->
-      <div class="form-group">
-        <label for="requestedBy">Requested By / የጠየቀው</label>
-        <input type="text" id="requestedBy" formControlName="requestedBy" class="form-control" />
-        <small *ngIf="submitted && maintenanceForm.get('requestedBy')?.invalid" class="text-danger">
-          Requested By is required. / የጠየቀው አስፈላጊ ነው።
-        </small>
+      <div class="form-row">
+        <!-- Serial No of Equipment -->
+        <div class="form-group">
+          <label for="serialNoOfEquip">Serial No of Equipment / የመሳሪያው ተራ ቁጥር <span class="required">*</span></label>
+          <input type="text" id="serialNoOfEquip" formControlName="serialNoOfEquip" class="form-control" />
+          <small *ngIf="submitted && maintenanceForm.get('serialNoOfEquip')?.invalid" class="error-text">
+            Serial Number is required / የተራ ቁጥር አስፈላጊ ነው
+          </small>
+        </div>
+
+        <!-- Quantity -->
+        <div class="form-group">
+          <label for="quantity">Quantity / ብዛት</label>
+          <input type="number" id="quantity" formControlName="quantity" class="form-control" [readonly]="true" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Requested By -->
+        <div class="form-group">
+          <label for="requestedBy">Requested By / የጠየቀው <span class="required">*</span></label>
+          <input type="text" id="requestedBy" formControlName="requestedBy" class="form-control" />
+          <small *ngIf="submitted && maintenanceForm.get('requestedBy')?.invalid" class="error-text">
+            Requested By is required / የጠየቀው አስፈላጊ ነው
+          </small>
+        </div>
+
+        <!-- Current Handler -->
+        <div class="form-group">
+          <label for="currentHandler">Current Handler / የህላው ተቋም</label>
+          <input type="text" id="currentHandler" formControlName="currentHandler" class="form-control" readonly />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Date Work Order Received -->
+        <div class="form-group">
+          <label for="dateWorkOrderReceived">Date Work Order Received / የተቀበለበት ቀን <span class="required">*</span></label>
+          <input type="date" id="dateWorkOrderReceived" formControlName="dateWorkOrderReceived" class="form-control" />
+          <small *ngIf="submitted && maintenanceForm.get('dateWorkOrderReceived')?.invalid" class="error-text">
+            Date is required / ቀኑ አስፈላጊ ነው
+          </small>
+        </div>
+
+        <!-- Status Stage -->
+        <div class="form-group">
+          <label for="statusStage">Status Stage / የስታጎች ሁኔታ <span class="required">*</span></label>
+          <select id="statusStage" formControlName="statusStage" class="form-control">
+            <option value="" disabled>Select Status Stage / የስታጎች ሁኔታ ይምረጡ</option>
+            <option value="POWER">POWER</option>
+            <option value="OFFICE_MACHINE">OFFICE_MACHINE</option>
+            <option value="RADIO_MAINTENANCE">RADIO_MAINTENANCE</option>
+          </select>
+          <small *ngIf="submitted && maintenanceForm.get('statusStage')?.invalid" class="error-text">
+            Status Stage is required / የስታጎች ሁኔታ አስፈላጊ ነው
+          </small>
+        </div>
       </div>
 
       <!-- Description of Work -->
-      <div class="form-group">
-        <label for="briefDescriptionOfWork">Description of Work / የስራው መግለጫ</label>
-        <textarea id="briefDescriptionOfWork" formControlName="briefDescriptionOfWork" class="form-control"></textarea>
-        <small *ngIf="submitted && maintenanceForm.get('briefDescriptionOfWork')?.invalid" class="text-danger">
-          Description is required. / መግለጫ አስፈላጊ ነው።
+      <div class="form-group full-width">
+        <label for="briefDescriptionOfWork">Description of Work / የስራው መግለጫ <span class="required">*</span></label>
+        <textarea id="briefDescriptionOfWork" formControlName="briefDescriptionOfWork" class="form-control" rows="4"></textarea>
+        <small *ngIf="submitted && maintenanceForm.get('briefDescriptionOfWork')?.invalid" class="error-text">
+          Description is required / መግለጫ አስፈላጊ ነው
         </small>
       </div>
 
-      <!-- Date Work Order Received -->
-      <div class="form-group">
-        <label for="dateWorkOrderReceived">Date Work Order Received / የተቀበለበት ቀን</label>
-        <input type="date" id="dateWorkOrderReceived" formControlName="dateWorkOrderReceived" class="form-control" />
-        <small *ngIf="submitted && maintenanceForm.get('dateWorkOrderReceived')?.invalid" class="text-danger">
-          Date is required. / ቀኑ አስፈላጊ ነው።
-        </small>
+      <!-- Buttons -->
+      <div class="button-container">
+        <button type="submit" class="action-btn primary">
+          <i class="bi bi-check-circle"></i> Submit / አስገባ
+        </button>
+        <button type="button" class="action-btn secondary" (click)="clearForm()">
+          <i class="bi bi-x-circle"></i> Clear / አጥፋ
+        </button>
       </div>
-
-
-<!-- Status Stage -->
-<div class="form-group">
-  <label for="statusStage">Status Stage / የስታጎች ሁኔታ</label>
-  <select id="statusStage" formControlName="statusStage" class="form-control">
-    <option value="" disabled>Select Status Stage / የስታጎች ሁኔታ ይምረጡ</option>
-    <option value="POWER">POWER</option>
-    <option value="OFFICE_MACHINE">OFFICE_MACHINE</option>
-    <option value="RADIO_MAINTENANCE">RADIO_MAINTENANCE</option>
-  </select>
-  <small *ngIf="submitted && maintenanceForm.get('statusStage')?.invalid" class="text-danger">
-    Status Stage is required. / የስታጎች ሁኔታ አስፈላጊ ነው።
-  </small>
-</div>
-    </div>
-
-        <!-- Letter ID -->
-<div class="form-group col-md-6">
-  <label for="letterId">Letter ID</label>
-
-<select 
-  id="letterId" 
-  formControlName="letterId" 
-  class="form-control"
-  (change)="onLetterChange($event)"
->
-  <option value="" disabled>Select Letter ID</option>
-  <option *ngFor="let letter of letters" [value]="letter.letterId">
-    {{ letter.letterId }}
-  </option>
-</select>
-
-
-
-
-
-  <small *ngIf="submitted && maintenanceForm.get('letterId')?.invalid" class="text-danger">
-    Letter ID is required.
-  </small>
-</div>
-
-    <!-- Buttons -->
-    <div class="button-container">
-      <button type="submit" class="btn btn-primary">Submit / አስገባ</button>
-      <button type="button" class="btn btn-secondary" (click)="clearForm()">Clear / አጥፋ</button>
-    </div>
-    
-  </form>
+      
+    </form>
+  </div>
 </div>

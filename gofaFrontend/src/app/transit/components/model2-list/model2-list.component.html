@@ -1,147 +1,176 @@
-<!-- model2-list.component.html -->
-<style>
-  .custom-bg {
-      background-color: #03203c;
-      color: white;
-  }
-  .custom-text {
-      color: #02172a;
-  }
-  .custom-btn {
-      background-color: #02172a;
-      border-color: #02172a;
-      color: white;
-  }
-  .custom-btn:hover {
-      background-color: #033c73;
-      border-color: #033c73;
-  }
-</style>
+<div class="item-listing">
+  <!-- Header with Title and Action Button -->
+  <div class="header">
+    <h1 class="title">Transaction Records / የግብይት መረጃ</h1>
 
-<div class="content-container">
-  <button class="btn btn-primary btn-sm" [routerLink]="['/transit/model2-add']">
-    + Add New Record
-  </button>
+    <div class="header-actions">
+      <button 
+        class="action-btn primary" 
+        [routerLink]="['/transit/model2-add']"
+        aria-label="Add new transaction record">
+        + Add New Record / አዲስ መዝገብ ጨምር
+      </button>
+    </div>
+  </div>
 
-  <div class="card shadow-sm mt-4">
-    <div class="card-header custom-bg text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Transaction Records / የግብይት መረጃ</h5>
-
-      <div class="form-group">
-        <label for="searchInput" class="form-label">Search / ፈልግ</label>
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <!-- Search and Sort Filter -->
+    <div class="search-filter-group">
+      <div class="search-group">
+        <label for="searchInput" class="search-label">Search: </label>
         <input
           id="searchInput"
           type="text"
-          class="form-control"
+          class="search-input"
+          placeholder="Search by voucher, stock number, description, or unit..."
           [(ngModel)]="searchQuery"
           (input)="onSearch()"
-          placeholder="Search by Voucher Number, Stock Number, etc.">
+          aria-label="Search transaction records"
+        />
       </div>
 
-      <div class="form-group">
-        <label for="sortSelect" class="form-label">Sort By / አስተካክል</label>
+      <div class="filter-group">
+        <label for="sortFilter" class="filter-label">Sort By / ደርድር: </label>
         <select
-          id="sortSelect"
-          class="form-select"
+          id="sortFilter"
+          class="filter-select"
           [(ngModel)]="selectedSort"
-          (change)="onSortChange($event)">
+          (change)="onSortChange($event)"
+          aria-label="Sort transaction records">
           <option *ngFor="let option of sortOptions" [value]="option.value">
             {{ option.viewValue }}
           </option>
         </select>
       </div>
     </div>
+  </div>
 
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Date / ቀን</th>
-              <th>Voucher No / የቫውቸር ቁጥር</th>
-              <th>Stock No / የእቃው ቁጥር</th>
-              <th>Description</th>
-              <th>Requesting Unit / ጥያቄ ያደረገው ክፍል</th>
-              <th>Issuing Store / አውጪ መጋዘን</th>
-              <th>Accessories</th>
-              <th>Extra Item / ተጨማሪ እቃ</th>
-              <th>Issued Quantity / የተሰጠው ብዛት</th>
-              <th>Total Price / ጠቅላላ ዋጋ</th>
-              <th>Status / ሁኔታ</th>
-              <th>Actions / ተግባር</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let record of paginatedRecords">
-              <td [routerLink]="['/transit/model2-detail', record.model2Id]">{{ record.date }}</td>
-              <td [routerLink]="['/transit/model2-detail', record.model2Id]">{{ record.voucherNumber }}</td>
-              <td [routerLink]="['/transit/model2-detail', record.model2Id]">{{ record.stockNumber }}</td>
-              <td [routerLink]="['/transit/model2-detail', record.model2Id]">{{ record.description }}</td>
-              <td [routerLink]="['/transit/model2-detail', record.model2Id]">{{ record.requestingUnit }}</td>
-              <td [routerLink]="['/transit/model2-detail', record.model2Id]">{{ record.issuingStore }}</td>
-              <!-- 
-              Removed commented <td> blocks for Accessories and Extra Items to prevent template parsing errors.
-              If needed, uncomment and wrap in <ng-container *ngIf="false">...</ng-container> for safe commenting.
-              -->
-              <td [routerLink]="['/transit/model2-detail', record.model2Id]">{{ record.issued }}</td>
-              <td [routerLink]="['/transit/model2-detail', record.model2Id]">{{ record.totalPrice | currency }}</td>
-              <td [routerLink]="['/transit/model2-detail', record.model2Id]">{{ record.status }}</td>
-
-              <td>
-                <button class="btn custom-bg btn-sm mr-2" [routerLink]="['/transit/model2-edit', record.model2Id]">
+  <!-- Table and Pagination -->
+  <div class="content-section">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date / ቀን</th>
+            <th>Voucher No / የሰነድ ቁጥር</th>
+            <th>Stock No / የእቃ ቁጥር</th>
+            <th>Description / መግለጫ</th>
+            <th>Requesting Unit / ጠያቂ ክፍል</th>
+            <th>Issuing Store / አቅራቢ ግምጃ ቤት</th>
+            <th>Accessories / ተጨማሪዎች</th>
+            <th>Extra Items / ተጨማሪ እቃዎች</th>
+            <th>Quantity / ብዛት</th>
+            <th>Total Price / ጠቅላላ ዋጋ</th>
+            <th>Status / ሁኔታ</th>
+            <th>Actions / ተግባር</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of paginatedRecords; trackBy: trackByRecordId" class="table-row">
+            <td data-label="Date" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              {{ record.date }}
+            </td>
+            <td data-label="Voucher No" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              <code class="small">{{ record.voucherNumber }}</code>
+            </td>
+            <td data-label="Stock No" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              <code class="small">{{ record.stockNumber }}</code>
+            </td>
+            <td data-label="Description" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              <div class="fw-medium">{{ record.description }}</div>
+            </td>
+            <td data-label="Requesting Unit" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              {{ record.requestingUnit }}
+            </td>
+            <td data-label="Issuing Store" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              {{ record.issuingStore }}
+            </td>
+            <td data-label="Accessories" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              <span class="badge bg-secondary">{{ record.accessories?.length || 0 }}</span>
+            </td>
+            <td data-label="Extra Items" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              <span class="badge bg-info">{{ record.extraItems?.length || 0 }}</span>
+            </td>
+            <td data-label="Quantity" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              <span class="badge bg-primary">{{ record.issued }}</span>
+            </td>
+            <td data-label="Total Price" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              <span class="fw-medium">{{ record.totalPrice | currency }}</span>
+            </td>
+            <td data-label="Status" [routerLink]="['/transit/model2-detail', record.model2Id]" style="cursor: pointer;">
+              <span class="badge" 
+                    [class]="record.status === 'Approved' ? 'bg-success' : 'bg-warning'">
+                {{ record.status || 'Pending' }}
+              </span>
+            </td>
+            <td data-label="Actions">
+              <div class="btn-group btn-group-sm">
+                <button
+                  class="action-btn secondary small"
+                  [routerLink]="['/transit/model2-edit', record.model2Id]"
+                  [attr.aria-label]="'Edit record ' + record.description">
                   Edit
                 </button>
-                <button class="btn btn-danger btn-sm mr-2" (click)="deleteRecord(record)">
+                <button
+                  class="action-btn secondary small"
+                  (click)="deleteRecord(record)"
+                  [attr.aria-label]="'Delete record ' + record.description">
                   Delete
                 </button>
-                <button *ngIf="record.status !== 'Approved'"
-                        class="btn btn-success btn-sm"
-                        (click)="approveRecord(record)">
-                  Approve
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-        <div class="d-flex mt-4 justify-content-between">
-          <div></div>
-          <div>
-            <nav aria-label="Page navigation">
-              <ul class="pagination">
-                <!-- Previous Button -->
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
+    <!-- Pagination Controls -->
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <div class="pagination-info">
+        Showing {{ getDisplayStartIndex() }} to 
+        {{ getDisplayEndIndex() }} of {{ filteredRecords.length }} records
+      </div>
 
-                <!-- Page Numbers -->
-                <li *ngFor="let page of getPageNumbers()" class="page-item" [class.active]="page === currentPage">
-                  <a class="page-link" (click)="onPageChange(page)">{{ page }}</a>
-                </li>
+      <div class="pagination-size">
+        <label for="pageSize">Records per page: </label>
+        <select id="pageSize" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
 
-                <!-- Next Button -->
-                <li class="page-item" [class.disabled]="currentPage === totalPages">
-                  <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div class="form-group me-4 mb-2">
-            <label>Items per page / እቃዎች በገጽ</label>
-            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </div>
-        </div>
+      <div class="pagination-buttons">
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage - 1)">
+          Previous
+        </button>
+
+        <span class="page-indicator">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(currentPage + 1)">
+          Next
+        </button>
       </div>
     </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filteredRecords.length === 0" class="empty-state">
+    <h3>{{ records.length === 0 ? 'No transaction records found.' : 'No records match your search.' }}</h3>
+    <p>
+      <button *ngIf="searchQuery" class="action-btn secondary" (click)="clearSearch()" aria-label="Clear search">
+        Clear Search / ፍለጋ አጽዳ
+      </button>
+    </p>
   </div>
 </div>

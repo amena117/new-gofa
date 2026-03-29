@@ -1,9 +1,7 @@
 <div class="container py-4" #content>
   <h2 class="mb-4 text-center border-bottom pb-2">በሃገር መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን ዋና መምሪያ 
     <br /> 
-    የመጠየቂያ፣ ማዘዣና የተመላሽ ሰነድ 
-   
-   
+    የመጠየቂያ፣ ማዘዣና የተመላሽ ሰነድ  
   </h2>
 
   <div class="d-flex justify-content-between mb-3 export-hideable" [ngClass]="{'export-hidden': isExporting}">
@@ -70,10 +68,15 @@
         </dd>
 
         <dt class="col-sm-4 fw-bold">Issuing Store / የሰጠው መጋዘን</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.issuingStore || 'N/A / የለም' }}</dd>
-        <dd class="col-sm-8" *ngIf="isEditing">
-          <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.issuingStore">
-        </dd>
+<dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.issuingStore || 'N/A / የለም' }}</dd>
+<dd class="col-sm-8" *ngIf="isEditing">
+  <select class="form-control" [(ngModel)]="editableRequestOrder!.issuingStore" required>
+    <option value="">-- Select Store --</option>
+    <option *ngFor="let store of issuingStores" [value]="store">
+      {{ store }}
+    </option>
+  </select>
+</dd>
 
         <dt class="col-sm-4 fw-bold">Make and Model / የእቃው አይነት እና ሞዴል</dt>
         <dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.makeAndModel || 'N/A / የለም' }}</dd>

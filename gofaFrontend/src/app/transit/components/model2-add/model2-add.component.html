@@ -3,6 +3,7 @@
     background-color: #02172a;
     color: white;
   }
+
   .custom-btn {
     background-color: #02172a;
     border-color: #02172a;
@@ -11,53 +12,64 @@
     padding: 0.45rem 1.2rem;
     font-weight: 500;
   }
+
   .custom-btn:hover {
     background-color: #033c73;
     border-color: #033c73;
   }
+
   .card {
     border-radius: 1rem;
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     margin-bottom: 1.5rem;
   }
+
   .card-header {
     font-weight: 600;
     font-size: 1.1rem;
     border-radius: 1rem 1rem 0 0 !important;
   }
+
   .lig {
     background-color: #f1f3f5 !important;
   }
+
   .card-body {
     background-color: #ffffff !important;
     border-radius: 0 0 1rem 1rem;
     padding: 1.2rem;
   }
+
   label {
     font-weight: 600;
     color: #02172a;
     font-size: 0.95rem;
     margin-bottom: 0.3rem;
   }
+
   .form-control.ng-touched.ng-invalid,
   .form-select.ng-touched.ng-invalid {
     border: 1px solid red;
   }
+
   small.text-danger {
     display: block;
     margin-top: 2px;
   }
+
   .form-check-input {
     width: 24px;
     height: 24px;
     cursor: pointer;
     border: 2px solid #02172a;
   }
+
   .form-check-input:checked {
     background-color: #02172a;
     border-color: #02172a;
   }
+
   .form-check-label {
     font-weight: 600;
     font-size: 1rem;
@@ -106,10 +118,12 @@
                       <option value="Condemnation">Condemnation / ከጥቅም ውጪ</option>
                       <option value="Incomplete">Incomplete / ዝግጁ ያልሆነ</option>
                     </select>
-                    <input *ngSwitchCase="'transactionDate'" formControlName="{{field.name}}" class="form-control" readonly />
+                    <input *ngSwitchCase="'transactionDate'" formControlName="{{field.name}}" class="form-control"
+                      readonly />
                     <input *ngSwitchDefault formControlName="{{field.name}}" class="form-control" />
                   </ng-container>
-                  <small class="text-danger" *ngIf="receiveForm.get(field.name)?.touched && receiveForm.get(field.name)?.hasError('required')">
+                  <small class="text-danger"
+                    *ngIf="receiveForm.get(field.name)?.touched && receiveForm.get(field.name)?.hasError('required')">
                     {{field.label}} is required
                   </small>
                 </div>
@@ -123,7 +137,8 @@
           <div *ngFor="let item of itemDetails.controls; let i = index" [formGroupName]="i" class="card mb-4">
             <div class="card-header lig d-flex justify-content-between">
               <span>Item {{ i + 1 }} Details</span>
-              <button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)" *ngIf="itemDetails.length > 1">Remove</button>
+              <button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)"
+                *ngIf="itemDetails.length > 1">Remove</button>
             </div>
             <div class="card-body">
               <div class="row g-3">
@@ -137,6 +152,8 @@
                   {name: 'do', label: 'DO / ያልተገኘ'},
                   {name: 'unitPrice', label: 'Unit Price / ያንዱ ዋጋ'},
                   {name: 'totalPrice', label: 'Total Price / ጠቅላላ ዋጋ'},
+                  {name: 'vat', label: 'VAT / ቫት'},
+                  {name: 'grandTotal', label: 'Grand Total / ጠቅላላ ድምር (ከቫት ጋር)'},
                   {name: 'currency', label: 'Currency / ምንዛሬ'}
                 ]">
                   <div class="col-md-4">
@@ -149,9 +166,11 @@
                         <option value="Pound">POUND</option>
                         <option value="Foc">Free Of Charge</option>
                       </select>
-                      <input *ngSwitchDefault formControlName="{{f.name}}" class="form-control" [type]="f.name === 'onHand' || f.name === 'request' || f.name === 'issued' || f.name === 'do' || f.name === 'unitPrice' || f.name === 'totalPrice' ? 'number' : 'text'" />
+                      <input *ngSwitchDefault formControlName="{{f.name}}" class="form-control"
+                        [type]="f.name === 'onHand' || f.name === 'request' || f.name === 'issued' || f.name === 'do' || f.name === 'unitPrice' || f.name === 'totalPrice' ? 'number' : 'text'" />
                     </ng-container>
-                    <small class="text-danger" *ngIf="item.get(f.name)?.touched && item.get(f.name)?.hasError('required')">
+                    <small class="text-danger"
+                      *ngIf="item.get(f.name)?.touched && item.get(f.name)?.hasError('required')">
                       {{f.label}} is required
                     </small>
                   </div>
@@ -170,21 +189,26 @@
                 <div *ngIf="item.get('hasAccessories')?.value" class="mt-3">
                   <label class="fw-bold">Accessory Details</label>
                   <div formArrayName="accessories">
-                    <div *ngFor="let acc of getAccessories(i).controls; let j = index" [formGroupName]="j" class="row g-2 mb-2">
+                    <div *ngFor="let acc of getAccessories(i).controls; let j = index" [formGroupName]="j"
+                      class="row g-2 mb-2">
                       <div class="col-md-5">
                         <input formControlName="name" class="form-control" placeholder="Accessory Name / ስም" />
-                        <small class="text-danger" *ngIf="acc.get('name')?.touched && acc.get('name')?.hasError('required')">
+                        <small class="text-danger"
+                          *ngIf="acc.get('name')?.touched && acc.get('name')?.hasError('required')">
                           Accessory Name is required
                         </small>
                       </div>
                       <div class="col-md-4">
-                        <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity / ብዛት" />
-                        <small class="text-danger" *ngIf="acc.get('quantity')?.touched && acc.get('quantity')?.hasError('required')">
+                        <input type="number" formControlName="quantity" class="form-control"
+                          placeholder="Quantity / ብዛት" />
+                        <small class="text-danger"
+                          *ngIf="acc.get('quantity')?.touched && acc.get('quantity')?.hasError('required')">
                           Quantity is required
                         </small>
                       </div>
                       <div class="col-md-3">
-                        <button type="button" class="btn btn-danger btn-sm w-100" (click)="removeAccessory(i,j)">Remove</button>
+                        <button type="button" class="btn btn-danger btn-sm w-100"
+                          (click)="removeAccessory(i,j)">Remove</button>
                       </div>
                     </div>
                     <button type="button" class="btn btn-info btn-sm" (click)="addAccessory(i)">+ Add Accessory</button>
@@ -195,16 +219,20 @@
                 <div *ngIf="item.get('hasExtraItems')?.value" class="mt-3">
                   <label class="fw-bold">Extra Item Details</label>
                   <div formArrayName="extraItems">
-                    <div *ngFor="let ex of getExtraItems(i).controls; let j = index" [formGroupName]="j" class="row g-2 mb-2">
+                    <div *ngFor="let ex of getExtraItems(i).controls; let j = index" [formGroupName]="j"
+                      class="row g-2 mb-2">
                       <div class="col-md-3">
                         <input formControlName="name" class="form-control" placeholder="Extra Item Name / ተጨማሪ እቃ ስም" />
-                        <small class="text-danger" *ngIf="ex.get('name')?.touched && ex.get('name')?.hasError('required')">
+                        <small class="text-danger"
+                          *ngIf="ex.get('name')?.touched && ex.get('name')?.hasError('required')">
                           Name is required
                         </small>
                       </div>
                       <div class="col-md-2">
-                        <input type="number" formControlName="quantity" class="form-control" placeholder="Quantity / ብዛት" />
-                        <small class="text-danger" *ngIf="ex.get('quantity')?.touched && ex.get('quantity')?.hasError('required')">
+                        <input type="number" formControlName="quantity" class="form-control"
+                          placeholder="Quantity / ብዛት" />
+                        <small class="text-danger"
+                          *ngIf="ex.get('quantity')?.touched && ex.get('quantity')?.hasError('required')">
                           Quantity is required
                         </small>
                       </div>
@@ -213,7 +241,8 @@
                           <option value="" disabled>Select Store / ግምጃ ቤት</option>
                           <option *ngFor="let type of storeTypes" [value]="type">{{type}}</option>
                         </select>
-                        <small class="text-danger" *ngIf="ex.get('store')?.touched && ex.get('store')?.hasError('required')">
+                        <small class="text-danger"
+                          *ngIf="ex.get('store')?.touched && ex.get('store')?.hasError('required')">
                           Store is required
                         </small>
                       </div>
@@ -224,10 +253,12 @@
                         <input formControlName="extraIssuedByName" class="form-control" placeholder="Issued By" />
                       </div>
                       <div class="col-md-2">
-                        <button type="button" class="btn btn-danger btn-sm" (click)="removeExtraItem(i,j)">Remove</button>
+                        <button type="button" class="btn btn-danger btn-sm"
+                          (click)="removeExtraItem(i,j)">Remove</button>
                       </div>
                     </div>
-                    <button type="button" class="btn btn-info btn-sm" (click)="addExtraItem(i)">+ Add Extra Item</button>
+                    <button type="button" class="btn btn-info btn-sm" (click)="addExtraItem(i)">+ Add Extra
+                      Item</button>
                   </div>
                 </div>
               </div>
@@ -258,7 +289,8 @@
                 <div class="col-md-4">
                   <label>{{f.label}}</label>
                   <input formControlName="{{f.name}}" class="form-control" />
-                  <small class="text-danger" *ngIf="receiveForm.get(f.name)?.touched && receiveForm.get(f.name)?.hasError('required')">
+                  <small class="text-danger"
+                    *ngIf="receiveForm.get(f.name)?.touched && receiveForm.get(f.name)?.hasError('required')">
                     {{f.label}} is required
                   </small>
                 </div>
@@ -280,7 +312,7 @@
         <!-- Submission Status -->
         <div class="mt-3 text-center" *ngIf="submissionStatus">
           <small [class.text-success]="!isSubmitting && submissionStatus.includes('successfully')"
-                 [class.text-danger]="submissionStatus.includes('Failed')">
+            [class.text-danger]="submissionStatus.includes('Failed')">
             {{ submissionStatus }}
           </small>
         </div>

@@ -20,7 +20,6 @@ import { TeamLeaderDashboardComponent } from './team-leader-dashboard/team-leade
 import { EditWarehouseComponent } from './Admin/edit-warehouse/edit-warehouse.component';
 import { UserListComponent } from './Admin/user-list/user-list.component';
 import { EditItemComponent } from './transit/components/edit-item/edit-item.component';
-import { Model19ListComponent } from './transit/components/model19-list/model19-list.component';
 import { ViewDetailsComponent } from './transit/components/view-details/view-details.component';
 import { TransitComponent } from './transit/transit.component';
 import { MasterCardFormComponent } from './Mastercard/components/mastercard-form/mastercard-form.component';
@@ -34,6 +33,7 @@ import { Model22RegistrationComponent } from './Model22/model22-registration/mod
 import { Model22ListComponent } from './Model22/model22-list/model22-list.component';
 import { Model22DetailComponent } from './Model22/model22-detail/model22-detail.component';
 import { Model22ReportComponent } from './Model22/model22-report/model22-report.component';
+import { ItemDistributionReportComponent } from './Model22/item-distribution-report/item-distribution-report.component';
 import { Model2DetailComponent } from './transit/components/model2-detail/model2-detail.component';
 import { Model2EditComponent } from './transit/components/model2-edit/model2-edit.component';
 import { Model2ListComponent } from './transit/components/model2-list/model2-list.component';
@@ -45,6 +45,8 @@ import { RequestOrderListComponent } from './Mastercard/components/request-order
 import { RegistrationComponent } from './Warehose/registration/registration.component';
 import { ListingComponent } from './Warehose/listing/listing.component';
 import { ItemDetailsComponent } from './Warehose/item-details/item-details.component';
+import { AccessoryListComponent } from './Warehose/accessory-list/accessory-list.component';
+import { AccessoryWithdrawalComponent } from './Model22/accessory-withdrawal/accessory-withdrawal.component';
 import { ItemTypeManagementComponent } from './Admin/item-type-management/item-type-management.component';
 import { AddItemQuantityComponent } from './add-item-quantity/add-item-quantity.component';
 import { ItemTransactionHistoryComponent } from './item-transaction-history/item-transaction-history.component';
@@ -54,11 +56,13 @@ import { TransactionReportComponent } from './Warehose/transaction-report/transa
 import { FromTransitComponent } from './Warehose/from-transit/from-transit.component';
 import { MasterCardDashboardComponent } from './Mastercard/components/dashboard/dashboard.component';
 import { ReportComponent } from './Mastercard/components/report/report.component';
-import { RequestOrdersReportComponent } from './request-orders-report/request-orders-report.component';
+import { RequestOrdersReportComponent } from './Mastercard/components/request-orders-report/request-orders-report.component';
 
 const routes: Routes = [
   { path: 'register-item', component: RegistrationComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
   { path: 'items', component: ListingComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER'] } },
+  { path: 'accessories', component: AccessoryListComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER'] } },
+  { path: 'accessory-withdrawal', component: AccessoryWithdrawalComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
   { path: 'item/:id', component: ItemDetailsComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER'] } },
   { path: 'item-transaction-history', component: ItemTransactionHistoryComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
   { path: 'dashboard', component: DashboardComponent },
@@ -67,14 +71,14 @@ const routes: Routes = [
   { path: 'from-transit', component: FromTransitComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
 
   { path: 'shelf', component: ShelfComponent, canActivate: [AuthGuard], data: { roles: ['SUPER_ADMIN', 'SANDD_ADMIN'] } },
-  { path: 'shelves', component: ShelfListComponent, canActivate: [AuthGuard], data: { roles: ['SUPER_ADMIN','SANDD_ADMIN'] } },
+  { path: 'shelves', component: ShelfListComponent, canActivate: [AuthGuard], data: { roles: ['SUPER_ADMIN', 'SANDD_ADMIN'] } },
   { path: 'warehouse', component: WarehouseComponent, canActivate: [AuthGuard], data: { roles: ['SUPER_ADMIN', 'SANDD_ADMIN'] } },
   { path: 'item-types', component: ItemTypeManagementComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
   { path: 'transaction-report', component: TransactionReportComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER'] } },
-  { 
-    path: 'warehouses', 
-    component: WarehouseListComponent, 
-    canActivate: [AuthGuard], 
+  {
+    path: 'warehouses',
+    component: WarehouseListComponent,
+    canActivate: [AuthGuard],
     data: { roles: ['SUPER_ADMIN', 'SANDD_ADMIN'] },
     children: [
       { path: 'edit/:id', component: EditWarehouseComponent }
@@ -92,8 +96,7 @@ const routes: Routes = [
   { path: 'transit/inspected-items', component: InspectedItemsListComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/send-to-store', component: SendToStoreFormComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/edit-item/:id', component: EditItemComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
-  { path: 'transit/view-details/:id', component: ViewDetailsComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT', 'PROPERTY_CONTROL'] } },
-  { path: 'transit/model19-list', component: Model19ListComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
+  { path: 'transit/view-details/:id', component: ViewDetailsComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT', 'PROPERTY_CONTROL', 'VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
   { path: 'transit/model2-list', component: Model2ListComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/model2-add', component: Model2AddComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/model2-edit/:id', component: Model2EditComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
@@ -106,12 +109,12 @@ const routes: Routes = [
   { path: 'MasterCard/mastercard-edit/:id', component: MastercardEditComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
   { path: 'MasterCard/master-card-issued/:id', component: AddMasterCardIssuedComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
   { path: 'MasterCard/master-card-details/:id', component: MasterCardDetailsComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  {path:'MasterCard/dashboard',component:MasterCardDashboardComponent,canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] }},
+  { path: 'MasterCard/dashboard', component: MasterCardDashboardComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
 
   { path: 'MasterCard/request-order-for-issue', component: RequestOrderForIssueComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/request-roder-list', component: RequestOrderListComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/request-order-detail/:id', component: RequestOrderDetailComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/report', component:ReportComponent , canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
+  { path: 'MasterCard/request-roder-list', component: RequestOrderListComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL','VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
+  { path: 'MasterCard/request-order-detail/:id', component: RequestOrderDetailComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL','VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
+  { path: 'MasterCard/report', component: ReportComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
   { path: 'MasterCard/request-order/report', component: RequestOrdersReportComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
   { path: 'model22report', component: Model22ReportComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'PROPERTY_CONTROL'] } },
 
@@ -120,6 +123,7 @@ const routes: Routes = [
   { path: 'model22-list', component: Model22ListComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL'] } },
   { path: 'model22-detail/:id', component: Model22DetailComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL'] } },
   { path: 'model22report', component: Model22ReportComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'PROPERTY_CONTROL'] } },
+  { path: 'item-distribution-report', component: ItemDistributionReportComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL'] } },
 
   { path: 'login', component: LoginComponent, canActivate: [RedirectIfAuthenticatedGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [AuthGuard], data: { roles: ['SUPER_ADMIN', 'SANDD_ADMIN', 'MAINTENANCE_ADMIN'] } },
@@ -140,4 +144,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

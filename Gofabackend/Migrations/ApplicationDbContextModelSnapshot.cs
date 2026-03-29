@@ -67,6 +67,9 @@ namespace Gofabackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Model1Id")
                         .HasColumnType("int");
 
@@ -76,6 +79,9 @@ namespace Gofabackend.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -98,6 +104,9 @@ namespace Gofabackend.Migrations
                         .HasColumnType("nvarchar(10)")
                         .HasDefaultValue("ETB");
 
+                    b.Property<bool>("IsStandalone")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
@@ -112,6 +121,9 @@ namespace Gofabackend.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<bool>("RequiresSerialNumbers")
+                        .HasColumnType("bit");
+
                     b.Property<decimal?>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -120,6 +132,62 @@ namespace Gofabackend.Migrations
                     b.HasIndex("ItemId");
 
                     b.ToTable("Accessories");
+                });
+
+            modelBuilder.Entity("Gofabackend.Models.AccessorySerialNumber", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccessoryId");
+
+                    b.HasIndex("SerialNumber");
+
+                    b.ToTable("AccessorySerialNumbers");
+                });
+
+            modelBuilder.Entity("Gofabackend.Models.AccessorySubAccessory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccessoryId");
+
+                    b.ToTable("AccessorySubAccessories");
                 });
 
             modelBuilder.Entity("Gofabackend.Models.Category", b =>
@@ -263,6 +331,10 @@ namespace Gofabackend.Migrations
 
                     b.Property<DateTime?>("GregorianDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("History")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ItemColumn")
                         .IsRequired()
@@ -931,6 +1003,37 @@ namespace Gofabackend.Migrations
                     b.ToTable("MiniStoreBinCardSerialNumbers");
                 });
 
+            modelBuilder.Entity("Gofabackend.Models.Model1AccessorySubAccessory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessoriesId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccessoriesId");
+
+                    b.ToTable("Model1AccessorySubAccessories");
+                });
+
             modelBuilder.Entity("Gofabackend.Models.Model2", b =>
                 {
                     b.Property<int>("Model2Id")
@@ -965,6 +1068,9 @@ namespace Gofabackend.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("GrandTotal")
+                        .HasColumnType("float");
 
                     b.Property<bool>("HasAccessories")
                         .HasColumnType("bit");
@@ -1038,6 +1144,9 @@ namespace Gofabackend.Migrations
 
                     b.Property<float>("UnitPrice")
                         .HasColumnType("real");
+
+                    b.Property<double>("Vat")
+                        .HasColumnType("float");
 
                     b.Property<string>("VoucherNumber")
                         .IsRequired()
@@ -1123,6 +1232,10 @@ namespace Gofabackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Model22ItemId"));
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1131,11 +1244,17 @@ namespace Gofabackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsAccessoryOnly")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Model22Id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ParentItemId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -1193,11 +1312,50 @@ namespace Gofabackend.Migrations
                     b.Property<decimal?>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("WithdrawnSerialNumbers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Model22ItemAccessoryId");
 
                     b.HasIndex("Model22ItemId");
 
                     b.ToTable("Model22ItemAccessories");
+                });
+
+            modelBuilder.Entity("Gofabackend.Models.Model22ItemSubAccessory", b =>
+                {
+                    b.Property<int>("Model22ItemSubAccessoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Model22ItemSubAccessoryId"));
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Model22ItemAccessoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubAccessoryId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Model22ItemSubAccessoryId");
+
+                    b.HasIndex("Model22ItemAccessoryId");
+
+                    b.ToTable("Model22ItemSubAccessories");
                 });
 
             modelBuilder.Entity("Gofabackend.Models.Model2Accessory", b =>
@@ -1312,6 +1470,12 @@ namespace Gofabackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AcceptedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1341,9 +1505,21 @@ namespace Gofabackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("RejectedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RejectedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RequestingUnit")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Pending");
 
                     b.Property<string>("VoucherNo")
                         .IsRequired()
@@ -1564,6 +1740,10 @@ namespace Gofabackend.Migrations
                     b.Property<DateTime?>("GregorianDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("History")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
@@ -1657,6 +1837,9 @@ namespace Gofabackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<float>("GrandTotal")
+                        .HasColumnType("real");
+
                     b.Property<bool>("HasAccessories")
                         .HasColumnType("bit");
 
@@ -1730,6 +1913,9 @@ namespace Gofabackend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("UnitOfPrice")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Vat")
                         .HasColumnType("real");
 
                     b.HasKey("Model1Id");
@@ -1813,6 +1999,28 @@ namespace Gofabackend.Migrations
                         .IsRequired();
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Gofabackend.Models.AccessorySerialNumber", b =>
+                {
+                    b.HasOne("Gofabackend.Models.Accessory", "Accessory")
+                        .WithMany("SerialNumbers")
+                        .HasForeignKey("AccessoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accessory");
+                });
+
+            modelBuilder.Entity("Gofabackend.Models.AccessorySubAccessory", b =>
+                {
+                    b.HasOne("Gofabackend.Models.Accessory", "Accessory")
+                        .WithMany("SubAccessories")
+                        .HasForeignKey("AccessoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accessory");
                 });
 
             modelBuilder.Entity("Gofabackend.Models.IssuedAccessory", b =>
@@ -1906,6 +2114,17 @@ namespace Gofabackend.Migrations
                     b.Navigation("MiniStoreBinCard");
                 });
 
+            modelBuilder.Entity("Gofabackend.Models.Model1AccessorySubAccessory", b =>
+                {
+                    b.HasOne("Gofabackend.Models.Accessories", "Accessories")
+                        .WithMany("SubAccessories")
+                        .HasForeignKey("AccessoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accessories");
+                });
+
             modelBuilder.Entity("Gofabackend.Models.Model22Item", b =>
                 {
                     b.HasOne("Gofabackend.Models.Model22", "Model22")
@@ -1926,6 +2145,17 @@ namespace Gofabackend.Migrations
                         .IsRequired();
 
                     b.Navigation("Model22Item");
+                });
+
+            modelBuilder.Entity("Gofabackend.Models.Model22ItemSubAccessory", b =>
+                {
+                    b.HasOne("Gofabackend.Models.Model22ItemAccessory", "Model22ItemAccessory")
+                        .WithMany("WithdrawnSubAccessories")
+                        .HasForeignKey("Model22ItemAccessoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Model22ItemAccessory");
                 });
 
             modelBuilder.Entity("Gofabackend.Models.Model2Accessory", b =>
@@ -2086,6 +2316,18 @@ namespace Gofabackend.Migrations
                     b.Navigation("ItemUnit");
                 });
 
+            modelBuilder.Entity("Gofabackend.Models.Accessories", b =>
+                {
+                    b.Navigation("SubAccessories");
+                });
+
+            modelBuilder.Entity("Gofabackend.Models.Accessory", b =>
+                {
+                    b.Navigation("SerialNumbers");
+
+                    b.Navigation("SubAccessories");
+                });
+
             modelBuilder.Entity("Gofabackend.Models.Item", b =>
                 {
                     b.Navigation("Accessories");
@@ -2139,6 +2381,11 @@ namespace Gofabackend.Migrations
             modelBuilder.Entity("Gofabackend.Models.Model22Item", b =>
                 {
                     b.Navigation("WithdrawnAccessories");
+                });
+
+            modelBuilder.Entity("Gofabackend.Models.Model22ItemAccessory", b =>
+                {
+                    b.Navigation("WithdrawnSubAccessories");
                 });
 
             modelBuilder.Entity("Gofabackend.Models.RequestOrderForIssue", b =>

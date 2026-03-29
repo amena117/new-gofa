@@ -43,9 +43,13 @@ export class MaintenanceFinishedForClientComponent implements OnInit {
   if (this.userRole === 'QUALITY') {
     url = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/Qualify`;
   } 
-  // All other roles fetch ALL records (all statuses)
+  // PPC and MAINTENANCE_LEADER see finished items ready for delivery
+  else if (this.userRole === 'PPC' || this.userRole === 'MAINTENANCE_LEADER') {
+    url = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/by-status?status=Maintenance Finished`;
+  }
+  // Team leaders see their own finished items
   else {
-    url = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister`;
+    url = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/by-status?status=Maintenance Finished`;
   }
 
   this.http.get<any[]>(url).subscribe(
@@ -56,25 +60,41 @@ export class MaintenanceFinishedForClientComponent implements OnInit {
       if (this.userRole === 'QUALITY') {
         filtered = filtered.filter(r => r.status === 'Quality Check');
       }
+      // PPC and MAINTENANCE_LEADER see "Maintenance Finished" status
+      else if (this.userRole === 'PPC' || this.userRole === 'MAINTENANCE_LEADER') {
+        filtered = filtered.filter(r => r.status === 'Maintenance Finished');
+      }
 
-      // Role-based filtering by maintenance type
+      // Role-based filtering by maintenance type for team leaders and technicians
       switch (this.userRole) {
         case 'RTEAM_LEADER':
-          filtered = filtered.filter(r => r.maintenanceType === 'RADIO_MAINTENANCE');
+        case 'VHF_MAINTENANCE':
+        case 'HF_MAINTENANCE':
+        case 'RADIO_MAINTENANCE':
+          filtered = filtered.filter(r => 
+            r.statusStage === 'VHF_RADIO' || r.statusStage === 'HF_RADIO'
+          );
+          break;
+
+        case 'HTEAM_LEADER':
+          filtered = filtered.filter(r => r.statusStage === 'HF_RADIO');
           break;
 
         case 'PTEAM_LEADER':
-          filtered = filtered.filter(r => r.maintenanceType === 'POWER');
+        case 'POWER_MAINTENANCE':
+          filtered = filtered.filter(r => r.statusStage === 'POWER');
           break;
 
         case 'OTEAM_LEADER':
-          filtered = filtered.filter(r => r.maintenanceType === 'OFFICE_MACHINE');
+        case 'OFFICE_MACHINE_MAINTENANCE':
+        case 'IT_MAINTENANCE':
+          filtered = filtered.filter(r => r.statusStage === 'OFFICE_MACHINE');
           break;
 
         case 'PPC':
         case 'MAINTENANCE_LEADER':
         case 'QUALITY':
-          // These roles see all (QUALITY already filtered above)
+          // These roles see all (already filtered above)
           break;
 
         default:
@@ -86,7 +106,7 @@ export class MaintenanceFinishedForClientComponent implements OnInit {
     },
     (error) => {
       console.error('Error fetching maintenance requests:', error);
-      this.errorMessage = 'Waiting For Maintained Materials!';
+      this.errorMessage = 'No finished maintenance items found. / ምንም የተጠገኑ ንብረቶች አልተገኙም።';
       this.isLoading = false;
     }
   );

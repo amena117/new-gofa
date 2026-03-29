@@ -87,6 +87,18 @@ export class RequestService {
     );
   }
 
+  // ✅ CORRECTED METHODS
+acceptRequestOrder(id: number): Observable<RequestOrderForIssue> {
+  return this.http.post<RequestOrderForIssue>(`${this.apiUrl}/${id}/accept`, {}).pipe(
+    catchError(this.handleError)
+  );
+}
+
+rejectRequestOrder(id: number): Observable<RequestOrderForIssue> {
+  return this.http.post<RequestOrderForIssue>(`${this.apiUrl}/${id}/reject`, {}).pipe(
+    catchError(this.handleError)
+  );
+}
    private handleError(error: HttpErrorResponse): Observable<never> {
     console.error('API Error:', error);
     let errorMessage = 'An error occurred';

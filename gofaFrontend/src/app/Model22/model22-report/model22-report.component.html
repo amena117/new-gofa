@@ -28,6 +28,13 @@
         <option value="12">Last 12 Months / ያለፉት 12 ወሮች</option>
       </select>
     </div>
+    <div class="filter-group">
+      <label for="category">Filter by Category / በምድብ አጣራ</label>
+      <select id="category" [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange()">
+        <option value="">All Categories / ሁሉም ምድቦች</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
   </div>
 
   <!-- Loading State -->

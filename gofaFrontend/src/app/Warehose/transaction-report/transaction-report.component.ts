@@ -22,6 +22,8 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
   sortDirection: 'asc' | 'desc' = 'desc';
   pagedTransactions: ReportEntry[] = [];
   filteredTransactions: ReportEntry[] = [];
+  groupedByVoucher: { voucherNumber: string; date: string; items: ReportEntry[]; totalValue: number; totalQuantity: number; hasVoucher: boolean }[] = [];
+  pagedVoucherGroups: { voucherNumber: string; date: string; items: ReportEntry[]; totalValue: number; totalQuantity: number; hasVoucher: boolean }[] = [];
   selectedPeriod: string = '';
   isSupplyAndDistributionLeader: boolean = false;
   availableRoles: string[] = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
@@ -163,10 +165,23 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       })
     ).subscribe(response => {
-      this.filteredTransactions = response.data.map(t => {
+      this.filteredTransactions = response.data.map((t: any) => {
         const unitPrice = t.unitPrice ?? 0;
         const quantity = t.quantity ?? 0;
         const currency = t.currency || 'ETB';
+        
+        // Detect if this is an accessory-only receipt (no main item quantity)
+        const isAccessoryOnly = quantity === 0 && t.accessories && t.accessories.length > 0;
+        
+        // Calculate total including accessories
+        let totalPrice = unitPrice * quantity;
+        
+        // Add accessory values to total
+        if (t.accessories && t.accessories.length > 0) {
+          t.accessories.forEach((acc: any) => {
+            totalPrice += (acc.unitPrice || 0) * acc.quantity;
+          });
+        }
         
         return {
           id: t.transactionId,
@@ -175,17 +190,90 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
           model: t.model || 'ያልታወቀ',
           ethiopianDate: t.date || 'ያልታወቀ ቀን',
           recipientName: t.receivedFrom || 'ያልታወቀ',
+          voucherNumber: t.voucherNumber || '-',
           totalQuantity: quantity,
           unitPrice: unitPrice,
           currency: currency,
-          totalPrice: unitPrice * quantity
+          totalPrice: totalPrice,
+          isAccessoryOnly: isAccessoryOnly,
+          accessories: t.accessories?.map((acc: any) => ({
+            name: acc.name,
+            model: acc.model,
+            quantity: acc.quantity,
+            unitPrice: acc.unitPrice || 0,
+            currency: acc.currency || 'ETB',
+            totalPrice: (acc.unitPrice || 0) * acc.quantity,
+            serialNumbers: acc.serialNumbers || [],
+            subAccessories: acc.subAccessories?.map((subAcc: any) => ({
+              name: subAcc.name,
+              quantity: subAcc.quantity * acc.quantity, // Convert per-unit to total
+              unitPrice: subAcc.unitPrice || 0,
+              currency: subAcc.currency || 'ETB'
+            })) || []
+          })) || []
         } as ReportEntry;
       });
 
       this.totalCount = response.totalCount;
       this.sortTable('ethiopianDate');
+      this.groupByVoucher();
       this.currentPage = 1;
       this.updatePagination();
+    });
+  }
+
+  private groupByVoucher(): void {
+    const voucherMap = new Map<string, ReportEntry[]>();
+    const noVoucherItems: ReportEntry[] = [];
+    
+    // Group transactions by voucher number
+    this.filteredTransactions.forEach(t => {
+      const voucher = t.voucherNumber;
+      
+      // If no voucher or voucher is "-", treat each item individually
+      if (!voucher || voucher === '-' || voucher.trim() === '') {
+        noVoucherItems.push(t);
+      } else {
+        if (!voucherMap.has(voucher)) {
+          voucherMap.set(voucher, []);
+        }
+        voucherMap.get(voucher)!.push(t);
+      }
+    });
+
+    // Convert voucher groups to array
+    this.groupedByVoucher = Array.from(voucherMap.entries()).map(([voucherNumber, items]) => {
+      const totalValue = items.reduce((sum, item) => sum + item.totalPrice, 0);
+      const totalQuantity = items.reduce((sum, item) => sum + item.totalQuantity, 0);
+      const date = items[0]?.ethiopianDate || '';
+      
+      return {
+        voucherNumber,
+        date,
+        items,
+        totalValue,
+        totalQuantity,
+        hasVoucher: true
+      };
+    });
+
+    // Add individual items without vouchers as separate groups
+    noVoucherItems.forEach(item => {
+      this.groupedByVoucher.push({
+        voucherNumber: 'No Voucher',
+        date: item.ethiopianDate,
+        items: [item],
+        totalValue: item.totalPrice,
+        totalQuantity: item.totalQuantity,
+        hasVoucher: false
+      });
+    });
+
+    // Sort by date (most recent first)
+    this.groupedByVoucher.sort((a, b) => {
+      const dateA = this.parseEthiopianDate(a.date).getTime();
+      const dateB = this.parseEthiopianDate(b.date).getTime();
+      return dateB - dateA;
     });
   }
 
@@ -203,6 +291,7 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
 
   private updatePagination(): void {
     this.pagedTransactions = this.getPagedTransactions();
+    this.pagedVoucherGroups = this.getPagedVoucherGroups();
     this.cdr.detectChanges();
   }
 
@@ -210,6 +299,12 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
     return this.filteredTransactions.slice(start, end);
+  }
+
+  private getPagedVoucherGroups() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    return this.groupedByVoucher.slice(start, end);
   }
 
   applyFilters(): void {
@@ -303,7 +398,29 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
   }
 
   getTotalPages(): number {
-    return Math.ceil(this.filteredTransactions.length / this.pageSize);
+    return Math.ceil(this.groupedByVoucher.length / this.pageSize);
+  }
+
+  getVoucherTotalByCurrency(items: ReportEntry[]): string {
+    const totals: { [currency: string]: number } = {};
+    const currencyOrder: string[] = [];
+
+    items.forEach(item => {
+      const currency = item.currency || 'ETB';
+      if (!totals[currency]) {
+        totals[currency] = 0;
+        currencyOrder.push(currency);
+      }
+      totals[currency] += item.totalPrice;
+    });
+
+    if (currencyOrder.length === 0) {
+      return '0.00 ETB';
+    }
+
+    return currencyOrder
+      .map(curr => `${totals[curr].toFixed(2)} ${curr}`)
+      .join(' | ');
   }
 
   formatEthiopianDate(date: string): string {
@@ -339,6 +456,16 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
       .join(' | ');
   }
 
+  getTotalQuantity(): number {
+    // For accessory-only items, count the number of accessories instead of main item quantity
+    return this.filteredTransactions.reduce((sum, t) => {
+      if (t.isAccessoryOnly && t.accessories) {
+        return sum + t.accessories.reduce((accSum, acc) => accSum + acc.quantity, 0);
+      }
+      return sum + t.totalQuantity;
+    }, 0);
+  }
+
   exportToExcel(): void {
     try {
       this.isExportDropdownOpen = false;
@@ -350,6 +477,7 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
       // Set column widths
       const wscols = [
         { wch: 5 },    // No
+        { wch: 18 },   // Voucher Number
         { wch: 40 },   // Description
         { wch: 20 },   // Model
         { wch: 15 },   // Date
@@ -383,6 +511,7 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
   private prepareExcelData(): any[] {
     return this.filteredTransactions.map((t, index) => ({
       'No': index + 1,
+      'Voucher Number': t.voucherNumber || '-',
       'Description': t.description,
       'Model': t.model || 'N/A',
       'Date': this.formatEthiopianDate(t.ethiopianDate),

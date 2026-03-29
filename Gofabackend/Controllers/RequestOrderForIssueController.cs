@@ -3,6 +3,7 @@ using Gofabackend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace Gofabackend.Controllers
 {
@@ -20,13 +21,58 @@ namespace Gofabackend.Controllers
         }
 
         // GET: api/RequestOrderForIssue
+        // GET: api/RequestOrderForIssue
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RequestOrderForIssue>>> GetRequestOrders()
+        public async Task<ActionResult<IEnumerable<object>>> GetRequestOrders()
         {
-            _logger.LogInformation("Fetching all RequestOrdersForIssue");
-            return await _context.RequestOrdersForIssue
-                .Include(r => r.IssuedItems)
-                .ToListAsync();
+            try 
+            {
+                _logger.LogInformation("Fetching all RequestOrdersForIssue");
+                var orders = await _context.RequestOrdersForIssue
+                    .AsNoTracking()
+                    .OrderByDescending(r => r.Date)
+                    .Take(50) // DIAGNOSTIC: Limit to 50 to prevent timeouts
+                    .Select(r => new 
+                    {
+                        r.Id,
+                        r.Date,
+                        r.IssueVoucherNo,
+                        r.VoucherNo,
+                        r.IsIssue,
+                        r.RequestingUnit,
+                        r.IssuingStore,
+                        r.MakeAndModel,
+                        r.IsServiceable,
+                        r.Category,
+                        r.Currency,
+                        r.Status,
+                        r.AcceptedBy,
+                        r.AcceptedAt,
+                        r.RejectedBy,
+                        r.RejectedAt,
+                        PreparedBy = new { r.PreparedBy.Name, r.PreparedBy.Title, r.PreparedBy.JobResponsibility, r.PreparedBy.Date },
+                        VerifiedBy = new { r.VerifiedBy.Name, r.VerifiedBy.Title, r.VerifiedBy.JobResponsibility, r.VerifiedBy.Date },
+                        ApprovedBy = new { r.ApprovedBy.Name, r.ApprovedBy.Title, r.ApprovedBy.JobResponsibility, r.ApprovedBy.Date },
+                        IssuedItems = r.IssuedItems.Select(i => new 
+                        {
+                            i.Id,
+                            i.ItemNo,
+                            i.StockNumber,
+                            i.Description,
+                            i.Issued,
+                            i.UnitPrice,
+                            i.TotalPrice
+                        }).ToList()
+                    })
+                    .ToListAsync();
+                    
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching RequestOrdersForIssue");
+                return StatusCode(500, new { message = "An error occurred while fetching orders.", detailedMessage = ex.Message });
+            }
         }
 
         // GET: api/RequestOrderForIssue/5
@@ -340,6 +386,74 @@ public async Task<IActionResult> GetRequestOrdersReport([FromQuery] RequestOrder
         return StatusCode(500, new { error = $"An error occurred while generating the report: {ex.Message}" });
     }
 }
+
+        [HttpPost("{id}/accept")]
+        public async Task<IActionResult> AcceptRequestOrder(int id)
+        {
+            var order = await _context.RequestOrdersForIssue.FindAsync(id);
+            if (order == null)
+                return NotFound($"Request order with ID {id} not found.");
+
+            if (order.Status != "Pending")
+                return BadRequest("Only pending orders can be accepted.");
+
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (userRole != "VHF" && userRole != "HF" && userRole != "SPAREPART" && userRole != "ELECTRONICS")
+                return Forbid("Only store personnel can accept orders.");
+
+            // 👇 Get user from DB using NameIdentifier claim
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                return Forbid();
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return Forbid();
+
+            var fullName = $"{user.FirstName} {user.LastName}".Trim();
+
+            order.Status = "Accepted";
+            order.AcceptedBy = fullName;
+            order.AcceptedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Order {Id} accepted by {FullName}", id, fullName);
+            return Ok(order);
+        }
+
+        [HttpPost("{id}/reject")]
+        public async Task<IActionResult> RejectRequestOrder(int id)
+        {
+            var order = await _context.RequestOrdersForIssue.FindAsync(id);
+            if (order == null)
+                return NotFound($"Request order with ID {id} not found.");
+
+            if (order.Status != "Pending")
+                return BadRequest("Only pending orders can be rejected.");
+
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (userRole != "VHF" && userRole != "HF" && userRole != "SPAREPART" && userRole != "ELECTRONICS")
+                return Forbid("Only store personnel can reject orders.");
+
+            // 👇 Get user from DB using the authenticated user ID
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                return Forbid();
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return Forbid();
+
+            var fullName = $"{user.FirstName} {user.LastName}".Trim();
+
+            order.Status = "Rejected";
+            order.RejectedBy = fullName; // e.g., "Amen B"
+            order.RejectedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Order {Id} rejected by {FullName}", id, fullName);
+            return Ok(order);
+        }
 
 [HttpGet("categories")]
 public async Task<IActionResult> GetCategories()

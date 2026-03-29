@@ -75,6 +75,25 @@
             </div>
           </div>
           <div class="table-row">
+            <label class="table-label">Source / ምንጭ <span class="required">*</span></label>
+            <div class="table-input">
+              <select formControlName="source" attr.aria-describedby="source-error">
+                <option value="" disabled>Select Source / ምንጭ ይምረጡ</option>
+                <option *ngFor="let source of sources" [value]="source">{{ source }}</option>
+              </select>
+              <div *ngIf="itemForm.get('source')?.invalid && itemForm.get('source')?.touched" id="source-error" class="error">
+                Source is required. / ምንጭ መሞላ አለበት።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">History Note / የታሪክ ማስታወሻ</label>
+            <div class="table-input">
+              <textarea formControlName="history" placeholder="Optional: Add a note about this quantity addition / አማራጭ: ስለዚህ ብዛት መጨመር ማስታወሻ ያክሉ" rows="3" attr.aria-describedby="history-hint"></textarea>
+              <small id="history-hint" class="form-hint">This will be appended to the item's history / ይህ ወደ እቃው ታሪክ ይጨመራል</small>
+            </div>
+          </div>
+          <div class="table-row">
             <label class="table-label">Registered By / የመዘገበው</label>
             <div class="table-input">
               <input formControlName="registeredBy" readonly aria-readonly="true" aria-label="Registered By (auto-filled)" />
@@ -253,14 +272,29 @@
           </span>
         </h2>
         <div class="table-container serial-numbers" *ngIf="showSerialNumbers">
-          <div *ngFor="let serial of serialNumbers.controls; let i=index" class="table-row serial-row">
+          <div *ngFor="let serial of serialNumbers.controls; let i=index" [formGroupName]="i" class="table-row serial-row">
             <label class="table-label">Serial Number / መለያ ቁጥር {{ i + 1 }}</label>
             <div class="input-group">
-              <input class="table-input serial-input" [formControlName]="i" placeholder="Serial {{ i + 1 }}" attr.aria-describedby="serialNumber{{i}}-error" />
+              <!-- Search for existing serial number (SPAREPART only) -->
+              <div *ngIf="itemForm.get('role')?.value === 'SPAREPART' && existingSerialNumbers.length > 0" class="serial-search-container">
+                <input class="table-input serial-input" formControlName="serialSearch" 
+                       placeholder="Search existing serial numbers..." 
+                       [matAutocomplete]="autoSerial"
+                       (input)="serial?.patchValue({serialNumber: ''})" />
+                <mat-autocomplete #autoSerial="matAutocomplete" (optionSelected)="selectExistingSerialNumber($event.option.value, i)">
+                  <mat-option *ngFor="let existingSerial of filteredSerialNumbers[i] | async" [value]="existingSerial">
+                    {{ existingSerial }}
+                  </mat-option>
+                </mat-autocomplete>
+                <small class="form-hint">Or enter new serial number below / ወይም አዲስ መለያ ቁጥር ከታች ያስገቡ</small>
+              </div>
+              
+              <!-- Serial number input -->
+              <input class="table-input serial-input" formControlName="serialNumber" placeholder="Serial {{ i + 1 }}" attr.aria-describedby="serialNumber{{i}}-error" />
               <button class="action-btn secondary small" (click)="removeSerialNumber(i)" *ngIf="serialNumbers.length > 0 && itemForm.get('role')?.value === 'SPAREPART'" attr.aria-label="Remove serial number {{i + 1}}">
                 Remove / አጥፋ
               </button>
-              <div *ngIf="serial.invalid && serial.touched" id="serialNumber{{i}}-error" class="error">
+              <div *ngIf="serial && serial.get('serialNumber')?.invalid && serial.get('serialNumber')?.touched" id="serialNumber{{i}}-error" class="error">
                 Serial number is required. / መለያ ቁጥር መሞላ አለበት።
               </div>
             </div>
@@ -281,46 +315,152 @@
     Accessories / ተያያዥ እቃዎች
     <span class="section-toggle">
       <label class="toggle-switch">
-        <input type="checkbox" class="toggle-switch-input" [checked]="showAccessories" (change)="toggleAccessories()" aria-label="Show accessories">
+        <input type="checkbox" class="toggle-switch-input" [checked]="showAccessories" (change)="toggleAccessories()" aria-label="Show accessories" />
         <span class="toggle-switch-slider"></span>
       </label>
-      <span class="toggle-label">{{ showAccessories ? 'Visible / የሚታይ' : 'Hidden / የማይታይ' }}</span>
+      <span class="toggle-label">{{ showAccessories ? 'Visible / አሳይ' : 'Hidden / ደብቅ' }}</span>
     </span>
-    <button *ngIf="showAccessories" type="button" class="action-btn secondary small" (click)="addAccessory()" attr.aria-label="Add new accessory">
-      Add Accessory / ተያያዥ እቃ ጨምር
-    </button>
+    <button *ngIf="showAccessories" type="button" class="action-btn secondary small" (click)="addAccessory()" attr.aria-label="Add new accessory">Add Accessory / ተያያዥ እቃ ጨምር</button>
   </h2>
   <div class="table-container" *ngIf="showAccessories">
-    <div *ngFor="let accessory of accessories.controls; let i=index" [formGroupName]="i" class="table-row accessory-row">
-      <label class="table-label">Accessory / ተያያዥ እቃ {{ i + 1 }}</label>
-      <div class="input-group accessory-input-group">
-        <input class="table-input" formControlName="name" placeholder="Accessory name / የተያያዥ እቃ ስም" attr.aria-describedby="accessoryName{{i}}-error" />
-        <input class="table-input" formControlName="model" placeholder="Accessory model / የተያያዥ እቃ ሞዴል" attr.aria-describedby="accessoryModel{{i}}-error" />
-        <input class="table-input" type="number" formControlName="quantity" min="1" placeholder="Quantity / ብዛት" attr.aria-describedby="accessoryQuantity{{i}}-error" />
-        
-        <!-- New Unit Price and Currency Fields -->
-        <input class="table-input" type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="Unit Price / ነጠላ ዋጋ" attr.aria-describedby="accessoryUnitPrice{{i}}-error" />
-        <select class="table-input" formControlName="currency" attr.aria-describedby="accessoryCurrency{{i}}-error">
-          <option value="" disabled>Currency / ገንዘብ</option>
-          <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
-        </select>
-        
-        <button class="action-btn secondary small" (click)="removeAccessory(i)" *ngIf="accessories.length > 0" attr.aria-label="Remove accessory {{i + 1}}">
-          Remove / አጥፋ
+    <div *ngFor="let accessory of accessories.controls; let i=index" [formGroupName]="i" class="accessory-card">
+      <div class="accessory-header">
+        <h4 class="accessory-title">
+          <i class="icon-accessory"></i>
+          Accessory {{ i + 1 }} / ተያያዥ እቃ {{ i + 1 }}
+        </h4>
+        <button class="action-btn danger small" (click)="removeAccessory(i)" *ngIf="accessories.length > 0" [attr.aria-label]="'Remove accessory ' + (i + 1)">
+          <i class="icon-trash"></i> Remove / አጥፋ
         </button>
-        
-        <!-- Error Messages -->
-        <div *ngIf="accessory.get('name')?.invalid && accessory.get('name')?.touched" id="accessoryName{{i}}-error" class="error">
-          Accessory name is required. / የተያያዥ እቃ ስም መሞላ አለበት።
+      </div>
+      
+      <div class="accessory-content">
+        <!-- Search for Existing Accessory -->
+        <div class="form-row" *ngIf="selectedItemId">
+          <div class="form-group full-width">
+            <label class="form-label">Search Existing Accessory / ያለውን ተያያዥ እቃ ፈልግ</label>
+            <input class="form-input" formControlName="accessorySearch" 
+                   placeholder="Type to search existing accessories..." 
+                   [matAutocomplete]="autoAccessory"
+                   (input)="accessory.patchValue({name: '', model: '', unitPrice: 0, currency: 'ETB'})" />
+            <mat-autocomplete #autoAccessory="matAutocomplete" [displayWith]="displayAccessory" (optionSelected)="selectExistingAccessory($event.option.value, i)">
+              <mat-option *ngFor="let existingAcc of filteredAccessories[i] | async" [value]="existingAcc">
+                {{ existingAcc.name }} - {{ existingAcc.model }}
+              </mat-option>
+            </mat-autocomplete>
+            <small class="form-hint">Or enter new accessory details below / ወይም አዲስ ተያያዥ እቃ ዝርዝር ከታች ያስገቡ</small>
+            <button type="button" class="action-btn secondary small" 
+                    *ngIf="accessory.get('accessoryId')?.value" 
+                    (click)="viewAccessoryTransactions(accessory.get('accessoryId')?.value)"
+                    style="margin-top: 8px;"
+                    attr.aria-label="View transactions for this accessory">
+              <i class="icon-history"></i> View Transactions / ግብይቶችን ይመልከቱ
+            </button>
+          </div>
         </div>
-        <div *ngIf="accessory.get('model')?.invalid && accessory.get('model')?.touched" id="accessoryModel{{i}}-error" class="error">
-          Accessory model is required. / የተያያዥ እቃ ሞዴል መሞላ አለበት።
+
+        <!-- Basic Information Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Name / ስም</label>
+            <input class="form-input" formControlName="name" placeholder="Enter accessory name" [attr.aria-describedby]="'accessoryName' + i + '-error'" />
+            <div *ngIf="accessory.get('name')?.invalid && accessory.get('name')?.touched" [id]="'accessoryName' + i + '-error'" class="error-message">
+              <i class="icon-warning"></i> Accessory name is required / ተያያዥ እቃው ስም ግዴታ ነው
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Model / ሞዴል</label>
+            <input class="form-input" formControlName="model" placeholder="Enter model number" [attr.aria-describedby]="'accessoryModel' + i + '-error'" />
+            <div *ngIf="accessory.get('model')?.invalid && accessory.get('model')?.touched" [id]="'accessoryModel' + i + '-error'" class="error-message">
+              <i class="icon-warning"></i> Accessory model is required / ተያያዥ እቃው ሞዴል ግዴታ ነው
+            </div>
+          </div>
         </div>
-        <div *ngIf="accessory.get('quantity')?.invalid && accessory.get('quantity')?.touched" id="accessoryQuantity{{i}}-error" class="error">
-          Quantity must be at least 1. / ብዛቱ ከአንድ በላይ መሆን አለበት።
+
+        <!-- Quantity and Pricing Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Quantity / ብዛት</label>
+            <input class="form-input" type="number" formControlName="quantity" min="1" placeholder="1" 
+                   (change)="onAccessoryQuantityChange(i)" [attr.aria-describedby]="'accessoryQuantity' + i + '-error'" />
+            <div *ngIf="accessory.get('quantity')?.invalid && accessory.get('quantity')?.touched" [id]="'accessoryQuantity' + i + '-error'" class="error-message">
+              <i class="icon-warning"></i> Quantity must be at least 1 / ብዛት ቢያንስ 1 መሆን አለበት
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Unit Price / ነጠላ ዋጋ</label>
+            <input class="form-input" type="number" formControlName="unitPrice" min="0" step="0.01" placeholder="0.00" [attr.aria-describedby]="'accessoryUnitPrice' + i + '-error'" />
+            <div *ngIf="accessory.get('unitPrice')?.invalid && accessory.get('unitPrice')?.touched" [id]="'accessoryUnitPrice' + i + '-error'" class="error-message">
+              <i class="icon-warning"></i> Unit price must be non-negative / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Currency / ምንዛሪ</label>
+            <select class="form-input" formControlName="currency" [attr.aria-describedby]="'accessoryCurrency' + i + '-error'">
+              <option value="" disabled>Select currency</option>
+              <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+            </select>
+          </div>
         </div>
-        <div *ngIf="accessory.get('unitPrice')?.invalid && accessory.get('unitPrice')?.touched" id="accessoryUnitPrice{{i}}-error" class="error">
-          Unit price must be non-negative. / ነጠላ ዋጋ ከዜሮ በላይ መሆን አለበት።
+
+        <!-- Serial Number Requirement -->
+        <div class="form-row">
+          <div class="form-group full-width">
+            <div class="checkbox-container">
+              <input type="checkbox" [id]="'accessoryRequiresSerial' + i" formControlName="requiresSerialNumbers" 
+                     (change)="onAccessoryRequiresSerialNumbersChange(i)" class="checkbox-input" />
+              <label [for]="'accessoryRequiresSerial' + i" class="checkbox-label">
+                <i class="checkbox-icon"></i>
+                <span class="checkbox-text">This accessory requires serial numbers / ይህ ተያያዥ እቃ ተከታታይ ቁጥር ያስፈልገዋል</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Serial Numbers Section -->
+        <div *ngIf="accessory.get('requiresSerialNumbers')?.value" class="serial-numbers-container">
+          <div class="serial-numbers-header">
+            <h5 class="serial-numbers-title">
+              <i class="icon-barcode"></i>
+              Serial Numbers for "{{ accessory.get('name')?.value || 'Accessory' }}" / ተከታታይ ቁጥሮች
+            </h5>
+            <div class="serial-numbers-info">
+              <span class="info-badge">{{ getAccessorySerialNumbers(i).length }} of {{ accessory.get('quantity')?.value || 0 }} required</span>
+            </div>
+          </div>
+          
+          <div formArrayName="serialNumbers" class="serial-numbers-grid">
+            <div *ngFor="let serial of getAccessorySerialNumbers(i).controls; let j=index" class="serial-input-container">
+              <label class="serial-label">Serial {{ j + 1 }}</label>
+              <div class="serial-input-wrapper">
+                <input class="serial-input" [formControlName]="j" 
+                       placeholder="Enter serial number" 
+                       [attr.aria-describedby]="'accessorySerial' + i + j + '-error'"
+                       [class.error]="serial.invalid && serial.touched" />
+                <i class="serial-icon icon-tag"></i>
+              </div>
+              <div *ngIf="serial.invalid && serial.touched" [id]="'accessorySerial' + i + j + '-error'" class="error-message small">
+                <i class="icon-warning"></i> Required / ግዴታ
+              </div>
+            </div>
+          </div>
+          
+          <!-- Serial Numbers Status -->
+          <div class="serial-numbers-status" [class.complete]="getAccessorySerialNumbers(i).length === (accessory.get('quantity')?.value || 0) && getAccessorySerialNumbers(i).valid">
+            <i class="status-icon" [class.icon-check]="getAccessorySerialNumbers(i).length === (accessory.get('quantity')?.value || 0) && getAccessorySerialNumbers(i).valid" 
+               [class.icon-warning]="getAccessorySerialNumbers(i).length !== (accessory.get('quantity')?.value || 0) || getAccessorySerialNumbers(i).invalid"></i>
+            <span class="status-text">
+              <ng-container *ngIf="getAccessorySerialNumbers(i).length === (accessory.get('quantity')?.value || 0) && getAccessorySerialNumbers(i).valid">
+                All serial numbers provided / ሁሉም ተከታታይ ቁጥሮች ተሰጥተዋል
+              </ng-container>
+              <ng-container *ngIf="getAccessorySerialNumbers(i).length !== (accessory.get('quantity')?.value || 0) || getAccessorySerialNumbers(i).invalid">
+                Please provide all required serial numbers / እባክዎ ሁሉንም የሚያስፈልጉ ተከታታይ ቁጥሮች ያቅርቡ
+              </ng-container>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -338,6 +478,9 @@
         </button>
         <button type="button" class="action-btn secondary" (click)="resetSingleForm()" attr.aria-label="Reset form">
           Reset / አስጀምር
+        </button>
+        <button type="button" class="action-btn secondary" (click)="debugForm()" attr.aria-label="Debug form">
+          Debug Form
         </button>
       </div>
     </form>
@@ -374,6 +517,18 @@
               <input formControlName="receivedFrom" placeholder="e.g., Supplier Name / ምርት አቅራቢ" attr.aria-describedby="bulkReceivedFrom-error" />
               <div *ngIf="bulkForm.get('receivedFrom')?.invalid && bulkForm.get('receivedFrom')?.touched" id="bulkReceivedFrom-error" class="error">
                 Received from is required. / ከማን ተቀበልተዋል መሞላ አለበት።
+              </div>
+            </div>
+          </div>
+          <div class="table-row">
+            <label class="table-label">Source / ምንጭ <span class="required">*</span></label>
+            <div class="table-input">
+              <select formControlName="source" attr.aria-describedby="bulkSource-error">
+                <option value="" disabled>Select Source / ምንጭ ይምረጡ</option>
+                <option *ngFor="let source of sources" [value]="source">{{ source }}</option>
+              </select>
+              <div *ngIf="bulkForm.get('source')?.invalid && bulkForm.get('source')?.touched" id="bulkSource-error" class="error">
+                Source is required. / ምንጭ መሞላ አለበት።
               </div>
             </div>
           </div>
@@ -548,6 +703,13 @@
                 <input formControlName="warehouseId" readonly aria-readonly="true" aria-label="Warehouse ID (auto-filled)" />
               </div>
             </div>
+            <div class="table-row">
+              <label class="table-label">History Note / የታሪክ ማስታወሻ</label>
+              <div class="table-input">
+                <textarea formControlName="history" placeholder="Optional: Add a note about this quantity addition / አማራጭ: ስለዚህ ብዛት መጨመር ማስታወሻ ያክሉ" rows="3" [attr.aria-describedby]="'bulkHistory' + i + '-hint'"></textarea>
+                <small [id]="'bulkHistory' + i + '-hint'" class="form-hint">This will be appended to the item's history / ይህ ወደ እቃው ታሪክ ይጨመራል</small>
+              </div>
+            </div>
           </div>
 
           <div formArrayName="serialNumbers" class="form-section">
@@ -562,14 +724,29 @@
               </span>
             </h3>
             <div class="table-container serial-numbers" *ngIf="showBulkSerialNumbers[i]">
-              <div *ngFor="let serial of getSerialNumbersForItem(i).controls; let j=index" class="table-row serial-row">
+              <div *ngFor="let serial of getSerialNumbersForItem(i).controls; let j=index" [formGroupName]="j" class="table-row serial-row">
                 <label class="table-label">Serial Number / መለያ ቁጥር {{ j + 1 }}</label>
                 <div class="input-group">
-                  <input class="table-input serial-input" [formControlName]="j" placeholder="Serial {{ j + 1 }}" [attr.aria-describedby]="'bulkSerialNumber' + i + j + '-error'" />
+                  <!-- Search for existing serial number (SPAREPART only) -->
+                  <div *ngIf="itemsFormArray.at(i).get('role')?.value === 'SPAREPART' && itemsFormArray.at(i).get('existingSerialNumbers')?.value?.length > 0" class="serial-search-container">
+                    <input class="table-input serial-input" formControlName="serialSearch" 
+                           placeholder="Search existing serial numbers..." 
+                           [matAutocomplete]="autoBulkSerial"
+                           (input)="serial.patchValue({serialNumber: ''})" />
+                    <mat-autocomplete #autoBulkSerial="matAutocomplete" (optionSelected)="selectExistingSerialNumberForItem($event.option.value, i, j)">
+                      <mat-option *ngFor="let existingSerial of filteredBulkSerialNumbers[i]?.[j] | async" [value]="existingSerial">
+                        {{ existingSerial }}
+                      </mat-option>
+                    </mat-autocomplete>
+                    <small class="form-hint">Or enter new serial number below / ወይም አዲስ መለያ ቁጥር ከታች ያስገቡ</small>
+                  </div>
+                  
+                  <!-- Serial number input -->
+                  <input class="table-input serial-input" formControlName="serialNumber" placeholder="Serial {{ j + 1 }}" [attr.aria-describedby]="'bulkSerialNumber' + i + j + '-error'" />
                   <button class="action-btn secondary small" (click)="removeSerialNumberFromItem(i, j)" *ngIf="getSerialNumbersForItem(i).length > 0 && itemsFormArray.at(i).get('role')?.value === 'SPAREPART'" [attr.aria-label]="'Remove serial number ' + (j + 1) + ' from item ' + (i + 1)">
                     Remove / አጥፋ
                   </button>
-                  <div *ngIf="serial.invalid && serial.touched" [id]="'bulkSerialNumber' + i + j + '-error'" class="error">
+                  <div *ngIf="serial.get('serialNumber')?.invalid && serial.get('serialNumber')?.touched" [id]="'bulkSerialNumber' + i + j + '-error'" class="error">
                     Serial number is required. / መለያ ቁጥር መሞላ አለበት።
                   </div>
                 </div>

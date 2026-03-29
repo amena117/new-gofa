@@ -39,16 +39,20 @@ namespace Gofabackend.Data
         public DbSet<ItemUnit> ItemUnits { get; set; }
         public DbSet<Accessory> Accessories { get; set; }
         public DbSet<Accessories> Model1Accessories { get; set; }
+        public DbSet<Model1AccessorySubAccessory> Model1AccessorySubAccessories { get; set; } // For Model1 (Transit) accessories
         public DbSet<ItemSerialNumber> ItemSerialNumbers { get; set; }
         public DbSet<ItemType> ItemTypes { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Model22ItemAccessory> Model22ItemAccessories { get; set; }
+        public DbSet<Model22ItemSubAccessory> Model22ItemSubAccessories { get; set; } // ✅ NEW
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<ReceivedAccessory> ReceivedAccessories { get; set; }
         public DbSet<IssuedAccessory> IssuedAccessories { get; set; }
         public DbSet<ExtraItem> ExtraItems { get; set; }
         public DbSet<ItemEditHistory> ItemEditHistories { get; set; }
+        public DbSet<AccessorySerialNumber> AccessorySerialNumbers { get; set; }
+        public DbSet<AccessorySubAccessory> AccessorySubAccessories { get; set; } // ✅ NEW
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -104,6 +108,13 @@ namespace Gofabackend.Data
                 .WithMany(i => i.Accessories)
                 .HasForeignKey(a => a.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            // Add indexes for AccessorySerialNumber for faster lookups
+            modelBuilder.Entity<AccessorySerialNumber>()
+                .HasIndex(s => s.AccessoryId);
+            
+            modelBuilder.Entity<AccessorySerialNumber>()
+                .HasIndex(s => s.SerialNumber);
             //..........................
             modelBuilder.Entity<Model1>()
                 .HasMany(m => m.Accessories)
@@ -123,9 +134,15 @@ namespace Gofabackend.Data
                 .WithMany(i => i.SerialNumbers)
                 .HasForeignKey(s => s.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            // Add index on SerialNumber for fast lookups
             modelBuilder.Entity<ItemSerialNumber>()
-        .HasIndex(s => s.SerialNumber)
-        .IsUnique();
+                .HasIndex(s => s.SerialNumber)
+                .IsUnique();
+            
+            // Add index on ItemId for faster serial number fetching per item
+            modelBuilder.Entity<ItemSerialNumber>()
+                .HasIndex(s => s.ItemId);
             // Model22 -> Model22Item (1 to many)
             modelBuilder.Entity<Model22Item>()
                 .HasOne(mi => mi.Model22)
@@ -159,6 +176,15 @@ namespace Gofabackend.Data
     .WithMany(i => i.WithdrawnAccessories)
     .HasForeignKey(a => a.Model22ItemId)
     .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Model22ItemAccessory>()
+                .Property(e => e.WithdrawnSerialNumbers)
+                .HasConversion(
+                    v => System.Text.Json.JsonSerializer.Serialize(v ?? new List<string>(), (System.Text.Json.JsonSerializerOptions?)null),
+                    v => string.IsNullOrEmpty(v) 
+                        ? new List<string>() 
+                        : (System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new List<string>())
+                );
 
             // Configure Model22 properties
             modelBuilder.Entity<Model22>()
@@ -203,6 +229,15 @@ namespace Gofabackend.Data
                 .Property(m => m.SerialNumber)
                 .IsRequired(false);
 
+            modelBuilder.Entity<Model22Item>()
+                .Property(e => e.SerialNumbers)
+                .HasConversion(
+                    v => System.Text.Json.JsonSerializer.Serialize(v ?? new List<string>(), (System.Text.Json.JsonSerializerOptions?)null),
+                    v => string.IsNullOrEmpty(v) 
+                        ? new List<string>() 
+                        : (System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new List<string>())
+                );
+
             modelBuilder.Entity<Organization>().HasKey(o => o.Id);
             modelBuilder.Entity<Location>().HasKey(l => l.Id);
             modelBuilder.Entity<Organization>().Property(o => o.Name).IsRequired();
@@ -215,6 +250,10 @@ namespace Gofabackend.Data
                 .OwnsOne(r => r.VerifiedBy);
             modelBuilder.Entity<RequestOrderForIssue>()
                 .OwnsOne(r => r.ApprovedBy);
+
+            modelBuilder.Entity<RequestOrderForIssue>()
+                .Property(o => o.Status)
+                .HasDefaultValue("Pending");
 
             // IssuedItem -> RequestOrderForIssue
             modelBuilder.Entity<IssuedItem>()
@@ -380,7 +419,7 @@ namespace Gofabackend.Data
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("Server=Josiah-Alex;Database=GofaDb;Integrated Security=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=Josiah-Alex;Database=GofaDb;Integrated Security=true;TrustServerCertificate=True;");
             return new ApplicationDbContext(optionsBuilder.Options);
         }
     }

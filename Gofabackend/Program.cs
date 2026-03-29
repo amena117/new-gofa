@@ -48,20 +48,7 @@ try
     {
         options.AddPolicy("AllowFrontend", policy =>
         {
-            policy.WithOrigins(
-                    "http://10.20.38.171:2023",
-                    "http://10.20.38.171:2024",
-                    "http://localhost:5000",
-                    "http://localhost:5001",
-                    "https://localhost:5001",
-                    "http://localhost:4200",
-                    "https://localhost:4200",
-                    "http://127.0.0.1:4200",
-                    "http://localhost:3000",
-                    "http://localhost:8080",
-                    "http://localhost:7112",
-                    "https://localhost:7112"
-                )
+            policy.SetIsOriginAllowed(_ => true) // Allow any origin for development
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
@@ -110,26 +97,45 @@ try
     });
 
     builder.WebHost.ConfigureKestrel(options =>
-    {
-        options.ListenLocalhost(5000);
-        options.ListenLocalhost(2024);
-        options.ListenLocalhost(5001, listenOptions => listenOptions.UseHttps());
-        options.ListenLocalhost(7112, listenOptions => listenOptions.UseHttps());
+{
+    options.ListenLocalhost(5000);
+    options.ListenLocalhost(2024);
+    options.ListenLocalhost(5001, listenOptions => listenOptions.UseHttps());
+    options.ListenLocalhost(7112, listenOptions => listenOptions.UseHttps());
 
-        var networkIp = System.Net.IPAddress.Parse("10.20.38.171");
-        if (System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
-            .SelectMany(n => n.GetIPProperties().UnicastAddresses)
-            .Any(a => a.Address.Equals(networkIp)))
-        {
-            options.Listen(networkIp, 2024);
-            options.Listen(networkIp, 2025, listenOptions => listenOptions.UseHttps());
-            Log.Information("Network bindings configured for http://10.20.38.171:2024 and https://10.20.38.171:2025");
-        }
-        else
-        {
-            Log.Warning("Network IP 10.20.38.171 not available. Only localhost bindings will be active.");
-        }
-    });
+    // Bind to first network IP
+    var networkIp1 = System.Net.IPAddress.Parse("10.20.38.171");
+    var networkIp2 = System.Net.IPAddress.Parse("10.20.38.51");
+    
+    var localIPs = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
+        .SelectMany(n => n.GetIPProperties().UnicastAddresses)
+        .Select(a => a.Address)
+        .ToList();
+
+    // Check and bind for 10.20.38.171
+    if (localIPs.Any(ip => ip.Equals(networkIp1)))
+    {
+        options.Listen(networkIp1, 2024);
+        options.Listen(networkIp1, 2025, listenOptions => listenOptions.UseHttps());
+        Log.Information("Network bindings configured for http://10.20.38.171:2024 and https://10.20.38.171:2025");
+    }
+    else
+    {
+        Log.Warning("Network IP 10.20.38.171 not available. Only localhost bindings will be active.");
+    }
+
+    // Check and bind for 10.20.38.51
+    if (localIPs.Any(ip => ip.Equals(networkIp2)))
+    {
+        options.Listen(networkIp2, 2024);
+        options.Listen(networkIp2, 2025, listenOptions => listenOptions.UseHttps());
+        Log.Information("Network bindings configured for http://10.20.38.51:2024 and https://10.20.38.51:2025");
+    }
+    else
+    {
+        Log.Warning("Network IP 10.20.38.51 not available. Bindings for this IP will not be active.");
+    }
+});
 
     var app = builder.Build();
 
@@ -145,6 +151,18 @@ try
 
     app.UseRouting();
     app.UseCors("AllowFrontend");
+
+    // Explicitly handle OPTIONS to ensure preflight succeeds for all routes
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Method == "OPTIONS")
+        {
+            context.Response.StatusCode = 200;
+            return;
+        }
+        await next();
+    });
+
     app.UseIpRateLimiting();
     app.UseAuthentication();
     app.UseAuthorization();
@@ -172,6 +190,7 @@ try
     Log.Information($"- https://localhost:5001");
     Log.Information($"- https://localhost:7112");
     Log.Information($"- http://10.20.38.171:2024");
+    Log.Information($"- http://10.20.38.51:2024");
     Log.Information($"- https://10.20.38.171:2025");
 
     await app.RunAsync();

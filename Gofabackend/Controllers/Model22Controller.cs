@@ -88,7 +88,7 @@ public async Task<ActionResult<IEnumerable<Model22>>> FilterModel22s(
         // Handle new 'roles' parameter (multiple roles)
         if (roles != null && roles.Any())
         {
-            var allowedRoles = new HashSet<string>(new[] { "VHF", "HF", "ELECTRONICS", "SPAREPART" }, StringComparer.OrdinalIgnoreCase);
+            var allowedRoles = new HashSet<string>(new[] { "VHF", "HF", "ELECTRONICS", "SPAREPART", "SUPPLY_AND_DISTRIBUTION_TEAMLEADER" }, StringComparer.OrdinalIgnoreCase);
             var invalidRoles = roles.Except(allowedRoles, StringComparer.OrdinalIgnoreCase).ToList();
 
             if (invalidRoles.Any())
@@ -96,7 +96,7 @@ public async Task<ActionResult<IEnumerable<Model22>>> FilterModel22s(
                 return BadRequest(new
                 {
                     success = false,
-                    message = $"Invalid roles: {string.Join(", ", invalidRoles)}. Allowed roles are: VHF, HF, ELECTRONICS, SPAREPART."
+                    message = $"Invalid roles: {string.Join(", ", invalidRoles)}. Allowed roles are: VHF, HF, ELECTRONICS, SPAREPART, SUPPLY_AND_DISTRIBUTION_TEAMLEADER."
                 });
             }
 
@@ -123,8 +123,7 @@ public async Task<ActionResult<IEnumerable<Model22>>> FilterModel22s(
                 m.Items.Any(i =>
                     i.Description.Contains(searchLower) ||
                     i.Model.Contains(searchLower) ||
-                    i.Currency.Contains(searchLower) ||
-                    (i.SerialNumbers != null && i.SerialNumbers.Any(sn => sn.Contains(searchLower)))
+                    i.Currency.Contains(searchLower)
                 )
             );
         }
@@ -423,21 +422,35 @@ public async Task<ActionResult<Model22>> PostModel22(Model22 model22)
             }
         }
 
-        // Validate ModelState
+        // Validate ModelState - Remove Model22 navigation property validation errors
+        var keysToRemove = ModelState.Keys.Where(k => k.Contains(".Model22") || k.Contains("Model22")).ToList();
+        foreach (var key in keysToRemove)
+        {
+            ModelState.Remove(key);
+        }
+        
+        // Also remove any validation errors that mention Model22
+        foreach (var modelState in ModelState.Values)
+        {
+            var errorsToRemove = modelState.Errors
+                .Where(e => e.ErrorMessage.Contains("Model22") || e.ErrorMessage.Contains("The Model22 field is required"))
+                .ToList();
+            foreach (var error in errorsToRemove)
+            {
+                modelState.Errors.Remove(error);
+            }
+        }
+        
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage)
-                .Where(e => !e.Contains("The Model22 field is required."))
+                .Where(e => !string.IsNullOrEmpty(e))
                 .ToList();
             if (errors.Any())
             {
                 Log.Warning("Invalid ModelState for Model22: {@Errors}", errors);
                 return BadRequest(new { success = false, message = "Invalid request.", errors });
-            }
-            foreach (var key in ModelState.Keys.Where(k => k.Contains(".Model22")))
-            {
-                ModelState.Remove(key);
             }
         }
 
@@ -537,8 +550,22 @@ public async Task<ActionResult<Model22>> PostModel22(Model22 model22)
                             message = $"Serial number {serial} not found for {model22Item.Description}."
                         });
                     }
-                    Log.Information("Removing serial number {Serial} for item {Description}", serial, model22Item.Description);
-                    _context.ItemSerialNumbers.Remove(serialNumber);
+
+                    // Handle serial number removal based on role
+                    if (model22.Role == "SPAREPART")
+                    {
+                        // For SPAREPART: NEVER remove serial numbers - they are reused
+                        // Serial numbers represent the item type, not individual units
+                        var newQuantity = item.Quantity - model22Item.Quantity;
+                        Log.Information("Keeping serial number {Serial} for SPAREPART item {Description} - new quantity: {NewQuantity} (serial numbers are reused)", 
+                            serial, model22Item.Description, newQuantity);
+                    }
+                    else
+                    {
+                        // For non-SPAREPART: Remove serial number immediately (existing logic)
+                        Log.Information("Removing serial number {Serial} for item {Description}", serial, model22Item.Description);
+                        _context.ItemSerialNumbers.Remove(serialNumber);
+                    }
                 }
             }
 
@@ -553,6 +580,7 @@ public async Task<ActionResult<Model22>> PostModel22(Model22 model22)
                 Action = "Withdrawn",
                 Quantity = model22Item.Quantity,
                 VoucherNumber = model22.VoucherNumber, // Use the Model22 VoucherNumber
+                History = string.Empty,
                 Details = $"Issued To: {model22.RecipientName}, Registered By: {model22.RegisteredBy}, Date: {model22.EthiopianDate}, Currency: {model22Item.Currency}, Voucher: {model22.VoucherNumber}",
                 Date = model22.EthiopianDate,
                 GregorianDate = currentDate,
@@ -619,13 +647,13 @@ public async Task<ActionResult<IEnumerable<Model22>>> GetModel22sByRoles(
             return BadRequest(new { success = false, message = "At least one role must be provided." });
         }
 
-        var allowedRoles = new HashSet<string>(new[] { "VHF", "HF", "ELECTRONICS", "SPAREPART" }, StringComparer.OrdinalIgnoreCase);
+        var allowedRoles = new HashSet<string>(new[] { "VHF", "HF", "ELECTRONICS", "SPAREPART", "SUPPLY_AND_DISTRIBUTION_TEAMLEADER" }, StringComparer.OrdinalIgnoreCase);
         var invalidRoles = roles.Except(allowedRoles, StringComparer.OrdinalIgnoreCase).ToList();
 
         if (invalidRoles.Any())
         {
             Log.Warning("Invalid roles provided: {InvalidRoles}", string.Join(", ", invalidRoles));
-            return BadRequest(new { success = false, message = $"Invalid roles: {string.Join(", ", invalidRoles)}. Allowed roles are: VHF, HF, ELECTRONICS, SPAREPART." });
+            return BadRequest(new { success = false, message = $"Invalid roles: {string.Join(", ", invalidRoles)}. Allowed roles are: VHF, HF, ELECTRONICS, SPAREPART, SUPPLY_AND_DISTRIBUTION_TEAMLEADER." });
         }
 
         var query = _context.Model22s
@@ -838,6 +866,11 @@ public async Task<ActionResult<Model22>> PostModel22WithAccessories(Model22WithA
         
         foreach (var itemRequest in request.Items)
         {
+            // Sanitize serial numbers — remove empty/whitespace entries
+            itemRequest.SerialNumbers = itemRequest.SerialNumbers?
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .ToList() ?? new List<string>();
+
             var model22Item = new Model22Item
             {
                 Description = itemRequest.Description,
@@ -846,14 +879,35 @@ public async Task<ActionResult<Model22>> PostModel22WithAccessories(Model22WithA
                 UnitPrice = itemRequest.UnitPrice,
                 Currency = itemRequest.Currency,
                 SerialNumbers = itemRequest.SerialNumbers,
-                WithdrawnAccessories = new List<Model22ItemAccessory>()
+                WithdrawnAccessories = new List<Model22ItemAccessory>(),
+                IsAccessoryOnly = itemRequest.IsAccessoryOnly,
+                ParentItemId = itemRequest.ParentItemId
             };
 
             // Find the actual item in database
-            var item = await _context.Items
-                .Include(i => i.Accessories)
-                .Include(i => i.SerialNumbers)
-                .FirstOrDefaultAsync(i => i.Description == itemRequest.Description && i.Model == itemRequest.Model);
+            // In accessory-only mode, prefer lookup by ParentItemId for precision
+            Item? item = null;
+            if (itemRequest.IsAccessoryOnly && itemRequest.ParentItemId.HasValue)
+            {
+                item = await _context.Items
+                    .Include(i => i.Accessories)
+                        .ThenInclude(a => a.SerialNumbers)
+                    .Include(i => i.Accessories)
+                        .ThenInclude(a => a.SubAccessories)
+                    .Include(i => i.SerialNumbers)
+                    .FirstOrDefaultAsync(i => i.ItemId == itemRequest.ParentItemId.Value);
+            }
+            
+            if (item == null)
+            {
+                item = await _context.Items
+                    .Include(i => i.Accessories)
+                        .ThenInclude(a => a.SerialNumbers)
+                    .Include(i => i.Accessories)
+                        .ThenInclude(a => a.SubAccessories)
+                    .Include(i => i.SerialNumbers)
+                    .FirstOrDefaultAsync(i => i.Description == itemRequest.Description && i.Model == itemRequest.Model);
+            }
 
             if (item == null)
             {
@@ -861,10 +915,29 @@ public async Task<ActionResult<Model22>> PostModel22WithAccessories(Model22WithA
                 return BadRequest(new { success = false, message = $"Item {itemRequest.Description} not found." });
             }
 
-            if (item.Quantity < itemRequest.Quantity)
+            // Set the category from the item
+            model22Item.Category = item.Category;
+
+            // Validate accessory-only mode
+            if (itemRequest.IsAccessoryOnly)
             {
-                await transaction.RollbackAsync();
-                return BadRequest(new { success = false, message = $"Insufficient quantity for {itemRequest.Description}. Available: {item.Quantity}" });
+                // In accessory-only mode, at least one accessory must be selected
+                if (itemRequest.SelectedAccessories == null || !itemRequest.SelectedAccessories.Any())
+                {
+                    await transaction.RollbackAsync();
+                    return BadRequest(new { success = false, message = $"Accessory-only mode requires at least one accessory to be selected for {itemRequest.Description}." });
+                }
+                
+                Log.Information("Processing accessory-only withdrawal for item {Description} - parent item quantity will NOT be changed", itemRequest.Description);
+            }
+            else
+            {
+                // Regular mode - validate parent item quantity
+                if (item.Quantity < itemRequest.Quantity)
+                {
+                    await transaction.RollbackAsync();
+                    return BadRequest(new { success = false, message = $"Insufficient quantity for {itemRequest.Description}. Available: {item.Quantity}" });
+                }
             }
 
             // Process accessory withdrawals
@@ -873,6 +946,7 @@ public async Task<ActionResult<Model22>> PostModel22WithAccessories(Model22WithA
                 foreach (var accessoryRequest in itemRequest.SelectedAccessories)
                 {
                     var accessory = item.Accessories.FirstOrDefault(a => a.Id == accessoryRequest.AccessoryId);
+                    
                     if (accessory == null)
                     {
                         await transaction.RollbackAsync();
@@ -885,48 +959,188 @@ public async Task<ActionResult<Model22>> PostModel22WithAccessories(Model22WithA
                         return BadRequest(new { success = false, message = $"Insufficient quantity for accessory {accessory.Name}. Available: {accessory.Quantity}" });
                     }
 
+                    // Validate accessory serial numbers if the accessory requires them
+                    if (accessory.RequiresSerialNumbers)
+                    {
+                        if (accessoryRequest.SerialNumbers == null || !accessoryRequest.SerialNumbers.Any())
+                        {
+                            await transaction.RollbackAsync();
+                            return BadRequest(new { success = false, message = $"Accessory {accessory.Name} requires serial numbers but none provided." });
+                        }
+
+                        if (accessoryRequest.Quantity != accessoryRequest.SerialNumbers.Count)
+                        {
+                            await transaction.RollbackAsync();
+                            return BadRequest(new { success = false, message = $"Accessory {accessory.Name}: quantity ({accessoryRequest.Quantity}) must match serial numbers count ({accessoryRequest.SerialNumbers.Count})." });
+                        }
+
+                        // Validate that all provided serial numbers exist for this accessory
+                        foreach (var serial in accessoryRequest.SerialNumbers)
+                        {
+                            var accessorySerial = accessory.SerialNumbers.FirstOrDefault(s => s.SerialNumber == serial);
+                            if (accessorySerial == null)
+                            {
+                                await transaction.RollbackAsync();
+                                return BadRequest(new { success = false, message = $"Serial number {serial} not found for accessory {accessory.Name}." });
+                            }
+                        }
+
+                        // Remove accessory serial numbers (similar logic to item serial numbers)
+                        foreach (var serial in accessoryRequest.SerialNumbers)
+                        {
+                            var accessorySerial = accessory.SerialNumbers.FirstOrDefault(s => s.SerialNumber == serial);
+                            if (accessorySerial != null)
+                            {
+                                if (model22.Role == "SPAREPART")
+                                {
+                                    // For SPAREPART: Only remove serial number if accessory quantity will be 0 after withdrawal
+                                    var newAccessoryQuantity = accessory.Quantity - accessoryRequest.Quantity;
+                                    if (newAccessoryQuantity == 0)
+                                    {
+                                        Log.Information("Removing accessory serial number {Serial} for SPAREPART accessory {AccessoryName} - quantity reaching 0", serial, accessory.Name);
+                                        _context.AccessorySerialNumbers.Remove(accessorySerial);
+                                    }
+                                    else
+                                    {
+                                        Log.Information("Keeping accessory serial number {Serial} for SPAREPART accessory {AccessoryName} - remaining quantity: {RemainingQuantity}", serial, accessory.Name, newAccessoryQuantity);
+                                    }
+                                }
+                                else
+                                {
+                                    // For non-SPAREPART: Remove serial number immediately
+                                    Log.Information("Removing accessory serial number {Serial} for accessory {AccessoryName}", serial, accessory.Name);
+                                    _context.AccessorySerialNumbers.Remove(accessorySerial);
+                                }
+                            }
+                        }
+                    }
+
+                    // ✅ CRITICAL: Store original accessory quantity BEFORE reducing it
+                    int originalAccessoryQuantity = accessory.Quantity;
+
                     // Reduce accessory quantity
                     accessory.Quantity -= accessoryRequest.Quantity;
 
-                    // Record the accessory withdrawal
+                    // Record the accessory withdrawal - use price/currency from request if provided
                     var withdrawnAccessory = new Model22ItemAccessory
                     {
                         AccessoryId = accessory.Id,
                         Name = accessory.Name,
                         Model = accessory.Model,
                         Quantity = accessoryRequest.Quantity,
-                        UnitPrice = accessory.UnitPrice,
-                        Currency = accessory.Currency
+                        UnitPrice = accessoryRequest.UnitPrice ?? accessory.UnitPrice,
+                        Currency = accessoryRequest.Currency ?? accessory.Currency,
+                        WithdrawnSerialNumbers = accessoryRequest.SerialNumbers ?? new List<string>(),
+                        WithdrawnSubAccessories = new List<Model22ItemSubAccessory>() // ✅ Initialize sub-accessories list
                     };
+
+                    // ✅ NEW: Automatically withdraw ALL sub-accessories with this accessory
+                    if (accessory.SubAccessories != null && accessory.SubAccessories.Any())
+                    {
+                        Log.Information("Processing {Count} sub-accessories for accessory {AccessoryName} (Original Qty: {OriginalQty}, Withdrawing: {WithdrawQty})",
+                            accessory.SubAccessories.Count, accessory.Name, originalAccessoryQuantity, accessoryRequest.Quantity);
+                        
+                        foreach (var subAccessory in accessory.SubAccessories)
+                        {
+                            Log.Information("Sub-accessory BEFORE: {Name}, Current Qty (per-unit): {CurrentQty}", 
+                                subAccessory.Name, subAccessory.Quantity);
+                            
+                            // ✅ IMPORTANT: Sub-accessories are stored as PER-UNIT quantities in the database
+                            // So we just multiply by the number of accessories being withdrawn
+                            int subAccessoryQuantityToWithdraw = subAccessory.Quantity * accessoryRequest.Quantity;
+                            
+                            Log.Information("Sub-accessory calculation: {Name}, PerUnit: {PerUnit}, ToWithdraw: {ToWithdraw} (formula: {PerUnit} * {WithdrawQty})",
+                                subAccessory.Name, subAccessory.Quantity, subAccessoryQuantityToWithdraw, 
+                                subAccessory.Quantity, accessoryRequest.Quantity);
+                            
+                            if (subAccessoryQuantityToWithdraw > 0)
+                            {
+                                // Note: We don't reduce subAccessory.Quantity here because it's a per-unit value
+                                // The per-unit quantity stays the same; only the parent accessory quantity changes
+                                
+                                Log.Information("Sub-accessory: {Name}, Per-unit qty remains: {PerUnit}", 
+                                    subAccessory.Name, subAccessory.Quantity);
+                                
+                                // Record the sub-accessory withdrawal
+                                withdrawnAccessory.WithdrawnSubAccessories.Add(new Model22ItemSubAccessory
+                                {
+                                    SubAccessoryId = subAccessory.Id,
+                                    Name = subAccessory.Name,
+                                    Quantity = subAccessoryQuantityToWithdraw,
+                                    UnitPrice = subAccessory.UnitPrice,
+                                    Currency = subAccessory.Currency
+                                });
+                                
+                                Log.Information("✅ Successfully withdrew sub-accessory {SubAccessoryName} x{Quantity} (per-unit: {PerUnit}) with accessory {AccessoryName}",
+                                    subAccessory.Name, subAccessoryQuantityToWithdraw, subAccessory.Quantity, accessory.Name);
+                            }
+                            else
+                            {
+                                Log.Warning("⚠️ Sub-accessory {Name} calculated withdrawal is 0 or negative - skipping", subAccessory.Name);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Log.Information("No sub-accessories found for accessory {AccessoryName}", accessory.Name);
+                    }
 
                     model22Item.WithdrawnAccessories.Add(withdrawnAccessory);
                 }
             }
 
-            // Process main item withdrawal (your existing logic)
-            item.Quantity -= itemRequest.Quantity;
-            
-            // Handle serial numbers
-            if (itemRequest.SerialNumbers != null && itemRequest.SerialNumbers.Any())
+            // Handle serial numbers BEFORE reducing quantity
+            // Skip serial number handling if this is an accessory-only withdrawal
+            if (!itemRequest.IsAccessoryOnly && itemRequest.SerialNumbers != null && itemRequest.SerialNumbers.Any())
             {
                 foreach (var serial in itemRequest.SerialNumbers)
                 {
                     var serialNumber = item.SerialNumbers.FirstOrDefault(s => s.SerialNumber == serial);
                     if (serialNumber != null)
                     {
-                        _context.ItemSerialNumbers.Remove(serialNumber);
+                        // Handle serial number removal based on role
+                        if (model22.Role == "SPAREPART")
+                        {
+                            // For SPAREPART: Only remove serial number if quantity will be 0 after withdrawal
+                            var newQuantity = item.Quantity - itemRequest.Quantity;
+                            if (newQuantity == 0)
+                            {
+                                _context.ItemSerialNumbers.Remove(serialNumber);
+                            }
+                            // For SPAREPART with remaining quantity, keep the serial number
+                        }
+                        else
+                        {
+                            // For non-SPAREPART: Remove serial number immediately
+                            _context.ItemSerialNumbers.Remove(serialNumber);
+                        }
                     }
                 }
+            }
+
+            // Process main item withdrawal (reduce quantity after serial number handling)
+            // Skip quantity decrease if this is an accessory-only withdrawal
+            if (!itemRequest.IsAccessoryOnly)
+            {
+                item.Quantity -= itemRequest.Quantity;
+                Log.Information("Decreased parent item {Description} quantity by {Quantity}. New quantity: {NewQuantity}", 
+                    itemRequest.Description, itemRequest.Quantity, item.Quantity);
+            }
+            else
+            {
+                Log.Information("Accessory-only mode: Skipping parent item {Description} quantity decrease", itemRequest.Description);
             }
 
             // Create transaction entry
             var transactionEntry = new TransactionEntry
             {
                 ItemId = item.ItemId,
-                Action = "Withdrawn",
-                Quantity = itemRequest.Quantity,
+                Action = itemRequest.IsAccessoryOnly ? "Accessory Withdrawn" : "Withdrawn",
+                Quantity = itemRequest.IsAccessoryOnly ? 0 : itemRequest.Quantity,
                 VoucherNumber = model22.VoucherNumber,
+                History = string.Empty,
                 Details = $"Issued To: {model22.RecipientName}, Registered By: {model22.RegisteredBy}" +
+                         (itemRequest.IsAccessoryOnly ? " (Accessory-Only Withdrawal)" : "") +
                          (model22Item.WithdrawnAccessories.Any() ? 
                              $", Accessories: {string.Join(", ", model22Item.WithdrawnAccessories.Select(a => $"{a.Name}({a.Quantity})"))}" : ""),
                 Date = model22.EthiopianDate,
@@ -951,8 +1165,11 @@ public async Task<ActionResult<Model22>> PostModel22WithAccessories(Model22WithA
     }
     catch (Exception ex)
     {
-        Log.Error(ex, "Error creating Model22 with accessories");
-        return StatusCode(500, new { success = false, message = ex.Message });
+        var innerMsg = ex.InnerException?.InnerException?.Message 
+                    ?? ex.InnerException?.Message 
+                    ?? ex.Message;
+        Log.Error(ex, "Error creating Model22 with accessories. Inner: {Inner}", innerMsg);
+        return StatusCode(500, new { success = false, message = innerMsg, outerMessage = ex.Message });
     }
 }
 

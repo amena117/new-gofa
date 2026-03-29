@@ -25,6 +25,30 @@ namespace Gofabackend.Controllers
             _jwtSettings = jwtSettings.Value;
         }
 
+        private static readonly List<string> SandDRoles = new List<string>
+        {
+            "VHF", "HF", "SPAREPART", "ELECTRONICS", "PROPERTY_CONTROL", 
+            "SUPPLY_AND_DISTRIBUTION_TEAMLEADER", "PROPERTY_CONTROL_TEAMLEADER", "TRANSIT"
+        };
+
+        private static readonly List<string> MaintenanceRoles = new List<string>
+        {
+            "SUPPLY_AND_DISTRIBUTION_MANAGER", "SUPPLY_AND_DISTRIBUTION_HEAD", 
+            "PPC", "QUALITY", "MINISTORE", 
+            "MAINTENANCE_LEADER", "PTEAM_LEADER", "OTEAM_LEADER", "RTEAM_LEADER", "HTEAM_LEADER",
+            // New maintenance-specific technician roles (separate from store roles)
+            "VHF_MAINTENANCE", "HF_MAINTENANCE", "POWER_MAINTENANCE", "IT_MAINTENANCE",
+            "OFFICE_MACHINE_MAINTENANCE", "RADIO_MAINTENANCE"
+        };
+
+        private bool CanManageRole(string adminRole, string targetRole)
+        {
+            if (adminRole == "SUPER_ADMIN") return true;
+            if (adminRole == "SANDD_ADMIN") return SandDRoles.Contains(targetRole);
+            if (adminRole == "MAINTENANCE_ADMIN") return MaintenanceRoles.Contains(targetRole);
+            return false;
+        }
+
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequest)
@@ -228,6 +252,12 @@ namespace Gofabackend.Controllers
                     return BadRequest(new { success = false, message = "Invalid request data" });
                 }
 
+                var adminRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (!CanManageRole(adminRole, registerRequest.Role))
+                {
+                    return StatusCode(403, new { success = false, message = "Access denied: You do not have permission to register a user with this role." });
+                }
+
                 if (_context.Users.Any(u => u.Username == registerRequest.Username))
                 {
                     return BadRequest(new { success = false, message = "Username already exists" });
@@ -309,6 +339,12 @@ namespace Gofabackend.Controllers
                     return NotFound(new { success = false, message = "User not found" });
                 }
 
+                var adminRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (!CanManageRole(adminRole, user.Role))
+                {
+                    return StatusCode(403, new { success = false, message = "Access denied: You do not have permission to manage this user role." });
+                }
+
                 user.FirstName = updateDto.FirstName ?? user.FirstName;
                 user.LastName = updateDto.LastName ?? user.LastName;
                 user.Role = updateDto.Role ?? user.Role;
@@ -333,6 +369,12 @@ namespace Gofabackend.Controllers
                 if (user == null)
                 {
                     return NotFound(new { success = false, message = "User not found" });
+                }
+
+                var adminRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (!CanManageRole(adminRole, user.Role))
+                {
+                    return StatusCode(403, new { success = false, message = "Access denied: You do not have permission to manage this user role." });
                 }
 
                 if (passwordDto.NewPassword != passwordDto.ConfirmPassword)
@@ -361,6 +403,12 @@ namespace Gofabackend.Controllers
                 if (user == null)
                 {
                     return NotFound(new { success = false, message = "User not found" });
+                }
+
+                var adminRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (!CanManageRole(adminRole, user.Role))
+                {
+                    return StatusCode(403, new { success = false, message = "Access denied: You do not have permission to manage this user role." });
                 }
 
                 user.IsDisabled = !user.IsDisabled;

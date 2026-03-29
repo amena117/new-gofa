@@ -8,6 +8,20 @@ public class AccessoryDto
 
     // Foreign key reference (optional depending on your needs)
     public int Model1Id { get; set; }
+    public decimal? UnitPrice { get; set; }
+    public string? Currency { get; set; }
+    
+    // Sub-accessories
+    public List<SubAccessoryDto> SubAccessories { get; set; } = new List<SubAccessoryDto>();
+}
+
+public class SubAccessoryDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Quantity { get; set; }
+    public decimal? UnitPrice { get; set; }
+    public string? Currency { get; set; }
 }
 
 public class ExtraItemDto
@@ -57,4 +71,6 @@ public class Model1Dto
 
     public List<AccessoryDto> Accessories { get; set; }
     public List<ExtraItemDto> ExtraItems { get; set; }
+    public float Vat { get; set; }
+    public float GrandTotal { get; set; }
 }

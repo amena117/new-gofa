@@ -219,6 +219,44 @@ public async Task<IActionResult> GetDoOutRequests()
     return Ok(requests);
 }
 
+        [HttpGet("pending-delivery")]
+        public async Task<IActionResult> GetPendingDeliveries()
+        {
+            try
+            {
+                var pendingDeliveries = await _context.MaintenanceRequestRegisters
+                    .Where(r => r.Status == "Maintenance Finished" || r.Status == "Quality Check")
+                    .OrderByDescending(r => r.DateWorkOrderReceived)
+                    .ToListAsync();
+
+                return Ok(pendingDeliveries);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching pending deliveries");
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpGet("by-status/{status}")]
+        public async Task<IActionResult> GetByStatus(string status)
+        {
+            try
+            {
+                var requests = await _context.MaintenanceRequestRegisters
+                    .Where(r => r.Status == status)
+                    .OrderByDescending(r => r.DateWorkOrderReceived)
+                    .ToListAsync();
+
+                return Ok(requests);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching requests by status");
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
 
         [HttpPut("by-worksorder/{worksOrderNumber}/update-serial-model")]
         public async Task<IActionResult> UpdateSerialAndModelByWorksOrder(int worksOrderNumber, [FromBody] UpdateSerialModelDto dto)
@@ -395,6 +433,16 @@ public IActionResult QualifyRequest(int worksOrderNumber)
             try
             {
                 _logger.LogInformation("Creating new maintenance request register");
+
+                // Check if a maintenance request with the same WorksOrderNumber already exists
+                var existingRequest = await _context.MaintenanceRequestRegisters
+                    .FirstOrDefaultAsync(m => m.WorksOrderNumber == createDto.WorksOrderNumber);
+
+                if (existingRequest != null)
+                {
+                    _logger.LogWarning($"Maintenance request with Works Order Number {createDto.WorksOrderNumber} already exists");
+                    return Conflict(new { message = $"A maintenance request with Works Order Number {createDto.WorksOrderNumber} already exists." });
+                }
 
                 var maintenanceRequest = new MaintenanceRequestRegister
                 {
@@ -681,43 +729,57 @@ public IActionResult QualifyRequest(int worksOrderNumber)
         }
 
 
-        [HttpPut("update-maintenance-only/{worksOrderNumber}")]
-        public async Task<IActionResult> UpdateMaintenanceOnly(int worksOrderNumber, [FromBody] MaintenanceDetailsUpdateDto updateDto)
+        [HttpPut("update-status/{worksOrderNumber}")]
+        public async Task<IActionResult> UpdateMaintenanceStatus(int worksOrderNumber, [FromBody] UpdateMaintenanceStatusDto dto)
         {
             try
             {
-                _logger.LogInformation($"Updating maintenance details for Works Order Number {worksOrderNumber}");
-
-                // Find the maintenance request
-                var maintenanceRequest = await _context.MaintenanceRequestRegisters
+                var request = await _context.MaintenanceRequestRegisters
                     .FirstOrDefaultAsync(m => m.WorksOrderNumber == worksOrderNumber);
 
-                if (maintenanceRequest == null)
-                {
-                    _logger.LogWarning($"Maintenance request with Works Order Number {worksOrderNumber} not found");
+                if (request == null)
                     return NotFound("Maintenance request not found.");
+
+                // Validate status
+                var validStatuses = new[]
+                {
+                    "Pending", "On Maintenance", "Quality Check", "Maintenance Finished", 
+                    "Client Received", "Rejected", "Waiting for Spare Part"
+                };
+
+                if (!validStatuses.Contains(dto.Status))
+                    return BadRequest($"Invalid status. Valid statuses are: {string.Join(", ", validStatuses)}");
+
+                request.Status = dto.Status;
+                request.UpdatedAt = DateTime.UtcNow;
+
+                // If status is "Waiting for Spare Part", update related spare parts requests
+                if (dto.Status == "Waiting for Spare Part")
+                {
+                    var spareRequests = await _context.SparePartsRequests
+                        .Where(s => s.WorksOrderNumber == worksOrderNumber)
+                        .ToListAsync();
+
+                    foreach (var spare in spareRequests)
+                    {
+                        spare.Status = "Pending Delivery";
+                        spare.CurrentStage = "MINISTORE";
+                    }
+
+                    if (spareRequests.Any())
+                    {
+                        _context.SparePartsRequests.UpdateRange(spareRequests);
+                    }
                 }
 
-                // Update only the MaintenanceRequestRegister fields
-                maintenanceRequest.RepairFinishDate = updateDto.RepairFinishDate;
-                maintenanceRequest.Status = updateDto.Status;
-                maintenanceRequest.ManHours = updateDto.ManHours;
-                maintenanceRequest.Remark = updateDto.Remark;
-                maintenanceRequest.MaintainedBy = updateDto.MaintainedBy;
-
-                _context.MaintenanceRequestRegisters.Update(maintenanceRequest);
-
-                // Save changes to database
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation($"Maintenance details updated successfully for Works Order Number {worksOrderNumber}");
-                return Ok(new { message = "Maintenance details updated successfully." });
+                return Ok(new { message = "Status updated successfully.", status = request.Status });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error updating maintenance details for Works Order Number {worksOrderNumber}");
-                var innerException = ex.InnerException?.Message ?? "No inner exception";
-                return StatusCode(500, $"Internal Server Error: {ex.Message}. Inner Exception: {innerException}");
+                _logger.LogError(ex, "Error updating maintenance status");
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
 
@@ -871,7 +933,6 @@ public async Task<IActionResult> AssignMaintenanceRequest(int worksOrderNumber, 
 
 
 
-        // PUT: api/MaintenanceRequestRegister/deliver/{worksOrderNumber}
         [HttpPut("deliver/{worksOrderNumber}")]
         public async Task<IActionResult> DeliverForClients(int worksOrderNumber, [FromBody] DeliveryRequest deliveryRequest)
         {
@@ -895,13 +956,31 @@ public async Task<IActionResult> AssignMaintenanceRequest(int worksOrderNumber, 
                 maintenanceRequest.RecievedDate = deliveryRequest.RecievedDate;
 
                 // Update status to "Client Received"
-                maintenanceRequest.Status = "Client Received"; // Ensure this line is present
+                maintenanceRequest.Status = "Client Received";
+                maintenanceRequest.UpdatedAt = DateTime.UtcNow;
 
                 _context.MaintenanceRequestRegisters.Update(maintenanceRequest);
                 await _context.SaveChangesAsync();
 
+                // ✅ NEW: Update related spare parts requests status
+                var sparePartsRequests = await _context.SparePartsRequests
+                    .Where(s => s.WorksOrderNumber == worksOrderNumber)
+                    .ToListAsync();
+
+                foreach (var spareRequest in sparePartsRequests)
+                {
+                    spareRequest.Status = "Delivered to Client";
+                    spareRequest.CurrentStage = "COMPLETED";
+                }
+
+                if (sparePartsRequests.Any())
+                {
+                    _context.SparePartsRequests.UpdateRange(sparePartsRequests);
+                    await _context.SaveChangesAsync();
+                }
+
                 _logger.LogInformation($"Maintenance request delivered successfully for Works Order Number {worksOrderNumber}");
-                return Ok(maintenanceRequest);
+                return Ok(new { message = "Maintenance request delivered successfully.", worksOrderNumber = worksOrderNumber });
             }
             catch (Exception ex)
             {

@@ -197,7 +197,6 @@ public async Task<IActionResult> UpdateByWorksOrder(
     return NoContent();
 }
 
-        // POST: api/SparePartsRequest/bulk
         [HttpPost("bulk")]
         public async Task<IActionResult> PostSparePartsRequestsBulk([FromBody] List<SparePartsRequest> sparePartsRequests)
         {
@@ -205,7 +204,7 @@ public async Task<IActionResult> UpdateByWorksOrder(
                 return BadRequest("No spare parts requests provided.");
 
             var validRequests = new List<SparePartsRequest>();
-            var skippedRequests = new List<int>(); // store WorksOrderNumbers that failed
+            var skippedRequests = new List<int>();
 
             foreach (var request in sparePartsRequests)
             {
@@ -220,6 +219,18 @@ public async Task<IActionResult> UpdateByWorksOrder(
                 {
                     skippedRequests.Add(request.WorksOrderNumber);
                     continue;
+                }
+
+                // Ensure status is set to Pending if not already set
+                if (string.IsNullOrEmpty(request.Status))
+                {
+                    request.Status = "Pending";
+                }
+
+                // Ensure CurrentStage is set to MAINTENANCE_LEADER for proper routing
+                if (string.IsNullOrEmpty(request.CurrentStage))
+                {
+                    request.CurrentStage = "MAINTENANCE_LEADER";
                 }
 
                 validRequests.Add(request);
@@ -360,19 +371,59 @@ public async Task<IActionResult> UpdateByWorksOrder(
             }
         }
 
-        [HttpPut("update-status/{id}")]
-        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto updatedStatus)
+        [HttpPut("route-to-team-leader/{id}")]
+        public async Task<IActionResult> RouteToTeamLeader(int id, [FromBody] RouteToTeamLeaderDto routeData)
         {
-            var request = await _context.SparePartsRequests.FindAsync(id);
-            if (request == null)
+            try
             {
-                return NotFound();
+                var request = await _context.SparePartsRequests.FindAsync(id);
+                if (request == null)
+                    return NotFound("Request not found.");
+
+                // Map request type to appropriate team leader
+                var teamLeaderMap = new Dictionary<string, string>
+                {
+                    { "POWER", "PTEAM_LEADER" },
+                    { "OFFICE_MACHINE", "OTEAM_LEADER" },
+                    { "VHF_RADIO", "VTEAM_LEADER" },
+                    { "HF_RADIO", "HTEAM_LEADER" }
+                };
+
+                if (!teamLeaderMap.TryGetValue(request.RequestType, out var teamLeader))
+                    return BadRequest("Invalid request type for routing.");
+
+                request.CurrentStage = teamLeader;
+                request.Status = "Routed to Team Leader";
+                request.ApprovedBy = routeData.ApprovedBy;
+                request.ApprovalDate = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = $"Request routed to {teamLeader} successfully." });
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error routing request to team leader.");
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
 
-            request.Status = updatedStatus.Status;
-            await _context.SaveChangesAsync();
+        [HttpGet("by-current-stage/{stage}")]
+        public async Task<IActionResult> GetByCurrentStage(string stage)
+        {
+            try
+            {
+                var requests = await _context.SparePartsRequests
+                    .Where(r => r.CurrentStage == stage)
+                    .ToListAsync();
 
-            return NoContent();
+                return Ok(requests);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching requests by stage.");
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
 
 
@@ -480,6 +531,11 @@ public async Task<IActionResult> UpdateByWorksOrder(
     public class UpdateStatusDto
     {
         public string Status { get; set; } = string.Empty;
+    }
+
+    public class RouteToTeamLeaderDto
+    {
+        public string ApprovedBy { get; set; } = string.Empty;
     }
 
 }

@@ -31,6 +31,7 @@
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.7",
     "jwt-decode": "^4.0.0",
     "kenat": "^3.0.0",
     "moment": "^2.30.1",

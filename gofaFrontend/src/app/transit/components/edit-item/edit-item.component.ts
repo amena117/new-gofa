@@ -114,6 +114,8 @@ export class EditItemComponent implements OnInit {
   itemId!: string;
   storeTypes: string[] = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
   isFormEditable = true;
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -164,8 +166,25 @@ export class EditItemComponent implements OnInit {
       StoreType: ['', Validators.required],
       Status: ['Waiting For Stores', Validators.required],
       Model19Ref: ['', Validators.required],
+      Vat: [0, [Validators.required, Validators.min(0)]],
+      GrandTotal: [0, [Validators.required, Validators.min(0)]],
       Accessories: this.fb.array([]),
       ExtraItems: this.fb.array([])
+    });
+
+    // Auto-calculate Amount and GrandTotal
+    this.editForm.valueChanges.subscribe(val => {
+      const received = +(val?.Received || 0);
+      const unitPrice = +(val?.UnitOfPrice || 0);
+      const vat = +(val?.Vat || 0);
+
+      const amount = received * unitPrice;
+      const grandTotal = amount + vat;
+
+      this.editForm.patchValue({
+        Amount: amount,
+        GrandTotal: grandTotal
+      }, { emitEvent: false });
     });
   }
 
@@ -208,8 +227,12 @@ export class EditItemComponent implements OnInit {
         this.patchFormValues(item);
         const formattedDate = this.formatDate(item.date);
         this.editForm.patchValue({ Date: formattedDate });
+        this.errorMessage = null;
       },
-      error: (err) => console.error('Error loading item:', err)
+      error: (err) => {
+        console.error('Error loading item:', err);
+        this.errorMessage = 'Failed to load item data. Please try again.';
+      }
     });
   }
 
@@ -250,7 +273,9 @@ export class EditItemComponent implements OnInit {
       RTitle: item.rTitle,
       AuthorizedByName: item.authorizedByName,
       ATitle: item.aTitle,
-      Model19Ref: item.model19Ref
+      Model19Ref: item.model19Ref,
+      Vat: item.vat,
+      GrandTotal: item.grandTotal
     });
 
     if (item.status === 'Stores Recieved') {
@@ -286,12 +311,24 @@ export class EditItemComponent implements OnInit {
 
   onSubmit(id: string): void {
     if (this.editForm.valid) {
+      this.errorMessage = null;
+      this.successMessage = null;
+      
       this.transitService.updateItem(id, this.editForm.value).subscribe({
-        next: () => this.router.navigate(['/transit/received-items']),
-        error: (err) => console.error('Update failed:', err)
+        next: () => {
+          this.successMessage = 'Item updated successfully!';
+          setTimeout(() => {
+            this.router.navigate(['/transit/received-items']);
+          }, 1500);
+        },
+        error: (err) => {
+          console.error('Update failed:', err);
+          this.errorMessage = 'Failed to update item. Please try again.';
+        }
       });
     } else {
       this.editForm.markAllAsTouched();
+      this.errorMessage = 'Please fill all required fields correctly.';
     }
   }
 

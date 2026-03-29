@@ -45,6 +45,8 @@ namespace Gofabackend.Models
 
         public List<Model2Accessory> Accessories { get; set; } = new List<Model2Accessory>();
         public List<Model2ExtraItem> ExtraItems { get; set; } = new List<Model2ExtraItem>();
+        public double Vat { get; set; }
+        public double GrandTotal { get; set; }
     }
 
     // ✅ Accessory Model for Model2

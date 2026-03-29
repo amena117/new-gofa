@@ -35,6 +35,8 @@ public class Model1
     public bool HasExtraItems { get; set; }
     public List<Accessories> Accessories { get; set; }
     public List<ExtraItem> ExtraItems { get; set; }
+    public float Vat { get; set; }
+    public float GrandTotal { get; set; }
 
     
 }
