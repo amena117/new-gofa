@@ -32,6 +32,9 @@
             <th>Received By</th>
             <th>Item Type / የእቃው አይነት</th>
             <th>Model</th>
+            <th>Quantity</th>
+            <th>Received</th>
+            <th>Date Added</th>
             <th>Store Type</th>
             <th>Accessories</th>
             <th>Extra Items</th>
@@ -54,6 +57,9 @@
                 </div>
               </td>
               <td>{{ item.serialNumber }}</td>
+              <td>{{ item.ordered }}</td>
+              <td>{{ item.received }}</td>
+              <td>{{ item.date }}</td>
               <td>{{ item.storeType }}</td>
               <td>
                 <ul class="item-list" *ngIf="(item.accessories ?? []).length > 0; else noAccessories">
@@ -112,7 +118,7 @@
             <!-- Extra Items Only Row (for stores that DON'T have the main item) -->
             <tr *ngIf="item.storeType?.toLowerCase() !== itemDetails.role?.toLowerCase() && getExtraItemsForCurrentStore(item).length > 0">
               <td>{{ item.supplier }}</td>
-              <td colspan="4">
+              <td colspan="7">
                 <span class="extra-only-label">Extra Items Only (Main item sent to {{ item.storeType }})</span>
               </td>
               <td>—</td>

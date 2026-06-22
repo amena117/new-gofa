@@ -164,7 +164,8 @@ export class FromTransitComponent implements OnInit {
         this.filteredItems.sort((a, b) => (b.status || '').localeCompare(a.status || ''));
         break;
       case 'date':
-        this.filteredItems.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        // Sort by model1Id as a proxy for date (newest first)
+        this.filteredItems.sort((a, b) => b.model1Id - a.model1Id);
         break;
     }
     this.updatePagination();

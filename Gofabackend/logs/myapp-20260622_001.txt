@@ -1,0 +1,510 @@
+[2026-06-22 23:50:00 WRN] Network IP 10.20.38.171 not available. Only localhost bindings will be active.
+[2026-06-22 23:50:00 WRN] Network IP 10.20.38.51 not available. Bindings for this IP will not be active.
+[2026-06-22 23:50:00 WRN] The WebRootPath was not found: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend\wwwroot". Static files may be unavailable.
+[2026-06-22 23:50:02 WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+[2026-06-22 23:50:02 WRN] The property '"Model22Item"."SerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-06-22 23:50:02 WRN] The property '"Model22ItemAccessory"."WithdrawnSerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-06-22 23:52:08 WRN] Network IP 10.20.38.171 not available. Only localhost bindings will be active.
+[2026-06-22 23:52:08 WRN] Network IP 10.20.38.51 not available. Bindings for this IP will not be active.
+[2026-06-22 23:52:08 WRN] The WebRootPath was not found: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend\wwwroot". Static files may be unavailable.
+[2026-06-22 23:52:10 WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+[2026-06-22 23:52:10 WRN] The property '"Model22Item"."SerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-06-22 23:52:10 WRN] The property '"Model22ItemAccessory"."WithdrawnSerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-06-22 23:52:10 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Accessories"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-06-22 23:52:10 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"AccessorySubAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-06-22 23:52:10 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Item"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-06-22 23:52:10 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"MasterCardItemDetails"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-06-22 23:52:10 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Model1AccessorySubAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-06-22 23:52:10 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Model22ItemAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-06-22 23:52:10 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Model22ItemSubAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-06-22 23:52:10 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"TransactionEntry"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-06-22 23:52:10 INF] Executed DbCommand ("19"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-06-22 23:52:10 INF] Executed DbCommand ("18"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-06-22 23:52:10 INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-06-22 23:52:10 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-06-22 23:52:10 INF] Executed DbCommand ("8"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];"
+[2026-06-22 23:52:10 INF] No migrations were applied. The database is already up to date.
+[2026-06-22 23:52:11 INF] Executed DbCommand ("10"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[Role] = N'SUPER_ADMIN') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END"
+[2026-06-22 23:52:11 INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Warehouses] AS [w]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END"
+[2026-06-22 23:52:11 INF] Executed DbCommand ("9"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Items] AS [i]
+        WHERE [i].[Role] = N'SPAREPART') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END"
+[2026-06-22 23:52:11 INF] Database migrated and seeded successfully.
+[2026-06-22 23:52:11 INF] Application starting up in Development mode...
+[2026-06-22 23:52:11 INF] Available endpoints:
+[2026-06-22 23:52:11 INF] - http://localhost:5000
+[2026-06-22 23:52:11 INF] - https://localhost:5001
+[2026-06-22 23:52:11 INF] - https://localhost:7112
+[2026-06-22 23:52:11 INF] - http://10.20.38.171:2024
+[2026-06-22 23:52:11 INF] - http://10.20.38.51:2024
+[2026-06-22 23:52:11 INF] - https://10.20.38.171:2025
+[2026-06-22 23:52:11 INF] User profile is available. Using '"C:\Users\Josiah\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+[2026-06-22 23:52:11 WRN] Overriding address(es) '"http://localhost:5000, http://10.20.38.171:2024, http://10.20.38.51:2024, http://localhost:2024"'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+[2026-06-22 23:52:11 INF] Now listening on: "http://localhost:5000"
+[2026-06-22 23:52:11 INF] Now listening on: "http://localhost:2024"
+[2026-06-22 23:52:11 INF] Now listening on: "https://localhost:5001"
+[2026-06-22 23:52:11 INF] Now listening on: "https://localhost:7112"
+[2026-06-22 23:52:11 INF] Application started. Press Ctrl+C to shut down.
+[2026-06-22 23:52:11 INF] Hosting environment: "Development"
+[2026-06-22 23:52:11 INF] Content root path: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend"
+[2026-06-22 23:52:29 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - null null
+[2026-06-22 23:52:29 INF] CORS policy execution successful.
+[2026-06-22 23:52:29 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - 204 null null 145.9169ms
+[2026-06-22 23:52:29 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - "application/json" 45
+[2026-06-22 23:52:29 INF] CORS policy execution successful.
+[2026-06-22 23:52:29 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-06-22 23:52:30 INF] Route matched with "{action = \"Login\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Gofabackend.Controllers.LoginRequestDto)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-06-22 23:52:30 INF] Executed DbCommand ("22"ms) [Parameters=["@__loginRequest_Username_0='mints12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(2) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginRequest_Username_0"
+[2026-06-22 23:52:30 INF] Executing "UnauthorizedObjectResult", writing value of type '"<>f__AnonymousType0`1[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-06-22 23:52:30 INF] Executed action "Gofabackend.Controllers.AuthController.Login (Gofabackend)" in 393.5918ms
+[2026-06-22 23:52:30 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-06-22 23:52:30 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - 401 null "application/json; charset=utf-8" 612.8108ms
+[2026-06-22 23:52:53 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:52:53 INF] CORS policy execution successful.
+[2026-06-22 23:52:53 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:52:53 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:52:54 INF] Executed DbCommand ("31"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:52:54 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:52:54 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 496.2557ms
+[2026-06-22 23:52:54 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:52:54 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 841.3514ms
+[2026-06-22 23:52:59 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - null null
+[2026-06-22 23:52:59 INF] CORS policy execution successful.
+[2026-06-22 23:52:59 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - 204 null null 11.0577ms
+[2026-06-22 23:52:59 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - "application/json" 52
+[2026-06-22 23:52:59 INF] CORS policy execution successful.
+[2026-06-22 23:52:59 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-06-22 23:52:59 INF] Route matched with "{action = \"Login\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Gofabackend.Controllers.LoginRequestDto)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-06-22 23:52:59 INF] Executed DbCommand ("6"ms) [Parameters=["@__loginRequest_Username_0='superadmin' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(2) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginRequest_Username_0"
+[2026-06-22 23:53:00 INF] Session created for user "superadmin" at 06/22/2026 20:53:00 +00:00, expires at 06/22/2026 21:03:00 +00:00
+[2026-06-22 23:53:00 INF] AuthenticationScheme: "Cookies" signed in.
+[2026-06-22 23:53:00 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType1`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:53:00 INF] Executed action "Gofabackend.Controllers.AuthController.Login (Gofabackend)" in 538.079ms
+[2026-06-22 23:53:00 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-06-22 23:53:00 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - 200 null "application/json; charset=utf-8" 567.2541ms
+[2026-06-22 23:53:00 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2026-06-22 23:53:00 INF] CORS policy execution successful.
+[2026-06-22 23:53:00 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-06-22 23:53:00 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-06-22 23:53:00 INF] Cookies received in /api/auth/me: "auth_token: CfDJ8Lp5QV1Wq-xMtjQw1nr5rvPzLMsQHmfmglWMpo5Buy1KLP7wydrGWNtoCx55KX_GgIYo6mpVuezMq1BlbHR40bZecxgdFSHTCp6Aej-c2zU1efCLyLAhkhsw2pkRmp2-ISjwZeiuFv3mzU4AjE0BJFc6SCwMNjDKdwjNUf0vmY68sV-ukpv6aSRjEAqH2FEii__ho57JhdEOvethZj0mLGHVk0VTO8M6rKMdy7Bo1CbWx028QSOmPzVpA06doCdLHSWsdCCVAxZsEboXrT3A2VzhqKHPnwG1AP6epxAIL-HzxiR8NdGjCbN22-k7W50kEGwQvF52kZCjMgMzfgLUvhxXYYR5AcbwySEol6MRPMHWIVEN8wYaEd__Q1svbW_9o1VyAASnGFy54WKJ5DVsZ7uD20UOcSd0d46jQcc1yxNJ0WJH5dtjYwoOKro5O7-RkGNcVTtWH2sZp-fPpMc8eacMPL49NPmDT0B9SClGE8dxMxf0ZfJnb-O2LEVB8j2FAACyylqYxNB061C1fRkx1mm1q7m_TyIRQCrhj4EKWpgR"
+[2026-06-22 23:53:00 INF] Executed DbCommand ("4"ms) [Parameters=["@__p_0='1'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Id] = @__p_0"
+[2026-06-22 23:53:00 INF] Session validated for user "superadmin" at 06/22/2026 20:53:00 +00:00
+[2026-06-22 23:53:00 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-06-22 23:53:00 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 52.2171ms
+[2026-06-22 23:53:00 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-06-22 23:53:00 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 200 null "application/json; charset=utf-8" 84.5452ms
+[2026-06-22 23:53:00 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:53:00 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/users""" - null null
+[2026-06-22 23:53:00 INF] CORS policy execution successful.
+[2026-06-22 23:53:00 INF] CORS policy execution successful.
+[2026-06-22 23:53:00 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetAllUsers (Gofabackend)"'
+[2026-06-22 23:53:00 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:53:00 INF] Route matched with "{action = \"GetAllUsers\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetAllUsers()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-06-22 23:53:00 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:53:00 INF] Executed DbCommand ("8"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CONVERT(varchar(11), [u].[Id]) AS [id], [u].[Username] AS [username], [u].[FirstName] AS [firstName], [u].[LastName] AS [lastName], [u].[Role] AS [role], [u].[IsDisabled] AS [isDisabled]
+FROM [Users] AS [u]"
+[2026-06-22 23:53:00 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType8`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[<>f__AnonymousType7`6[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-06-22 23:53:00 INF] Executed action "Gofabackend.Controllers.AuthController.GetAllUsers (Gofabackend)" in 70.1823ms
+[2026-06-22 23:53:00 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetAllUsers (Gofabackend)"'
+[2026-06-22 23:53:00 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/users""" - 200 null "application/json; charset=utf-8" 106.3087ms
+[2026-06-22 23:53:00 INF] Executed DbCommand ("20"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:53:00 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:53:00 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 73.0496ms
+[2026-06-22 23:53:00 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:53:00 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 187.796ms
+[2026-06-22 23:53:16 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/logout""" - null null
+[2026-06-22 23:53:16 INF] CORS policy execution successful.
+[2026-06-22 23:53:16 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/logout""" - 204 null null 7.3173ms
+[2026-06-22 23:53:16 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/logout""" - "application/json" 2
+[2026-06-22 23:53:16 INF] CORS policy execution successful.
+[2026-06-22 23:53:16 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Logout (Gofabackend)"'
+[2026-06-22 23:53:16 INF] Route matched with "{action = \"Logout\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Logout()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-06-22 23:53:16 INF] AuthenticationScheme: "Cookies" signed out.
+[2026-06-22 23:53:16 INF] User logged out at 06/22/2026 20:53:16 +00:00
+[2026-06-22 23:53:16 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType4`2[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-06-22 23:53:16 INF] Executed action "Gofabackend.Controllers.AuthController.Logout (Gofabackend)" in 16.6015ms
+[2026-06-22 23:53:16 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Logout (Gofabackend)"'
+[2026-06-22 23:53:16 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/logout""" - 200 null "application/json; charset=utf-8" 46.4216ms
+[2026-06-22 23:53:22 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - null null
+[2026-06-22 23:53:22 INF] CORS policy execution successful.
+[2026-06-22 23:53:22 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/auth/login""" - 204 null null 4.6429ms
+[2026-06-22 23:53:22 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - "application/json" 45
+[2026-06-22 23:53:22 INF] CORS policy execution successful.
+[2026-06-22 23:53:22 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-06-22 23:53:22 INF] Route matched with "{action = \"Login\", controller = \"Auth\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Gofabackend.Controllers.LoginRequestDto)" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-06-22 23:53:22 INF] Executed DbCommand ("7"ms) [Parameters=["@__loginRequest_Username_0='minte12' (Size = 450)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(2) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Username] = @__loginRequest_Username_0"
+[2026-06-22 23:53:22 INF] Session created for user "minte12" at 06/22/2026 20:53:22 +00:00, expires at 06/22/2026 21:03:22 +00:00
+[2026-06-22 23:53:22 INF] AuthenticationScheme: "Cookies" signed in.
+[2026-06-22 23:53:22 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType1`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:53:22 INF] Executed action "Gofabackend.Controllers.AuthController.Login (Gofabackend)" in 168.0842ms
+[2026-06-22 23:53:22 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.Login (Gofabackend)"'
+[2026-06-22 23:53:22 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/auth/login""" - 200 null "application/json; charset=utf-8" 187.3392ms
+[2026-06-22 23:53:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - null null
+[2026-06-22 23:53:22 INF] CORS policy execution successful.
+[2026-06-22 23:53:22 INF] Executing endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-06-22 23:53:22 INF] Route matched with "{action = \"GetCurrentUser\", controller = \"Auth\"}". Executing controller action with signature "Microsoft.AspNetCore.Mvc.IActionResult GetCurrentUser()" on controller "Gofabackend.Controllers.AuthController" ("Gofabackend").
+[2026-06-22 23:53:22 INF] Cookies received in /api/auth/me: "auth_token: CfDJ8Lp5QV1Wq-xMtjQw1nr5rvPdNjgvmaJx6DnX4oZi4eGV9OGrPeD5nKlgXehmRT4JfHBYJqDOnLnD-t9u6gPagm8MyeONqOQiF6VHQy3XRflDxMjLBLhCSOuhU2xovtjpp_M78VleJ6neRDsohe6JXUl1tqyOHNjbC1rAXRqq5b6px210F4LKNt3daKTdi35mU1aBEuFxOl3HACx2ByoSgm_K6q_fQKtKRCEs1DIUluj9-vsBTynHGkQ3FZ6OuEdX8yE0_bg4gpS5yPkp-1Ll8lmRb9Yz5Pxl-9tYQqnKJQbkiHAnQ5epe3sTlmxm8g4uM7tVkBDUZlsR5QsdDCOGlcLqgcxSQJuckZtTh-76UkyycDbNe4FJTBkdQLn2_jSN5uutaHjl89Ad_O99o0ABMOVGhv7GSRzGeKQI--jpQulNvFo_WqcTOIvZ7SFA27a65k8FwTESX2ocWAayfXrcJv6OLSQOvLvvnw3-5E_G-y_ztikU7hugM4cCWwu9lB4fEI2aD0VmZuyKzZZlgYRYgXQ"
+[2026-06-22 23:53:22 INF] Executed DbCommand ("3"ms) [Parameters=["@__p_0='2004'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [u].[Id], [u].[FailedLoginAttempts], [u].[FirstName], [u].[IsDisabled], [u].[LastName], [u].[LockoutEnd], [u].[PasswordHash], [u].[Role], [u].[Username]
+FROM [Users] AS [u]
+WHERE [u].[Id] = @__p_0"
+[2026-06-22 23:53:22 INF] Session validated for user "minte12" at 06/22/2026 20:53:22 +00:00
+[2026-06-22 23:53:22 INF] Executing "OkObjectResult", writing value of type '"<>f__AnonymousType2`5[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"'.
+[2026-06-22 23:53:22 INF] Executed action "Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)" in 19.0471ms
+[2026-06-22 23:53:22 INF] Executed endpoint '"Gofabackend.Controllers.AuthController.GetCurrentUser (Gofabackend)"'
+[2026-06-22 23:53:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/auth/me""" - 200 null "application/json; charset=utf-8" 36.7419ms
+[2026-06-22 23:53:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:53:22 INF] CORS policy execution successful.
+[2026-06-22 23:53:22 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:53:22 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:53:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model1""" - null null
+[2026-06-22 23:53:22 INF] CORS policy execution successful.
+[2026-06-22 23:53:22 INF] Executing endpoint '"Gofabackend.Controllers.Model1Controller.GetModel1 (Gofabackend)"'
+[2026-06-22 23:53:22 INF] Route matched with "{action = \"GetModel1\", controller = \"Model1\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Model1Dto]]] GetModel1()" on controller "Gofabackend.Controllers.Model1Controller" ("Gofabackend").
+[2026-06-22 23:53:22 INF] Executed DbCommand ("26"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:53:22 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:53:22 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 41.6679ms
+[2026-06-22 23:53:22 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:53:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 72.0071ms
+[2026-06-22 23:53:22 WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+[2026-06-22 23:53:22 INF] Executed DbCommand ("19"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Model1Id], [m].[ATitle], [m].[Amount], [m].[AuthorizedByName], [m].[AuthorizedByRank], [m].[CTitle], [m].[Category], [m].[CheckedByName], [m].[CheckedByRank], [m].[ContactNumber], [m].[Currency], [m].[Date], [m].[Description], [m].[GrandTotal], [m].[HasAccessories], [m].[HasExtraItems], [m].[ITitle], [m].[InvoiceNo], [m].[IsAccessoryOnly], [m].[IsTitle], [m].[IssBy], [m].[IssuedTurnBy], [m].[ItemType], [m].[Location], [m].[Model19Ref], [m].[Number], [m].[Ordered], [m].[PRNO], [m].[PTitle], [m].[ParentItemDescription], [m].[PreparedBy], [m].[PreparedByRank], [m].[RTitle], [m].[Received], [m].[RecivedByName], [m].[RecivedByRank], [m].[RegisteredBy], [m].[Remark], [m].[SerialNumber], [m].[Status], [m].[StoreType], [m].[Supplier], [m].[UnitOfMeasurment], [m].[UnitOfPrice], [m].[Vat], [m0].[Id], [m0].[Currency], [m0].[Model1Id], [m0].[Name], [m0].[Quantity], [m0].[UnitPrice], [e].[Id], [e].[ExtraRecivedByName], [e].[ExtraStatus], [e].[Model1Id], [e].[Name], [e].[Quantity], [e].[Store]
+FROM [Model1] AS [m]
+LEFT JOIN [Model1Accessories] AS [m0] ON [m].[Model1Id] = [m0].[Model1Id]
+LEFT JOIN [ExtraItems] AS [e] ON [m].[Model1Id] = [e].[Model1Id]
+ORDER BY [m].[Model1Id], [m0].[Id]"
+[2026-06-22 23:53:22 INF] Executing "OkObjectResult", writing value of type '"System.Linq.Enumerable+SelectListIterator`2[[Model1, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[Model1Dto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:53:22 INF] Executed action "Gofabackend.Controllers.Model1Controller.GetModel1 (Gofabackend)" in 379.2537ms
+[2026-06-22 23:53:22 INF] Executed endpoint '"Gofabackend.Controllers.Model1Controller.GetModel1 (Gofabackend)"'
+[2026-06-22 23:53:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model1""" - 200 null "application/json; charset=utf-8" 419.7365ms
+[2026-06-22 23:53:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:53:52 INF] CORS policy execution successful.
+[2026-06-22 23:53:52 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:53:52 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:53:52 INF] Executed DbCommand ("7"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:53:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:53:52 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 13.7903ms
+[2026-06-22 23:53:52 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:53:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 25.6079ms
+[2026-06-22 23:54:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:54:22 INF] CORS policy execution successful.
+[2026-06-22 23:54:22 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:54:22 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:54:22 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:54:22 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:54:22 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 12.1317ms
+[2026-06-22 23:54:22 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:54:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 26.841ms
+[2026-06-22 23:54:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:54:52 INF] CORS policy execution successful.
+[2026-06-22 23:54:52 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:54:52 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:54:52 INF] Executed DbCommand ("13"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:54:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:54:52 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 20.2521ms
+[2026-06-22 23:54:52 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:54:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 32.5399ms
+[2026-06-22 23:55:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:55:22 INF] CORS policy execution successful.
+[2026-06-22 23:55:22 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:55:22 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:55:22 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:55:22 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:55:22 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 8.1018ms
+[2026-06-22 23:55:22 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:55:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 20.3774ms
+[2026-06-22 23:55:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:55:52 INF] CORS policy execution successful.
+[2026-06-22 23:55:52 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:55:52 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:55:52 INF] Executed DbCommand ("13"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:55:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:55:52 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 22.7366ms
+[2026-06-22 23:55:52 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:55:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 40.7844ms
+[2026-06-22 23:56:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:56:22 INF] CORS policy execution successful.
+[2026-06-22 23:56:22 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:56:22 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:56:22 INF] Executed DbCommand ("9"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:56:22 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:56:22 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 14.8639ms
+[2026-06-22 23:56:22 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:56:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 23.3946ms
+[2026-06-22 23:56:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:56:52 INF] CORS policy execution successful.
+[2026-06-22 23:56:52 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:56:52 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:56:52 INF] Executed DbCommand ("11"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:56:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:56:52 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 19.869ms
+[2026-06-22 23:56:52 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:56:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 32.0322ms
+[2026-06-22 23:57:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:57:22 INF] CORS policy execution successful.
+[2026-06-22 23:57:22 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:57:22 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:57:22 INF] Executed DbCommand ("6"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:57:22 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:57:22 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 13.7114ms
+[2026-06-22 23:57:22 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:57:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 22.7875ms
+[2026-06-22 23:57:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:57:52 INF] CORS policy execution successful.
+[2026-06-22 23:57:52 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:57:52 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:57:52 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:57:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:57:52 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 6.939ms
+[2026-06-22 23:57:52 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:57:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 15.9792ms
+[2026-06-22 23:58:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:58:22 INF] CORS policy execution successful.
+[2026-06-22 23:58:22 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:58:22 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:58:22 INF] Executed DbCommand ("12"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:58:22 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:58:22 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 20.3429ms
+[2026-06-22 23:58:22 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:58:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 33.3695ms
+[2026-06-22 23:58:49 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model1""" - null null
+[2026-06-22 23:58:49 INF] Request starting "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model1""" - null null
+[2026-06-22 23:58:49 INF] CORS policy execution successful.
+[2026-06-22 23:58:49 INF] CORS policy execution successful.
+[2026-06-22 23:58:49 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model1""" - 204 null null 6.7522ms
+[2026-06-22 23:58:49 INF] Request finished "HTTP/1.1" "OPTIONS" "http"://"localhost:5000""""/api/Model1""" - 204 null null 7.0277ms
+[2026-06-22 23:58:49 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/Model1""" - "application/json" 890
+[2026-06-22 23:58:49 INF] Request starting "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/Model1""" - "application/json" 893
+[2026-06-22 23:58:49 INF] CORS policy execution successful.
+[2026-06-22 23:58:49 INF] CORS policy execution successful.
+[2026-06-22 23:58:49 INF] Executing endpoint '"Gofabackend.Controllers.Model1Controller.PostModel1 (Gofabackend)"'
+[2026-06-22 23:58:49 INF] Executing endpoint '"Gofabackend.Controllers.Model1Controller.PostModel1 (Gofabackend)"'
+[2026-06-22 23:58:49 INF] Route matched with "{action = \"PostModel1\", controller = \"Model1\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[Model1Dto]] PostModel1(Model1Dto)" on controller "Gofabackend.Controllers.Model1Controller" ("Gofabackend").
+[2026-06-22 23:58:49 INF] Route matched with "{action = \"PostModel1\", controller = \"Model1\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[Model1Dto]] PostModel1(Model1Dto)" on controller "Gofabackend.Controllers.Model1Controller" ("Gofabackend").
+[2026-06-22 23:58:50 INF] Executed DbCommand ("22"ms) [Parameters=["@p0='97' (Nullable = false) (Size = 4000), @p1='885339', @p2='98' (Nullable = false) (Size = 4000), @p3='78' (Nullable = false) (Size = 4000), @p4='9789' (Nullable = false) (Size = 4000), @p5='87879' (Nullable = false) (Size = 4000), @p6='897' (Nullable = false) (Size = 4000), @p7='8978' (Nullable = false) (Size = 4000), @p8='897' (Nullable = false) (Size = 4000), @p9='Birr' (Nullable = false) (Size = 4000), @p10='ሰኔ 15, 2018' (Nullable = false) (Size = 4000), @p11='8798' (Nullable = false) (Size = 4000), @p12='885428', @p13='False', @p14='False', @p15='' (Nullable = false) (Size = 4000), @p16='897' (Nullable = false) (Size = 4000), @p17='False', @p18='' (Nullable = false) (Size = 4000), @p19='' (Nullable = false) (Size = 4000), @p20='' (Nullable = false) (Size = 4000), @p21='897' (Nullable = false) (Size = 4000), @p22='978' (Nullable = false) (Size = 4000), @p23='897' (Nullable = false) (Size = 4000), @p24='87' (Nullable = false) (Size = 4000), @p25='97', @p26='7897' (Nullable = false) (Size = 4000), @p27='798' (Nullable = false) (Size = 4000), @p28=NULL (Size = 4000), @p29='897' (Nullable = false) (Size = 4000), @p30='98' (Nullable = false) (Size = 4000), @p31='87' (Nullable = false) (Size = 4000), @p32='897', @p33='7' (Nullable = false) (Size = 4000), @p34='897' (Nullable = false) (Size = 4000), @p35='Minte Belete (Transit Officer)' (Nullable = false) (Size = 4000), @p36='7897' (Nullable = false) (Size = 4000), @p37='797' (Nullable = false) (Size = 4000), @p38='Waiting For Stores' (Nullable = false) (Size = 4000), @p39='VHF' (Nullable = false) (Size = 4000), @p40='798787' (Nullable = false) (Size = 4000), @p41='78' (Nullable = false) (Size = 4000), @p42='987', @p43='89'"], CommandType='Text', CommandTimeout='30']"
+""SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Model1] ([ATitle], [Amount], [AuthorizedByName], [AuthorizedByRank], [CTitle], [Category], [CheckedByName], [CheckedByRank], [ContactNumber], [Currency], [Date], [Description], [GrandTotal], [HasAccessories], [HasExtraItems], [ITitle], [InvoiceNo], [IsAccessoryOnly], [IsTitle], [IssBy], [IssuedTurnBy], [ItemType], [Location], [Model19Ref], [Number], [Ordered], [PRNO], [PTitle], [ParentItemDescription], [PreparedBy], [PreparedByRank], [RTitle], [Received], [RecivedByName], [RecivedByRank], [RegisteredBy], [Remark], [SerialNumber], [Status], [StoreType], [Supplier], [UnitOfMeasurment], [UnitOfPrice], [Vat])
+OUTPUT INSERTED.[Model1Id]
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29, @p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41, @p42, @p43);"
+[2026-06-22 23:58:50 INF] Executed DbCommand ("13"ms) [Parameters=["@p0='97' (Nullable = false) (Size = 4000), @p1='79833', @p2='98' (Nullable = false) (Size = 4000), @p3='78' (Nullable = false) (Size = 4000), @p4='9789' (Nullable = false) (Size = 4000), @p5='87879' (Nullable = false) (Size = 4000), @p6='897' (Nullable = false) (Size = 4000), @p7='8978' (Nullable = false) (Size = 4000), @p8='897' (Nullable = false) (Size = 4000), @p9='Birr' (Nullable = false) (Size = 4000), @p10='ሰኔ 15, 2018' (Nullable = false) (Size = 4000), @p11='789' (Nullable = false) (Size = 4000), @p12='79911', @p13='False', @p14='False', @p15='' (Nullable = false) (Size = 4000), @p16='897' (Nullable = false) (Size = 4000), @p17='False', @p18='' (Nullable = false) (Size = 4000), @p19='' (Nullable = false) (Size = 4000), @p20='' (Nullable = false) (Size = 4000), @p21='897' (Nullable = false) (Size = 4000), @p22='978' (Nullable = false) (Size = 4000), @p23='897' (Nullable = false) (Size = 4000), @p24='87' (Nullable = false) (Size = 4000), @p25='897', @p26='7897' (Nullable = false) (Size = 4000), @p27='798' (Nullable = false) (Size = 4000), @p28=NULL (Size = 4000), @p29='897' (Nullable = false) (Size = 4000), @p30='98' (Nullable = false) (Size = 4000), @p31='87' (Nullable = false) (Size = 4000), @p32='897', @p33='7' (Nullable = false) (Size = 4000), @p34='897' (Nullable = false) (Size = 4000), @p35='Minte Belete (Transit Officer)' (Nullable = false) (Size = 4000), @p36='7897' (Nullable = false) (Size = 4000), @p37='9878' (Nullable = false) (Size = 4000), @p38='Waiting For Stores' (Nullable = false) (Size = 4000), @p39='VHF' (Nullable = false) (Size = 4000), @p40='798787' (Nullable = false) (Size = 4000), @p41='7' (Nullable = false) (Size = 4000), @p42='89', @p43='78'"], CommandType='Text', CommandTimeout='30']"
+""SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Model1] ([ATitle], [Amount], [AuthorizedByName], [AuthorizedByRank], [CTitle], [Category], [CheckedByName], [CheckedByRank], [ContactNumber], [Currency], [Date], [Description], [GrandTotal], [HasAccessories], [HasExtraItems], [ITitle], [InvoiceNo], [IsAccessoryOnly], [IsTitle], [IssBy], [IssuedTurnBy], [ItemType], [Location], [Model19Ref], [Number], [Ordered], [PRNO], [PTitle], [ParentItemDescription], [PreparedBy], [PreparedByRank], [RTitle], [Received], [RecivedByName], [RecivedByRank], [RegisteredBy], [Remark], [SerialNumber], [Status], [StoreType], [Supplier], [UnitOfMeasurment], [UnitOfPrice], [Vat])
+OUTPUT INSERTED.[Model1Id]
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29, @p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41, @p42, @p43);"
+[2026-06-22 23:58:50 INF] Executing "CreatedAtActionResult", writing value of type '"Model1Dto"'.
+[2026-06-22 23:58:50 INF] Executing "CreatedAtActionResult", writing value of type '"Model1Dto"'.
+[2026-06-22 23:58:50 INF] Executed action "Gofabackend.Controllers.Model1Controller.PostModel1 (Gofabackend)" in 298.9153ms
+[2026-06-22 23:58:50 INF] Executed action "Gofabackend.Controllers.Model1Controller.PostModel1 (Gofabackend)" in 296.6872ms
+[2026-06-22 23:58:50 INF] Executed endpoint '"Gofabackend.Controllers.Model1Controller.PostModel1 (Gofabackend)"'
+[2026-06-22 23:58:50 INF] Executed endpoint '"Gofabackend.Controllers.Model1Controller.PostModel1 (Gofabackend)"'
+[2026-06-22 23:58:50 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/Model1""" - 201 null "application/json; charset=utf-8" 323.1592ms
+[2026-06-22 23:58:50 INF] Request finished "HTTP/1.1" "POST" "http"://"localhost:5000""""/api/Model1""" - 201 null "application/json; charset=utf-8" 326.3032ms
+[2026-06-22 23:58:50 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model1""" - null null
+[2026-06-22 23:58:50 INF] CORS policy execution successful.
+[2026-06-22 23:58:50 INF] Executing endpoint '"Gofabackend.Controllers.Model1Controller.GetModel1 (Gofabackend)"'
+[2026-06-22 23:58:50 INF] Route matched with "{action = \"GetModel1\", controller = \"Model1\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[System.Collections.Generic.IEnumerable`1[Model1Dto]]] GetModel1()" on controller "Gofabackend.Controllers.Model1Controller" ("Gofabackend").
+[2026-06-22 23:58:50 INF] Executed DbCommand ("17"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Model1Id], [m].[ATitle], [m].[Amount], [m].[AuthorizedByName], [m].[AuthorizedByRank], [m].[CTitle], [m].[Category], [m].[CheckedByName], [m].[CheckedByRank], [m].[ContactNumber], [m].[Currency], [m].[Date], [m].[Description], [m].[GrandTotal], [m].[HasAccessories], [m].[HasExtraItems], [m].[ITitle], [m].[InvoiceNo], [m].[IsAccessoryOnly], [m].[IsTitle], [m].[IssBy], [m].[IssuedTurnBy], [m].[ItemType], [m].[Location], [m].[Model19Ref], [m].[Number], [m].[Ordered], [m].[PRNO], [m].[PTitle], [m].[ParentItemDescription], [m].[PreparedBy], [m].[PreparedByRank], [m].[RTitle], [m].[Received], [m].[RecivedByName], [m].[RecivedByRank], [m].[RegisteredBy], [m].[Remark], [m].[SerialNumber], [m].[Status], [m].[StoreType], [m].[Supplier], [m].[UnitOfMeasurment], [m].[UnitOfPrice], [m].[Vat], [m0].[Id], [m0].[Currency], [m0].[Model1Id], [m0].[Name], [m0].[Quantity], [m0].[UnitPrice], [e].[Id], [e].[ExtraRecivedByName], [e].[ExtraStatus], [e].[Model1Id], [e].[Name], [e].[Quantity], [e].[Store]
+FROM [Model1] AS [m]
+LEFT JOIN [Model1Accessories] AS [m0] ON [m].[Model1Id] = [m0].[Model1Id]
+LEFT JOIN [ExtraItems] AS [e] ON [m].[Model1Id] = [e].[Model1Id]
+ORDER BY [m].[Model1Id], [m0].[Id]"
+[2026-06-22 23:58:50 INF] Executing "OkObjectResult", writing value of type '"System.Linq.Enumerable+SelectListIterator`2[[Model1, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[Model1Dto, Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:58:50 INF] Executed action "Gofabackend.Controllers.Model1Controller.GetModel1 (Gofabackend)" in 34.6141ms
+[2026-06-22 23:58:50 INF] Executed endpoint '"Gofabackend.Controllers.Model1Controller.GetModel1 (Gofabackend)"'
+[2026-06-22 23:58:50 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/Model1""" - 200 null "application/json; charset=utf-8" 50.6476ms
+[2026-06-22 23:58:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:58:52 INF] CORS policy execution successful.
+[2026-06-22 23:58:52 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:58:52 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:58:52 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:58:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:58:52 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 7.2766ms
+[2026-06-22 23:58:52 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:58:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 17.3587ms
+[2026-06-22 23:59:22 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:59:22 INF] CORS policy execution successful.
+[2026-06-22 23:59:22 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:59:22 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:59:22 INF] Executed DbCommand ("13"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:59:22 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:59:22 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 23.0315ms
+[2026-06-22 23:59:22 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:59:22 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 35.6557ms
+[2026-06-22 23:59:52 INF] Request starting "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - null null
+[2026-06-22 23:59:52 INF] CORS policy execution successful.
+[2026-06-22 23:59:52 INF] Executing endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:59:52 INF] Route matched with "{action = \"GetDoOutRequests\", controller = \"MaintenanceRequestRegister\"}". Executing controller action with signature "System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDoOutRequests()" on controller "Gofabackend.Controllers.MaintenanceRequestRegisterController" ("Gofabackend").
+[2026-06-22 23:59:52 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [m].[Id], [m].[WorksOrderNumber], CASE
+    WHEN [m].[Nomenclature] <> N'' THEN [m].[Nomenclature]
+    WHEN 1 = 1 THEN [e].[EquipmentTypeName]
+END AS [nomenclature], [m].[SerialNoOfEquip], [m].[Model], [m].[MaintenanceType], [m].[StatusStage], [m].[RequestedBy], [m].[RequestedTo], [m].[Status], [m].[MaintainedBy], [m].[DateWorkOrderReceived], [m].[RepairFinishDate], [m].[UpdatedAt]
+FROM [MaintenanceRequestRegisters] AS [m]
+INNER JOIN [EquipmentTypes] AS [e] ON [m].[EquipmentTypeId] = [e].[EquipmentTypeId]
+WHERE [m].[Status] = N'Do Out'
+ORDER BY [m].[DateWorkOrderReceived] DESC"
+[2026-06-22 23:59:52 INF] Executing "OkObjectResult", writing value of type '"System.Collections.Generic.List`1[[<>f__AnonymousType66`14[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Nullable`1[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], Gofabackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]"'.
+[2026-06-22 23:59:52 INF] Executed action "Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)" in 6.3502ms
+[2026-06-22 23:59:52 INF] Executed endpoint '"Gofabackend.Controllers.MaintenanceRequestRegisterController.GetDoOutRequests (Gofabackend)"'
+[2026-06-22 23:59:52 INF] Request finished "HTTP/1.1" "GET" "http"://"localhost:5000""""/api/MaintenanceRequestRegister/status/do-out""" - 200 null "application/json; charset=utf-8" 16.2114ms
