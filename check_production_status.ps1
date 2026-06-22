@@ -21,7 +21,7 @@ if (Test-Path $logPath) {
 
 Write-Host "`n=== Verifying Database Columns ===" -ForegroundColor Cyan
 $sqlQuery = @"
-USE GofaDb;
+USE GofaDb;are
 SELECT 'TransactionEntries' AS TableName, COLUMN_NAME, DATA_TYPE, IS_NULLABLE 
 FROM INFORMATION_SCHEMA.COLUMNS 
 WHERE TABLE_NAME = 'TransactionEntries' AND COLUMN_NAME = 'History'

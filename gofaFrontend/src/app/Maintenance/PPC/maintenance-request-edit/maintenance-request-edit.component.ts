@@ -34,7 +34,7 @@ export class MaintenanceRequestEditComponent implements OnInit {
     }
 
     this.isLoading = true;
-    const apiUrl = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/${worksOrderNumber}`;
+    const apiUrl = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/by-worksorder/${worksOrderNumber}`;
     this.http.get<any>(apiUrl).subscribe(
       (data) => {
         this.editRequest = data;

@@ -34,7 +34,7 @@ export class ReceivedItemsListComponent implements OnInit {
     { value: 'status', viewValue: 'Status' },
     { value: 'date', viewValue: 'Date Added' }
   ];
-  selectedSort = 'status';
+  selectedSort = 'date';
 
   constructor(
     private transitService: TransitService,
@@ -140,7 +140,7 @@ export class ReceivedItemsListComponent implements OnInit {
   }
 
   canDeleteItem(item: any): boolean {
-    if (this.authService.hasRole('PROPERTY_CONTROL')) {
+    if (this.authService.hasRole('PROPERTY_CONTROL') || this.authService.hasRole('PROPERTY_CONTROL_TEAMLEADER')) {
     return false;
   }
     const extraItems = item.extraItems ?? [];
@@ -149,8 +149,8 @@ export class ReceivedItemsListComponent implements OnInit {
 
 
   canEditItem(item: any): boolean {
-  // If user is PROPERTY_CONTROL, never allow edit
-  if (this.authService.hasRole('PROPERTY_CONTROL')) {
+  // If user is PROPERTY_CONTROL or PROPERTY_CONTROL_TEAMLEADER, never allow edit
+  if (this.authService.hasRole('PROPERTY_CONTROL') || this.authService.hasRole('PROPERTY_CONTROL_TEAMLEADER')) {
     return false;
   }
 
@@ -265,7 +265,8 @@ export class ReceivedItemsListComponent implements OnInit {
         this.filteredItems.sort((a, b) => (b.status || '').localeCompare(a.status || ''));
         break;
       case 'date':
-        this.filteredItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        // Sort by ID descending to show newest items first
+        this.filteredItems.sort((a, b) => (b.model1Id || 0) - (a.model1Id || 0));
         break;
       default:
         break;

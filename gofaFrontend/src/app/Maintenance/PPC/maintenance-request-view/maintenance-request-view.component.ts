@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-maintenance-request-view',
@@ -22,15 +23,28 @@ export class MaintenanceRequestViewComponent implements OnInit {
   currentPage = 1;                   // Current page number
   pageSize = 20;                     // Rows per page (configurable)
 
+  // Expose Math to template
+  Math = Math;
+
+  showDetailModal = false;
+  selectedRequest: any = null;
+
   ethMonthNames = [
     'መስከረም', 'ጥቅምት', 'ሕዳር', 'ታህሳስ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ',
     'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜ'
   ];
   ethiopianDateString: string = '';
 
-  constructor(private http: HttpClient) {}
+  currentUserRole: string = '';
+  selectedRoleFilter: string = ''; // New filter for role/department
+
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    this.currentUserRole = this.authService.getRole()?.toUpperCase() || '';
     this.fetchMaintenanceRequests();
     this.loadCurrentDate(); // Convert local date to Ethiopian date
   }
@@ -38,16 +52,20 @@ export class MaintenanceRequestViewComponent implements OnInit {
   /** Fetch all maintenance requests from API */
   fetchMaintenanceRequests(): void {
     this.isLoading = true;
-    // Fetch only finished/completed maintenance requests
-    const apiUrl = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/by-status?status=Client Received`;
+    
+    // Default URL for regular users: only "Client Received"
+    let apiUrl = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/by-status/Client Received`;
+
+    // For Leaders and PPC: fetch ALL requests
+    if (['MAINTENANCE_LEADER', 'PPC', 'MAINTENANCE_ADMIN'].includes(this.currentUserRole)) {
+      apiUrl = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister`;
+    }
 
     this.http.get<any[]>(apiUrl).subscribe(
       (response) => {
-        this.maintenanceRequests = Array.isArray(response) ? response : [];
-        // Additional filter to ensure we only show completed items
-        this.maintenanceRequests = this.maintenanceRequests.filter(req => 
-          req.status === 'Client Received' || req.status === 'Maintenance Finished'
-        );
+        let data = Array.isArray(response) ? response : [];
+        // Exclude Quality Check items as requested
+        this.maintenanceRequests = data.filter(r => r.status !== 'Quality Check');
         this.filteredRequests = [...this.maintenanceRequests];
         this.currentPage = 1;
         this.applyPagination();
@@ -117,91 +135,68 @@ export class MaintenanceRequestViewComponent implements OnInit {
     return year % 4 === 0;
   }
 
-  /** View request details and print */
+  /** View request details in modal */
   viewRequest(request: any) {
-    const printWindow = window.open('', '_blank', 'width=900,height=650');
-    const content = `
-      <html>
-        <head>
-          <title>Maintenance Request Details</title>
-          <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h2 { text-align: center; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            td, th { border: 1px solid #333; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
-            .print-btn {
-              display: block;
-              margin: 20px auto;
-              padding: 10px 15px;
-              background: #1976d2;
-              color: #fff;
-              border: none;
-              border-radius: 5px;
-              cursor: pointer;
-            }
-          </style>
-        </head>
-        <body>
-          <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ </h2>
-          <h2>የጠጋኝ ንብረት መሸኛ</h2>
-          <table>
-            <tr><th>Works Order Number</th><td>${request.worksOrderNumber}</td></tr>
-            <tr><th>Serial Number</th><td>${request.serialNoOfEquip || 'N/A'}</td></tr>
-            <tr><th>Description</th><td>${request.briefDescriptionOfWork || 'N/A'}</td></tr>
-            <tr><th>Date Work Order Received</th><td>${request.dateWorkOrderReceived || 'N/A'}</td></tr>
-            <tr><th>Maintenance Type</th><td>${request.maintenanceType || 'N/A'}</td></tr>
-            <tr><th>Repair Start Date</th><td>${request.repairStartDate || 'N/A'}</td></tr>
-            <tr><th>Repair Finish Date</th><td>${request.repairFinishDate || 'N/A'}</td></tr>
-            <tr><th>Maintained By</th><td>${request.maintainedBy || 'N/A'}</td></tr>
-            <tr><th>Total Cost</th><td>${request.totalCost || 'N/A'}</td></tr>
-            <tr><th>Status</th><td>${request.status || 'N/A'}</td></tr>
-            <tr><th>Solved Remark</th><td>${request.remark || 'N/A'}</td></tr>
-            <tr><th>Given To</th><td>${request.givenTo || 'N/A'}</td></tr>
-            <tr><th>Approval</th><td>${request.approval || 'N/A'}</td></tr>
-            <tr><th>Receiver Remark</th><td>${request.recieverRemark || 'N/A'}</td></tr>
-            <tr><th>Received Date</th><td>${request.recievedDate || 'N/A'}</td></tr>
-            <tr><th>Receiver Signature</th><td>_________________________</td></tr>
-          </table>
-          <button class="print-btn" onclick="window.print()">Print</button>
-        </body>
-      </html>
-    `;
-    printWindow!.document.write(content);
-    printWindow!.document.close();
+    this.selectedRequest = request;
+    this.showDetailModal = true;
+  }
+
+  closeModal() {
+    this.showDetailModal = false;
+    this.selectedRequest = null;
+  }
+
+  printModal() {
+    window.print();
   }
 
   /** Reset filters */
   resetFilters(): void {
     this.selectedStatus = '';
+    this.selectedRoleFilter = '';
     this.searchValue = '';
     this.filteredRequests = [...this.maintenanceRequests];
     this.currentPage = 1;
     this.applyPagination();
   }
 
-  /** Apply status filter */
+  /** Apply all filters including status and role */
   applyFilter(): void {
     this.currentPage = 1;
-    this.filteredRequests = this.selectedStatus
-      ? this.maintenanceRequests.filter(req => req.status === this.selectedStatus)
-      : [...this.maintenanceRequests];
-    this.applyPagination();
-  }
+    let temp = [...this.maintenanceRequests];
 
-  /** Apply search filter */
-  applySearch(): void {
-    this.currentPage = 1;
-    if (!this.searchValue.trim()) {
-      this.filteredRequests = [...this.maintenanceRequests];
-    } else {
+    // 1. Status Filter
+    if (this.selectedStatus) {
+      temp = temp.filter(req => req.status === this.selectedStatus);
+    }
+
+    // 2. Role/Department Filter
+    if (this.selectedRoleFilter) {
+      temp = temp.filter(req => {
+        const type = (req.maintenanceType || '').toUpperCase();
+        if (this.selectedRoleFilter === 'RADIO') return type.includes('RADIO');
+        if (this.selectedRoleFilter === 'POWER') return type.includes('POWER');
+        if (this.selectedRoleFilter === 'OFFICE') return type.includes('OFFICE') || type.includes('COMPUTER');
+        return true;
+      });
+    }
+
+    // 3. Search Filter
+    if (this.searchValue.trim()) {
       const query = this.searchValue.toLowerCase();
-      this.filteredRequests = this.maintenanceRequests.filter(req => {
+      temp = temp.filter(req => {
         const value = String(req[this.searchType] ?? '').toLowerCase();
         return value.includes(query);
       });
     }
+
+    this.filteredRequests = temp;
     this.applyPagination();
+  }
+
+  /** Unified search handler calling applyFilter */
+  applySearch(): void {
+    this.applyFilter();
   }
 
   /** Apply pagination slice */

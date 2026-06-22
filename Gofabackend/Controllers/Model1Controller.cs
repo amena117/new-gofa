@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using Gofabackend.Data;
 using Gofabackend.Models;
 using Gofabackend.Utilities; // Added for EthiopianCalendarConverter
 
-namespace UserManagment.Controllers
+namespace Gofabackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -57,15 +57,24 @@ namespace UserManagment.Controllers
                     Location = model.Location,
                     Remark = model.Remark,
                     CheckedByName = model.CheckedByName,
+                    CheckedByRank = model.CheckedByRank,
                     CTitle = model.CTitle,
                     RecivedByName = model.RecivedByName,
+                    RecivedByRank = model.RecivedByRank,
                     RTitle = model.RTitle,
                     AuthorizedByName = model.AuthorizedByName,
+                    AuthorizedByRank = model.AuthorizedByRank,
                     ATitle = model.ATitle,
+                    PreparedBy = model.PreparedBy,
+                    PreparedByRank = model.PreparedByRank,
+                    PTitle = model.PTitle,
                     Model19Ref = model.Model19Ref,
                     Status = model.Status,
                     StoreType = model.StoreType,
                     HasAccessories = model.HasAccessories,
+                    HasExtraItems = model.HasExtraItems,
+                    IsAccessoryOnly = model.IsAccessoryOnly,
+                    ParentItemDescription = model.ParentItemDescription,
                     Accessories = model.Accessories?.Select(a => new AccessoryDto
                     {
                         Id = a.Id,
@@ -171,15 +180,23 @@ public async Task<ActionResult<IEnumerable<Model1Dto>>> GetModel1sByDateRange([F
                 Location = model.Location,
                 Remark = model.Remark,
                 CheckedByName = model.CheckedByName,
+                CheckedByRank = model.CheckedByRank,
                 CTitle = model.CTitle,
                 RecivedByName = model.RecivedByName,
+                RecivedByRank = model.RecivedByRank,
                 RTitle = model.RTitle,
                 AuthorizedByName = model.AuthorizedByName,
+                AuthorizedByRank = model.AuthorizedByRank,
                 ATitle = model.ATitle,
+                PreparedBy = model.PreparedBy,
+                PreparedByRank = model.PreparedByRank,
+                PTitle = model.PTitle,
                 Model19Ref = model.Model19Ref,
                 Status = model.Status,
                 StoreType = model.StoreType,
                 HasAccessories = model.HasAccessories,
+                IsAccessoryOnly = model.IsAccessoryOnly,
+                ParentItemDescription = model.ParentItemDescription,
                 Accessories = model.Accessories?.Select(a => new AccessoryDto
                 {
                     Id = a.Id,
@@ -317,15 +334,23 @@ private static bool TryParseEthiopianDate(string ethiopianDate, out DateTime gre
                 Location = model.Location,
                 Remark = model.Remark,
                 CheckedByName = model.CheckedByName,
+                CheckedByRank = model.CheckedByRank,
                 CTitle = model.CTitle,
                 RecivedByName = model.RecivedByName,
+                RecivedByRank = model.RecivedByRank,
                 RTitle = model.RTitle,
                 AuthorizedByName = model.AuthorizedByName,
+                AuthorizedByRank = model.AuthorizedByRank,
                 ATitle = model.ATitle,
+                PreparedBy = model.PreparedBy,
+                PreparedByRank = model.PreparedByRank,
+                PTitle = model.PTitle,
                 Model19Ref = model.Model19Ref,
                 Status = model.Status,
                 StoreType = model.StoreType,
                 HasAccessories = model.HasAccessories,
+                IsAccessoryOnly = model.IsAccessoryOnly,
+                ParentItemDescription = model.ParentItemDescription,
                 Accessories = model.Accessories?.Select(a => new AccessoryDto
                 {
                     Id = a.Id,
@@ -390,15 +415,23 @@ public async Task<ActionResult<Model1Dto>> PostModel1(Model1Dto dto)
         Location = dto.Location,
         Remark = dto.Remark,
         CheckedByName = dto.CheckedByName,
+        CheckedByRank = dto.CheckedByRank,
         CTitle = dto.CTitle,
         RecivedByName = dto.RecivedByName,
+        RecivedByRank = dto.RecivedByRank,
         RTitle = dto.RTitle,
         AuthorizedByName = dto.AuthorizedByName,
+        AuthorizedByRank = dto.AuthorizedByRank,
         ATitle = dto.ATitle,
+        PreparedBy = dto.PreparedBy,
+        PreparedByRank = dto.PreparedByRank,
+        PTitle = dto.PTitle,
         Model19Ref = dto.Model19Ref,
         Status = dto.Status,
         StoreType = dto.StoreType,
         HasAccessories = dto.HasAccessories,
+        IsAccessoryOnly = dto.IsAccessoryOnly,
+        ParentItemDescription = dto.ParentItemDescription,
         Accessories = dto.Accessories?.Select(a => new Accessories
         {
             Name = a.Name,

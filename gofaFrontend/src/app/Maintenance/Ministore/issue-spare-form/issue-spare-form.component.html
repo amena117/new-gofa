@@ -1,0 +1,303 @@
+<div class="page-wrap">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       HEADER
+  ════════════════════════════════════════════════════════════════ -->
+  <h2>
+    በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
+    Issue Spare Part Form / ስፔርፓርት የመስጫ ፎርም
+  </h2>
+
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage"   class="alert alert-danger">{{ errorMessage }}</div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FORM
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="form-card">
+    <h3 class="section-title">New Handover / አዲስ ምዝገባ</h3>
+
+    <!-- Common fields: Technician, Date, Work Order -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Technician Name / ተቀባዩ <span class="req">*</span></label>
+        <select [(ngModel)]="technicianUsername" (change)="onTechnicianChange()" class="form-control">
+          <option value="" disabled selected>-- Select Technician --</option>
+          <option *ngFor="let tech of technicians" [value]="tech.username">
+            {{ tech.fullName }} ({{ tech.role }})
+          </option>
+        </select>
+        <p class="hint" *ngIf="isLoadingTechnicians">Loading technicians...</p>
+      </div>
+      <div class="form-group">
+        <label>Date Issued / ቀን <span class="req">*</span></label>
+        <input type="date" [(ngModel)]="issueDate" class="form-control" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Works Order Number / የሥራ ትዕዛዝ ቁጥር</label>
+        <div class="search-box">
+          <!-- Always-visible search input -->
+          <div class="wo-input-wrap">
+            <input
+              type="text"
+              [(ngModel)]="workOrderSearchQuery"
+              (input)="onWoSearchInput()"
+              (focus)="onWoFocus()"
+              (blur)="onWoBlur()"
+              class="form-control"
+              placeholder="Type WO number, equipment name or S/N to search..."
+              autocomplete="off" />
+            <button *ngIf="workOrderSearchQuery || worksOrderNumber"
+                    class="btn-clear-wo" (click)="clearWorkOrder()" title="Clear">✕</button>
+          </div>
+
+          <!-- Selected indicator (shown below the input when one is chosen) -->
+          <div class="wo-selected-tag" *ngIf="worksOrderNumber && !isWoDropdownOpen">
+            <span>✅ WO# <strong>{{ worksOrderNumber }}</strong> selected</span>
+          </div>
+
+          <p class="hint" *ngIf="isLoadingWorkOrders">Loading work orders... / በመጫን ላይ...</p>
+          <p class="hint" *ngIf="!isLoadingWorkOrders && workOrders.length > 0 && !workOrderSearchQuery && !worksOrderNumber">
+            {{ workOrders.length }} work orders available — type or click above to search
+          </p>
+
+          <ul class="search-results" *ngIf="isWoDropdownOpen && filteredWorkOrders.length > 0">
+            <li *ngFor="let wo of filteredWorkOrders" (mousedown)="selectWorkOrder(wo)">
+              <div class="wo-info">
+                <div class="wo-top">
+                  <span class="wo-num">WO# {{ wo.worksOrderNumber }}</span>
+                  <span class="wo-status">{{ wo.status }}</span>
+                </div>
+                <span class="wo-name">{{ wo.nomenclature }}</span>
+                <span class="wo-sn" *ngIf="wo.serialNumber">S/N: {{ wo.serialNumber }}</span>
+                <span class="wo-model" *ngIf="wo.model">Model: {{ wo.model }}</span>
+              </div>
+            </li>
+          </ul>
+
+          <div class="dropdown-msg"
+               *ngIf="isWoDropdownOpen && workOrderSearchQuery && filteredWorkOrders.length === 0 && !isLoadingWorkOrders">
+            No work orders found for "{{ workOrderSearchQuery }}"
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Items Section ──────────────────────────────────────────── -->
+    <div class="items-section">
+      <div class="items-header">
+        <h4 class="items-title">Spare Parts / ስፔርፓርቶች</h4>
+        <button class="btn btn-add-item" (click)="addItem()" type="button">
+          + Add Item / እቃ ጨምር
+        </button>
+      </div>
+
+      <p class="hint" *ngIf="isLoadingParts">Loading inventory...</p>
+      <p class="hint" *ngIf="!isLoadingParts && allParts.length === 0" style="color:#dc2626">
+        ⚠️ No inventory loaded — check API connection.
+      </p>
+
+      <!-- Item rows -->
+      <div class="item-card" *ngFor="let item of items; let i = index">
+        <div class="item-card-header">
+          <span class="item-number">Item #{{ i + 1 }}</span>
+          <button class="btn-remove-item" (click)="removeItem(i)" type="button"
+                  title="Remove this item" *ngIf="items.length > 1">
+            ✕ Remove
+          </button>
+        </div>
+
+        <!-- Stock Number + inline search -->
+        <div class="form-group search-group">
+          <label>Stock Number / ስቶክ ቁጥር <span class="req">*</span></label>
+          <div class="input-with-clear">
+            <input type="text" [(ngModel)]="item.stockNumber" class="form-control"
+                   placeholder="Type directly or use search below..." />
+            <button *ngIf="item.stockNumber" class="btn-clear" (click)="clearPart(i)" title="Clear">✕</button>
+          </div>
+          <input type="text" [(ngModel)]="item.searchQuery" (input)="filterParts(i)"
+                 class="form-control search-sub"
+                 placeholder="Search inventory by name, stock no, category..." />
+          <div class="dropdown" *ngIf="item.filteredParts.length > 0">
+            <div *ngFor="let p of item.filteredParts" class="dropdown-item" (click)="selectPart(p, i)">
+              <span class="d-stock">{{ p.stockNumber }}</span>
+              <span class="d-desc">{{ p.description }}</span>
+              <span class="d-bal">Bal: {{ p.balance }}</span>
+            </div>
+          </div>
+          <p class="hint" *ngIf="item.searchQuery && item.filteredParts.length === 0 && !isLoadingParts">
+            No parts found for "{{ item.searchQuery }}"
+          </p>
+        </div>
+
+        <!-- Description + Serial Number + Quantity in a row -->
+        <div class="form-row three-col">
+          <div class="form-group">
+            <label>Description / መግለጫ</label>
+            <input type="text" [(ngModel)]="item.description" class="form-control"
+                   placeholder="Auto-filled from search, or type manually" />
+          </div>
+          <div class="form-group">
+            <label>Serial Number / ሲሪያል ቁጥር <span class="req">*</span></label>
+            <input type="text" [(ngModel)]="item.serialNumber" class="form-control"
+                   placeholder="Enter serial number" />
+          </div>
+          <div class="form-group">
+            <label>Quantity / ብዛት <span class="req">*</span></label>
+            <input type="number" [(ngModel)]="item.quantity" class="form-control"
+                   placeholder="1" min="1" />
+          </div>
+        </div>
+
+        <!-- Remark -->
+        <div class="form-group">
+          <label>Remark / ማስታወሻ</label>
+          <input type="text" [(ngModel)]="item.remark" class="form-control"
+                 placeholder="Any notes for this item" />
+        </div>
+      </div><!-- /item-card -->
+    </div><!-- /items-section -->
+
+    <div class="form-actions">
+      <button class="btn btn-add-item-bottom" (click)="addItem()" type="button">
+        + Add Another Item / ሌላ እቃ ጨምር
+      </button>
+      <button class="btn btn-primary" (click)="submitHandover()" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Recording...' : 'Record Handover (' + items.length + ' item' + (items.length !== 1 ? 's' : '') + ') / ምዝገባ' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LISTING
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="list-card">
+    <div class="list-header">
+      <h3 class="section-title">Handover Log / የምዝገባ ዝርዝር</h3>
+      <input type="text" [(ngModel)]="listSearchQuery" (ngModelChange)="applyListFilter()"
+             class="form-control list-search" placeholder="Search by stock, serial, technician, WO..." />
+    </div>
+
+    <div *ngIf="isLoadingLogs" class="loading">Loading records...</div>
+
+    <div *ngIf="!isLoadingLogs">
+      <div *ngIf="filteredLogs.length === 0" class="empty">No handover records found.</div>
+
+      <table *ngIf="filteredLogs.length > 0" class="log-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Stock No.</th>
+            <th>Description</th>
+            <th>Serial No.</th>
+            <th>Qty</th>
+            <th>Technician</th>
+            <th>WO No.</th>
+            <th>Date</th>
+            <th>Issued By</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of pagedLogs; let i = index">
+            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+            <td><span class="badge-stock">{{ log.stockNumber }}</span></td>
+            <td class="desc-cell">{{ log.description }}</td>
+            <td><code>{{ log.serialNumber }}</code></td>
+            <td>{{ log.quantity ?? 1 }}</td>
+            <td>{{ log.technicianName }}</td>
+            <td>{{ log.worksOrderNumber || '—' }}</td>
+            <td>{{ log.issueDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ log.issuedBy }}</td>
+            <td class="action-cell">
+              <button class="btn-view" (click)="openDetail(log)">View</button>
+              <button class="btn-print" (click)="printSlip(log)" title="Print handover slip">🖨 Print</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button class="pg-btn" (click)="prevPage()" [disabled]="currentPage === 1">‹ Prev</button>
+        <span class="pg-info">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button class="pg-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">Next ›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       DETAIL MODAL
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="selectedLog" (click)="closeDetail()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Handover Details</h3>
+        <button class="modal-close" (click)="closeDetail()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">Stock Number</span>
+            <span class="detail-value badge-stock">{{ selectedLog.stockNumber }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Description</span>
+            <span class="detail-value">{{ selectedLog.description || '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Serial Number</span>
+            <span class="detail-value"><code>{{ selectedLog.serialNumber }}</code></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Quantity / ብዛት</span>
+            <span class="detail-value">{{ selectedLog.quantity ?? 1 }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Technician (Receiver)</span>
+            <span class="detail-value">{{ selectedLog.technicianName }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Confirmation Status</span>
+            <span class="detail-value">
+              <span class="status-badge" [ngClass]="selectedLog.isConfirmedByTechnician ? 'confirmed' : 'pending'">
+                {{ selectedLog.isConfirmedByTechnician ? 'Confirmed' : 'Pending' }}
+              </span>
+              <small *ngIf="selectedLog.isConfirmedByTechnician" class="conf-date">
+                at {{ selectedLog.confirmedAt | date:'dd/MM/yyyy HH:mm' }}
+              </small>
+            </span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Works Order No.</span>
+            <span class="detail-value">{{ selectedLog.worksOrderNumber || '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Date Issued</span>
+            <span class="detail-value">{{ selectedLog.issueDate | date:'dd MMMM yyyy' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Issued By</span>
+            <span class="detail-value">{{ selectedLog.issuedBy }}</span>
+          </div>
+          <div class="detail-item full-width">
+            <span class="detail-label">Remark</span>
+            <span class="detail-value">{{ selectedLog.remark || '—' }}</span>
+          </div>
+          <div class="detail-item full-width">
+            <span class="detail-label">Recorded At</span>
+            <span class="detail-value">{{ selectedLog.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-print-modal" (click)="printSlip(selectedLog)">🖨 Print Slip / አትም</button>
+        <button class="btn btn-secondary" (click)="closeDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+
+</div>

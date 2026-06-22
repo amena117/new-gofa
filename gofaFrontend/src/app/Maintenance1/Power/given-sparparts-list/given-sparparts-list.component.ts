@@ -176,7 +176,23 @@ export class GivenSparpartsListComponent implements OnInit {
     return 'Action';
   }
 
+  isMaintenanceDone(request: SparePartsRequest): boolean {
+    const maintenanceRecord = this.maintenanceRegister.find(
+      r => String(r.worksOrderNumber) === String(request.worksOrderNumber)
+    );
+    if (!maintenanceRecord) return false;
+    const activeStatuses = ['On Maintenance', 'On Maintaining', 'Waiting for Spare Part'];
+    return !!maintenanceRecord.status && !activeStatuses.includes(maintenanceRecord.status);
+  }
+
   onManHoursChange(): void {
+    const manHours = this.maintenanceData.manHours || 0;
+    const partsCost = this.maintenanceData.partsCost || 0;
+    this.maintenanceData.laborCost = manHours * 250;
+    this.maintenanceData.totalCost = partsCost + this.maintenanceData.laborCost;
+  }
+
+  onPartsCostChange(): void {
     const manHours = this.maintenanceData.manHours || 0;
     const partsCost = this.maintenanceData.partsCost || 0;
     this.maintenanceData.laborCost = manHours * 250;
@@ -226,6 +242,7 @@ export class GivenSparpartsListComponent implements OnInit {
       repairFinishDate: this.maintenanceData.repairFinishDate,
       status: this.maintenanceData.status,
       manHours: this.maintenanceData.manHours,
+      partsCost: this.maintenanceData.partsCost || 0,
       remark: this.maintenanceData.remark,
       maintainedBy
     };

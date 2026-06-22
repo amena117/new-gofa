@@ -75,6 +75,7 @@ public class Model22WithAccessoriesRequest
     public string EthiopianDate { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public string RegisteredBy { get; set; } = string.Empty;
+    public string? Comment { get; set; }
     public List<Model22ItemWithAccessoriesRequest> Items { get; set; } = new List<Model22ItemWithAccessoriesRequest>();
 }
 

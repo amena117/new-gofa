@@ -1,0 +1,148 @@
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Maintenance Cost Report / የጥገና ወጪ ሪፖርት</h1>
+    <p class="unit-context" *ngIf="!isManager()">
+      Unit: <strong>{{ userRole.replace('_LEADER', '').replace('_MAINTENANCE', '') }}</strong>
+    </p>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards" *ngIf="!isLoading">
+    <div class="summary-card total">
+      <div class="card-icon"><i class="bi bi-cash-stack"></i></div>
+      <div class="card-content">
+        <span class="card-label">Total Parts Cost / ጠቅላላ የፓርት ዋጋ</span>
+        <span class="card-value">{{ totalPartsCost | number:'1.2-2' }} ETB</span>
+      </div>
+    </div>
+    <div class="summary-card labor">
+      <div class="card-icon"><i class="bi bi-tools"></i></div>
+      <div class="card-content">
+        <span class="card-label">Total Labor Cost / ጠቅላላ የሰው ኃይል ዋጋ</span>
+        <span class="card-value">{{ totalLaborCost | number:'1.2-2' }} ETB</span>
+      </div>
+    </div>
+    <div class="summary-card grand">
+      <div class="card-icon"><i class="bi bi-wallet2"></i></div>
+      <div class="card-content">
+        <span class="card-label">Grand Total / ጠቅላላ ድምር</span>
+        <span class="card-value">{{ grandTotalCost | number:'1.2-2' }} ETB</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filter-card">
+    <div class="filter-row">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input 
+          type="text" 
+          placeholder="Search by Order #, Item, Serial..." 
+          [(ngModel)]="searchTerm" 
+          (input)="applyFilters()"
+        >
+      </div>
+
+      <div class="filter-actions">
+        <!-- Sub-unit Filter for Team Leaders -->
+        <select class="filter-select" [(ngModel)]="selectedSubUnitFilter" (change)="$any(applyFilters)()" *ngIf="userRole === 'PTEAM_LEADER'">
+          <option value="">All Power Units / ሁሉም</option>
+          <option value="Electrical Maintenance">Electrical / ኤሌክትሪካል</option>
+          <option value="Mechanical Maintenance">Mechanical / ሜካኒካል</option>
+          <option value="Welding Maintenance">Welding / ብየዳ</option>
+        </select>
+
+        <select class="filter-select" [(ngModel)]="selectedSubUnitFilter" (change)="$any(applyFilters)()" *ngIf="userRole === 'OTEAM_LEADER'">
+          <option value="">All Office Units / ሁሉም</option>
+          <option value="Office_Machine Maintenance">Office Machine / ኦፊስ ማሽን</option>
+          <option value="Computer_Maintenance">Computer / ኮምፒዩተር</option>
+        </select>
+
+        <select class="filter-select" [(ngModel)]="selectedSubUnitFilter" (change)="$any(applyFilters)()" *ngIf="['RTEAM_LEADER', 'VTEAM_LEADER', 'HTEAM_LEADER'].includes(userRole)">
+          <option value="">All Radio Units / ሁሉም</option>
+          <option value="VHF_Radio Maintenance">VHF Radio / ቪ.ኤች.ኤፍ</option>
+          <option value="HF_Radio Maintenance">HF Radio / ኤች.ኤፍ</option>
+        </select>
+
+        <select class="filter-select" [(ngModel)]="selectedMaintenanceType" (change)="$any(applyFilters)()" *ngIf="isManager()">
+          <option value="">All Departments / ሁሉም</option>
+          <option value="POWER">Power / ፓወር</option>
+          <option value="RADIO_MAINTENANCE">Radio / ራዲዮ</option>
+          <option value="OFFICE_MACHINE">Office / ኦፊስ ማሽን</option>
+        </select>
+
+        <select class="filter-select" [(ngModel)]="selectedDateFilter" (change)="$any(applyFilters)()">
+          <option value="ALL">All Time / ሁሉም</option>
+          <option value="1WEEK">Last 1 Week / 1 ሳምንት</option>
+          <option value="1MONTH">Last 1 Month / 1 ወር</option>
+          <option value="3MONTHS">Last 3 Months / 3 ወር</option>
+          <option value="6MONTHS">Last 6 Months / 6 ወር</option>
+          <option value="12MONTHS">Last 12 Months / 1 አመት</option>
+        </select>
+
+        <div class="export-btns">
+          <button class="export-btn excel" (click)="exportToExcel()">
+            <i class="bi bi-file-earmark-excel"></i>
+          </button>
+          <button class="export-btn pdf" (click)="exportToPDF()">
+            <i class="bi bi-file-earmark-pdf"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-container" *ngIf="!isLoading">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Item / ንብረት</th>
+          <th>Serial / ተ.ቁ</th>
+          <th>Type / አይነት</th>
+          <th>Status / ሁኔታ</th>
+          <th class="text-right">Parts Cost</th>
+          <th class="text-right">Labor Cost</th>
+          <th class="text-right">Total Cost</th>
+          <th>Date / ቀን</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of filteredRequests">
+          <td><strong>#{{ r.worksOrderNumber }}</strong></td>
+          <td>{{ r.nomenclature }}</td>
+          <td><code>{{ r.serialNoOfEquip || 'N/A' }}</code></td>
+          <td>{{ r.maintenanceType }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="{
+              'status-success': r.status === 'Maintenance Finished' || r.status === 'Client Received',
+              'status-warning': r.status === 'On Maintaining' || r.status === 'Quality Check',
+              'status-secondary': r.status === 'Pending'
+            }">
+              {{ r.status }}
+            </span>
+          </td>
+          <td class="text-right">{{ r.partsCost | number:'1.2-2' }}</td>
+          <td class="text-right">{{ r.laborCost | number:'1.2-2' }}</td>
+          <td class="text-right"><strong>{{ r.totalCost | number:'1.2-2' }}</strong></td>
+          <td>{{ r.dateWorkOrderReceived | date:'shortDate' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredRequests.length === 0" class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <p>No cost data found matching the filters.</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading Cost Report...</p>
+  </div>
+</div>

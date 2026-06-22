@@ -28,6 +28,7 @@
         <th>Requested By</th>
         <th>Reason</th>
         <th>Works Order Number</th>
+        <th>Status</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -40,17 +41,47 @@
         <td>{{ request.reason }}</td>
         <td>{{ request.worksOrderNumber }}</td>
         <td>
-          <!-- MINISTORE Actions -->
+          <span class="status-badge" [ngClass]="{
+            'status-pending': request.status === 'Pending',
+            'status-waiting': request.status === 'Waiting for Maintenance Leader',
+            'status-accepted': request.status === 'Accepted' || request.status === 'Issued'
+          }">
+            {{ request.status || 'Pending' }}
+          </span>
+        </td>
+        <td>
+          <!-- ✅ MINISTORE Actions -->
           <ng-container *ngIf="isMinistore()">
-            <button (click)="goToRejectForm(request.worksOrderNumber)">Reject</button>
-            <button (click)="openRespondForm(request)" [disabled]="request.isResponded">Respond</button>
-            <button (click)="acceptRequest(request.id, request.stockNumber)" [disabled]="request.isResponded">Accept</button>
+            <button 
+              (click)="goToRejectForm(request.worksOrderNumber)" 
+              *ngIf="request.currentStage === 'MINISTORE' && !request.isResponded">
+              Reject
+            </button>
+
+            <button 
+              (click)="openRespondForm(request)" 
+              *ngIf="request.currentStage === 'MINISTORE' && !request.isResponded">
+              Respond
+            </button>
           </ng-container>
 
-          <!-- Team Leader Actions -->
-          <ng-container *ngIf="isTeamLeader() || userRole === 'MAINTENANCE_LEADER'">
-            <button (click)="goToRejectForm(request.worksOrderNumber)">Reject</button>
-            <button (click)="approveRequest(request)">Approve</button>
+          <!-- ✅ Team Leader & Maintenance Leader Actions -->
+          <ng-container *ngIf="(isTeamLeader() || userRole === 'MAINTENANCE_LEADER')">
+            <button 
+              (click)="goToRejectForm(request.worksOrderNumber)" 
+              *ngIf="request.currentStage === userRole && !request.isResponded">
+              Reject
+            </button>
+
+            <button 
+              (click)="approveRequest(request)" 
+              *ngIf="request.currentStage === userRole && !request.isResponded">
+              Approve
+            </button>
+
+            <span class="no-action" *ngIf="request.currentStage !== userRole">
+              Approved / የተላከ
+            </span>
           </ng-container>
         </td>
       </tr>

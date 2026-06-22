@@ -170,6 +170,17 @@ a.active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* Spare-parts-issued badge — green with a pulse to draw attention */
+.notification-badge--alert {
+    background: #16a34a;
+    animation: badge-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6); }
+    50%       { box-shadow: 0 0 0 5px rgba(22, 163, 74, 0); }
+}
+
 /* Logout */
 .logout-btn {
     display: block;

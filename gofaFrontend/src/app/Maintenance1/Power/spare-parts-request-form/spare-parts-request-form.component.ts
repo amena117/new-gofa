@@ -35,8 +35,14 @@ export class SparePartsRequestFormComponent implements OnInit {
   private readonly ROLE_CONFIG: Record<string, { currentStage: string; requestType: string }> = {
     power: { currentStage: 'PTEAM_LEADER', requestType: 'POWER' },
     office_machine: { currentStage: 'OTEAM_LEADER', requestType: 'OFFICE_MACHINE' },
-    vhf_radio: { currentStage: 'VTEAM_LEADER', requestType: 'VHF_RADIO' },
+    radio_maintenance: { currentStage: 'RTEAM_LEADER', requestType: 'RADIO_MAINTENANCE' },
     hf_radio: { currentStage: 'HTEAM_LEADER', requestType: 'HF_RADIO' },
+    vhf_radio: { currentStage: 'RTEAM_LEADER', requestType: 'RADIO_MAINTENANCE' },
+    hf: { currentStage: 'HTEAM_LEADER', requestType: 'HF_RADIO' },
+    power_maintenance: { currentStage: 'PTEAM_LEADER', requestType: 'POWER' },
+    office_machine_maintenance: { currentStage: 'OTEAM_LEADER', requestType: 'OFFICE_MACHINE' },
+    vhf_maintenance: { currentStage: 'RTEAM_LEADER', requestType: 'RADIO_MAINTENANCE' },
+    hf_maintenance: { currentStage: 'HTEAM_LEADER', requestType: 'HF_RADIO' }
   };
 
   constructor(
@@ -100,7 +106,7 @@ export class SparePartsRequestFormComponent implements OnInit {
     const payload = {
       SerialNoOfEquip: this.formData.serialNoOfEquip,
       Model: this.formData.model,
-      Status: "On Maintenance"
+      Status: "Waiting for Spare Part"
     };
     return this.http.put<void>(
       `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/by-worksorder/${this.formData.worksOrderNumber}/update-serial-model`,
@@ -135,9 +141,11 @@ export class SparePartsRequestFormComponent implements OnInit {
     this.formData.spareParts.splice(index, 1);
   }
 
-async submitRequest(): Promise<void> {
-  try {
-    // Validate spare parts first before updating maintenance request
+  isSubmitting = false;
+
+  async submitRequest(): Promise<void> {
+    if (this.isSubmitting) return;
+
     const userRoleKey = this.formData.requestedBy.toLowerCase();
     const config = this.ROLE_CONFIG[userRoleKey];
 
@@ -153,7 +161,7 @@ async submitRequest(): Promise<void> {
         QuantityAsked: part.quantityAsked,
         Reason: part.reason,
         RequestType: this.formData.requestType,
-        CurrentStage: 'MAINTENANCE_LEADER', // Route to maintenance leader first
+        CurrentStage: 'MAINTENANCE_LEADER',
       }));
 
     if (!payload.length) {
@@ -161,24 +169,28 @@ async submitRequest(): Promise<void> {
       return;
     }
 
-    // Submit spare parts request first
-    const response = await this.http.post(
-      `${environment.apiBaseUrl}/api/SparePartsRequest/bulk`,
-      payload
-    ).toPromise();
+    this.isSubmitting = true;
 
-    // Only update maintenance request if spare parts submission succeeds
-    await this.updateMaintenanceRequest();
+    try {
+      // Step 1: Submit spare parts FIRST — if this fails, maintenance status is NOT changed
+      await this.http.post(
+        `${environment.apiBaseUrl}/api/SparePartsRequest/bulk`,
+        payload
+      ).toPromise();
 
-    alert('Spare parts request submitted successfully.');
-    this.resetForm();
-    this.router.navigate(['/maintenance/spare-parts-requests']);
+      // Step 2: Only update maintenance status AFTER spare parts are saved
+      await this.updateMaintenanceRequest();
 
-  } catch (err) {
-    alert('Failed to submit spare parts request. Please try again.');
-    console.error('Error submitting spare parts request:', err);
+      alert('Spare parts request submitted successfully.');
+      this.resetForm();
+      this.router.navigate(['/maintenance/spare-parts-requests']);
+    } catch (err) {
+      alert('Failed to submit spare parts request. Please try again.');
+      console.error('Error submitting spare parts request:', err);
+    } finally {
+      this.isSubmitting = false;
+    }
   }
-}
 
 
   private resetForm(): void {

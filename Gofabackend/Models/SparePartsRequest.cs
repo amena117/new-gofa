@@ -38,7 +38,7 @@ namespace Gofabackend.Models
         [Required(ErrorMessage = "Status is required.")]
 
 
-        public string Status { get; set; } = "Pending"; // default value can be Pending
+        public string Status { get; set; } = "Pending Team Leader Approval"; // default value can be Pending Team Leader Approval
 
         [Required(ErrorMessage = "Current stage is required.")]
         public string CurrentStage { get; set; } = "";

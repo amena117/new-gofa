@@ -34,6 +34,7 @@ import { Model22ListComponent } from './Model22/model22-list/model22-list.compon
 import { Model22DetailComponent } from './Model22/model22-detail/model22-detail.component';
 import { Model22ReportComponent } from './Model22/model22-report/model22-report.component';
 import { ItemDistributionReportComponent } from './Model22/item-distribution-report/item-distribution-report.component';
+import { UserPerformanceComponent } from './user-performance/user-performance.component';
 import { Model2DetailComponent } from './transit/components/model2-detail/model2-detail.component';
 import { Model2EditComponent } from './transit/components/model2-edit/model2-edit.component';
 import { Model2ListComponent } from './transit/components/model2-list/model2-list.component';
@@ -87,42 +88,43 @@ const routes: Routes = [
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard], data: { roles: ['SUPER_ADMIN'] } },
   { path: 'users', component: UserListComponent, canActivate: [AuthGuard], data: { roles: ['SUPER_ADMIN', 'SANDD_ADMIN', 'MAINTENANCE_ADMIN'] } },
   { path: 'team-leader-dashboard', component: TeamLeaderDashboardComponent, canActivate: [AuthGuard], data: { roles: ['SUPPLY_AND_DISTRIBUTION_TEAMLEADER'] } },
+  { path: 'user-performance', component: UserPerformanceComponent, canActivate: [AuthGuard], data: { roles: ['SUPPLY_AND_DISTRIBUTION_TEAMLEADER'] } },
 
   // Transit routes moved from R1
   { path: 'transit/receive-item-form', component: ReceiveItemFormComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit-root', component: TransitComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
-  { path: 'transit/received-items', component: ReceivedItemsListComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT', 'PROPERTY_CONTROL'] } },
+  { path: 'transit/received-items', component: ReceivedItemsListComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT', 'PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
   { path: 'transit/sent-for-inspection', component: SentForInspectionListComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/inspected-items', component: InspectedItemsListComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/send-to-store', component: SendToStoreFormComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/edit-item/:id', component: EditItemComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
-  { path: 'transit/view-details/:id', component: ViewDetailsComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT', 'PROPERTY_CONTROL', 'VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
+  { path: 'transit/view-details/:id', component: ViewDetailsComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT', 'PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER', 'VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
   { path: 'transit/model2-list', component: Model2ListComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/model2-add', component: Model2AddComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/model2-edit/:id', component: Model2EditComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/model2-detail/:id', component: Model2DetailComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
   { path: 'transit/model1-report', component: Model1ReportComponent, canActivate: [AuthGuard], data: { roles: ['TRANSIT'] } },
 
-  { path: 'MasterCard/mastercard-list', component: MastercardListComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/mastercard-form', component: MasterCardFormComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/master-card-received/:id', component: AddMasterCardReceivedComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/mastercard-edit/:id', component: MastercardEditComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/master-card-issued/:id', component: AddMasterCardIssuedComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/master-card-details/:id', component: MasterCardDetailsComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/dashboard', component: MasterCardDashboardComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
+  { path: 'MasterCard/mastercard-list', component: MastercardListComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'MasterCard/mastercard-form', component: MasterCardFormComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'MasterCard/master-card-received/:id', component: AddMasterCardReceivedComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'MasterCard/mastercard-edit/:id', component: MastercardEditComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'MasterCard/master-card-issued/:id', component: AddMasterCardIssuedComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'MasterCard/master-card-details/:id', component: MasterCardDetailsComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'MasterCard/dashboard', component: MasterCardDashboardComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
 
-  { path: 'MasterCard/request-order-for-issue', component: RequestOrderForIssueComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/request-roder-list', component: RequestOrderListComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL','VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
-  { path: 'MasterCard/request-order-detail/:id', component: RequestOrderDetailComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL','VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
-  { path: 'MasterCard/report', component: ReportComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
-  { path: 'MasterCard/request-order/report', component: RequestOrdersReportComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL'] } },
+  { path: 'MasterCard/request-order-for-issue', component: RequestOrderForIssueComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'MasterCard/request-roder-list', component: RequestOrderListComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER','VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
+  { path: 'MasterCard/request-order-detail/:id', component: RequestOrderDetailComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER','VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
+  { path: 'MasterCard/report', component: ReportComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'MasterCard/request-order/report', component: RequestOrdersReportComponent, canActivate: [AuthGuard], data: { roles: ['PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
   { path: 'model22report', component: Model22ReportComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'PROPERTY_CONTROL'] } },
 
 
   { path: 'model22register', component: Model22RegistrationComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'] } },
-  { path: 'model22-list', component: Model22ListComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL'] } },
-  { path: 'model22-detail/:id', component: Model22DetailComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL'] } },
-  { path: 'model22report', component: Model22ReportComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'PROPERTY_CONTROL'] } },
+  { path: 'model22-list', component: Model22ListComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'model22-detail/:id', component: Model22DetailComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
+  { path: 'model22report', component: Model22ReportComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'PROPERTY_CONTROL', 'PROPERTY_CONTROL_TEAMLEADER'] } },
   { path: 'item-distribution-report', component: ItemDistributionReportComponent, canActivate: [AuthGuard], data: { roles: ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 'PROPERTY_CONTROL'] } },
 
   { path: 'login', component: LoginComponent, canActivate: [RedirectIfAuthenticatedGuard] },

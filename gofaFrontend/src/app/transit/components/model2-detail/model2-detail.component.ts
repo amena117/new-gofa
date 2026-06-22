@@ -2,15 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Model2Service } from '../../services/model2.service';
 import { Model2Item } from '../../models/model2.model';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
-// Extend jsPDF type to include autoTable
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-    lastAutoTable: any;
-  }
+// Extend jsPDF type locally to fix TypeScript errors
+interface jsPDFWithAutoTable extends jsPDF {
+  lastAutoTable: {
+    finalY: number;
+  };
 }
 
 @Component({
@@ -75,7 +74,7 @@ export class Model2DetailComponent implements OnInit {
   downloadAsPDF() {
     if (!this.item) return;
 
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdf = new jsPDF('p', 'mm', 'a4') as jsPDFWithAutoTable;
     const pageWidth = pdf.internal.pageSize.getWidth();
     let yPos = 20;
 
@@ -111,7 +110,7 @@ export class Model2DetailComponent implements OnInit {
       ['Category / ምድብ', this.item.category || 'Unknown']
     ];
 
-    pdf.autoTable({
+    autoTable(pdf, {
       startY: yPos,
       head: [],
       body: generalInfoData,
@@ -149,7 +148,7 @@ export class Model2DetailComponent implements OnInit {
       ['Currency / መገበያያ', this.item.currency || 'ETB']
     ];
 
-    pdf.autoTable({
+    autoTable(pdf, {
       startY: yPos,
       head: [],
       body: itemDetailsData,
@@ -183,7 +182,7 @@ export class Model2DetailComponent implements OnInit {
         String(acc.quantity || 0)
       ]);
 
-      pdf.autoTable({
+      autoTable(pdf, {
         startY: yPos,
         head: [['Name / ስም', 'Quantity / ብዛት']],
         body: accessoriesData,
@@ -218,7 +217,7 @@ export class Model2DetailComponent implements OnInit {
         extra.extraIssuedByName || 'N/A'
       ]);
 
-      pdf.autoTable({
+      autoTable(pdf, {
         startY: yPos,
         head: [['Name / ስም', 'Quantity / ብዛት', 'Store / ግምጃ ቤት', 'Status / ሁኔታ', 'Issued By / የወጣው በ']],
         body: extraItemsData,
@@ -245,35 +244,36 @@ export class Model2DetailComponent implements OnInit {
     yPos += 5;
 
     const approvalData = [
-      ['Prepared By / የተዘጋጀው በ', this.item.preparedBy || 'Unknown'],
-      ['Prepared Title / የዝግጅት ማዕረግ', this.item.pTitle || 'Unknown'],
-      ['Checked By / የተመረመረው በ', this.item.checkedBy || 'Unknown'],
-      ['Checked Title / የመርመራ ማዕረግ', this.item.cTitle || 'Unknown'],
-      ['Approved By / የተፈቀደው በ', this.item.approvedBy || 'Unknown'],
-      ['Approved Title / የፈቃድ ማዕረግ', this.item.aTitle || 'Unknown'],
-      ['Issued/Turn By / የወጣው/የተመለሰው በ', this.item.issuedTurnBy || 'Unknown'],
-      ['Issued/Turn Title / የመውጫ/መመለሻ ማዕረግ', this.item.iTitle || 'Unknown'],
-      ['Issued By / የወጣው በ', this.item.issBy || 'Unknown'],
-      ['Issued Title / የመውጫ ማዕረግ', this.item.isTitle || 'Unknown'],
-      ['Received By / የተቀበለው በ', this.item.receivedBy || 'Unknown'],
-      ['Received Title / የመቀበያ ማዕረግ', this.item.rTitle || 'Unknown']
+      ['Prepared By / ያዘጋጀው ስም', this.item.preparedBy || 'Unknown'],
+      ['Prepared Rank / ያዘጋጀው ማዕረግ', this.item.pRank || 'Unknown'],
+      ['Prepared Title / ያዘጋጀው ሃላፊነት', this.item.pTitle || 'Unknown'],
+      ['Checked By / ያረጋገጠው ስም', this.item.checkedBy || 'Unknown'],
+      ['Checked Rank / ያረጋገጠው ማዕረግ', this.item.cRank || 'Unknown'],
+      ['Checked Title / ያረጋገጠው ሃላፊነት', this.item.cTitle || 'Unknown'],
+      ['Approved By / ያጸደቀው ስም', this.item.approvedBy || 'Unknown'],
+      ['Approved Rank / ያጸደቀው ማዕረግ', this.item.aRank || 'Unknown'],
+      ['Approved Title / ያጸደቀው ሃላፊነት', this.item.aTitle || 'Unknown'],
+      ['Issued By / የአረካካቢ ስም', this.item.issBy || 'Unknown'],
+      ['Issued Rank / የአረካካቢ ማዕረግ', this.item.isRank || 'Unknown'],
+      ['Issued Title / የአረካካቢ ሃላፊነት', this.item.isTitle || 'Unknown'],
+      ['Issued/Turn By / ወጪ/ተመላሽ ያደረገው ስም', this.item.issuedTurnBy || 'Unknown'],
+      ['Issued/Turn Rank / ወጪ/ተመላሽ ያደረገው ማዕረግ', this.item.iRank || 'Unknown'],
+      ['Issued/Turn Title / ወጪ/ተመላሽ ያደረገው ሃላፊነት', this.item.iTitle || 'Unknown'],
+      ['Received By / የተረከበው/የመለሰው ስም', this.item.receivedBy || 'Unknown'],
+      ['Received Rank / የተረከበው/የመለሰው ማዕረግ', this.item.rRank || 'Unknown'],
+      ['Received Title / የተረከበው/የመለሰው ሃላፊነት', this.item.rTitle || 'Unknown']
     ];
 
-    pdf.autoTable({
+    autoTable(pdf, {
       startY: yPos,
-      head: [],
+      head: [['Signature Field / የፊርማ መስክ', 'Details / ዝርዝር']],
       body: approvalData,
       theme: 'grid',
-      styles: { fontSize: 9, cellPadding: 3 },
-      columnStyles: {
-        0: { fontStyle: 'bold', fillColor: [240, 240, 240], cellWidth: 80 },
-        1: { cellWidth: 'auto' }
-      },
-      margin: { left: 20, right: 20 }
+      headStyles: { fillColor: [0, 32, 60] },
+      styles: { fontSize: 9 }
     });
 
-    // Save PDF
-    const fileName = `TransactionRecord_${this.item.model2Id || 'Report'}.pdf`;
+    const fileName = `Model2_Detail_${this.item.voucherNo || 'Record'}.pdf`;
     pdf.save(fileName);
   }
 

@@ -35,10 +35,13 @@ namespace Gofabackend.Controllers
         {
             "SUPPLY_AND_DISTRIBUTION_MANAGER", "SUPPLY_AND_DISTRIBUTION_HEAD", 
             "PPC", "QUALITY", "MINISTORE", 
-            "MAINTENANCE_LEADER", "PTEAM_LEADER", "OTEAM_LEADER", "RTEAM_LEADER", "HTEAM_LEADER",
+            "MAINTENANCE_LEADER", "PTEAM_LEADER", "OTEAM_LEADER", "RTEAM_LEADER", "HTEAM_LEADER", "VTEAM_LEADER",
             // New maintenance-specific technician roles (separate from store roles)
             "VHF_MAINTENANCE", "HF_MAINTENANCE", "POWER_MAINTENANCE", "IT_MAINTENANCE",
-            "OFFICE_MACHINE_MAINTENANCE", "RADIO_MAINTENANCE"
+            "OFFICE_MACHINE_MAINTENANCE", "RADIO_MAINTENANCE", "COMPUTER_MAINTENANCE",
+            "ELECTRICAL_MAINTENANCE", "MECHANICAL_MAINTENANCE", "WELDING_MAINTENANCE",
+            // Reporting role
+            "MAINTENANCE_REPORTING"
         };
 
         private bool CanManageRole(string adminRole, string targetRole)
@@ -325,6 +328,38 @@ namespace Gofabackend.Controllers
             {
                 Log.Error(ex, "Error retrieving users");
                 return StatusCode(500, new { success = false, message = "Error retrieving users", error = ex.Message });
+            }
+        }
+
+        [HttpGet("technicians")]
+        [AllowAnonymous]
+        public IActionResult GetAllTechnicians()
+        {
+            try
+            {
+                var techRoles = new List<string> { 
+                    "POWER", "OFFICE_MACHINE", "RADIO_MAINTENANCE", "VHF_RADIO", "HF_RADIO",
+                    "POWER_MAINTENANCE", "OFFICE_MACHINE_MAINTENANCE", "VHF_MAINTENANCE",
+                    "HF_MAINTENANCE", "IT_MAINTENANCE", "COMPUTER_MAINTENANCE",
+                    "ELECTRICAL_MAINTENANCE", "MECHANICAL_MAINTENANCE", "WELDING_MAINTENANCE"
+                };
+
+                var technicians = _context.Users
+                    .Where(u => techRoles.Contains(u.Role) && !u.IsDisabled)
+                    .Select(u => new
+                    {
+                        username = u.Username,
+                        fullName = u.FirstName + " " + u.LastName,
+                        role = u.Role
+                    })
+                    .ToList();
+
+                return Ok(technicians);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error retrieving technicians");
+                return StatusCode(500, new { message = "Error retrieving technicians", error = ex.Message });
             }
         }
 

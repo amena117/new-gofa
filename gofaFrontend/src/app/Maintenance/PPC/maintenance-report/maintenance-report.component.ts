@@ -57,6 +57,10 @@ export class MaintenanceReportComponent implements OnInit {
   switch (this.currentUserRole) {
     case 'POWER':
     case 'PTEAM_LEADER':
+    case 'POWER_MAINTENANCE':
+    case 'ELECTRICAL_MAINTENANCE':
+    case 'MECHANICAL_MAINTENANCE':
+    case 'WELDING_MAINTENANCE':
       this.maintenanceTypeOptions = ['POWER'];
       this.reportFilters.maintenanceType = 'POWER';
       break;

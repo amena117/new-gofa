@@ -6,6 +6,8 @@ import { AuthService } from '../services/auth.service';
 import { Item, TransactionEntry } from '../model/item.model';
 import { Model22Dto } from '../model/model22';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-inventory-summary',
@@ -25,9 +27,9 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
     totalItems: number;
     totalQuantity: number;
     totalValueByCurrency: { [currency: string]: number };
-    lowStockItems: { itemId: number | undefined; description: string; model: string; quantity: number; isCriticallyLow: boolean; isLow: boolean }[];
+    lowStockItems: { itemId: number | undefined; description: string; model: string; category: string; quantity: number; isCriticallyLow: boolean; isLow: boolean }[];
     recentWithdrawals: (Model22Dto & { dateFormatted: string })[];
-    itemsByCategory: { name: string; count: number }[];
+    itemsByCategory: { name: string; count: number; lowStockCount: number }[];
     itemsByWarehouse: { name: string; quantity: number }[];
     monthlyInventoryTrends: { monthYear: string; received: number; withdrawn: number }[];
     topItems: { itemId: number | undefined; description: string; model: string; quantity: number }[];
@@ -45,10 +47,76 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
 
   // 🔍 Search & Pagination for Categories
   categorySearchTerm = '';
-  filteredCategories: { name: string; count: number }[] = [];
-  displayedCategories: { name: string; count: number }[] = [];
+  filteredCategories: { name: string; count: number; lowStockCount: number }[] = [];
+  displayedCategories: { name: string; count: number; lowStockCount: number }[] = [];
   showAllCategories = false;
-  maxDisplayed = 8; // Show only 8 categories by default
+  maxDisplayed = 8;
+
+  // Low stock pagination & filtering
+  lowStockPage = 1;
+  lowStockPageSize = 10;
+  lowStockCategoryFilter = '';
+
+  get filteredLowStockItems() {
+    return this.summaryData.lowStockItems.filter(item => 
+      !this.lowStockCategoryFilter || item.category === this.lowStockCategoryFilter
+    );
+  }
+
+  get pagedLowStockItems() {
+    const start = (this.lowStockPage - 1) * this.lowStockPageSize;
+    return this.filteredLowStockItems.slice(start, start + this.lowStockPageSize);
+  }
+
+  get lowStockTotalPages() {
+    return Math.ceil(this.filteredLowStockItems.length / this.lowStockPageSize) || 1;
+  }
+
+  onLowStockCategoryChange(): void {
+    this.lowStockPage = 1;
+  }
+
+  downloadLowStockReport(): void {
+    const doc = new jsPDF();
+    const userRole = this.authService.getRole() || 'User';
+    const category = this.lowStockCategoryFilter || 'All Categories';
+    const date = new Date().toLocaleDateString();
+
+    // Title
+    doc.setFontSize(18);
+    doc.text('Low Stock Inventory Report', 14, 20);
+    
+    // Subtitle
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Warehouse/Role: ${userRole}`, 14, 30);
+    doc.text(`Category Filter: ${category}`, 14, 37);
+    doc.text(`Generated on: ${date}`, 14, 44);
+
+    const tableData = this.filteredLowStockItems.map(item => [
+      item.description,
+      item.model,
+      item.category,
+      item.quantity,
+      item.isCriticallyLow ? 'Critically Low' : 'Low'
+    ]);
+
+    autoTable(doc, {
+      startY: 55,
+      head: [['Description', 'Model', 'Category', 'Quantity', 'Status']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillColor: [180, 0, 0] }, // Red header for alerts
+      styles: { fontSize: 10 }
+    });
+
+    const fileName = `Low_Stock_Report_${userRole.replace(/\s+/g, '_')}_${date.replace(/\//g, '-')}.pdf`;
+    doc.save(fileName);
+  }
+
+  lowStockGoToPage(page: number) {
+    if (page >= 1 && page <= this.lowStockTotalPages) this.lowStockPage = page;
+  }
 
   isLoading = true;
   errorMessage: string | null = null;
@@ -221,18 +289,19 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
       });
     });
 
-    // ✅ LOW STOCK ITEMS (quantity < 5)
+    // ✅ LOW STOCK ITEMS (quantity < 10)
     this.summaryData.lowStockItems = roleFilteredItems
-      .filter(item => item.quantity < 5)
+      .filter(item => item.quantity < 10)
       .map(item => ({
         itemId: item.itemId,
         description: item.description || 'ያልታወቀ',
         model: item.model || 'ያልታወቀ',
+        category: item.category || 'ያልተመደበ',
         quantity: item.quantity,
         isCriticallyLow: item.quantity < 3,
-        isLow: item.quantity >= 3 && item.quantity < 5
+        isLow: item.quantity >= 3 && item.quantity < 10
       }))
-      .slice(0, 10);
+      .sort((a, b) => a.quantity - b.quantity); // Show critically low first
 
     // ✅ RECENT WITHDRAWALS
     this.summaryData.recentWithdrawals = withdrawals
@@ -244,14 +313,23 @@ export class InventorySummaryComponent implements OnInit, OnDestroy {
       }));
 
     // ✅ ITEMS BY CATEGORY — ONLY FROM ROLE-FILTERED ITEMS
-    const categoryMap = new Map<string, number>();
+    const categoryMap = new Map<string, { count: number; lowStockCount: number }>();
     roleFilteredItems.forEach(item => {
       const category = item.category || 'ያልተመደበ';
-      categoryMap.set(category, (categoryMap.get(category) || 0) + 1);
+      const existing = categoryMap.get(category) || { count: 0, lowStockCount: 0 };
+      
+      categoryMap.set(category, {
+        count: existing.count + 1,
+        lowStockCount: existing.lowStockCount + (item.quantity < 10 ? 1 : 0)
+      });
     });
 
     this.summaryData.itemsByCategory = Array.from(categoryMap.entries())
-      .map(([name, count]) => ({ name, count }))
+      .map(([name, data]) => ({ 
+        name, 
+        count: data.count, 
+        lowStockCount: data.lowStockCount 
+      }))
       .sort((a, b) => b.count - a.count);
 
     // 🔍 Initialize filtered & displayed categories

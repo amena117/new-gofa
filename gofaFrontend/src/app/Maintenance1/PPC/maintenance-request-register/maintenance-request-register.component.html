@@ -5,15 +5,6 @@
     <!-- Column 1 -->
     <div class="col-md-6">
       
-      <!-- Works Order Number -->
-      <div class="form-group">
-        <label for="worksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
-        <input type="number" id="worksOrderNumber" formControlName="worksOrderNumber" class="form-control" />
-        <small *ngIf="submitted && maintenanceForm.get('worksOrderNumber')?.invalid" class="text-danger">
-          Works Order Number is required. / የስራ ትዕዛዝ ቁጥር አስፈላጊ ነው።
-        </small>
-      </div>
-
       <!-- Quantity -->
       <div class="form-group">
         <label for="quantity">Quantity / ብዛት</label>
@@ -32,7 +23,7 @@
 
       <!-- Serial No of Equipment -->
       <div class="form-group">
-        <label for="serialNoOfEquip">Serial No of Equipment / የመሳሪያው ተራ ቁጥር</label>
+        <label for="serialNoOfEquip">Serial No of Equipment / መለያ ቁጥር</label>
         <input type="text" id="serialNoOfEquip" formControlName="serialNoOfEquip" class="form-control" />
         <small *ngIf="submitted && maintenanceForm.get('serialNoOfEquip')?.invalid" class="text-danger">
           Serial Number is required. / የተራ ቁጥር አስፈላጊ ነው።
@@ -78,15 +69,6 @@
     <!-- Column 2 -->
     <div class="col-md-6">
       
-      <!-- Nomenclature -->
-      <div class="form-group">
-        <label for="nomenclature">Model / ሞዴል </label>
-        <input type="text" id="nomenclature" formControlName="nomenclature" class="form-control" />
-        <small *ngIf="submitted && maintenanceForm.get('nomenclature')?.invalid" class="text-danger">
-          Nomenclature is required. / ስሙ አስፈላጊ ነው።
-        </small>
-      </div>
-
       <!-- Requested By -->
       <div class="form-group">
         <label for="requestedBy">Requested By / የጠየቀው</label>
@@ -117,7 +99,7 @@
 
 <!-- Status Stage -->
 <div class="form-group">
-  <label for="statusStage">Status Stage / የስታጎች ሁኔታ</label>
+  <label for="statusStage">Status Stage / የሚላክበት ክፍል</label>
   <select id="statusStage" formControlName="statusStage" class="form-control">
     <option value="" disabled>Select Status Stage / የስታጎች ሁኔታ ይምረጡ</option>
     <option value="POWER">POWER</option>

@@ -208,7 +208,7 @@
       <div class="summary-card">
         <div class="summary-icon received-icon">📥</div>
         <div class="summary-content">
-          <div class="summary-label">Total Received / ጠቅላላ የተቀበለ</div>
+          <div class="summary-label">Current Stock / የአሁኑ ክምችት</div>
           <div class="summary-value">{{ totalReceived }}</div>
         </div>
       </div>
@@ -238,12 +238,7 @@
       </div>
     </div>
 
-    <!-- Export Button -->
-    <div class="export-section">
-      <button class="action-btn primary export-btn" (click)="exportToExcel()" aria-label="Export to Excel">
-        📊 Export to Excel / ወደ ኤክሴል ላክ
-      </button>
-    </div>
+
 
 
     <!-- Item Information -->
@@ -312,6 +307,41 @@
           </span>
         </div>
       </div>
+
+      <!-- Serial Numbers -->
+      <div *ngIf="item.serialNumbers && item.serialNumbers.length > 0" class="serial-numbers-section">
+        <div class="serial-numbers-header" (click)="toggleSerialNumbers()">
+          <span class="serial-numbers-title">
+            Serial Numbers / ተከታታይ ቁጥሮች
+            <span class="serial-count-badge">{{ item.serialNumbers.length }}</span>
+          </span>
+          <button class="serial-toggle-btn" type="button">
+            {{ showSerialNumbers ? 'Hide / ደብቅ' : 'View / ይመልከቱ' }}
+            <span class="toggle-arrow" [class.open]="showSerialNumbers">&#9660;</span>
+          </button>
+        </div>
+        <div class="serial-numbers-panel" *ngIf="showSerialNumbers">
+          <input
+            type="text"
+            class="serial-search-input"
+            placeholder="Search serial number..."
+            [(ngModel)]="serialNumberSearch"
+            (input)="$event.stopPropagation()"
+          />
+          <div class="serial-grid">
+            <ng-container *ngFor="let sn of item.serialNumbers">
+              <span class="serial-chip"
+                *ngIf="!serialNumberSearch || sn.serialNumber.toLowerCase().includes(serialNumberSearch.toLowerCase())">
+                {{ sn.serialNumber }}
+              </span>
+            </ng-container>
+          </div>
+          <div class="serial-no-results"
+            *ngIf="serialNumberSearch && filteredSerialNumbers().length === 0">
+            No matching serial numbers found.
+          </div>
+        </div>
+      </div>
     </div>
 
 
@@ -321,7 +351,12 @@
 
     <div class="form-section">
       <div class="section-header">
-        <h2 class="section-title">Accessories / ተያያዥ እቃዎች</h2>
+        <h2 class="section-title">
+          Accessories / ተያያዥ እቃዎች
+          <span style="margin-left: 16px; padding: 6px 12px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 8px; font-size: 14px; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+            Total: {{ getTotalAccessoriesValue() }}
+          </span>
+        </h2>
         <div class="pagination-info" *ngIf="consolidatedAccessories && consolidatedAccessories.length > accessoryPageSize">
           Page {{ accessoryCurrentPage }} of {{ getAccessoryTotalPages() }} ({{ consolidatedAccessories.length }} total)
         </div>
@@ -426,7 +461,20 @@
             <strong>Total Withdrawn / ጠቅላላ የወጣ:</strong> {{ selectedAccessory.totalWithdrawn }}
           </div>
           <div class="detail-row" *ngIf="selectedAccessory.currentQuantity !== undefined">
-            <strong>Current Quantity / የአሁኑ ብዛት:</strong> {{ selectedAccessory.currentQuantity }}
+            <strong>Current Quantity / የአሁኑ ብዛት:</strong>
+            <span style="
+              display: inline-flex;
+              align-items: center;
+              background: linear-gradient(135deg, #16a34a, #22c55e);
+              color: white;
+              font-weight: 700;
+              font-size: 1.05em;
+              padding: 3px 14px;
+              border-radius: 20px;
+              margin-left: 8px;
+              box-shadow: 0 2px 6px rgba(22,163,74,0.35);
+              letter-spacing: 0.5px;
+            ">{{ selectedAccessory.currentQuantity }}</span>
           </div>
           <div class="detail-row">
             <strong>Unit Price / የነጠላ ዋጋ:</strong> {{ selectedAccessory.unitPrice | number:'1.2-2' }} {{ selectedAccessory.currency }}
@@ -484,7 +532,6 @@
                   <th>Action / ተግባር</th>
                   <th>Quantity / ብዛት</th>
                   <th>Voucher / ሰነድ</th>
-                  <th>Details / ዝርዝር</th>
                 </tr>
               </thead>
               <tbody>
@@ -494,7 +541,6 @@
                   <td>Received / ተቀብሏል</td>
                   <td>+{{ entry.quantity }}</td>
                   <td>-</td>
-                  <td>{{ i === 0 ? 'Initial registration / የመጀመሪያ ምዝገባ' : 'Added to existing / ለነባር ተጨምሯል' }}</td>
                 </tr>
                 <!-- Withdrawal entries -->
                 <tr *ngFor="let withdrawal of selectedAccessory.withdrawals" class="transaction-withdrawn">
@@ -502,7 +548,6 @@
                   <td>Withdrawn / ወጥቷል</td>
                   <td>-{{ withdrawal.quantity }}</td>
                   <td>{{ withdrawal.voucherNumber }}</td>
-                  <td>{{ withdrawal.recipientName }}</td>
                 </tr>
               </tbody>
             </table>

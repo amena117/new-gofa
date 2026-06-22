@@ -1,0 +1,132 @@
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Change Department / ክፍል ቀይር</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner-border" role="status"></div>
+    <p>Loading request data...</p>
+  </div>
+
+  <!-- Form Card -->
+  <div *ngIf="!isLoading && requestData" class="form-card">
+    
+    <!-- Existing Request Information (Read-only) -->
+    <div class="info-section">
+      <h3 class="section-title">
+        <i class="bi bi-info-circle"></i> Request Information / የጥያቄ መረጃ
+      </h3>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
+          <div class="info-value">{{ requestData.worksOrderNumber }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Model Number / የሞዴል ቁጥር</label>
+          <div class="info-value">{{ requestData.model || 'N/A' }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Equipment Type / የመሳሪያ አይነት</label>
+          <div class="info-value">{{ requestData.equipmentType?.equipmentTypeName || 'N/A' }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Serial Number / ተራ ቁጥር</label>
+          <div class="info-value">{{ requestData.serialNoOfEquip || 'N/A' }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Requested By / የጠየቀው</label>
+          <div class="info-value">{{ requestData.requestedBy || 'N/A' }}</div>
+        </div>
+        
+        <div class="info-item">
+          <label>Date Received / የተቀበለበት ቀን</label>
+          <div class="info-value">{{ requestData.dateWorkOrderReceived | date:'MMM d, y' }}</div>
+        </div>
+
+        <div class="info-item">
+          <label>Current Department / የአሁኑ ክፍል</label>
+          <div class="info-value">
+            <span class="badge bg-info">{{ requestData.maintenanceType || 'Not Assigned' }}</span>
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <label>Status / ሁኔታ</label>
+          <div class="info-value">
+            <span class="status-badge">{{ requestData.status || 'Pending' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="info-item full-width" *ngIf="requestData.briefDescriptionOfWork">
+        <label>Description / መግለጫ</label>
+        <div class="info-value">{{ requestData.briefDescriptionOfWork }}</div>
+      </div>
+    </div>
+
+    <!-- Reassignment Form -->
+    <form (ngSubmit)="onSubmit()">
+      <div class="assignment-section">
+        <h3 class="section-title">
+          <i class="bi bi-arrow-left-right"></i> Change Department / ክፍል ቀይር
+        </h3>
+        
+        <div class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle"></i>
+          <strong>Warning:</strong> Changing the department will reassign this maintenance request to a different unit.
+        </div>
+
+        <div class="form-row">
+          <!-- Maintenance Type -->
+          <div class="form-group">
+            <label for="maintenanceType">New Department / አዲስ ክፍል <span class="required">*</span></label>
+            <select
+              id="maintenanceType"
+              class="form-control"
+              [(ngModel)]="maintenanceType"
+              name="maintenanceType"
+              (ngModelChange)="updateRequestedTo()"
+              required
+            >
+              <option value="">Select Maintenance Type / የጥገና አይነት ይምረጡ</option>
+              <option value="Office_Machine">Office / IT Maintenance</option>
+              <option value="Power">POWER</option>
+              <option value="RADIO_MAINTENANCE">RADIO MAINTENANCE</option>
+            </select>
+          </div>
+
+          <!-- Requested To (Auto-filled) -->
+          <div class="form-group">
+            <label for="requestedTo">Will Be Assigned To / ይመደባል ወደ</label>
+            <input
+              type="text"
+              id="requestedTo"
+              class="form-control"
+              [(ngModel)]="requestedTo"
+              name="requestedTo"
+              readonly
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="button-container">
+        <button type="submit" class="action-btn primary" [disabled]="!maintenanceType">
+          <i class="bi bi-check-circle"></i> Change Department / ክፍል ቀይር
+        </button>
+        <button type="button" class="action-btn secondary" (click)="goBack()">
+          <i class="bi bi-x-circle"></i> Cancel / ሰርዝ
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1605,3 +1605,131 @@
 .data-table tbody tr.transaction-accessory-only:hover {
   background-color: #f3e8ff !important;
 }
+
+/* Serial Numbers Section */
+.serial-numbers-section {
+  margin-top: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.serial-numbers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.serial-numbers-header:hover {
+  background: #f1f5f9;
+}
+
+.serial-numbers-title {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.serial-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  min-width: 24px;
+}
+
+.serial-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #02172a;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.serial-toggle-btn:hover {
+  background: #033c73;
+}
+
+.toggle-arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+  font-size: 0.7rem;
+}
+
+.toggle-arrow.open {
+  transform: rotate(180deg);
+}
+
+.serial-numbers-panel {
+  padding: 16px;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.serial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.serial-chip {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #1e293b;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.serial-search-input {
+  width: 100%;
+  padding: 7px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.serial-search-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+}
+
+.serial-no-results {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  text-align: center;
+  padding: 8px 0;
+}
+
+/* Hide serial numbers section during PDF capture */
+:host-context(body.print-mode) .serial-numbers-section {
+  display: none !important;
+}

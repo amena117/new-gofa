@@ -257,6 +257,32 @@ input[type="number"]::-webkit-inner-spin-button {
   margin-left: 8px;
 }
 
+/* Serial warning styling */
+.serial-warning {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.serial-warning .icon-warning::before {
+  content: "⚠️";
+}
+
+.serial-warning.small {
+  padding: 4px 8px;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
 /* Error messages */
 .error {
   color: #c82333;

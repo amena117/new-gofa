@@ -44,6 +44,15 @@ export class ItemService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
+  checkSerialNumber(serialNumber: string): Observable<{ exists: boolean; type?: string; description?: string; model?: string; role?: string }> {
+    return this.http.get<{ exists: boolean; type?: string; description?: string; model?: string; role?: string }>(
+      `${this.apiUrl}/check-serial/${encodeURIComponent(serialNumber)}`,
+      { headers: this.getHeaders(), withCredentials: true }
+    ).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   getItems(search: string = ''): Observable<Item[]> {
     const url = search ? `${this.apiUrl}?description=${encodeURIComponent(search)}` : this.apiUrl;
     return this.http.get<Item[]>(url, {
@@ -687,21 +696,35 @@ export class ItemService {
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknown error occurred!';
+    
     if (error.error instanceof ErrorEvent) {
-      errorMessage = `Client-side error: ${error.error.message}`;
+      // Client-side error
+      errorMessage = error.error.message;
     } else {
-      errorMessage = `Server error: Status ${error.status}`;
-      if (error.error?.detailedMessage) {
-        errorMessage += ` - ${error.error.detailedMessage}`;
+      // Server-side error
+      if (error.status === 400 && error.error?.detailedMessage) {
+        // Use the detailed message for validation errors (like duplicates)
+        errorMessage = error.error.detailedMessage;
       } else if (error.error?.message) {
-        errorMessage += ` - ${error.error.message}`;
-      } else if (error.message) {
-        errorMessage += ` - ${error.message}`;
+        errorMessage = error.error.message;
+      } else if (error.error?.detailedMessage) {
+        errorMessage = error.error.detailedMessage;
+      } else if (typeof error.error === 'string') {
+        errorMessage = error.error;
+      } else {
+        errorMessage = `Server error: Status ${error.status} - ${error.message}`;
       }
-      if (error.error?.errors) {
-        errorMessage += `; Errors: ${JSON.stringify(error.error.errors)}`;
+
+      // Append any specific validation errors if present
+      if (error.error?.errors && typeof error.error.errors === 'object') {
+        const validationErrors = Object.values(error.error.errors).flat();
+        if (validationErrors.length > 0) {
+          errorMessage += `; Details: ${validationErrors.join(', ')}`;
+        }
       }
     }
+    
+    console.error('API Error:', errorMessage, error);
     return throwError(() => new Error(errorMessage));
   }
 }

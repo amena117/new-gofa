@@ -1,45 +1,114 @@
-<div class="container">
-  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Serial Number Details / ስሪያል ቁጥር ዝርዝሮች</h2>
+<div class="view-serial-container">
+  <!-- Header -->
+  <header class="page-header">
+    <span class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</span>
+    <h1 class="page-title">Serial Number Details / ስሪያል ቁጥር ዝርዝሮች</h1>
+  </header>
 
-  <div *ngIf="message" class="error">{{ message }} / ስህተት አለ</div>
-
-  <div *ngIf="stockNumbers.length > 0">
-    <label for="stockNumber">Select Stock Number / የስቶክ ቁጥር ምረጥ:</label>
-    <select id="stockNumber" [(ngModel)]="selectedStockNumber" (change)="onStockNumberSelect(selectedStockNumber)">
-      <option *ngFor="let stock of stockNumbers" [value]="stock">{{ stock }}</option>
-    </select>
+  <!-- Error Message -->
+  <div *ngIf="message" class="error-alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span>{{ message }}</span>
   </div>
 
-  <div *ngIf="selectedStockNumber">
-    <p><strong>Stock Number / የስቶክ ቁጥር:</strong> {{ selectedStockNumber }}</p>
-    <p><strong>Model / ሞዴል:</strong> {{ model }}</p>
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-box-wrapper">
+      <label class="search-label">Search Stock Number / የስቶክ ቁጥር ይፈልጉ</label>
+      <div class="input-with-icon">
+        <i class="bi bi-search search-icon"></i>
+        <input 
+          type="text" 
+          [(ngModel)]="stockSearchTerm" 
+          (input)="filterStockNumbers()"
+          placeholder="Type stock number (e.g. SP-001)..."
+          class="search-input"
+        >
+        <button *ngIf="stockSearchTerm" class="clear-btn" (click)="stockSearchTerm=''; filterStockNumbers()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
 
-    <!-- Table -->
-    <table *ngIf="paginatedSerials.length > 0">
-      <thead>
-        <tr>
-          <th># / ቁጥር</th>
-          <th>Part Number / ስሪያል ቁጥር</th>
-          <th>In Date / ቀን</th>
-          <th>Status / ሁኔታ</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of paginatedSerials; let i = index">
-          <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-          <td>{{ item.serialNumber }}</td>
-          <td>{{ item.inDate }}</td>
-          <td>{{ item.status }}</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Pagination Controls -->
-    <div *ngIf="serials.length > itemsPerPage" class="pagination">
-      <button (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
-      <span>Page {{ currentPage }} of {{ totalPages() }}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages()">Next</button>
+      <!-- Suggestions Dropdown -->
+      <ul class="suggestions-list" *ngIf="filteredStockNumbers.length > 0 && stockSearchTerm">
+        <li *ngFor="let stock of filteredStockNumbers" (click)="selectStock(stock)">
+          <i class="bi bi-box-seam"></i> {{ stock }}
+        </li>
+      </ul>
     </div>
+  </div>
+
+  <!-- Details Display -->
+  <div class="details-content" *ngIf="selectedStockNumber">
+    <div class="info-banner">
+      <div class="info-item">
+        <span class="info-label">Stock Number / የስቶክ ቁጥር</span>
+        <span class="info-val highlight">{{ selectedStockNumber }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Model / ሞዴል</span>
+        <span class="info-val">{{ model || 'N/A' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Total Serials / ጠቅላላ ብዛት</span>
+        <span class="info-val">{{ serials.length }}</span>
+      </div>
+      <div class="info-item export-item">
+        <span class="info-label">Export / አውርድ</span>
+        <div class="export-btns">
+          <button class="export-btn excel" (click)="exportToExcel()" title="Export to Excel">
+            <i class="bi bi-file-earmark-excel"></i> Excel
+          </button>
+          <button class="export-btn pdf" (click)="exportToPDF()" title="Export to PDF">
+            <i class="bi bi-file-earmark-pdf"></i> PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th style="width: 80px">#</th>
+              <th>Serial Number / ስሪያል ቁጥር</th>
+              <th>In Date / ቀን</th>
+              <th>Status / ሁኔታ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of paginatedSerials; let i = index">
+              <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+              <td><code>{{ item.serialNumber }}</code></td>
+              <td class="date-cell">{{ item.inDate | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <span class="status-badge" [class.available]="item.status === 'Available in stock'">
+                  {{ item.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-footer" *ngIf="serials.length > itemsPerPage">
+        <button class="pg-btn" (click)="prevPage()" [disabled]="currentPage === 1">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="pg-info">Page {{ currentPage }} of {{ totalPages() }}</span>
+        <button class="pg-btn" (click)="nextPage()" [disabled]="currentPage === totalPages()">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!selectedStockNumber && !message">
+    <i class="bi bi-search"></i>
+    <p>Please search and select a stock number to view details.</p>
   </div>
 </div>

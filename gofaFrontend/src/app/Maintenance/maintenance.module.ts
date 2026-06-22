@@ -18,6 +18,7 @@ import { SpecialToolsRegisterDetailsComponent } from './special-tools-register-d
 import { MaintenanceRequestRegisterComponent } from './PPC/maintenance-request-register/maintenance-request-register.component';
 import { MaintenanceRequestRegisterListComponent } from './PPC/maintenance-request-register-list/maintenance-request-register-list.component';
 import { AssignMaintenanceComponent } from './PPC/assign-maintenance/assign-maintenance.component';
+import { ReassignMaintenanceComponent } from './PPC/reassign-maintenance/reassign-maintenance.component';
 import { MaintenanceRequestListComponent } from './Power/maintenance-request-list/maintenance-request-list.component';
 import { MaintenanceSparePartRequestFormComponent } from './maintenance-sparepart-request-form/maintenance-sparepart-request-form.component';
 import { SparePartsRequestRespondComponent } from './Ministore/spare-parts-request-respond/spare-parts-request-respond.component';
@@ -46,8 +47,11 @@ import { DoOutComponent } from './PPC/do-out/do-out.component';
 import { LetterComponent } from './PPC/letter/letter.component';
 import { MaintainFormComponent } from './Power/maintain-form/maintain-form.component';
 import { RejectRequestComponent } from './Ministore/reject-request/reject-request.component';
-
-
+import { UnitLeaderDashboardComponent } from './unit-leader-dashboard/unit-leader-dashboard.component';
+import { IssueSpareFormComponent } from './Ministore/issue-spare-form/issue-spare-form.component';
+import { HandoverConfirmationComponent } from './Power/handover-confirmation/handover-confirmation.component';
+import { MaintenanceCostReportComponent } from './PPC/maintenance-cost-report/maintenance-cost-report.component';
+import { MaintenancePerformanceComponent } from './maintenance-performance/maintenance-performance.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +66,7 @@ import { RejectRequestComponent } from './Ministore/reject-request/reject-reques
     MaintenanceRequestRegisterComponent,
     MaintenanceRequestRegisterListComponent,
     AssignMaintenanceComponent,
+    ReassignMaintenanceComponent,
     MaintenanceRequestListComponent,
     MaintenanceSparePartRequestFormComponent,
     SparePartsRequestRespondComponent,
@@ -89,6 +94,11 @@ import { RejectRequestComponent } from './Ministore/reject-request/reject-reques
     LetterComponent,
     MaintainFormComponent,
     RejectRequestComponent,
+    UnitLeaderDashboardComponent,
+    IssueSpareFormComponent,
+    HandoverConfirmationComponent,
+    MaintenanceCostReportComponent,
+    MaintenancePerformanceComponent,
    
   ],
   imports: [

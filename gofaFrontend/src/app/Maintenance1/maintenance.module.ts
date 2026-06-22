@@ -46,6 +46,8 @@ import { DoOutComponent } from './PPC/do-out/do-out.component';
 import { LetterComponent } from './PPC/letter/letter.component';
 import { MaintainFormComponent } from './Power/maintain-form/maintain-form.component';
 import { RejectRequestComponent } from './Ministore/reject-request/reject-request.component';
+import { MaintainedListComponent } from './Power/maintained-list/maintained-list.component';
+import { TeamLeaderReportComponent } from './Power/team-leader-report/team-leader-report.component';
 
 
 
@@ -91,6 +93,8 @@ import { RejectRequestComponent } from './Ministore/reject-request/reject-reques
     LetterComponent,
     MaintainFormComponent,
     RejectRequestComponent,
+    MaintainedListComponent,
+    TeamLeaderReportComponent,
    
   ],
   imports: [

@@ -57,10 +57,6 @@
   </div>
 
   <!-- PDF Export Info -->
-  <div class="pdf-export-info" *ngIf="!isLoading && filteredRecords.length > 0">
-    <span class="info-icon">📄</span>
-    <span>Click "Export PDF Report" to generate a professional table-formatted PDF with all filtered records</span>
-  </div>
 
   <!-- Filters Panel -->
   <div class="filters-panel">
@@ -155,9 +151,13 @@
       </div>
       
       <div class="records-grid">
-        <div *ngFor="let record of paginatedRecords; trackBy: trackByRecordId" class="record-card">
+        <div *ngFor="let record of paginatedRecords; trackBy: trackByRecordId" class="record-card"
+             [class.accessory-only-card]="record.isAccessoryOnly">
           <div class="card-header">
-            <div class="item-title">{{ record.description || 'No Description' }}</div>
+            <div class="item-title">
+              {{ record.description || 'No Description' }}
+              <span *ngIf="record.isAccessoryOnly" class="accessory-only-badge ms-1">📎 Accessory Only</span>
+            </div>
             <div class="item-meta">
               <span class="serial-badge">{{ record.serialNumber || 'N/A' }}</span>
             </div>
@@ -261,6 +261,20 @@
 
     <!-- List View -->
     <div *ngIf="currentView === 'list'" class="list-view">
+      <div class="grid-header">
+        <div class="view-info">
+          <span class="record-count">{{ filteredRecords.length }} Records Found</span>
+          <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+        </div>
+        <div class="grid-controls">
+          <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange($event)" class="page-size-select">
+            <option [value]="10">10 per page</option>
+            <option [value]="20">20 per page</option>
+            <option [value]="50">50 per page</option>
+            <option [value]="100">100 per page</option>
+          </select>
+        </div>
+      </div>
       <div class="table-container">
         <table class="modern-table">
           <thead>
@@ -276,12 +290,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let record of paginatedRecords; trackBy: trackByRecordId" class="table-row">
+            <tr *ngFor="let record of paginatedRecords; trackBy: trackByRecordId" class="table-row"
+                [class.accessory-only-row]="record.isAccessoryOnly">
               <td class="date-cell">{{ displayDate(record.date) }}</td>
               <td class="description-cell">
                 <div class="description-content">
-                  <span class="main-text">{{ record.description || 'No Description' }}</span>
-                  <span class="sub-text">{{ record.itemType || 'Unknown Type' }}</span>
+                  <span class="main-text">
+                    {{ record.description || 'No Description' }}
+                    <span *ngIf="record.isAccessoryOnly" class="accessory-only-badge ms-1">📎 Accessory Only</span>
+                  </span>
+                  <span class="sub-text" *ngIf="record.isAccessoryOnly && record.parentItemDescription">
+                    Parent: {{ record.parentItemDescription }}
+                  </span>
+                  <span class="sub-text" *ngIf="!record.isAccessoryOnly">{{ record.itemType || 'Unknown Type' }}</span>
                 </div>
               </td>
               <td class="supplier-cell">{{ record.supplier || 'N/A' }}</td>

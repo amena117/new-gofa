@@ -831,3 +831,43 @@
 .capturing .summary-cards {
   display: none !important;
 }
+
+/* Accessory-Only Banner */
+.accessory-only-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff8e1;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.accessory-only-badge {
+  background: #f59e0b;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.accessory-only-parent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.accessory-only-parent label {
+  font-weight: 600;
+  color: #92400e;
+  margin: 0;
+}
+
+.accessory-only-parent span {
+  color: #1a1a1a;
+}

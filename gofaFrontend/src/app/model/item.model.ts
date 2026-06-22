@@ -352,6 +352,7 @@ export interface PaginatedResponse<T> {
   page: number;
   pageSize: number;
   totalPages: number;
+  totalsByCurrency?: { [currency: string]: number };
 }
 // Add this interface to your item.model.ts file
 export interface UpdateItemRequest {

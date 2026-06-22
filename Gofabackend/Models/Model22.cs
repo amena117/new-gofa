@@ -10,6 +10,7 @@ namespace Gofabackend.Models
     public string EthiopianDate { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public string RegisteredBy { get; set; } = string.Empty;
+    public string? Comment { get; set; }
     
     // Navigation property
     public virtual ICollection<Model22Item> Items { get; set; } = new List<Model22Item>();

@@ -1,0 +1,228 @@
+<div class="dashboard-container">
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>{{ departmentName }} Dashboard / የቡድን ሪፖርት</h1>
+    <div class="header-actions">
+      <button class="refresh-btn" (click)="loadStats()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+        Refresh / አድስ
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading dashboard data... / የዳሽቦርድ ውሂብ በመጫን ላይ...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadStats()">Try Again / እንደገና ሞክር</button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading && !error" class="dashboard-content">
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+
+      <div class="summary-card">
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>{{ totalPending }}</h3>
+          <p>Awaiting Assignment / ያልተሰጠ</p>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon warning-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>{{ stuckTasks }}</h3>
+          <p>Waiting for Spare Parts / ስፓር ፓርት ሲጠበቅ</p>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon info-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>{{ totalReceived }}</h3>
+          <p>Total Tasks / ጠቅላላ ተግባሮች</p>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon success-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>{{ totalMaintained }}</h3>
+          <p>Successfully Maintained / የተጠገኑ</p>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon danger-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>{{ totalDoOut }}</h3>
+          <p>Do Out / Unrepairable / ጉድለት</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Data Section -->
+    <div class="data-section">
+
+      <!-- Sub-Unit Backlog -->
+      <div class="data-card">
+        <h3>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:8px;">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Sub-Unit Backlog / የቡድን ሥራ ቀሪ
+        </h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Sub-Unit Queue / ቡድን</th>
+                <th>Active Tasks / ቀሪ ሥራ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tech of technicianWorkload">
+                <td><strong>{{ tech.name }}</strong></td>
+                <td>
+                  <span class="status-badge info">{{ tech.count }}</span>
+                </td>
+              </tr>
+              <tr *ngIf="technicianWorkload.length === 0">
+                <td colspan="2" class="no-data">No active tasks / ቀሪ ሥራ የለም</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Frequent Failures -->
+      <div class="data-card">
+        <h3>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:8px;">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          Frequent Failures / ተደጋጋሚ ጉዳቶች
+        </h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Serial Number / ተ.ቁ</th>
+                <th>Equipment Model / ሞዴል</th>
+                <th>Incidents / ጊዜ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fail of frequentFailures">
+                <td><strong>{{ fail.serial }}</strong></td>
+                <td>{{ fail.model }}</td>
+                <td>
+                  <span class="status-badge critical">{{ fail.count }}x</span>
+                </td>
+              </tr>
+              <tr *ngIf="frequentFailures.length === 0">
+                <td colspan="3" class="no-data">No items repaired more than once / ተደጋጋሚ ጉዳቶች የሉም</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Status Breakdown -->
+      <div class="data-card">
+        <h3>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:8px;">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+          Status Breakdown / ሁኔታ ዝርዝር
+        </h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Status / ሁኔታ</th>
+                <th>Count / ብዛት</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let st of statusBreakdown">
+                <td>
+                  <span class="status-badge" [ngClass]="{
+                    'status-warning': st.status === 'Waiting for Approval' || st.status === 'Waiting for Spare Part' || st.status === 'Approved - Waiting for Parts',
+                    'status-info': st.status === 'On Maintaining' || st.status === 'On Maintenance' || st.status === 'Spare Part Issued',
+                    'status-success': st.status === 'Maintenance Finished' || st.status === 'Client Received',
+                    'status-danger': st.status === 'Do Out' || st.status === 'Rejected',
+                    'status-secondary': !['Waiting for Approval', 'Waiting for Spare Part', 'Approved - Waiting for Parts', 'On Maintaining', 'On Maintenance', 'Spare Part Issued', 'Maintenance Finished', 'Client Received', 'Do Out', 'Rejected'].includes(st.status)
+                  }">
+                    <i class="bi" [ngClass]="{
+                      'bi-clock-history': st.status.includes('Waiting'),
+                      'bi-gear-wide-connected': st.status.includes('Mainten') || st.status.includes('Progress'),
+                      'bi-check-circle-fill': st.status.includes('Finished') || st.status.includes('Received'),
+                      'bi-exclamation-triangle-fill': st.status === 'Do Out' || st.status === 'Rejected'
+                    }"></i>
+                    {{ st.status }}
+                  </span>
+                </td>
+                <td><strong>{{ st.count }}</strong></td>
+              </tr>
+              <tr *ngIf="statusBreakdown.length === 0">
+                <td colspan="2" class="no-data">No data available</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

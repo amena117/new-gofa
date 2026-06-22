@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MaintenanceRequestService } from '../../services/maintenance-request.service';
 import { Router } from '@angular/router';
 
-// Declare Bootstrap to avoid TypeScript errors
 declare var bootstrap: any;
 
 @Component({
@@ -11,24 +10,24 @@ declare var bootstrap: any;
   styleUrls: ['./maintenance-request-register-list.component.css']
 })
 export class MaintenanceRequestRegisterListComponent implements OnInit {
-  /** ================= DATA & STATE ================= */
+
   maintenanceRequests: any[] = [];
   filteredRequests: any[] = [];
   paginatedRequests: any[] = [];
 
   isLoading = true;
   error: string | null = null;
-  searchSerialNo: string = '';
 
-  /** ================= MODALS ================= */
+  // Search & filter
+  searchTerm = '';
+  statusFilter = 'all';
+
+  // Edit modal
   editRequest: any = {};
 
-  /** ================= PAGINATION ================= */
+  // Pagination
   currentPage = 1;
-  itemsPerPage = 20;
-
-  /** ================= FILTER ================= */
-  statusFilter = 'pending'; // Only show "In Progress" by default
+  itemsPerPage = 15;
 
   constructor(
     private maintenanceRequestService: MaintenanceRequestService,
@@ -39,68 +38,71 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
     this.fetchMaintenanceRequests();
   }
 
-  /** ================= DATA FETCH ================= */
+  // ── Fetch ──────────────────────────────────────────────────────────
+
   fetchMaintenanceRequests(): void {
     this.isLoading = true;
     this.maintenanceRequestService.getMaintenanceRequests('').subscribe({
       next: (data: any[]) => {
-        console.log('Fetched maintenance requests:', data);
-
-        this.maintenanceRequests = data;
-
-        // Sort by latest date
-        this.maintenanceRequests.sort(
+        this.maintenanceRequests = data.sort(
           (a, b) => new Date(b.dateWorkOrderReceived).getTime() - new Date(a.dateWorkOrderReceived).getTime()
         );
-
-        this.filteredRequests = [...this.maintenanceRequests];
-        this.currentPage = 1;
-        this.updatePagination();
+        this.applyFilters();
         this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Error fetching maintenance requests:', err);
+      error: () => {
         this.error = 'Failed to load maintenance requests.';
         this.isLoading = false;
       }
     });
   }
 
+  // ── Filters ────────────────────────────────────────────────────────
 
-  /** ================= SEARCH ================= */
-  onSearchSerialNo(): void {
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  /** ================= FILTERING ================= */
   applyFilters(): void {
-    let filtered = [...this.maintenanceRequests];
+    let result = [...this.maintenanceRequests];
 
-    // Filter by search term across multiple fields
-    const term = this.searchSerialNo.trim().toLowerCase();
+    // Status filter — supports both exact status strings and grouped keys
+    if (this.statusFilter !== 'all') {
+      if (this.statusFilter === 'pending') {
+        result = result.filter(req => req.status === 'Pending');
+      } else if (this.statusFilter === 'inprogress') {
+        result = result.filter(req => this.isInProgress(req));
+      } else if (this.statusFilter === 'completed') {
+        result = result.filter(req => this.isCompleted(req));
+      } else {
+        // Exact status match from dropdown
+        result = result.filter(req => req.status === this.statusFilter);
+      }
+    }
+
+    // Search
+    const term = this.searchTerm.trim().toLowerCase();
     if (term) {
-      filtered = filtered.filter(req =>
-        (req.serialNoOfEquip?.toLowerCase().includes(term)) ||
-        (req.nomenclature?.toLowerCase().includes(term)) ||
-        (req.requestedBy?.toLowerCase().includes(term)) ||
-        (req.worksOrderNumber?.toString().includes(term))
+      result = result.filter(req =>
+        req.serialNoOfEquip?.toLowerCase().includes(term) ||
+        req.model?.toLowerCase().includes(term) ||
+        req.requestedBy?.toLowerCase().includes(term) ||
+        req.worksOrderNumber?.toString().includes(term) ||
+        req.equipmentTypeName?.toLowerCase().includes(term) ||
+        req.briefDescriptionOfWork?.toLowerCase().includes(term)
       );
     }
 
-    this.filteredRequests = filtered;
+    this.filteredRequests = result;
+    this.currentPage = 1;
     this.updatePagination();
   }
 
-  /** ================= PAGINATION ================= */
+  // ── Pagination ─────────────────────────────────────────────────────
+
   get totalPages(): number {
     return Math.ceil(this.filteredRequests.length / this.itemsPerPage);
   }
 
   updatePagination(): void {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedRequests = this.filteredRequests.slice(startIndex, endIndex);
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    this.paginatedRequests = this.filteredRequests.slice(start, start + this.itemsPerPage);
   }
 
   goToPage(page: number): void {
@@ -109,150 +111,110 @@ export class MaintenanceRequestRegisterListComponent implements OnInit {
     this.updatePagination();
   }
 
-  /** ================= VIEW DETAILS ================= */
+  // ── Navigation ─────────────────────────────────────────────────────
+
   viewDetails(request: any): void {
-    // Navigate to request details page using worksOrderNumber
     this.router.navigate(['/maintenance/request-details', request.worksOrderNumber]);
   }
 
-  /** ================= EDIT MODAL ================= */
-  openEditModal(request: any): void {
+  sendRequest(worksOrderNumber: number): void {
+    this.router.navigate(['maintenance/assign-maintenance'], { queryParams: { worksOrderNumber } });
+  }
+
+  changeDepartment(worksOrderNumber: number): void {
+    this.router.navigate(['maintenance/reassign-maintenance'], { queryParams: { worksOrderNumber } });
+  }
+
+  registerNew(): void {
+    this.router.navigate(['/maintenance/request-form']);
+  }
+
+  // ── Edit ───────────────────────────────────────────────────────────
+
+  openEditModal(request: any, event: MouseEvent): void {
+    event.stopPropagation();
     this.editRequest = { ...request };
     this.openModalById('editModal');
   }
 
   onFullEditSubmit(): void {
-    const worksOrderNumber = this.editRequest.worksOrderNumber;
-
     const dto = {
       serialNoOfEquip: this.editRequest.serialNoOfEquip,
       equipmentTypeId: this.editRequest.equipmentTypeId,
       model: this.editRequest.model,
-      requestedBy: this.editRequest.requestedBy,
       briefDescriptionOfWork: this.editRequest.briefDescriptionOfWork,
       dateWorkOrderReceived: this.editRequest.dateWorkOrderReceived,
       statusStage: this.editRequest.statusStage
     };
 
-    this.maintenanceRequestService.updateFullMaintenanceRequest(worksOrderNumber, dto)
-      .subscribe(
-        () => {
+    this.maintenanceRequestService.updateFullMaintenanceRequest(this.editRequest.worksOrderNumber, dto)
+      .subscribe({
+        next: () => {
           this.fetchMaintenanceRequests();
           this.closeModalById('editModal');
-          alert('Maintenance request updated successfully.');
         },
-        (error) => {
-          console.error('Full update failed:', error);
-          alert('Failed to update request.');
-        }
-      );
+        error: () => alert('Failed to update request.')
+      });
   }
 
-  /** ================= ACTIONS ================= */
-  sendRequest(worksOrderNumber: number): void {
-    this.router.navigate(['maintenance/assign-maintenance'], {
-      queryParams: { worksOrderNumber }
-    });
+  // ── Status helpers ─────────────────────────────────────────────────
+
+  isInProgress(req: any): boolean {
+    return ['In Progress', 'On Maintaining', 'On Maintenance', 'Quality Check',
+            'Waiting for Spare Part', 'Waiting for Approval', 'Spare Part Issued',
+            'Approved - Waiting for Parts', 'Waiting for Maintenance Leader Approval',
+            'Waiting for Ministore'].includes(req.status);
   }
 
-  deleteRequest(request: any): void {
-    if (request.status !== 'Pending') {
-      alert('You cannot delete this request because it has already been sent or processed.');
-      return;
-    }
-
-    if (confirm('Are you sure you want to delete this request?')) {
-      this.maintenanceRequestService.deleteMaintenanceRequest(request.worksOrderNumber).subscribe(
-        () => {
-          this.maintenanceRequests = this.maintenanceRequests.filter(
-            (req) => req.worksOrderNumber !== request.worksOrderNumber
-          );
-          this.applyFilters();
-          alert('Request deleted successfully.');
-        },
-        (error) => {
-          this.error = 'Failed to delete the request.';
-          console.error('Deletion error:', error);
-        }
-      );
-    }
+  isCompleted(req: any): boolean {
+    return req.status === 'Maintenance Finished' || req.status === 'Client Received';
   }
 
-  /** ================= STATUS HELPERS ================= */
-  getStatusClass(request: any): string {
-    if (request.repairFinishDate) return 'badge bg-success';
-    if (request.status === 'Maintenance Finished') return 'badge bg-success';
-    if (request.status === 'Client Received') return 'badge bg-success';
-    if (request.status === 'Quality Check') return 'badge bg-info text-dark';
-    if (request.status === 'On Maintaining') return 'badge bg-info text-dark';
-    if (request.status === 'In Progress') return 'badge bg-warning text-dark';
-    if (request.status === 'Waiting for Spare Part') return 'badge bg-warning text-dark';
-    if (request.status === 'Pending') return 'badge bg-secondary';
-    return 'badge bg-secondary';
+  getStatusClass(req: any): string {
+    const s = req.status;
+    if (s === 'Do Out' || s === 'Rejected') return 'status-danger';
+    if (this.isCompleted(req))              return 'status-success';
+    if (s === 'Quality Check' || s === 'Waiting for Spare Part' || s.includes('Needs Parts')) return 'status-warning';
+    if (s === 'On Maintaining' || s === 'On Maintenance' || s === 'Spare Part Issued' || s === 'In Progress') return 'status-info';
+    if (s === 'Waiting for Approval' || s.includes('Waiting')) return 'status-warning';
+    return 'status-secondary';
   }
 
-  getStatusText(request: any): string {
-    // If there's a status field, use it
-    if (request.status) {
-      return request.status;
-    }
-    // Fallback to checking repair dates
-    if (request.repairFinishDate) return 'Completed';
-    if (request.repairStartDate) return 'In Progress';
-    // Default status
-    return 'Pending';
+  getStatusText(req: any): string {
+    const map: Record<string, string> = {
+      'Pending':                                  'Not Sent',
+      'Waiting for Approval':                     'Waiting Approval',
+      'In Progress':                              'In Progress',
+      'On Maintaining':                           'On Maintenance',
+      'On Maintenance':                           'On Maintenance',
+      'Quality Check':                            'Quality Check',
+      'Waiting for Spare Part':                   'Needs Parts',
+      'Approved - Waiting for Parts':             'Needs Parts',
+      'Spare Part Issued':                        'Spare Part Issued',
+      'Waiting for Maintenance Leader Approval':  'Leader Approval',
+      'Waiting for Ministore':                    'Waiting Ministore',
+      'Maintenance Finished':                     'Finished',
+      'Client Received':                          'Delivered',
+    };
+    return map[req.status] ?? req.status ?? 'Not Sent';
   }
 
-  isSendRequestDisabled(status: string): boolean {
-    return status !== 'Pending';
+  // ── Stats ──────────────────────────────────────────────────────────
+
+  getTotalRequests():     number { return this.maintenanceRequests.length; }
+  getPendingRequests():   number { return this.maintenanceRequests.filter(r => r.status === 'Pending').length; }
+  getInProgressRequests():number { return this.maintenanceRequests.filter(r => this.isInProgress(r)).length; }
+  getCompletedRequests(): number { return this.maintenanceRequests.filter(r => this.isCompleted(r)).length; }
+
+  // ── Modal utils ────────────────────────────────────────────────────
+
+  openModalById(id: string): void {
+    const el = document.getElementById(id);
+    if (el) new bootstrap.Modal(el).show();
   }
 
-  isDeleteDisabled(status: string): boolean {
-    return status !== 'Pending';
-  }
-
-  /** ================= STATISTICS ================= */
-  getTotalRequests(): number {
-    return this.maintenanceRequests.length;
-  }
-
-  getPendingRequests(): number {
-    return this.maintenanceRequests.filter(req => req.status === 'Pending').length;
-  }
-
-  getInProgressRequests(): number {
-    return this.maintenanceRequests.filter(req => 
-      req.status === 'In Progress' || 
-      req.status === 'On Maintaining' || 
-      req.status === 'Quality Check' ||
-      req.status === 'Waiting for Spare Part'
-    ).length;
-  }
-
-  getCompletedRequests(): number {
-    return this.maintenanceRequests.filter(req => 
-      req.status === 'Maintenance Finished' || 
-      req.status === 'Client Received' ||
-      req.repairFinishDate
-    ).length;
-  }
-
-  /** ================= UTILITIES ================= */
-  openModalById(modalId: string): void {
-    const modalEl = document.getElementById(modalId);
-    if (modalEl) {
-      const modal = new bootstrap.Modal(modalEl);
-      modal.show();
-    } else {
-      console.error(`Modal with ID "${modalId}" not found.`);
-    }
-  }
-
-  closeModalById(modalId: string): void {
-    const modalEl = document.getElementById(modalId);
-    if (modalEl) {
-      const modal = bootstrap.Modal.getInstance(modalEl);
-      modal?.hide();
-    }
+  closeModalById(id: string): void {
+    const el = document.getElementById(id);
+    if (el) bootstrap.Modal.getInstance(el)?.hide();
   }
 }

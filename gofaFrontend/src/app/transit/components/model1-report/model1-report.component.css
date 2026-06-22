@@ -1075,3 +1075,24 @@
 .sub-acc-table tbody tr:hover {
   background: #f8fafc;
 }
+
+/* Accessory-only indicators */
+.accessory-only-card {
+  border-left: 3px solid #f59e0b !important;
+  background-color: #fffbeb !important;
+}
+
+.accessory-only-row {
+  background-color: #fffbeb !important;
+  border-left: 3px solid #f59e0b;
+}
+
+.accessory-only-badge {
+  background-color: #f59e0b;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  vertical-align: middle;
+}

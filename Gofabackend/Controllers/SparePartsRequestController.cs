@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -26,10 +26,75 @@ namespace Gofabackend.Controllers
 
         // GET: api/SparePartsRequest (with pagination
 
-        [HttpGet("all")] public async Task<ActionResult<IEnumerable<SparePartsRequest>>> GetAllSparePartsRequests() 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllSparePartsRequests() 
         { 
             var spareParts = await _context.SparePartsRequests.ToListAsync();
-            return Ok(spareParts);
+
+            var worksOrders = await _context.MaintenanceRequestRegisters
+                .Select(m => new { m.WorksOrderNumber, m.DateWorkOrderReceived, m.Model, m.RequestedTo, m.TechnicianRole })
+                .ToListAsync();
+
+            var worksOrderDict = worksOrders
+                .GroupBy(w => w.WorksOrderNumber)
+                .ToDictionary(g => g.Key, g => new 
+                { 
+                    g.First().DateWorkOrderReceived, 
+                    g.First().Model,
+                    g.First().RequestedTo,
+                    g.First().TechnicianRole
+                });
+
+            // Map RequestedTo (department code) to human-readable label
+            static string DepartmentLabel(string? requestedTo) => (requestedTo ?? "").ToUpper().Trim() switch
+            {
+                "POWER"              => "Power",
+                "RADIO_MAINTENANCE"  => "Radio",
+                "OFFICE_MACHINE"     => "Office Machine",
+                "VHF_RADIO"          => "Radio",
+                "HF_RADIO"           => "Radio",
+                "IT_MAINTENANCE"     => "IT / Computer",
+                "COMPUTER_MAINTENANCE" => "IT / Computer",
+                "ELECTRICAL_MAINTENANCE" => "Electrical",
+                "MECHANICAL_MAINTENANCE" => "Mechanical",
+                "WELDING_MAINTENANCE" => "Welding",
+                "" or null => "Unknown",
+                var other  => other
+            };
+
+            var result = spareParts.Select(s =>
+            {
+                var wo = worksOrderDict.TryGetValue(s.WorksOrderNumber, out var found) ? found : null;
+                var dept = DepartmentLabel(wo?.RequestedTo);
+
+                return new
+                {
+                    s.Id,
+                    s.QuantityAsked,
+                    s.RequestedBy,
+                    s.Reason,
+                    s.StockNumber,
+                    s.RequestType,
+                    s.QuantityApproved,
+                    s.ApprovedBy,
+                    s.ApprovalDate,
+                    s.Remark,
+                    s.Status,
+                    s.CurrentStage,
+                    s.WorksOrderNumber,
+                    s.SerialNumber,
+                    s.PartCost,
+                    s.LabourCost,
+                    s.TotalCost,
+                    s.IsUrgent,
+                    Model       = wo?.Model,
+                    RequestDate = wo?.DateWorkOrderReceived,
+                    RequestedTo = wo?.RequestedTo,
+                    Department  = dept
+                };
+            });
+
+            return Ok(result);
         }
 
 
@@ -221,10 +286,10 @@ public async Task<IActionResult> UpdateByWorksOrder(
                     continue;
                 }
 
-                // Ensure status is set to Pending if not already set
+                // Ensure status is set to Pending Team Leader Approval if not already set
                 if (string.IsNullOrEmpty(request.Status))
                 {
-                    request.Status = "Pending";
+                    request.Status = "Pending Team Leader Approval";
                 }
 
                 // Ensure CurrentStage is set to MAINTENANCE_LEADER for proper routing
@@ -261,9 +326,8 @@ public async Task<IActionResult> UpdateByWorksOrder(
 
 
         // PUT: api/SparePartsRequest/5
-        // PUT: api/SparePartsRequest/5
         [HttpPut("{id}")]
-        public IActionResult UpdateSparePartsRequest(int id, [FromBody] UpdateSparePartsRequestDto request)
+        public async Task<IActionResult> UpdateSparePartsRequest(int id, [FromBody] UpdateSparePartsRequestDto request)
         {
             try
             {
@@ -321,11 +385,15 @@ public async Task<IActionResult> UpdateByWorksOrder(
                 sparePartsRequest.Remark = request.Remark;
                 sparePartsRequest.SerialNumber = request.SerialNumber;
                 sparePartsRequest.IsUrgent = true;
+                sparePartsRequest.Status = "Issued to Technician"; // ✅ Update status to Issued to Technician
 
                 // Now, also update the RequestedBy to ApprovedBy (user role)
                 sparePartsRequest.RequestedBy = request.ApprovedBy;  // Set RequestedBy to the role of the user
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
+
+                // ✅ Check and update Maintenance Request Status
+                await UpdateMaintenanceRequestStatus(sparePartsRequest.WorksOrderNumber);
 
                 return Ok(new { message = "Response submitted successfully." });
             }
@@ -336,10 +404,46 @@ public async Task<IActionResult> UpdateByWorksOrder(
             }
         }
 
-        [HttpPut("approve/{id}")]
-        public IActionResult ApproveRequest(int id, [FromBody] SparePartsRequestDto approvalData)
+        [HttpPut("reject/{id}")]
+        public async Task<IActionResult> RejectSparePartsRequest(int id, [FromBody] RejectSparePartDto dto)
         {
-            var request = _context.SparePartsRequests.FirstOrDefault(r => r.Id == id);
+            try
+            {
+                var sparePartsRequest = await _context.SparePartsRequests.FindAsync(id);
+                if (sparePartsRequest == null)
+                {
+                    return NotFound("Spare parts request not found.");
+                }
+
+                sparePartsRequest.Status = "Rejected";
+                sparePartsRequest.Remark = dto.Reason;
+                sparePartsRequest.CurrentStage = "COMPLETED"; // Removed from Ministore queue
+                sparePartsRequest.ApprovalDate = DateTime.UtcNow;
+
+                // Optionally mark who rejected it if provided
+                if (!string.IsNullOrEmpty(dto.RejectedBy))
+                {
+                    sparePartsRequest.ApprovedBy = dto.RejectedBy;
+                }
+
+                await _context.SaveChangesAsync();
+
+                // ✅ Check and update Maintenance Request Status
+                await UpdateMaintenanceRequestStatus(sparePartsRequest.WorksOrderNumber);
+
+                return Ok(new { message = "Spare parts request rejected successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error rejecting spare parts request.");
+                return StatusCode(500, "An error occurred while processing the request.");
+            }
+        }
+
+        [HttpPut("approve/{id}")]
+        public async Task<IActionResult> ApproveRequest(int id, [FromBody] SparePartsRequestDto approvalData)
+        {
+            var request = await _context.SparePartsRequests.FirstOrDefaultAsync(r => r.Id == id);
             if (request == null)
             {
                 return NotFound(new { message = "Request not found" });
@@ -355,15 +459,30 @@ public async Task<IActionResult> UpdateByWorksOrder(
                 request.ApprovedBy = approvalData.ApprovedBy;
                 request.QuantityApproved = approvalData.QuantityApproved;
                 request.ApprovalDate = DateTime.UtcNow;
-
                 if (!string.IsNullOrEmpty(approvalData.Remark))
                 {
                     request.Remark = approvalData.Remark;
                 }
 
-                _context.SaveChanges();
+                // Determine status based on current stage
+                if (!string.IsNullOrEmpty(request.CurrentStage) && request.CurrentStage.EndsWith("_LEADER"))
+                {
+                    // Team leader approved → route to MINISTORE for spare part issuance
+                    request.Status = "Approved by Team Leader";
+                    request.CurrentStage = "MINISTORE";
+                }
+                else
+                {
+                    // Default behaviour (e.g., Ministore issuing to technician)
+                    request.Status = "Issued to Technician";
+                }
 
-                return Ok(new { message = "Request approved successfully" }); // <<< THIS is correct
+                await _context.SaveChangesAsync();
+
+                // ✅ Check and update Maintenance Request Status using helper
+                await UpdateMaintenanceRequestStatus(request.WorksOrderNumber);
+
+                return Ok(new { message = "Request approval processed successfully" });
             }
             catch (Exception ex)
             {
@@ -453,7 +572,7 @@ public async Task<IActionResult> UpdateByWorksOrder(
                 sparePartsRequest.RequestedBy = request.RequestedBy;
 
                 // ✅ Optionally validate CurrentStage
-                var validStages = new[] { "TEAM_LEADER", "MAINTENANCE_LEADER", "MINISTORE", "COMPLETED" };
+                var validStages = new[] { "TEAM_LEADER", "PTEAM_LEADER", "OTEAM_LEADER", "VTEAM_LEADER", "HTEAM_LEADER", "RTEAM_LEADER", "MAINTENANCE_LEADER", "MINISTORE", "COMPLETED" };
                 if (!string.IsNullOrEmpty(request.CurrentStage))
                 {
                     if (!validStages.Contains(request.CurrentStage))
@@ -464,9 +583,14 @@ public async Task<IActionResult> UpdateByWorksOrder(
                     sparePartsRequest.CurrentStage = request.CurrentStage;
                 }
 
+                if (!string.IsNullOrEmpty(request.Status))
+                {
+                    sparePartsRequest.Status = request.Status;
+                }
+
                 _context.SaveChanges();
 
-                return Ok(new { message = "RequestedBy and CurrentStage updated successfully." });
+                return Ok(new { message = "RequestedBy, CurrentStage and Status updated successfully." });
             }
             catch (Exception ex)
             {
@@ -498,6 +622,60 @@ public async Task<IActionResult> UpdateByWorksOrder(
         private bool SparePartsRequestExists(int id)
         {
             return _context.SparePartsRequests.Any(e => e.Id == id);
+        }
+
+        private async Task UpdateMaintenanceRequestStatus(int worksOrderNumber)
+        {
+            var maintenanceRequest = await _context.MaintenanceRequestRegisters
+                .FirstOrDefaultAsync(m => m.WorksOrderNumber == worksOrderNumber);
+
+            if (maintenanceRequest == null) return;
+
+            var allRequests = await _context.SparePartsRequests
+                .Where(s => s.WorksOrderNumber == worksOrderNumber)
+                .ToListAsync();
+
+            if (!allRequests.Any()) return;
+
+            // Check if any are still pending in the pipeline
+            var pendingStatuses = new[] { 
+                "Pending Team Leader Approval", 
+                "Approved by Team Leader", 
+                "Waiting for Maintenance Leader Approval", 
+                "Waiting for Ministore" 
+            };
+
+            if (allRequests.Any(r => pendingStatuses.Contains(r.Status) || string.IsNullOrEmpty(r.Status)))
+            {
+                // If at least one is approved by team leader, keep the specific status
+                if (allRequests.Any(r => r.Status == "Approved by Team Leader"))
+                {
+                    maintenanceRequest.Status = "Approved - Waiting for Parts";
+                }
+                else 
+                {
+                    maintenanceRequest.Status = "Waiting for Spare Part";
+                }
+            }
+            // If none are pending, check if any were issued
+            else if (allRequests.Any(r => r.Status == "Issued to Technician"))
+            {
+                maintenanceRequest.Status = "Spare Part Issued";
+            }
+            // If all are processed and none were issued (meaning they were all rejected)
+            else if (allRequests.Any(r => r.Status == "Rejected"))
+            {
+                maintenanceRequest.Status = "Spare Part Rejected";
+            }
+            // Otherwise default to On Maintenance
+            else
+            {
+                maintenanceRequest.Status = "On Maintenance";
+            }
+
+            maintenanceRequest.UpdatedAt = DateTime.UtcNow;
+            _context.MaintenanceRequestRegisters.Update(maintenanceRequest);
+            await _context.SaveChangesAsync();
         }
     }
 
@@ -536,6 +714,12 @@ public async Task<IActionResult> UpdateByWorksOrder(
     public class RouteToTeamLeaderDto
     {
         public string ApprovedBy { get; set; } = string.Empty;
+    }
+
+    public class RejectSparePartDto
+    {
+        public string Reason { get; set; } = string.Empty;
+        public string? RejectedBy { get; set; }
     }
 
 }

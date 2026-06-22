@@ -1,6 +1,6 @@
 <div class="letter-form">
     <h2>Register a Letter</h2>
-    <form (ngSubmit)="onSubmit()" #etterForm="ngForm">
+    <form (ngSubmit)="onSubmit(etterForm)" #etterForm="ngForm">
   
       <label for="from">From:</label>
       <input

@@ -31,6 +31,15 @@
   <!-- Item Details (Read-only View) -->
   <div *ngIf="item && !isLoading" class="details-container">
     
+    <!-- Accessory-Only Banner -->
+    <div *ngIf="item.isAccessoryOnly" class="accessory-only-banner">
+      <span class="accessory-only-badge">📎 Accessory Only / አባሪ ብቻ</span>
+      <div class="accessory-only-parent">
+        <label>Parent Item / ዋና እቃ:</label>
+        <span>{{ item.parentItemDescription || 'Unknown / ያልታወቀ' }}</span>
+      </div>
+    </div>
+
     <!-- Summary Cards -->
     <div class="summary-cards">
       <div class="summary-card">
@@ -126,11 +135,16 @@
           <label class="info-label">Currency / ምንዛሬ:</label>
           <span class="info-value">{{ item.currency || 'ETB' }}</span>
         </div>
+        <!-- Accessory-only: show store type here -->
+        <div class="info-item" *ngIf="item.isAccessoryOnly">
+          <label class="info-label">Store Type / ግምጃ ቤት:</label>
+          <span class="info-value">{{ item.storeType || 'Unknown / ያልታወቀ' }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- Transaction Details -->
-    <div class="form-section">
+    <!-- Transaction Details — hidden for accessory-only items -->
+    <div class="form-section" *ngIf="!item.isAccessoryOnly">
       <h2 class="section-title">Transaction Details / የግብይት መረጃ</h2>
       <div class="info-grid">
         <div class="info-item">
@@ -172,6 +186,45 @@
         <div class="info-item">
           <label class="info-label">Model19 Ref. / ሞዴል 19 ቁጥር:</label>
           <span class="info-value">{{ item.model19Ref || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Status / እቃው ያለበት ሁኔታ:</label>
+          <span class="info-value">{{ item.status || 'Unknown / ያልታወቀ' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accessory-Only: quantity/price summary -->
+    <div class="form-section" *ngIf="item.isAccessoryOnly">
+      <h2 class="section-title">Item Details / የእቃ ዝርዝር</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label">Ordered / የታዘዘ:</label>
+          <span class="info-value">{{ item.ordered || '0' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Received / የገባ:</label>
+          <span class="info-value">{{ item.received || '0' }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Unit Price / ያንዱ ዋጋ:</label>
+          <span class="info-value">{{ formatPrice(item.unitOfPrice, item.currency) }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Total Price / ጠቅላላ ዋጋ:</label>
+          <span class="info-value">{{ formatPrice(item.amount, item.currency) }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">VAT / ቫት:</label>
+          <span class="info-value">{{ formatPrice(item.vat, item.currency) }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Grand Total / ጠቅላላ ድምር:</label>
+          <span class="info-value">{{ formatPrice(item.grandTotal, item.currency) }}</span>
+        </div>
+        <div class="info-item">
+          <label class="info-label">Remark / መግለጫ:</label>
+          <span class="info-value">{{ item.remark || 'None / የለም' }}</span>
         </div>
         <div class="info-item">
           <label class="info-label">Status / እቃው ያለበት ሁኔታ:</label>
@@ -289,23 +342,32 @@
       <h2 class="section-title">Approval & Signatures / ማጽደቅ እና ፊርማ</h2>
       <div class="signature-container">
         <div class="signature-card">
-          <div class="signature-header">Registered By / የመዘገበው</div>
+          <div class="signature-header">Prepared By / ያዘጋጀው</div>
           <div class="signature-details">
             <div class="signature-info">
-              <strong>Name / ስም:</strong> {{ item.registeredBy || 'Unknown / ያልታወቀ' }}
+              <strong>Name / ስም:</strong> {{ item?.preparedBy || 'Unknown / ያልታወቀ' }}
+            </div>
+            <div class="signature-info">
+              <strong>Rank / ማዕረግ:</strong> {{ item?.preparedByRank || '-' }}
+            </div>
+            <div class="signature-info">
+              <strong>Title / ሃላፊነት:</strong> {{ item?.pTitle || 'Unknown / ያልታወቀ' }}
             </div>
             <div class="signature-box">Signature / ፊርማ</div>
           </div>
         </div>
-        
+
         <div class="signature-card">
           <div class="signature-header">Checked By / የፈተሸው</div>
           <div class="signature-details">
             <div class="signature-info">
-              <strong>Name / ስም:</strong> {{ item.checkedByName || 'Unknown / ያልታወቀ' }}
+              <strong>Name / ስም:</strong> {{ item?.checkedByName || 'Unknown / ያልታወቀ' }}
             </div>
             <div class="signature-info">
-              <strong>Title / ማዕረግ:</strong> {{ item.cTitle || 'Unknown / ያልታወቀ' }}
+              <strong>Rank / ማዕረግ:</strong> {{ item?.checkedByRank || '-' }}
+            </div>
+            <div class="signature-info">
+              <strong>Title / ሃላፊነት:</strong> {{ item?.cTitle || 'Unknown / ያልታወቀ' }}
             </div>
             <div class="signature-box">Signature / ፊርማ</div>
           </div>
@@ -315,7 +377,13 @@
           <div class="signature-header">Received By / የተረካቢው</div>
           <div class="signature-details">
             <div class="signature-info">
-              <strong>Name / ስም:</strong> {{ item.recivedByName || 'Unknown / ያልታወቀ' }}
+              <strong>Name / ስም:</strong> {{ item?.recivedByName || 'Unknown / ያልታወቀ' }}
+            </div>
+            <div class="signature-info">
+              <strong>Rank / ማዕረግ:</strong> {{ item?.recivedByRank || '-' }}
+            </div>
+            <div class="signature-info">
+              <strong>Title / ሃላፊነት:</strong> {{ item?.rTitle || 'Unknown / ያልታወቀ' }}
             </div>
             <div class="signature-box">Signature / ፊርማ</div>
           </div>
@@ -325,10 +393,13 @@
           <div class="signature-header">Authorized By / ያጸደቀው</div>
           <div class="signature-details">
             <div class="signature-info">
-              <strong>Name / ስም:</strong> {{ item.authorizedByName || 'Unknown / ያልታወቀ' }}
+              <strong>Name / ስም:</strong> {{ item?.authorizedByName || 'Unknown / ያልታወቀ' }}
             </div>
             <div class="signature-info">
-              <strong>Title / ማዕረግ:</strong> {{ item.aTitle || 'Unknown / ያልታወቀ' }}
+              <strong>Rank / ማዕረግ:</strong> {{ item?.authorizedByRank || '-' }}
+            </div>
+            <div class="signature-info">
+              <strong>Title / ሃላፊነት:</strong> {{ item?.aTitle || 'Unknown / ያልታወቀ' }}
             </div>
             <div class="signature-box">Signature / ፊርማ</div>
           </div>

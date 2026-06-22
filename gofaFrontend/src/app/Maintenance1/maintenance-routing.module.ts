@@ -38,6 +38,8 @@ import { DoOutComponent } from './PPC/do-out/do-out.component';
 import { LetterComponent } from './PPC/letter/letter.component';
 import { MaintainFormComponent } from './Power/maintain-form/maintain-form.component';
 import { RejectRequestComponent } from './Ministore/reject-request/reject-request.component';
+import { MaintainedListComponent } from './Power/maintained-list/maintained-list.component';
+import { TeamLeaderReportComponent } from './Power/team-leader-report/team-leader-report.component';
 
 
 const routes: Routes = [
@@ -80,7 +82,7 @@ const routes: Routes = [
       { path: 'receive-spare-form-12', component: ReceiveSpareFormComponent},
       { path: 'maintenance-finished', component: MaintenanceRequestsComponent },
       { path: 'update-delivery/:worksOrderNumber', component: DeliverForClientsFormComponent },
-      { path: 'MRRListAll', component: MaintenanceRequestRegisterAlllistComponent},
+      { path: 'MRRListAll', redirectTo: 'power-maintReqList', pathMatch: 'full' },
       { path: 'Give-maintainedEqupment', component: MaintenanceFinishedForClientComponent},
       { path: "view-client-data", component: MaintenanceRequestViewComponent},
       { path: "generate-report", component: MaintenanceReportComponent},
@@ -91,8 +93,10 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent},
       { path: 'Add_Letter', component: EtterRegistrationComponent},
       { path: 'letter_fetch', component: LetterComponent },
-      { path: 'maintain/:worksOrderNumber', component: MaintainFormComponent }, 
+      { path: 'maintain/:worksOrderNumber', component: MaintainFormComponent },
       { path: 'reject-request', component: RejectRequestComponent },
+      { path: 'maintained-list', component: MaintainedListComponent },
+      { path: 'team-leader-report', component: TeamLeaderReportComponent },
       // Default Route (Redirect to Dashboard)
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ],

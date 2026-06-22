@@ -1,28 +1,63 @@
-<div class="letter-form">
-    <h3>Register a Letter</h3>
-    <form (ngSubmit)="onSubmit()" #etterForm="ngForm">
-  
-      <label for="from">From:</label>
-      <input
-        type="text"
-        id="from"
-        name="from"
-        [(ngModel)]="etter.from"
-        required
-      />
-  
-      <label for="recommendBy">Reason:</label>
-      <input
-        type="text"
-        id="recommendBy"
-        name="recommendBy"
-        [(ngModel)]="etter.recommendBy"
-        required
-      />
-  
-      <button type="submit" [disabled]="!etterForm.form.valid">Submit</button>
+<div class="page-container">
+  <div class="form-card">
+    <div class="card-header">
+      <p class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</p>
+      <h2 class="form-title"><i class="bi bi-envelope-plus"></i> Register a Letter / ደብዳቤ ይመዝግቡ</h2>
+    </div>
+
+    <form (ngSubmit)="onSubmit(etterForm)" #etterForm="ngForm" class="modern-form">
+      <div class="form-group">
+        <label for="from">From / ከማን:</label>
+        <div class="input-with-icon">
+          <i class="bi bi-person-badge"></i>
+          <input
+            type="text"
+            id="from"
+            name="from"
+            placeholder="Enter sender's name / የላኪውን ስም ያስገቡ..."
+            [(ngModel)]="etter.from"
+            required
+            #fromInput="ngModel"
+          />
+        </div>
+        <div class="error-msg" *ngIf="fromInput.invalid && fromInput.touched">
+          Sender's name is required / የላኪው ስም ያስፈልጋል።
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="recommendBy">Reason / ምክንያት:</label>
+        <div class="input-with-icon">
+          <i class="bi bi-chat-left-text"></i>
+          <textarea
+            id="recommendBy"
+            name="recommendBy"
+            placeholder="Enter the reason for the letter / የደብዳቤውን ምክንያት ያስገቡ..."
+            [(ngModel)]="etter.recommendBy"
+            required
+            #reasonInput="ngModel"
+            rows="4"
+          ></textarea>
+        </div>
+        <div class="error-msg" *ngIf="reasonInput.invalid && reasonInput.touched">
+          Reason is required / የደብዳቤው ምክንያት ያስፈልጋል።
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="!etterForm.form.valid || isSubmitting">
+        <span *ngIf="!isSubmitting">
+          <i class="bi bi-check2-circle"></i> Register Letter / ደብዳቤውን መዝግብ
+        </span>
+        <span *ngIf="isSubmitting" class="loader-container">
+          <span class="btn-loader"></span> Processing...
+        </span>
+      </button>
     </form>
-  
-    <p *ngIf="successMessage" class="success">{{ successMessage }}</p>
+
+    <div *ngIf="successMessage" class="alert-success">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ successMessage }}</span>
+    </div>
   </div>
+</div>
   

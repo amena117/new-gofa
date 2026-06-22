@@ -366,3 +366,27 @@
   font-style: italic;
   font-size: 13px;
 }
+
+/* Accessory-only row */
+.accessory-only-row {
+  background-color: #fffbeb !important;
+  border-left: 3px solid #f59e0b;
+}
+
+.accessory-only-badge {
+  display: inline-block;
+  background-color: #f59e0b;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.parent-item-hint {
+  font-size: 0.78rem;
+  color: #92400e;
+  margin-top: 2px;
+}

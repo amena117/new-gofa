@@ -291,6 +291,12 @@
               
               <!-- Serial number input -->
               <input class="table-input serial-input" formControlName="serialNumber" placeholder="Serial {{ i + 1 }}" attr.aria-describedby="serialNumber{{i}}-error" />
+              
+              <!-- Real-time warning -->
+              <div class="serial-warning" *ngIf="serialWarnings[i]">
+                <i class="icon-warning"></i> {{ serialWarnings[i] }}
+              </div>
+
               <button class="action-btn secondary small" (click)="removeSerialNumber(i)" *ngIf="serialNumbers.length > 0 && itemForm.get('role')?.value === 'SPAREPART'" attr.aria-label="Remove serial number {{i + 1}}">
                 Remove / አጥፋ
               </button>
@@ -345,7 +351,7 @@
                    (input)="accessory.patchValue({name: '', model: '', unitPrice: 0, currency: 'ETB'})" />
             <mat-autocomplete #autoAccessory="matAutocomplete" [displayWith]="displayAccessory" (optionSelected)="selectExistingAccessory($event.option.value, i)">
               <mat-option *ngFor="let existingAcc of filteredAccessories[i] | async" [value]="existingAcc">
-                {{ existingAcc.name }} - {{ existingAcc.model }}
+                {{ existingAcc?.name || 'N/A' }} - {{ existingAcc?.model || 'N/A' }}
               </mat-option>
             </mat-autocomplete>
             <small class="form-hint">Or enter new accessory details below / ወይም አዲስ ተያያዥ እቃ ዝርዝር ከታች ያስገቡ</small>
@@ -442,6 +448,12 @@
                        [class.error]="serial.invalid && serial.touched" />
                 <i class="serial-icon icon-tag"></i>
               </div>
+              
+              <!-- Real-time warning -->
+              <div class="serial-warning small" *ngIf="accessorySerialWarnings[i] && accessorySerialWarnings[i][j]">
+                <i class="icon-warning"></i> {{ accessorySerialWarnings[i][j] }}
+              </div>
+
               <div *ngIf="serial.invalid && serial.touched" [id]="'accessorySerial' + i + j + '-error'" class="error-message small">
                 <i class="icon-warning"></i> Required / ግዴታ
               </div>
@@ -743,6 +755,12 @@
                   
                   <!-- Serial number input -->
                   <input class="table-input serial-input" formControlName="serialNumber" placeholder="Serial {{ j + 1 }}" [attr.aria-describedby]="'bulkSerialNumber' + i + j + '-error'" />
+                  
+                  <!-- Real-time warning (Bulk) -->
+                  <div class="serial-warning" *ngIf="bulkSerialWarnings[i] && bulkSerialWarnings[i][j]">
+                    <i class="icon-warning"></i> {{ bulkSerialWarnings[i][j] }}
+                  </div>
+
                   <button class="action-btn secondary small" (click)="removeSerialNumberFromItem(i, j)" *ngIf="getSerialNumbersForItem(i).length > 0 && itemsFormArray.at(i).get('role')?.value === 'SPAREPART'" [attr.aria-label]="'Remove serial number ' + (j + 1) + ' from item ' + (i + 1)">
                     Remove / አጥፋ
                   </button>

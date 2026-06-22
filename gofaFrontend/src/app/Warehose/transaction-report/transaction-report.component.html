@@ -171,8 +171,8 @@
               <line x1="16" y1="17" x2="8" y2="17"></line>
             </svg>
             <span class="voucher-label" *ngIf="group.hasVoucher">Voucher:</span>
-            <span class="voucher-label" *ngIf="!group.hasVoucher">Individual Receipt:</span>
-            <strong>{{ group.hasVoucher ? group.voucherNumber : group.items[0].description }}</strong>
+            <span class="voucher-label" *ngIf="!group.hasVoucher">No Voucher / ቫውቸር የለም</span>
+            <strong>{{ group.hasVoucher ? group.voucherNumber : '' }}</strong>
           </div>
           <div class="voucher-meta">
             <span class="voucher-date">

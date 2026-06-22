@@ -38,7 +38,7 @@ namespace Gofabackend.Controllers
                                         i.Model.ToLower().Contains(search));
             }
             
-            // ✅ OPTIMIZED: Use projection instead of includes
+            // âœ… OPTIMIZED: Use projection instead of includes
             var items = await query
                 .Select(i => new ItemListingDto
                 {
@@ -144,15 +144,11 @@ namespace Gofabackend.Controllers
         {
             try
             {
+                // ✅ OPTIMIZED: Start with base query - filter in database, not in memory
                 IQueryable<TransactionEntry> query = _context.TransactionEntries
-                    .Include(t => t.Item)
-                        .ThenInclude(i => i.Accessories)
-                            .ThenInclude(a => a.SerialNumbers)
-                    .Include(t => t.Item)
-                        .ThenInclude(i => i.Accessories)
-                            .ThenInclude(a => a.SubAccessories)
                     .Where(t => t.Action == "receive");
 
+                // Apply role filter
                 if (roles != null && roles.Any())
                 {
                     var allowedRoles = new HashSet<string>(new[] { "VHF", "HF", "ELECTRONICS", "SPAREPART", "SUPPLY_AND_DISTRIBUTION_TEAMLEADER" }, StringComparer.OrdinalIgnoreCase);
@@ -165,14 +161,18 @@ namespace Gofabackend.Controllers
                             message = $"Invalid roles: {string.Join(", ", invalidRoles)}. Allowed roles are: VHF, HF, ELECTRONICS, SPAREPART, SUPPLY_AND_DISTRIBUTION_TEAMLEADER."
                         });
                     }
-                    query = query.Where(t => roles.Select(r => r.ToUpper()).Contains(t.Item.Role.ToUpper()));
+                    var upperRoles = roles.Select(r => r.ToUpper()).ToList();
+                    query = query.Where(t => upperRoles.Contains(t.Item.Role.ToUpper()));
                 }
 
+                // Apply category filter
                 if (categories != null && categories.Any())
                 {
-                    query = query.Where(t => categories.Select(c => c.ToUpper()).Contains(t.Item.Category.ToUpper()));
+                    var upperCategories = categories.Select(c => c.ToUpper()).ToList();
+                    query = query.Where(t => upperCategories.Contains(t.Item.Category.ToUpper()));
                 }
 
+                // Apply search filter
                 if (!string.IsNullOrEmpty(search))
                 {
                     var searchLower = search.ToLower();
@@ -186,47 +186,7 @@ namespace Gofabackend.Controllers
                     );
                 }
 
-                int totalCount = await query.CountAsync();
-
-                // Load records with accessories
-                var allRecords = await query.ToListAsync();
-                
-                var receiveHistoryDtos = allRecords.Select(t => new ReceiveHistoryDto
-                {
-                    TransactionId = t.Id,
-                    Category = t.Item.Category,
-                    Description = t.Item.Description,
-                    Model = t.Item.Model,
-                    Quantity = t.Quantity,
-                    VoucherNumber = t.VoucherNumber,
-                    ReceivedFrom = t.Item.ReceivedFrom,
-                    RegisteredBy = t.Item.RegisteredBy,
-                    Date = t.Date,
-                    Source = t.Item.Source,
-                    UnitPrice = t.UnitPrice,
-                    Currency = t.Currency,
-                    // Include accessories that were added with this item
-                    // Note: This shows current accessories, not historical snapshot
-                    Accessories = t.Item.Accessories.Select(acc => new ReceivedAccessoryDto
-                    {
-                        Name = acc.Name,
-                        Model = acc.Model,
-                        Quantity = acc.Quantity,
-                        UnitPrice = acc.UnitPrice ?? 0m,
-                        Currency = acc.Currency ?? "ETB",
-                        SerialNumbers = acc.SerialNumbers.Select(s => s.SerialNumber).ToList(),
-                        SubAccessories = acc.SubAccessories.Select(subAcc => new ReceivedSubAccessoryDto
-                        {
-                            Name = subAcc.Name,
-                            Quantity = subAcc.Quantity,
-                            UnitPrice = subAcc.UnitPrice,
-                            Currency = subAcc.Currency
-                        }).ToList()
-                    }).ToList()
-                }).ToList();
-
-                var filteredRecords = receiveHistoryDtos.AsEnumerable();
-
+                // ✅ OPTIMIZED: Apply date filter IN THE DATABASE using GregorianDate
                 if (!string.IsNullOrEmpty(period))
                 {
                     DateTime now = DateTime.UtcNow.AddHours(3);
@@ -258,28 +218,93 @@ namespace Gofabackend.Controllers
                                 message = "Invalid period. Allowed values: 1week, 1month, 3months, 6months, 9months, 1year."
                             });
                     }
-                    filteredRecords = filteredRecords
-                        .Where(r => EthiopianCalendarConverter.TryParseEthiopianDate(r.Date, out DateTime gregorianDate)
-                                    && gregorianDate >= lowerBound
-                                    && gregorianDate <= now);
+                    // Filter by GregorianDate in the database
+                    query = query.Where(t => t.GregorianDate >= lowerBound && t.GregorianDate <= now);
                 }
 
-                filteredRecords = filteredRecords
-                    .OrderByDescending(r => EthiopianCalendarConverter.TryParseEthiopianDate(r.Date, out DateTime gd) ? gd : DateTime.MinValue)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
+                // Get total count BEFORE pagination
+                int totalCount = await query.CountAsync();
 
-                Log.Information("Filtered ReceiveHistory: Search='{Search}', Period='{Period}', Roles={Roles}, Categories={Categories}, Page={Page}, PageSize={PageSize}, Count={Count}, Total={Total}",
-                    search ?? "(none)", period, roles?.Length ?? 0, categories?.Length ?? 0, page, pageSize, filteredRecords.Count(), totalCount);
+                // ✅ OPTIMIZED: Calculate totals efficiently in database before pagination
+                var totalsByCurrency = await query
+                    .Where(t => t.UnitPrice > 0 && t.Currency != null && t.Currency != "FOC")
+                    .GroupBy(t => t.Currency)
+                    .Select(g => new { Currency = g.Key, Total = g.Sum(t => t.UnitPrice * t.Quantity) })
+                    .ToDictionaryAsync(x => x.Currency, x => x.Total);
+
+                // ✅ OPTIMIZED: Apply sorting and pagination IN THE DATABASE
+                var paginatedQuery = query
+                    .OrderByDescending(t => t.GregorianDate)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize);
+
+                // ✅ OPTIMIZED: Use projection to load only needed data
+                var receiveHistoryDtos = await paginatedQuery
+                    .Select(t => new ReceiveHistoryDto
+                    {
+                        TransactionId = t.Id,
+                        Category = t.Item.Category,
+                        Description = t.Item.Description,
+                        Model = t.Item.Model,
+                        Quantity = t.Quantity,
+                        VoucherNumber = t.VoucherNumber,
+                        ReceivedFrom = t.Item.ReceivedFrom,
+                        RegisteredBy = t.Item.RegisteredBy,
+                        Date = t.Date,
+                        Source = t.Item.Source,
+                        UnitPrice = t.UnitPrice,
+                        Currency = t.Currency,
+                        // Load accessories with projection - only essential fields
+                        Accessories = t.Item.Accessories
+                            .Where(a => !a.IsStandalone)
+                            .Select(acc => new ReceivedAccessoryDto
+                            {
+                                Name = acc.Name,
+                                Model = acc.Model,
+                                Quantity = acc.Quantity,
+                                UnitPrice = acc.UnitPrice ?? 0m,
+                                Currency = acc.Currency ?? "ETB",
+                                SerialNumbers = acc.SerialNumbers.Select(s => s.SerialNumber).ToList(),
+                                SubAccessories = acc.SubAccessories.Select(subAcc => new ReceivedSubAccessoryDto
+                                {
+                                    Name = subAcc.Name,
+                                    Quantity = subAcc.Quantity,
+                                    UnitPrice = subAcc.UnitPrice,
+                                    Currency = subAcc.Currency
+                                }).ToList()
+                            }).ToList()
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // Add accessory values to totals
+                foreach (var record in receiveHistoryDtos)
+                {
+                    if (record.Accessories != null)
+                    {
+                        foreach (var acc in record.Accessories)
+                        {
+                            if (acc.UnitPrice > 0 && !string.IsNullOrEmpty(acc.Currency) && acc.Currency != "FOC")
+                            {
+                                if (!totalsByCurrency.ContainsKey(acc.Currency))
+                                    totalsByCurrency[acc.Currency] = 0;
+                                totalsByCurrency[acc.Currency] += acc.UnitPrice * acc.Quantity;
+                            }
+                        }
+                    }
+                }
+
+                Log.Information("Optimized ReceiveHistory: Search='{Search}', Period='{Period}', Roles={Roles}, Categories={Categories}, Page={Page}, PageSize={PageSize}, Count={Count}, Total={Total}",
+                    search ?? "(none)", period, roles?.Length ?? 0, categories?.Length ?? 0, page, pageSize, receiveHistoryDtos.Count, totalCount);
 
                 return Ok(new
                 {
-                    data = filteredRecords,
-                    totalCount,
+                    data = receiveHistoryDtos,
+                    totalCount = totalCount,
                     page,
                     pageSize,
-                    totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+                    totalPages = (int)Math.Ceiling((double)totalCount / pageSize),
+                    totalsByCurrency
                 });
             }
             catch (Exception ex)
@@ -300,12 +325,12 @@ namespace Gofabackend.Controllers
 [HttpGet("by-warehouse-debug/{warehouseId}")]
 public async Task<ActionResult> DebugByWarehouse(string warehouseId, [FromQuery] string? role = null)
 {
-    Console.WriteLine($"🔍 DEBUG by-warehouse: warehouseId={warehouseId}, role={role}");
+    Console.WriteLine($"ðŸ” DEBUG by-warehouse: warehouseId={warehouseId}, role={role}");
     
     try
     {
         // Test 1: Basic query without navigation properties
-        Console.WriteLine($"🔍 Test 1: Basic filtering...");
+        Console.WriteLine($"ðŸ” Test 1: Basic filtering...");
         var baseQuery = _context.Items
             .Where(i => i.WarehouseId == warehouseId);
             
@@ -319,10 +344,10 @@ public async Task<ActionResult> DebugByWarehouse(string warehouseId, [FromQuery]
             .Take(3)
             .ToListAsync();
             
-        Console.WriteLine($"🔍 Basic query: {basicResult.Count} items found");
+        Console.WriteLine($"ðŸ” Basic query: {basicResult.Count} items found");
         
         // Test 2: Try with Accessories navigation - SIMPLIFIED (no GroupJoin)
-        Console.WriteLine($"🔍 Test 2: Testing Accessories navigation...");
+        Console.WriteLine($"ðŸ” Test 2: Testing Accessories navigation...");
         try
         {
             var withAccessories = await (from item in _context.Items
@@ -337,15 +362,15 @@ public async Task<ActionResult> DebugByWarehouse(string warehouseId, [FromQuery]
                                         })
                                         .Take(3)
                                         .ToListAsync();
-            Console.WriteLine($"🔍 Accessories navigation: SUCCESS");
+            Console.WriteLine($"ðŸ” Accessories navigation: SUCCESS");
         }
         catch (Exception ex1)
         {
-            Console.WriteLine($"❌ Accessories navigation FAILED: {ex1.Message}");
+            Console.WriteLine($"âŒ Accessories navigation FAILED: {ex1.Message}");
         }
         
         // Test 5: SIMPLIFIED working query (no GroupJoin)
-        Console.WriteLine($"🔍 Test 5: Simple working query...");
+        Console.WriteLine($"ðŸ” Test 5: Simple working query...");
         try
         {
             var fullResult = await (from item in _context.Items
@@ -370,7 +395,7 @@ public async Task<ActionResult> DebugByWarehouse(string warehouseId, [FromQuery]
                                    .Take(5)
                                    .ToListAsync();
             
-            Console.WriteLine($"🔍 Simple query: SUCCESS - {fullResult.Count} items");
+            Console.WriteLine($"ðŸ” Simple query: SUCCESS - {fullResult.Count} items");
             
             return Ok(new 
             { 
@@ -388,13 +413,13 @@ public async Task<ActionResult> DebugByWarehouse(string warehouseId, [FromQuery]
         }
         catch (Exception ex4)
         {
-            Console.WriteLine($"❌ Simple query FAILED: {ex4.Message}");
+            Console.WriteLine($"âŒ Simple query FAILED: {ex4.Message}");
             throw;
         }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌❌❌ CRITICAL ERROR in DebugByWarehouse ❌❌❌");
+        Console.WriteLine($"âŒâŒâŒ CRITICAL ERROR in DebugByWarehouse âŒâŒâŒ");
         Console.WriteLine($"Message: {ex.Message}");
         
         return StatusCode(500, new 
@@ -424,7 +449,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
             query = query.Where(i => i.Role == role);
         }
         
-        // ✅ Use simple subqueries instead of navigation properties
+        // âœ… Use simple subqueries instead of navigation properties
         var items = await query
             .Select(i => new ItemListingDto
             {
@@ -513,12 +538,13 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                     return BadRequest(new { success = false, message = $"Invalid roles: {string.Join(", ", invalidRoles)}. Allowed roles are: VHF, HF, ELECTRONICS, SPAREPART, SUPPLY_AND_DISTRIBUTION_TEAMLEADER." });
                 }
 
-                // ✅ HIGHLY OPTIMIZED: Minimal data for listing, load details on demand
+                // âœ… HIGHLY OPTIMIZED: Minimal data for listing, load details on demand
                 // Convert roles to uppercase once for better performance
                 var upperRoles = roles.Select(r => r.ToUpper()).ToList();
                 
                 Log.Information("Querying items with uppercase roles: {UpperRoles}", string.Join(", ", upperRoles));
                 
+                // ✅ OPTIMIZED: Use projection to load only essential data for listing (no eager loading)
                 var items = await _context.Items
                     .Where(i => upperRoles.Contains(i.Role.ToUpper()))
                     .Select(i => new ItemListingDto
@@ -540,12 +566,20 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         ItemRow = i.ItemRow,
                         Condition = i.Condition,
                         VoucherNumber = i.VoucherNumber,
-                        // Load accessories and serial numbers for withdrawal form
-                        HasAccessories = i.Accessories.Any(),
-                        HasSerialNumbers = i.SerialNumbers.Any(),
-                        SerialNumbersCount = i.SerialNumbers.Count,
+                        // Use subqueries for counts - no need to load full collections
+                        HasAccessories = _context.Accessories.Any(a => a.ItemId == i.ItemId && !a.IsStandalone),
+                        HasSerialNumbers = _context.ItemSerialNumbers.Any(s => s.ItemId == i.ItemId),
+                        SerialNumbersCount = _context.ItemSerialNumbers.Count(s => s.ItemId == i.ItemId),
+                        // ✅ LOAD serial numbers and accessories for withdrawal form
                         SerialNumbers = _context.ItemSerialNumbers
                             .Where(s => s.ItemId == i.ItemId)
+                            .Select(s => new ItemSerialNumber
+                            {
+                                Id = s.Id,
+                                ItemId = s.ItemId,
+                                SerialNumber = s.SerialNumber,
+                                AddedDate = s.AddedDate
+                            })
                             .ToList(),
                         Accessories = _context.Accessories
                             .Where(a => a.ItemId == i.ItemId && !a.IsStandalone)
@@ -561,26 +595,41 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                                 ItemId = a.ItemId,
                                 SerialNumbers = _context.AccessorySerialNumbers
                                     .Where(asn => asn.AccessoryId == a.Id)
+                                    .Select(asn => new AccessorySerialNumber
+                                    {
+                                        Id = asn.Id,
+                                        AccessoryId = asn.AccessoryId,
+                                        SerialNumber = asn.SerialNumber
+                                    })
                                     .ToList(),
                                 SubAccessories = _context.AccessorySubAccessories
-                                    .Where(sa => sa.AccessoryId == a.Id)
+                                    .Where(sub => sub.AccessoryId == a.Id)
+                                    .Select(sub => new AccessorySubAccessory
+                                    {
+                                        Id = sub.Id,
+                                        AccessoryId = sub.AccessoryId,
+                                        Name = sub.Name,
+                                        Quantity = sub.Quantity,
+                                        UnitPrice = sub.UnitPrice,
+                                        Currency = sub.Currency
+                                    })
                                     .ToList()
                             })
                             .ToList(),
-                        // Get latest transaction date for sorting
-                        LatestTransactionDate = i.TransactionHistory
-                            .OrderByDescending(th => th.GregorianDate)
-                            .Select(th => th.GregorianDate)
+                        // Get latest transaction date efficiently
+                        LatestTransactionDate = _context.TransactionEntries
+                            .Where(t => t.ItemId == i.ItemId)
+                            .OrderByDescending(t => t.GregorianDate)
+                            .Select(t => (DateTime?)t.GregorianDate)
                             .FirstOrDefault()
                     })
-                    .OrderByDescending(i => i.LatestTransactionDate) // ✅ Sort on database
-                    .AsNoTracking() // Don't track changes for read-only query
+                    .AsNoTracking()
+                    .OrderByDescending(i => i.LatestTransactionDate)
                     .ToListAsync();
 
-                // Get standalone accessories for the requested roles
+                // Get standalone accessories for the requested roles - also optimized with projection
                 var standaloneAccessories = await _context.Accessories
                     .Where(a => a.IsStandalone)
-                    .Include(a => a.Item)
                     .Where(a => upperRoles.Contains(a.Item.Role.ToUpper()))
                     .Select(a => new ItemListingDto
                     {
@@ -602,13 +651,14 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         Condition = "N/A",
                         VoucherNumber = a.Item.VoucherNumber,
                         HasAccessories = false,
-                        HasSerialNumbers = a.SerialNumbers.Any(),
+                        HasSerialNumbers = _context.AccessorySerialNumbers.Any(asn => asn.AccessoryId == a.Id),
                         SerialNumbers = new List<ItemSerialNumber>(),
                         SerialNumbersCount = 0,
                         Accessories = new List<Accessory>(),
-                        LatestTransactionDate = a.Item.TransactionHistory
-                            .OrderByDescending(th => th.GregorianDate)
-                            .Select(th => th.GregorianDate)
+                        LatestTransactionDate = _context.TransactionEntries
+                            .Where(t => t.ItemId == a.ItemId)
+                            .OrderByDescending(t => t.GregorianDate)
+                            .Select(t => (DateTime?)t.GregorianDate)
                             .FirstOrDefault(),
                         IsStandaloneAccessory = true,
                         ParentItemId = a.ItemId,
@@ -643,7 +693,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                 .Include(i => i.Units)
                 .Include(i => i.Accessories)
                     .ThenInclude(a => a.SerialNumbers)
-                .Include(i => i.Accessories) // ✅ Include sub-accessories
+                .Include(i => i.Accessories) // âœ… Include sub-accessories
                     .ThenInclude(a => a.SubAccessories)
                 .AsSplitQuery()
                 .AsNoTracking()
@@ -655,7 +705,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                 return NotFound(new { success = false, message = "Item not found." });
             }
 
-            // 🛑 PREVENT CIRCULAR REFERENCE & REDUCE PAYLOAD SIZE
+            // ðŸ›‘ PREVENT CIRCULAR REFERENCE & REDUCE PAYLOAD SIZE
             // Manually break the cycle: Item -> Transaction -> Item
             foreach (var t in item.TransactionHistory)
             {
@@ -719,30 +769,59 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
             }
         }
 
+        [HttpGet("check-serial/{serialNumber}")]
+        public async Task<IActionResult> CheckSerialNumber(string serialNumber)
+        {
+            if (string.IsNullOrWhiteSpace(serialNumber))
+            {
+                return BadRequest(new { success = false, message = "Serial number is required." });
+            }
+
+            // Check in ItemSerialNumbers table
+            var existingItemSerial = await _context.ItemSerialNumbers
+                .Include(s => s.Item)
+                .FirstOrDefaultAsync(s => s.SerialNumber == serialNumber);
+
+            if (existingItemSerial != null)
+            {
+                return Ok(new 
+                { 
+                    exists = true, 
+                    type = "ITEM",
+                    description = existingItemSerial.Item?.Description,
+                    model = existingItemSerial.Item?.Model,
+                    role = existingItemSerial.Item?.Role
+                });
+            }
+
+            // Check in AccessorySerialNumbers table
+            var existingAccSerial = await _context.AccessorySerialNumbers
+                .Include(s => s.Accessory)
+                .FirstOrDefaultAsync(s => s.SerialNumber == serialNumber);
+
+            if (existingAccSerial != null)
+            {
+                return Ok(new 
+                { 
+                    exists = true, 
+                    type = "ACCESSORY",
+                    description = existingAccSerial.Accessory?.Name,
+                    model = existingAccSerial.Accessory?.Model
+                });
+            }
+
+            return Ok(new { exists = false });
+        }
+
         // POST: api/items/receive
         [HttpPost("receive")]
         public async Task<IActionResult> ReceiveItem([FromBody] ItemReceiveRequest request)
         {
-            HttpContext.Request.EnableBuffering();
-            string body = string.Empty;
-            try
-            {
-                using (var reader = new StreamReader(HttpContext.Request.Body, encoding: System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true))
-                {
-                    body = await reader.ReadToEndAsync();
-                    Log.Information("Raw request body: {Body}", body);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Warning("Failed to read request body: {Message}", ex.Message);
-            }
-
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 Log.Warning("Invalid ModelState for ReceiveItem: {@Errors}", errors);
-                return BadRequest(new { success = false, message = "Invalid request.", errors });
+                return BadRequest(new { success = false, message = "Invalid data format provided.", errors });
             }
 
             // Check if this is a standalone accessory registration
@@ -753,19 +832,33 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                 return await HandleStandaloneAccessory(request);
             }
 
-            if (string.IsNullOrEmpty(request.Category) || string.IsNullOrEmpty(request.Description) ||
-                string.IsNullOrEmpty(request.Model) || string.IsNullOrEmpty(request.WarehouseId))
+            // Detailed validation for required fields
+            var missingFields = new List<string>();
+            if (string.IsNullOrEmpty(request.Category)) missingFields.Add("Category");
+            if (string.IsNullOrEmpty(request.Description)) missingFields.Add("Description");
+            if (string.IsNullOrEmpty(request.Model)) missingFields.Add("Model");
+            if (string.IsNullOrEmpty(request.WarehouseId)) missingFields.Add("WarehouseId");
+            if (string.IsNullOrEmpty(request.Role)) missingFields.Add("Role");
+
+            if (missingFields.Any())
             {
-                Log.Warning("Missing required fields: Category={Category}, Description={Description}, Model={Model}, WarehouseId={WarehouseId}",
-                    request.Category, request.Description, request.Model, request.WarehouseId);
-                return BadRequest(new { success = false, message = "Category, Description, Model, and WarehouseId are required." });
+                Log.Warning("Missing required fields for ReceiveItem: {MissingFields}", string.Join(", ", missingFields));
+                return BadRequest(new { 
+                    success = false, 
+                    message = $"Required fields are missing: {string.Join(", ", missingFields)}.",
+                    detailedMessage = $"The following fields must be provided: {string.Join(", ", missingFields)}"
+                });
             }
 
             var allowedSources = new List<string> { "Purchase", "Return", "Donation", "Transfer" };
             if (!string.IsNullOrEmpty(request.Source) && !allowedSources.Contains(request.Source, StringComparer.OrdinalIgnoreCase))
             {
                 Log.Warning("Invalid Source value: {Source}. Allowed values: {AllowedSources}", request.Source, string.Join(", ", allowedSources));
-                return BadRequest(new { success = false, message = $"Invalid Source value: {request.Source}. Allowed values: {string.Join(", ", allowedSources)}." });
+                return BadRequest(new { 
+                    success = false, 
+                    message = $"Invalid Source value: {request.Source}.",
+                    detailedMessage = $"Allowed source values are: {string.Join(", ", allowedSources)}."
+                });
             }
 
             try
@@ -778,87 +871,65 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                 Log.Information("Processing item receive: Description={Description}, Model={Model}, WarehouseId={WarehouseId}, Category={Category}, Quantity={Quantity}, Source={Source}",
                     request.Description, request.Model, request.WarehouseId, request.Category, request.Quantity, request.Source);
 
-                // Debug incoming accessories
-                if (request.Accessories != null)
-                {
-                    foreach (var accessory in request.Accessories)
-                    {
-                        Log.Information("📦 INCOMING ACCESSORY - Name: {Name}, Model: {Model}, Quantity: {Quantity}, UnitPrice: {UnitPrice}, Currency: {Currency}",
-                            accessory.Name, accessory.Model, accessory.Quantity, accessory.UnitPrice, accessory.Currency);
-                    }
-                }
+                // Check warehouse exists
+                var warehouseExists = await _context.Warehouses
+                    .AnyAsync(w => w.WarehouseId == request.WarehouseId);
 
-                var warehouse = await _context.Warehouses.FirstOrDefaultAsync(w => w.WarehouseId == request.WarehouseId);
-                if (warehouse == null)
+                if (!warehouseExists)
                 {
                     Log.Warning("Warehouse with ID {WarehouseId} not found.", request.WarehouseId);
                     await transaction.RollbackAsync();
-                    return BadRequest(new { success = false, message = $"Warehouse with ID {request.WarehouseId} not found." });
-                }
-
-                if (request.SerialNumbers != null && request.SerialNumbers.Any())
-                {
-                    // For SPAREPART, check if we're adding to an existing item first
-                    Item? potentialExistingItem = null;
-                    if (request.Role == "SPAREPART")
-                    {
-                        potentialExistingItem = await _context.Items
-                            .Include(i => i.SerialNumbers)
-                            .FirstOrDefaultAsync(i => i.Description == request.Description &&
-                                                     i.Model == request.Model &&
-                                                     i.WarehouseId == request.WarehouseId &&
-                                                     i.Category == request.Category);
-                    }
-
-                    // Check for duplicate serial numbers
-                    // For SPAREPART, allow reusing serial numbers that belong to the same item
-                    var existingSerials = await _context.ItemSerialNumbers
-                        .Where(s => request.SerialNumbers.Contains(s.SerialNumber))
-                        .Select(s => new { s.SerialNumber, s.ItemId })
-                        .ToListAsync();
-                    
-                    // Filter out serials that belong to the same item (for SPAREPART reuse)
-                    var duplicateSerials = existingSerials;
-                    if (request.Role == "SPAREPART" && potentialExistingItem != null)
-                    {
-                        duplicateSerials = existingSerials
-                            .Where(s => s.ItemId != potentialExistingItem.ItemId)
-                            .ToList();
-                    }
-                    
-                    if (duplicateSerials.Any())
-                    {
-                        Log.Warning("Duplicate serial numbers for item {Description}: {SerialNumbers}",
-                            request.Description, string.Join(", ", duplicateSerials.Select(s => s.SerialNumber)));
-                        await transaction.RollbackAsync();
-                        return BadRequest(new
-                        {
-                            success = false,
-                            message = $"Serial numbers {string.Join(", ", duplicateSerials.Select(s => s.SerialNumber))} already exist for another item."
-                        });
-                    }
-                    if (request.Role != "SPAREPART" && request.Role != "ELECTRONICS" && request.Quantity != request.SerialNumbers.Count)
-                    {
-                        Log.Warning("For non-SPAREPART item {Description}, serial numbers count ({SerialCount}) does not match quantity ({Quantity}).",
-                            request.Description, request.SerialNumbers.Count, request.Quantity);
-                        await transaction.RollbackAsync();
-                        return BadRequest(new
-                        {
-                            success = false,
-                            message = "For non-SPAREPART and non-ELECTRONICS items, the number of serial numbers must match the quantity."
-                        });
-                    }
+                    return BadRequest(new { 
+                        success = false, 
+                        message = $"Warehouse not found.",
+                        detailedMessage = $"The WarehouseId '{request.WarehouseId}' does not exist in the database. Please contact an administrator."
+                    });
                 }
 
                 var existingItem = await _context.Items
-                    .Include(i => i.SerialNumbers)
-                    .Include(i => i.TransactionHistory)
-                    .Include(i => i.Units)
                     .Include(i => i.Accessories)
+                        .ThenInclude(a => a.SubAccessories)
                     .FirstOrDefaultAsync(i => i.Description == request.Description &&
                                              i.Model == request.Model &&
                                              i.WarehouseId == request.WarehouseId &&
                                              i.Category == request.Category);
+
+                // Serial number duplicate check
+                if (request.SerialNumbers != null && request.SerialNumbers.Any())
+                {
+                    // SPAREPART and ELECTRONICS have flexible serial number counts (can be 0, 1, or 2)
+                    // Other roles must match exactly
+                    if (request.Role != "SPAREPART" && request.Role != "ELECTRONICS" && request.Quantity != request.SerialNumbers.Count)
+                    {
+                        Log.Warning("Serial number count mismatch: Role={Role}, Qty={Qty}, Serials={Serials}", 
+                            request.Role, request.Quantity, request.SerialNumbers.Count);
+                        await transaction.RollbackAsync();
+                        return BadRequest(new { 
+                            success = false, 
+                            message = "Serial number count mismatch.",
+                            detailedMessage = $"For {request.Role} items, the number of serial numbers ({request.SerialNumbers.Count}) must match the quantity ({request.Quantity})."
+                        });
+                    }
+
+                    // Check for duplicates against DB, excluding serials already on this item
+                    var existingItemId = existingItem?.ItemId;
+                    var existingSerials = await _context.ItemSerialNumbers
+                        .Where(s => request.SerialNumbers.Contains(s.SerialNumber) &&
+                                    (existingItemId == null || s.ItemId != existingItemId))
+                        .Select(s => s.SerialNumber)
+                        .ToListAsync();
+
+                    if (existingSerials.Any())
+                    {
+                        Log.Warning("Duplicate serial numbers detected: {Serials}", string.Join(", ", existingSerials));
+                        await transaction.RollbackAsync();
+                        return BadRequest(new { 
+                            success = false, 
+                            message = "Duplicate serial numbers detected.",
+                            detailedMessage = $"The following serial numbers already exist for another item: {string.Join(", ", existingSerials)}"
+                        });
+                    }
+                }
 
                 int itemId;
                 if (existingItem != null)
@@ -866,10 +937,18 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                     Log.Information("Found existing item: ItemId={ItemId}, Description={Description}, Current Quantity={Quantity}",
                         existingItem.ItemId, existingItem.Description, existingItem.Quantity);
 
-                    existingItem.SerialNumbers ??= new List<ItemSerialNumber>();
-                    existingItem.Units ??= new List<ItemUnit>();
                     existingItem.Accessories ??= new List<Accessory>();
-                    existingItem.TransactionHistory ??= new List<TransactionEntry>();
+
+                    // Build serial/unit lookup sets from DB directly — avoids loading all 300+ records into memory
+                    var existingSerialSet = (await _context.ItemSerialNumbers
+                        .Where(s => s.ItemId == existingItem.ItemId)
+                        .Select(s => s.SerialNumber)
+                        .ToListAsync()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                    var existingUnitSet = (await _context.ItemUnits
+                        .Where(u => u.ItemId == existingItem.ItemId)
+                        .Select(u => u.SerialNumber)
+                        .ToListAsync()).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
                     existingItem.Quantity += request.Quantity;
                     existingItem.Shelf = request.Shelf ?? existingItem.Shelf;
@@ -906,41 +985,25 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                     {
                         if (!string.IsNullOrEmpty(serial))
                         {
-                            // For SPAREPART, check if serial number already exists for this item
-                            var existingSerial = existingItem.SerialNumbers
-                                .FirstOrDefault(s => s.SerialNumber == serial);
-                            
-                            if (existingSerial == null)
+                            if (!existingSerialSet.Contains(serial))
                             {
-                                // Serial number doesn't exist, add it
-                                existingItem.SerialNumbers.Add(new ItemSerialNumber
+                                _context.ItemSerialNumbers.Add(new ItemSerialNumber
                                 {
                                     SerialNumber = serial,
                                     AddedDate = ethiopianDate,
                                     ItemId = existingItem.ItemId
                                 });
+                                existingSerialSet.Add(serial);
                             }
-                            else
+
+                            if (!existingUnitSet.Contains(serial))
                             {
-                                Log.Information("Serial number {SerialNumber} already exists for item {ItemId}, reusing it", serial, existingItem.ItemId);
-                            }
-                            
-                            // Check if ItemUnit already exists
-                            var existingUnit = existingItem.Units
-                                .FirstOrDefault(u => u.SerialNumber == serial);
-                            
-                            if (existingUnit == null)
-                            {
-                                // Unit doesn't exist, add it
-                                existingItem.Units.Add(new ItemUnit
+                                _context.ItemUnits.Add(new ItemUnit
                                 {
                                     SerialNumber = serial,
                                     ItemId = existingItem.ItemId
                                 });
-                            }
-                            else
-                            {
-                                Log.Information("ItemUnit with serial {SerialNumber} already exists for item {ItemId}, reusing it", serial, existingItem.ItemId);
+                                existingUnitSet.Add(serial);
                             }
                         }
                     }
@@ -994,16 +1057,16 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                             }
                         }
                         
-                        Log.Information("📦 ADDING ACCESSORY TO EXISTING ITEM - Name: {Name}, Model: {Model}, Quantity: {Quantity}, UnitPrice: {UnitPrice}, Currency: {Currency}, RequiresSerialNumbers: {RequiresSerialNumbers}",
+                        Log.Information("ðŸ“¦ ADDING ACCESSORY TO EXISTING ITEM - Name: {Name}, Model: {Model}, Quantity: {Quantity}, UnitPrice: {UnitPrice}, Currency: {Currency}, RequiresSerialNumbers: {RequiresSerialNumbers}",
                             accessory.Name, accessory.Model, accessory.Quantity, accessory.UnitPrice, accessory.Currency, accessory.RequiresSerialNumbers);
 
-                        // Check if accessory with same name+model already exists — merge instead of duplicate
+                        // Check if accessory with same name+model already exists â€” merge instead of duplicate
                         var existingAccessory = existingItem.Accessories
                             .FirstOrDefault(a => a.Name == accessory.Name && a.Model == accessory.Model);
 
                         if (existingAccessory != null)
                         {
-                            Log.Information("📦 Accessory {Name} ({Model}) already exists. Merging quantity {Old}+{Add}", 
+                            Log.Information("ðŸ“¦ Accessory {Name} ({Model}) already exists. Merging quantity {Old}+{Add}", 
                                 accessory.Name, accessory.Model, existingAccessory.Quantity, accessory.Quantity);
                             existingAccessory.Quantity += accessory.Quantity;
 
@@ -1054,7 +1117,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
 
                             if (accessory.SubAccessories != null && accessory.SubAccessories.Any())
                             {
-                                Log.Information("📦 Adding {Count} sub-accessories to accessory {Name}", accessory.SubAccessories.Count, accessory.Name);
+                                Log.Information("ðŸ“¦ Adding {Count} sub-accessories to accessory {Name}", accessory.SubAccessories.Count, accessory.Name);
                                 foreach (var subAcc in accessory.SubAccessories)
                                 {
                                     if (!string.IsNullOrEmpty(subAcc.Name))
@@ -1068,7 +1131,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                                             Currency = subAcc.Currency ?? "ETB",
                                             AccessoryId = newAccessory.Id
                                         });
-                                        Log.Information("  ✅ Sub-accessory added: {Name}, Per-Unit: {PerUnitQty}", subAcc.Name, perUnitQuantity);
+                                        Log.Information("  âœ… Sub-accessory added: {Name}, Per-Unit: {PerUnitQty}", subAcc.Name, perUnitQuantity);
                                     }
                                 }
                             }
@@ -1076,6 +1139,15 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                             existingItem.Accessories.Add(newAccessory);
                         }
                     }
+
+                    var accessorySummaryExisting = request.Accessories != null && request.Accessories.Any()
+                        ? "Accessories added: " + string.Join(", ", request.Accessories.Select(a => $"{a.Name} ({a.Model}) x{a.Quantity}"))
+                        : string.Empty;
+                    var historyExisting = string.IsNullOrEmpty(request.History)
+                        ? accessorySummaryExisting
+                        : string.IsNullOrEmpty(accessorySummaryExisting)
+                            ? request.History
+                            : $"{request.History}; {accessorySummaryExisting}";
 
                     var transactionEntry = new TransactionEntry
                     {
@@ -1087,7 +1159,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         Currency = request.Currency ?? "ETB",
                         VoucherNumber = request.VoucherNumber ?? string.Empty,
                         Details = $"Received From: {request.ReceivedFrom ?? "unknown"}, Registered By: {request.RegisteredBy ?? "unknown"}, Source: {request.Source}, Date: {ethiopianDate}",
-                        History = request.History ?? string.Empty,
+                        History = historyExisting,
                         ItemId = existingItem.ItemId
                     };
 
@@ -1198,7 +1270,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                             }
                         }
                         
-                        Log.Information("📦 ADDING ACCESSORY TO NEW ITEM - Name: {Name}, Model: {Model}, Quantity: {Quantity}, UnitPrice: {UnitPrice}, Currency: {Currency}, RequiresSerialNumbers: {RequiresSerialNumbers}",
+                        Log.Information("ðŸ“¦ ADDING ACCESSORY TO NEW ITEM - Name: {Name}, Model: {Model}, Quantity: {Quantity}, UnitPrice: {UnitPrice}, Currency: {Currency}, RequiresSerialNumbers: {RequiresSerialNumbers}",
                             accessory.Name, accessory.Model, accessory.Quantity, accessory.UnitPrice, accessory.Currency, accessory.RequiresSerialNumbers);
                         
                         var newAccessory = new Accessory
@@ -1233,12 +1305,12 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         // Add sub-accessories
                         if (accessory.SubAccessories != null && accessory.SubAccessories.Any())
                         {
-                            Log.Information("📦 Adding {Count} sub-accessories to accessory {Name}", accessory.SubAccessories.Count, accessory.Name);
+                            Log.Information("ðŸ“¦ Adding {Count} sub-accessories to accessory {Name}", accessory.SubAccessories.Count, accessory.Name);
                             foreach (var subAcc in accessory.SubAccessories)
                             {
                                 if (!string.IsNullOrEmpty(subAcc.Name))
                                 {
-                                    // Calculate per-unit quantity: total sub-accessory qty ÷ accessory qty
+                                    // Calculate per-unit quantity: total sub-accessory qty Ã· accessory qty
                                     int perUnitQuantity = accessory.Quantity > 0 ? (int)Math.Round((decimal)subAcc.Quantity / accessory.Quantity) : subAcc.Quantity;
                                     
                                     newAccessory.SubAccessories.Add(new AccessorySubAccessory
@@ -1249,7 +1321,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                                         Currency = subAcc.Currency ?? "ETB",
                                         AccessoryId = newAccessory.Id
                                     });
-                                    Log.Information("  ✅ Sub-accessory added: {Name}, Total: {TotalQty}, Per-Unit: {PerUnitQty}, Price: {Price} {Currency}",
+                                    Log.Information("  âœ… Sub-accessory added: {Name}, Total: {TotalQty}, Per-Unit: {PerUnitQty}, Price: {Price} {Currency}",
                                         subAcc.Name, subAcc.Quantity, perUnitQuantity, subAcc.UnitPrice, subAcc.Currency);
                                 }
                             }
@@ -1257,6 +1329,15 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
 
                         newItem.Accessories.Add(newAccessory);
                     }
+
+                    var accessorySummaryNew = request.Accessories != null && request.Accessories.Any()
+                        ? "Accessories added: " + string.Join(", ", request.Accessories.Select(a => $"{a.Name} ({a.Model}) x{a.Quantity}"))
+                        : string.Empty;
+                    var historyNew = string.IsNullOrEmpty(request.History)
+                        ? accessorySummaryNew
+                        : string.IsNullOrEmpty(accessorySummaryNew)
+                            ? request.History
+                            : $"{request.History}; {accessorySummaryNew}";
 
                     var transactionEntry = new TransactionEntry
                     {
@@ -1268,7 +1349,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         Currency = request.Currency ?? "ETB",
                         VoucherNumber = request.VoucherNumber ?? string.Empty,
                         Details = $"Received From: {request.ReceivedFrom ?? "unknown"}, Registered By: {request.RegisteredBy ?? "unknown"}, Source: {request.Source}, Date: {ethiopianDate}",
-                        History = request.History ?? string.Empty,
+                        History = historyNew,
                         ItemId = newItem.ItemId
                     };
 
@@ -1427,21 +1508,6 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
         [HttpPost("bulk-receive")]
         public async Task<IActionResult> BulkReceiveItems([FromBody] BulkReceiveRequest request)
         {
-            HttpContext.Request.EnableBuffering();
-            string body = string.Empty;
-            try
-            {
-                using (var reader = new StreamReader(HttpContext.Request.Body, encoding: System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true))
-                {
-                    body = await reader.ReadToEndAsync();
-                    Log.Information("Raw request body: {Body}", body);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Warning("Failed to read request body: {Message}", ex.Message);
-            }
-
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
@@ -1528,13 +1594,15 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         
                         if (duplicateSerials.Any())
                         {
+                            var duplicateList = string.Join(", ", duplicateSerials.Select(s => s.SerialNumber));
                             Log.Warning("Duplicate serial numbers for item {Description}: {SerialNumbers}",
-                                itemRequest.Description, string.Join(", ", duplicateSerials.Select(s => s.SerialNumber)));
+                                itemRequest.Description, duplicateList);
                             await transaction.RollbackAsync();
                             return BadRequest(new
                             {
                                 success = false,
-                                message = $"Serial numbers {string.Join(", ", duplicateSerials.Select(s => s.SerialNumber))} already exist for another item."
+                                message = $"Duplicate serial numbers detected for item '{itemRequest.Description}'.",
+                                detailedMessage = $"The following serial numbers already exist for another item: {duplicateList}"
                             });
                         }
                         if (itemRequest.Role != "SPAREPART" && itemRequest.Role != "ELECTRONICS" && itemRequest.Quantity != itemRequest.SerialNumbers.Count)
@@ -1545,7 +1613,8 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                             return BadRequest(new
                             {
                                 success = false,
-                                message = "For non-SPAREPART and non-ELECTRONICS items, the number of serial numbers must match the quantity."
+                                message = "Serial number count mismatch.",
+                                detailedMessage = $"For non-SPAREPART/ELECTRONICS item '{itemRequest.Description}', the number of serial numbers ({itemRequest.SerialNumbers.Count}) must match the quantity ({itemRequest.Quantity})."
                             });
                         }
                     }
@@ -1626,7 +1695,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                                 return BadRequest(new { success = false, message = "Accessory name and model cannot be empty." });
                             }
 
-                            // Check if accessory with same name+model already exists — merge instead of duplicate
+                            // Check if accessory with same name+model already exists â€” merge instead of duplicate
                             var existingAccessory = existingItem.Accessories
                                 .FirstOrDefault(a => a.Name == accessory.Name && a.Model == accessory.Model);
 
@@ -1914,7 +1983,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                     if (existingAccessory != null)
                     {
                         // Accessory exists - add to quantity and optionally update unit price
-                        Log.Information("📦 Accessory {Name} ({Model}) already exists. Adding {Quantity} to existing quantity {ExistingQuantity}",
+                        Log.Information("ðŸ“¦ Accessory {Name} ({Model}) already exists. Adding {Quantity} to existing quantity {ExistingQuantity}",
                             accessoryRequest.Name, accessoryRequest.Model, accessoryRequest.Quantity, existingAccessory.Quantity);
                         
                         int oldQuantity = existingAccessory.Quantity;
@@ -1925,7 +1994,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         // Update unit price if provided and different from existing
                         if (accessoryRequest.UnitPrice.HasValue && accessoryRequest.UnitPrice.Value != existingAccessory.UnitPrice)
                         {
-                            Log.Information("📦 Updating unit price for accessory {Name} from {OldPrice} to {NewPrice}",
+                            Log.Information("ðŸ“¦ Updating unit price for accessory {Name} from {OldPrice} to {NewPrice}",
                                 accessoryRequest.Name, existingAccessory.UnitPrice, accessoryRequest.UnitPrice.Value);
                             existingAccessory.UnitPrice = accessoryRequest.UnitPrice.Value;
                         }
@@ -1933,7 +2002,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         // Update currency if provided and different from existing
                         if (!string.IsNullOrEmpty(accessoryRequest.Currency) && accessoryRequest.Currency != existingAccessory.Currency)
                         {
-                            Log.Information("📦 Updating currency for accessory {Name} from {OldCurrency} to {NewCurrency}",
+                            Log.Information("ðŸ“¦ Updating currency for accessory {Name} from {OldCurrency} to {NewCurrency}",
                                 accessoryRequest.Name, existingAccessory.Currency, accessoryRequest.Currency);
                             existingAccessory.Currency = accessoryRequest.Currency;
                         }
@@ -1954,10 +2023,10 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                             }
                         }
 
-                        // ✅ Simple approach: Add sub-accessories to existing ones (assumes same per-unit ratio)
+                        // âœ… Simple approach: Add sub-accessories to existing ones (assumes same per-unit ratio)
                         if (accessoryRequest.SubAccessories != null && accessoryRequest.SubAccessories.Any())
                         {
-                            Log.Information("📦 Processing {Count} sub-accessories for existing accessory {Name}", 
+                            Log.Information("ðŸ“¦ Processing {Count} sub-accessories for existing accessory {Name}", 
                                 accessoryRequest.SubAccessories.Count, accessoryRequest.Name);
                             
                             foreach (var newSubAcc in accessoryRequest.SubAccessories)
@@ -1976,14 +2045,14 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                                 if (existingSubAcc != null)
                                 {
                                     // Sub-accessory exists - just keep the existing per-unit quantity
-                                    // The total will automatically adjust when displayed (per-unit × accessory quantity)
-                                    Log.Information("  ✅ Sub-accessory {Name} already exists with per-unit quantity {PerUnit}. Keeping existing ratio.",
+                                    // The total will automatically adjust when displayed (per-unit Ã— accessory quantity)
+                                    Log.Information("  âœ… Sub-accessory {Name} already exists with per-unit quantity {PerUnit}. Keeping existing ratio.",
                                         newSubAcc.Name, existingSubAcc.Quantity);
                                     
                                     // Optionally update price if provided
                                     if (newSubAcc.UnitPrice > 0 && newSubAcc.UnitPrice != existingSubAcc.UnitPrice)
                                     {
-                                        Log.Information("  💰 Updating price for sub-accessory {Name} from {OldPrice} to {NewPrice}",
+                                        Log.Information("  ðŸ’° Updating price for sub-accessory {Name} from {OldPrice} to {NewPrice}",
                                             newSubAcc.Name, existingSubAcc.UnitPrice, newSubAcc.UnitPrice);
                                         existingSubAcc.UnitPrice = newSubAcc.UnitPrice;
                                         existingSubAcc.Currency = newSubAcc.Currency ?? existingSubAcc.Currency;
@@ -2001,7 +2070,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                                         AccessoryId = existingAccessory.Id
                                     });
                                     
-                                    Log.Information("  ➕ Added new sub-accessory {Name} with per-unit quantity {PerUnit}",
+                                    Log.Information("  âž• Added new sub-accessory {Name} with per-unit quantity {PerUnit}",
                                         newSubAcc.Name, newPerUnitQuantity);
                                 }
                             }
@@ -2010,7 +2079,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                     else
                     {
                         // Accessory doesn't exist - create new
-                        Log.Information("📦 Creating new accessory {Name} ({Model}) with quantity {Quantity}",
+                        Log.Information("ðŸ“¦ Creating new accessory {Name} ({Model}) with quantity {Quantity}",
                             accessoryRequest.Name, accessoryRequest.Model, accessoryRequest.Quantity);
 
                         var accessory = new Accessory
@@ -2045,12 +2114,12 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         // Add sub-accessories
                         if (accessoryRequest.SubAccessories != null && accessoryRequest.SubAccessories.Any())
                         {
-                            Log.Information("📦 Adding {Count} sub-accessories to accessory {Name}", accessoryRequest.SubAccessories.Count, accessoryRequest.Name);
+                            Log.Information("ðŸ“¦ Adding {Count} sub-accessories to accessory {Name}", accessoryRequest.SubAccessories.Count, accessoryRequest.Name);
                             foreach (var subAcc in accessoryRequest.SubAccessories)
                             {
                                 if (!string.IsNullOrEmpty(subAcc.Name))
                                 {
-                                    // Calculate per-unit quantity: total sub-accessory qty ÷ accessory qty
+                                    // Calculate per-unit quantity: total sub-accessory qty Ã· accessory qty
                                     int perUnitQuantity = accessoryRequest.Quantity > 0 ? (int)Math.Round((decimal)subAcc.Quantity / accessoryRequest.Quantity) : subAcc.Quantity;
                                     
                                     accessory.SubAccessories.Add(new AccessorySubAccessory
@@ -2061,7 +2130,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                                         Currency = subAcc.Currency ?? "ETB",
                                         AccessoryId = accessory.Id
                                     });
-                                    Log.Information("  ✅ Sub-accessory added: {Name}, Total: {TotalQty}, Per-Unit: {PerUnitQty}, Price: {Price} {Currency}",
+                                    Log.Information("  âœ… Sub-accessory added: {Name}, Total: {TotalQty}, Per-Unit: {PerUnitQty}, Price: {Price} {Currency}",
                                         subAcc.Name, subAcc.Quantity, perUnitQuantity, subAcc.UnitPrice, subAcc.Currency);
                                 }
                             }
@@ -2133,8 +2202,8 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         Description = t.Item != null ? t.Item.Description : "Unknown",
                         Action = t.Action,
                         Quantity = t.Quantity,
-                        UnitPrice = t.UnitPrice,        // ✅ FIXED: Include unit price
-                        Currency = t.Currency,           // ✅ FIXED: Include currency
+                        UnitPrice = t.UnitPrice,        // âœ… FIXED: Include unit price
+                        Currency = t.Currency,           // âœ… FIXED: Include currency
                         VoucherNumber = t.VoucherNumber,
                         Details = t.Details,
                         Date = t.Date,
@@ -2173,8 +2242,8 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         RegisteredBy = ExtractDetailValue(te.Details, "Registered By: "),
                         Date = te.Date,
                         Source = te.Item != null ? te.Item.Source : "Purchase",
-                        UnitPrice = te.UnitPrice,        // ✅ FIXED
-                        Currency = te.Currency           // ✅ FIXED
+                        UnitPrice = te.UnitPrice,        // âœ… FIXED
+                        Currency = te.Currency           // âœ… FIXED
                     })
                     .ToListAsync();
                 Log.Information("Fetched {Count} receive history entries", receiveEntries.Count);
@@ -2310,7 +2379,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
         {
             try
             {
-                Log.Information("📊 Dashboard summary API called with roles: {Roles}", roles != null ? string.Join(", ", roles) : "null");
+                Log.Information("ðŸ“Š Dashboard summary API called with roles: {Roles}", roles != null ? string.Join(", ", roles) : "null");
                 
                 var allowedRoles = new HashSet<string>(new[] { "VHF", "HF", "ELECTRONICS", "SPAREPART" }, StringComparer.OrdinalIgnoreCase);
                 if (roles != null && roles.Any())
@@ -2329,29 +2398,29 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
 
                 IQueryable<Item> query = _context.Items;
                 
-                Log.Information("📊 Total items in database: {Count}", await _context.Items.CountAsync());
+                Log.Information("ðŸ“Š Total items in database: {Count}", await _context.Items.CountAsync());
 
                 if (roles != null && roles.Any())
                 {
                     var upperRoles = roles.Select(r => r.ToUpper()).ToArray();
                     query = query.Where(i => upperRoles.Contains(i.Role.ToUpper()));
-                    Log.Information("📊 Filtering for roles: {Roles}", string.Join(", ", upperRoles));
+                    Log.Information("ðŸ“Š Filtering for roles: {Roles}", string.Join(", ", upperRoles));
                 }
                 else
                 {
-                    Log.Information("📊 No roles filter applied - returning all items");
+                    Log.Information("ðŸ“Š No roles filter applied - returning all items");
                 }
 
                 var itemCount = await query.CountAsync();
-                Log.Information("📊 Items after role filter: {Count}", itemCount);
+                Log.Information("ðŸ“Š Items after role filter: {Count}", itemCount);
 
                 if (itemCount == 0)
                 {
-                    Log.Warning("📊 No items found for the specified roles");
+                    Log.Warning("ðŸ“Š No items found for the specified roles");
                     return Ok(new List<DashboardItemDto>()); // Return empty list instead of error
                 }
 
-                // ✅ Lean projection
+                // âœ… Lean projection
                 var dashboardItems = await query
                     .Select(i => new DashboardItemDto
                     {
@@ -2372,12 +2441,12 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                     .Take(1000)
                     .ToListAsync();
 
-                Log.Information("📊 Dashboard summary: {Count} items for roles: {Roles}",
+                Log.Information("ðŸ“Š Dashboard summary: {Count} items for roles: {Roles}",
                     dashboardItems.Count, roles?.Length > 0 ? string.Join(", ", roles) : "(all)");
                     
                 if (dashboardItems.Count > 0)
                 {
-                    Log.Information("📊 Sample first item: ID={ItemId}, Desc={Description}, Qty={Quantity}",
+                    Log.Information("ðŸ“Š Sample first item: ID={ItemId}, Desc={Description}, Qty={Quantity}",
                         dashboardItems[0].ItemId, dashboardItems[0].Description, dashboardItems[0].Quantity);
                 }
 
@@ -2385,7 +2454,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "❌ Error in GetDashboardItemsByRoles – roles: {Roles}", roles);
+                Log.Error(ex, "âŒ Error in GetDashboardItemsByRoles â€“ roles: {Roles}", roles);
                 return StatusCode(500, new
                 {
                     success = false,
@@ -2760,7 +2829,7 @@ public async Task<ActionResult<IEnumerable<ItemListingDto>>> GetItemsByWarehouse
                         AccessoryIds = g.Select(a => a.Id).ToList(),
                         SerialNumbers = g.SelectMany(a => a.SerialNumbers).ToList()
                     })
-                    .Where(g => g.TotalQuantity > 0) // ✅ Only show accessories with stock
+                    .Where(g => g.TotalQuantity > 0) // âœ… Only show accessories with stock
                     .ToListAsync();
                 
                 var accessories = accessoryGroups.Select(g => new AccessoryListingDto

@@ -34,6 +34,7 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
   isCategoryDropdownOpen: boolean = false;
   isSearching = false;
   isExportDropdownOpen: boolean = false;
+  backendTotalsByCurrency: { [currency: string]: number } = {};
   
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -147,18 +148,19 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
 
     const period = this.mapPeriod(this.selectedPeriod);
 
+    // ✅ OPTIMIZED: Use server-side pagination - request only current page
     this.itemService.getFilteredReceiveHistory(
       this.searchQuery,
       period,
       this.selectedRoles,
       this.selectedCategories,
-      1,
-      10000
+      this.currentPage,
+      this.pageSize  // Use actual page size, not 10000
     ).pipe(
       catchError(err => {
         this.errorMessage = 'የግብይት መረጃዎችን መጫን አልተሳካም። እባክዋ እንደገና ይሞክሩ።';
         console.error('[TransactionReport] Error loading transactions:', err);
-        return of({ data: [], totalCount: 0, page: 1, pageSize: 10000, totalPages: 0 });
+        return of({ data: [], totalCount: 0, page: 1, pageSize: this.pageSize, totalPages: 0, totalsByCurrency: {} });
       }),
       finalize(() => {
         this.isLoading = false;
@@ -190,7 +192,7 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
           model: t.model || 'ያልታወቀ',
           ethiopianDate: t.date || 'ያልታወቀ ቀን',
           recipientName: t.receivedFrom || 'ያልታወቀ',
-          voucherNumber: t.voucherNumber || '-',
+          voucherNumber: t.voucherNumber || '',
           totalQuantity: quantity,
           unitPrice: unitPrice,
           currency: currency,
@@ -215,9 +217,11 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
       });
 
       this.totalCount = response.totalCount;
-      this.sortTable('ethiopianDate');
+      // Backend now provides totals - no need to recalculate
+      this.backendTotalsByCurrency = (response as any).totalsByCurrency || {};
+      
+      // ✅ Data is already sorted by backend, just group by voucher
       this.groupByVoucher();
-      this.currentPage = 1;
       this.updatePagination();
     });
   }
@@ -308,40 +312,21 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
-    this.currentPage = 1;
-    this.loadTransactions();
+    this.currentPage = 1; // Reset to first page when filters change
+    this.loadTransactions(); // Reload from server with new filters
   }
 
   sortTable(column: keyof ReportEntry): void {
+    // ✅ Backend handles sorting by date - no need for client-side sorting
+    // Just toggle direction for UI feedback if needed in future
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
       this.sortColumn = column;
       this.sortDirection = column === 'ethiopianDate' ? 'desc' : 'asc';
     }
-    
-    const multiplier = this.sortDirection === 'asc' ? 1 : -1;
-    
-    this.filteredTransactions.sort((a, b) => {
-      if (column === 'ethiopianDate') {
-        const dateA = this.parseEthiopianDate(a.ethiopianDate).getTime();
-        const dateB = this.parseEthiopianDate(b.ethiopianDate).getTime();
-        return (dateA - dateB) * multiplier;
-      }
-      
-      let valA = a[column];
-      let valB = b[column];
-      
-      if (typeof valA === 'number' && typeof valB === 'number') {
-        return (valA - valB) * multiplier;
-      }
-      
-      valA = String(valA ?? '').toLowerCase();
-      valB = String(valB ?? '').toLowerCase();
-      return valA.localeCompare(valB) * multiplier;
-    });
-    
-    this.updatePagination();
+    // Note: Backend always sorts by date descending
+    // If you need different sorting, add sortColumn/sortDirection to API call
   }
 
   toggleRoleDropdown(): void {
@@ -381,24 +366,24 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.updatePagination();
+      this.loadTransactions(); // Reload from server
     }
   }
 
   nextPage(): void {
     if (this.currentPage < this.getTotalPages()) {
       this.currentPage++;
-      this.updatePagination();
+      this.loadTransactions(); // Reload from server
     }
   }
 
   onPageSizeChange(): void {
     this.currentPage = 1;
-    this.updatePagination();
+    this.loadTransactions(); // Reload from server with new page size
   }
 
   getTotalPages(): number {
-    return Math.ceil(this.groupedByVoucher.length / this.pageSize);
+    return Math.ceil(this.totalCount / this.pageSize); // Use totalCount from server
   }
 
   getVoucherTotalByCurrency(items: ReportEntry[]): string {
@@ -429,31 +414,10 @@ export class TransactionReportComponent implements OnInit, OnDestroy {
   }
 
   calculateGrandTotal(): string {
-    if (this.filteredTransactions.length === 0) {
-      return '0.00 ETB';
-    }
-
-    const totals: { [currency: string]: number } = {};
-    const currencyOrder: string[] = [];
-
-    for (const t of this.filteredTransactions) {
-      if (t.totalPrice === 0) continue;
-
-      const currency = t.currency || 'ETB';
-      if (!totals[currency]) {
-        totals[currency] = 0;
-        currencyOrder.push(currency);
-      }
-      totals[currency] += t.totalPrice;
-    }
-
-    if (currencyOrder.length === 0) {
-      return '0.00 ETB';
-    }
-
-    return currencyOrder
-      .map(curr => `${curr}: ${totals[curr].toFixed(2)}`)
-      .join(' | ');
+    const totals = this.backendTotalsByCurrency;
+    const currencies = Object.keys(totals);
+    if (currencies.length === 0) return '0.00 ETB';
+    return currencies.map(c => `${c}: ${totals[c].toFixed(2)}`).join(' | ');
   }
 
   getTotalQuantity(): number {

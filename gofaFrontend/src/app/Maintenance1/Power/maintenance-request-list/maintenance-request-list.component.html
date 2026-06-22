@@ -32,15 +32,35 @@
           <td>{{ request.serialNoOfEquip }}</td>
           <td>{{ request.maintenanceType }}</td>
           <td>{{ request.requestedTo }}</td>
-          <td>{{ request.status }}</td>
+          <td>
+            <span [ngClass]="{
+              'badge bg-danger': request.status === 'Do Out',
+              'badge bg-success': request.status === 'Maintenance Finished' || request.status === 'Client Received',
+              'badge bg-warning text-dark': request.status === 'Waiting for Spare Part' || request.status === 'Approved - Waiting for Parts' || request.status === 'Waiting for Approval',
+              'badge bg-info text-dark': request.status === 'On Maintenance' || request.status === 'On Maintaining' || request.status === 'Spare Part Issued' || request.status === 'Quality Check'
+            }">{{ request.status }}</span>
+          </td>
           <td class="actions-container">
-            <ng-container *ngIf="request.status !== 'Client Received' && request.status !== 'On Maintenance' && request.status !== 'Maintenance Finished' && request.status !== 'Quality Check' && request.status !== 'Do Out'; else noAction">
+            <!-- Spare part requested: lock all action buttons -->
+            <ng-container *ngIf="request.status === 'Waiting for Spare Part' || request.status === 'Approved - Waiting for Parts'">
+              <button disabled class="btn btn-noaction">{{ request.status }}</button>
+            </ng-container>
+
+            <!-- Spare part already issued: hide Request Part but show Maintain -->
+            <ng-container *ngIf="request.status === 'Spare Part Issued'">
+              <button disabled class="btn btn-noaction">Spare Part Issued</button>
+              <button (click)="goToMaintainForm(request)" class="btn btn-maintain">Maintain</button>
+            </ng-container>
+
+            <!-- Active work: both buttons available -->
+            <ng-container *ngIf="request.status === 'On Maintaining' || request.status === 'On Maintenance'">
               <button (click)="requestPart(request)" class="btn btn-request">Request Part</button>
               <button (click)="goToMaintainForm(request)" class="btn btn-maintain">Maintain</button>
             </ng-container>
-            <ng-template #noAction>
+            <!-- Terminal / no-action statuses -->
+            <ng-container *ngIf="request.status === 'Client Received' || request.status === 'Maintenance Finished' || request.status === 'Quality Check' || request.status === 'Do Out'">
               <button disabled class="btn btn-noaction">No Action Needed</button>
-            </ng-template>
+            </ng-container>
           </td>
         </tr>
       </tbody>

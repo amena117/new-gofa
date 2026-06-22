@@ -41,16 +41,22 @@ interface Model2Dto {
   totalPrice: number;
   currency: string;
   preparedBy: string;
+  pRank: string;
   pTitle: string;
   checkedBy: string;
+  cRank: string;
   cTitle: string;
   approvedBy: string;
+  aRank: string;
   aTitle: string;
   issuedTurnBy: string;
+  iRank: string;
   iTitle: string;
   issBy: string;
+  isRank: string;
   isTitle: string;
   receivedBy: string;
+  rRank: string;
   rTitle: string;
   hasAccessories: boolean;
   accessories: Accessory[];
@@ -91,16 +97,22 @@ export class Model2AddComponent implements OnInit {
       status: ['', Validators.required],
       category: ['', Validators.required],
       preparedBy: ['', Validators.required],
+      pRank: [''],
       pTitle: ['', Validators.required],
       checkedBy: ['', Validators.required],
+      cRank: [''],
       cTitle: ['', Validators.required],
       approvedBy: ['', Validators.required],
+      aRank: [''],
       aTitle: ['', Validators.required],
       issuedTurnBy: ['', Validators.required],
+      iRank: [''],
       iTitle: ['', Validators.required],
       issBy: ['', Validators.required],
+      isRank: [''],
       isTitle: ['', Validators.required],
       receivedBy: ['', Validators.required],
+      rRank: [''],
       rTitle: ['', Validators.required],
       itemDetails: this.fb.array([this.createItem()])
     });
@@ -280,16 +292,22 @@ export class Model2AddComponent implements OnInit {
         totalPrice: +item.totalPrice,
         currency: item.currency,
         preparedBy: formValue.preparedBy,
+        pRank: formValue.pRank,
         pTitle: formValue.pTitle,
         checkedBy: formValue.checkedBy,
+        cRank: formValue.cRank,
         cTitle: formValue.cTitle,
         approvedBy: formValue.approvedBy,
+        aRank: formValue.aRank,
         aTitle: formValue.aTitle,
         issuedTurnBy: formValue.issuedTurnBy,
+        iRank: formValue.iRank,
         iTitle: formValue.iTitle,
         issBy: formValue.issBy,
+        isRank: formValue.isRank,
         isTitle: formValue.isTitle,
         receivedBy: formValue.receivedBy,
+        rRank: formValue.rRank,
         rTitle: formValue.rTitle,
         hasAccessories: item.hasAccessories,
         accessories: item.hasAccessories
@@ -325,7 +343,7 @@ export class Model2AddComponent implements OnInit {
       error: (err) => {
         console.error('Submission failed:', err);
         let msg = err.error?.message || err.message || 'Unknown error';
-        if (typeof err.error === 'object') {
+        if (err.error && typeof err.error === 'object' && !Array.isArray(err.error)) {
           msg = Object.keys(err.error)
             .map(k => `${k}: ${err.error[k]}`)
             .join('; ');

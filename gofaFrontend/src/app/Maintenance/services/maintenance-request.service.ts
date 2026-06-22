@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, Subject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
@@ -9,6 +9,13 @@ import { environment } from '../../../environments/environment';
 })
 export class MaintenanceRequestService {
   private apiUrl = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister`;
+
+  private refreshNotificationsSource = new Subject<void>();
+  refreshNotifications$ = this.refreshNotificationsSource.asObservable();
+
+  triggerNotificationsRefresh() {
+    this.refreshNotificationsSource.next();
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -60,6 +67,26 @@ export class MaintenanceRequestService {
       catchError((error) => {
         console.error('Error deleting maintenance request:', error);
         return throwError(() => new Error('Failed to delete maintenance request.'));
+      })
+    );
+  }
+
+  /** ================= GET BY WORKS ORDER NUMBER ================= */
+  getMaintenanceRequestByWorksOrder(worksOrderNumber: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/by-worksorder/${worksOrderNumber}`).pipe(
+      catchError((error) => {
+        console.error('Error fetching by works order:', error);
+        return throwError(() => new Error('Failed to fetch maintenance request.'));
+      })
+    );
+  }
+
+  /** ================= GET BY ID ================= */
+  getMaintenanceRequestById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+      catchError((error) => {
+        console.error('Error fetching by id:', error);
+        return throwError(() => new Error('Failed to fetch maintenance request.'));
       })
     );
   }

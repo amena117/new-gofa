@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, Subject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Letter } from '../Maintenance/Models/letter.model';
@@ -10,6 +10,41 @@ import { Letter } from '../Maintenance/Models/letter.model';
 })
 export class MaintenanceRequestService {
   private apiUrl = environment.apiBaseUrl;
+
+  private refreshNotificationsSource = new Subject<void>();
+  refreshNotifications$ = this.refreshNotificationsSource.asObservable();
+
+  triggerNotificationsRefresh() {
+    this.refreshNotificationsSource.next();
+  }
+
+  /** ================= SPARE PART HANDOVER ================== */
+  getHandoverLogs(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/api/SparePartHandoverLog`).pipe(
+      catchError(err => {
+        console.error('Error fetching handover logs:', err);
+        return throwError(() => new Error('Failed to fetch handover logs.'));
+      })
+    );
+  }
+
+  getHandoverLogsByTechnician(fullName: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/api/SparePartHandoverLog/by-technician/${fullName}`).pipe(
+      catchError(err => {
+        console.error('Error fetching technician handover logs:', err);
+        return throwError(() => new Error('Failed to fetch technician handover logs.'));
+      })
+    );
+  }
+
+  confirmHandover(id: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/api/SparePartHandoverLog/confirm/${id}`, {}).pipe(
+      catchError(err => {
+        console.error('Error confirming handover:', err);
+        return throwError(() => new Error('Failed to confirm handover.'));
+      })
+    );
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -123,11 +158,11 @@ export class MaintenanceRequestService {
     );
   }
 
-  updateMaintenanceOnly(worksOrderNumber: number, data: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/update-maintenance-only/${worksOrderNumber}`, data).pipe(
+  updateMaintenanceDetails(worksOrderNumber: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/api/MaintenanceRequestRegister/update-maintenance/${worksOrderNumber}`, data).pipe(
       catchError(err => {
-        console.error('Error updating maintenance only:', err);
-        return throwError(() => new Error('Failed to update maintenance only.'));
+        console.error('Error updating maintenance details:', err);
+        return throwError(() => new Error('Failed to update maintenance details.'));
       })
     );
   }

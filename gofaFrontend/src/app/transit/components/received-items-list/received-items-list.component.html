@@ -52,6 +52,7 @@
       <table class="data-table">
         <thead>
           <tr>
+            <th>Date / ቀን</th>
             <th>Supplier / አቅራቢ</th>
             <th>Description / መግለጫ</th>
             <th>Model / ሞዴል</th>
@@ -64,14 +65,24 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of paginatedItems; trackBy: trackByItemId" class="table-row">
+          <tr *ngFor="let item of paginatedItems; trackBy: trackByItemId" class="table-row"
+              [class.accessory-only-row]="item.isAccessoryOnly">
+            <td data-label="Date" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
+              {{ item.date }}
+            </td>
             <td data-label="Supplier" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
               {{ item.supplier }}
             </td>
             <td data-label="Description" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">
               <div>
-                <div class="fw-medium">{{ item.description }}</div>
-                <small class="text-muted">{{ item.itemType }}</small>
+                <div class="fw-medium">
+                  {{ item.description }}
+                  <span *ngIf="item.isAccessoryOnly" class="badge accessory-only-badge ms-1">📎 Accessory Only</span>
+                </div>
+                <small class="text-muted" *ngIf="item.isAccessoryOnly && item.parentItemDescription">
+                  Parent: {{ item.parentItemDescription }}
+                </small>
+                <small class="text-muted" *ngIf="!item.isAccessoryOnly">{{ item.itemType }}</small>
               </div>
             </td>
             <td data-label="Model" [routerLink]="['/transit/view-details', item.model1Id]" style="cursor: pointer;">

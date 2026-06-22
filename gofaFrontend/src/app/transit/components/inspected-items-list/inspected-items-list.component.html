@@ -7,6 +7,7 @@
       <table class="table table-striped table-hover mb-0">
         <thead class="table-light">
           <tr>
+            <th>Date / ቀን</th>
             <th>Supplier / የአቅራቢው ስም</th>
             <th>Item Type / የእቃው አይነት</th>
             <th>Status </th>
@@ -15,6 +16,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of inspectedItems">
+            <td>{{ item.date }}</td>
             <td>{{ item.supplier }}</td>
             <td>{{ item.itemType }}</td>
             <td>

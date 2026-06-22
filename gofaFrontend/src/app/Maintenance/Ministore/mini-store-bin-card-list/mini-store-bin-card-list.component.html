@@ -1,118 +1,184 @@
-<div class="container">
-  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Bin Card Lists / የቢን ካርድ ዝርዝር</h2>
+<div class="page-container">
 
-  <!-- Search Bar -->
-  <div class="search-bar">
-    <input
-      type="text"
-      [(ngModel)]="searchTerm"
-      placeholder="Enter search term"
-      aria-label="Search term"
-    />
-    <select [(ngModel)]="searchBy" aria-label="Search by">
-      <option value="id">ID</option>
-      <option value="stockNumber">Stock Number</option>
-      <option value="model">Model</option>
-      <option value="date">Date</option>
-    </select>
-    <button (click)="onSearch()">Search</button>
+  <!-- Page Header -->
+  <div class="page-header">
+    <p class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</p>
+    <h1 class="page-title">Bin Card List / የቢን ካርድ ዝርዝር</h1>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="info-cards">
+    <div class="info-card">
+      <div class="card-icon">
+        <i class="bi bi-card-list"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ miniStoreBinCards.length }}</div>
+        <div class="card-label">Total Items / ጠቅላላ</div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="card-icon low-stock">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ lowStockCount }}</div>
+        <div class="card-label">Low Stock / ዝቅተኛ ክምችት</div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-icon filtered">
+        <i class="bi bi-funnel"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ filteredItems.length }}</div>
+        <div class="card-label">Filtered Results / ውጤቶች</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Low Stock Alert Banner -->
+  <div *ngIf="lowStockCount > 0" class="low-stock-alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <strong>{{ lowStockCount }} item(s) critically low (balance &lt; 10)</strong> — please restock soon.
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="filter-section">
+    <div class="search-wrapper">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search bin cards..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()" />
+    </div>
+
+    <div class="filter-dropdown-wrapper">
+      <select class="filter-select" [(ngModel)]="searchBy" (change)="onSearch()">
+        <option value="stockNumber">Search Stock Number / የስቶክ ቁጥር ይፈልጉ</option>
+        <option value="description">Description / መግለጫ</option>
+        <option value="model">Model / ሞዴል</option>
+        <option value="category">Category / ምድብ</option>
+      </select>
+    </div>
+
+    <div class="result-info">
+      <span>{{ filteredItems.length }} records / መዝገቦች</span>
+    </div>
+
+    <div class="export-actions">
+      <button class="action-btn primary small" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i> Excel
+      </button>
+      <button class="action-btn secondary small" (click)="exportToPDF()">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+      </button>
+    </div>
   </div>
 
   <!-- Data Table -->
-  <table
-    class="data-table"
-    role="grid"
-    aria-live="polite"
-    [attr.aria-rowcount]="totalItems"
-  >
-    <thead>
-      <tr>
-        <th scope="col">Stock Number</th>
-        <th scope="col">Description</th>
-        <th scope="col">Location</th>
-        <th scope="col">Category</th>
-        <th scope="col">Balance</th>
-        <th scope="col">Model</th>
-        <th scope="col">Date</th>
-        <th scope="col">Posted By</th>
-        <th scope="col">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        *ngFor="let item of paginatedItems; let i = index"
-        [attr.aria-rowindex]="i + 2"
-      >
-        <td>{{ item.stockNumber }}</td>
-        <td>{{ item.description }}</td>
-        <td>{{ item.location }}</td>
-        <td>{{ item.category }}</td>
-        <td>{{ item.balance }}</td>
-        <td>{{ item.model }}</td>
-        <td>{{ item.date | date: 'yyyy-MM-dd' }}</td>
-        <td>{{ item.postedBy }}</td>
-   <td>
-  <ng-container *ngIf="userRole === 'MINISTORE'; else noAction">
-    <button class="update" (click)="updateItem(item.id)">
-      Add By Part Number
-    </button>
+  <div *ngIf="filteredItems.length > 0" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Stock Number / ፓርት ቁጥር</th>
+          <th>Description / መግለጫ</th>
+          <th>Location / ቦታ</th>
+          <th>Category / ምድብ</th>
+          <th>Balance / ቀሪ</th>
+          <th>Model / ሞዴል</th>
+          <th>Date / ቀን</th>
+          <th>Posted By / የተመዘገበ</th>
+          <th *ngIf="userRole === 'MINISTORE'">Actions / ተግባር</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of paginatedItems; let i = index"
+            [class.low-stock-row]="(item.balance ?? 0) < 10">
+          <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+          <td><strong>{{ item.stockNumber }}</strong></td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.location || '—' }}</td>
+          <td>{{ item.category || '—' }}</td>
+          <td>
+            <span class="balance-val" [class.balance-low]="(item.balance ?? 0) < 10">
+              {{ item.balance ?? 0 }}
+            </span>
+            <span *ngIf="(item.balance ?? 0) < 10" class="low-stock-badge">
+              <i class="bi bi-exclamation-triangle-fill"></i> Low
+            </span>
+          </td>
+          <td>{{ item.model || '—' }}</td>
+          <td>{{ item.date | date:'yyyy-MM-dd' }}</td>
+          <td>{{ item.postedBy || '—' }}</td>
+          <td *ngIf="userRole === 'MINISTORE'">
+            <div class="action-buttons">
+              <button class="action-btn primary small" (click)="updateItem(item.id)" title="Add by Part Number">
+                <i class="bi bi-plus-circle"></i> Add Part
+              </button>
+              <button class="action-btn danger small" (click)="deleteItem(item.id)" title="Delete">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <button class="delete" (click)="deleteItem(item.id)">
-      Delete
-    </button>
-  </ng-container>
+  <!-- Empty State -->
+  <div *ngIf="filteredItems.length === 0" class="empty-state">
+    <i class="bi bi-inbox empty-icon"></i>
+    <h3>No bin cards found</h3>
+    <p>ምንም የቢን ካርድ አልተገኘም</p>
+  </div>
 
-  <ng-template #noAction>
-    <button class="update" disabled>No action</button>
-  </ng-template>
-</td>
-
-
-      </tr>
-      <tr *ngIf="filteredItems.length === 0">
-        <td colspan="9" class="no-data">No records found.</td>
-      </tr>
-    </tbody>
-  </table>
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="pagination-controls">
+    <div class="page-info">Page {{ currentPage }} of {{ totalPages }}</div>
+    <div class="page-size">
+      Items per page:
+      <select [(ngModel)]="itemsPerPage" (ngModelChange)="changePage(1)">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="20">20</option>
+        <option [value]="50">50</option>
+      </select>
+    </div>
+    <div class="nav-buttons">
+      <button class="action-btn secondary small" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+        Prev / ቀዳሚ
+      </button>
+      <button class="action-btn primary small" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        Next / ቀጣይ
+      </button>
+    </div>
+  </div>
 
   <!-- Serial Numbers Modal -->
-  <div
-    *ngIf="serialNumbers.length > 0"
-    class="serial-numbers-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="serialNumbersTitle"
-  >
-    <h3 id="serialNumbersTitle">Serial Numbers</h3>
-    <ul>
-      <li *ngFor="let serial of serialNumbers">{{ serial }}</li>
-    </ul>
-    <button (click)="closeSerialNumbers()">Close</button>
+  <div *ngIf="serialNumbers.length > 0" class="modal-backdrop" (click)="closeSerialNumbers()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-card-header">
+        <h5><i class="bi bi-upc-scan"></i> Serial Numbers</h5>
+        <button class="btn-close-custom" (click)="closeSerialNumbers()">×</button>
+      </div>
+      <div class="modal-card-body">
+        <ul class="serial-list">
+          <li *ngFor="let serial of serialNumbers">{{ serial }}</li>
+        </ul>
+      </div>
+      <div class="modal-card-footer">
+        <button class="action-btn secondary small" (click)="closeSerialNumbers()">Close / ዝጋ</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Pagination Controls -->
-  <div
-    class="pagination"
-    role="navigation"
-    aria-label="Pagination Navigation"
-  >
-    <button
-      (click)="changePage(currentPage - 1)"
-      [disabled]="currentPage === 1"
-      [attr.aria-disabled]="currentPage === 1"
-      aria-label="Previous Page"
-    >
-      Previous
-    </button>
-    <span>Page {{ currentPage }} of {{ totalPages }}</span>
-    <button
-      (click)="changePage(currentPage + 1)"
-      [disabled]="currentPage === totalPages"
-      [attr.aria-disabled]="currentPage === totalPages"
-      aria-label="Next Page"
-    >
-      Next
-    </button>
-  </div>
 </div>

@@ -1,42 +1,169 @@
-<div class="container">
-    <h2 class="text-center">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Maintenance Request Details</h2>
-  
-    <!-- Loading Indicator -->
-    <div *ngIf="isLoading" class="text-center">
-      <p>Loading...</p>
+<div class="details-page">
+
+  <div class="details-header">
+    <div>
+      <p class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</p>
+      <h1 class="page-title">Maintenance Request Details</h1>
     </div>
-  
-    <!-- Error Message -->
-    <div *ngIf="error" class="alert alert-danger text-center">
-      {{ error }}
+    <button class="btn-back" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="alert-error">{{ error }}</div>
+
+  <!-- Content -->
+  <div *ngIf="!isLoading && request" class="details-body">
+
+    <!-- Top bar: WO number + status -->
+    <div class="top-bar">
+      <span class="wo-number">Works Order #{{ request.worksOrderNumber }}</span>
+      <span class="status-pill" [ngClass]="getStatusClass()">{{ request.status || 'Pending' }}</span>
     </div>
-  
-    <!-- Display Request Details -->
-    <div *ngIf="!isLoading && request" class="card">
-      <div class="card-body">
-        <h5 class="card-title">Works Order Number: {{ request.worksOrderNumber }}</h5>
-        <ul class="list-group">
-          <li class="list-group-item"><strong>Nomenclature:</strong> {{ request.nomenclature }}</li>
-          <li class="list-group-item"><strong>Quantity:</strong> {{ request.quantity }}</li>
-          <li class="list-group-item"><strong>Requested By:</strong> {{ request.requestedBy }}</li>
-          <li class="list-group-item"><strong>Serial No:</strong> {{ request.serialNoOfEquip }}</li>
-          <li class="list-group-item"><strong>Date Received:</strong> {{ request.dateWorkOrderReceived | date }}</li>
-          <li class="list-group-item"><strong>Repair Start Date:</strong> {{ request.repairStartDate | date }}</li>
-          <li class="list-group-item"><strong>Repair Finish Date:</strong> {{ request.repairFinishDate | date }}</li>
-          <li class="list-group-item"><strong>Man Hours:</strong> {{ request.manHours }}</li>
-          <li class="list-group-item"><strong>Parts Cost:</strong> {{ request.partsCost | currency }}</li>
-          <li class="list-group-item"><strong>Remark:</strong> {{ request.remark || 'N/A' }}</li>
-          <li class="list-group-item"><strong>Status:</strong>
-            <span *ngIf="request.repairFinishDate" class="badge badge-success">Completed</span>
-            <span *ngIf="!request.repairFinishDate" class="badge badge-warning">In Progress</span>
-          </li>
-        </ul>
+
+    <!-- Section 1: Equipment Info -->
+    <div class="section-card">
+      <h3 class="section-heading"><i class="bi bi-cpu"></i> Equipment Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Model Number</span>
+          <span class="info-val">{{ request.model || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Equipment Type</span>
+          <span class="info-val">{{ request.equipmentTypeName || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Serial Number</span>
+          <span class="info-val"><code>{{ request.serialNoOfEquip || '—' }}</code></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Quantity</span>
+          <span class="info-val">{{ request.quantity }}</span>
+        </div>
+        <div class="info-item full">
+          <span class="info-label">Description of Fault</span>
+          <span class="info-val">{{ request.briefDescriptionOfWork || '—' }}</span>
+        </div>
       </div>
     </div>
-  
-    <!-- Back Button -->
-    <div class="text-center mt-3">
-      <button class="btn btn-secondary" (click)="goBack()">Back</button>
+
+    <!-- Section 2: Request Info -->
+    <div class="section-card">
+      <h3 class="section-heading"><i class="bi bi-person-lines-fill"></i> Request Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Requested By</span>
+          <span class="info-val">{{ request.requestedBy || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Registered By (PPC)</span>
+          <span class="info-val">{{ request.registeredBy || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Date Received</span>
+          <span class="info-val">{{ request.dateWorkOrderReceived | date:'dd MMMM yyyy' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Department Assigned</span>
+          <span class="info-val">{{ request.statusStage || '—' }}</span>
+        </div>
+      </div>
     </div>
+
+    <!-- Section 3: Assignment & Progress -->
+    <div class="section-card">
+      <h3 class="section-heading"><i class="bi bi-tools"></i> Assignment & Progress</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Assigned To</span>
+          <span class="info-val">{{ request.requestedTo || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Maintained By</span>
+          <span class="info-val">{{ request.maintainedBy || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Current Handler</span>
+          <span class="info-val">{{ request.currentHandler || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Maintenance Type</span>
+          <span class="info-val">{{ request.maintenanceType || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Repair Start</span>
+          <span class="info-val">{{ (request.repairStartDate | date:'dd/MM/yyyy') || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Repair Finish</span>
+          <span class="info-val">{{ (request.repairFinishDate | date:'dd/MM/yyyy') || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Man Hours</span>
+          <span class="info-val">{{ request.manHours ?? '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Quality Check</span>
+          <span class="info-val">{{ request.quality || '—' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Costs -->
+    <div class="section-card" *ngIf="request.partsCost || request.laborCost || request.totalCost">
+      <h3 class="section-heading"><i class="bi bi-cash-stack"></i> Costs</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Parts Cost</span>
+          <span class="info-val">{{ request.partsCost | currency:'ETB':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Labour Cost</span>
+          <span class="info-val">{{ request.laborCost | currency:'ETB':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Total Cost</span>
+          <span class="info-val total-cost">{{ request.totalCost | currency:'ETB':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Delivery -->
+    <div class="section-card" *ngIf="request.givenTo || request.recievedDate">
+      <h3 class="section-heading"><i class="bi bi-box-arrow-right"></i> Delivery to Client</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Given To</span>
+          <span class="info-val">{{ request.givenTo || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Approval</span>
+          <span class="info-val">{{ request.approval || '—' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Received Date</span>
+          <span class="info-val">{{ (request.recievedDate | date:'dd/MM/yyyy') || '—' }}</span>
+        </div>
+        <div class="info-item full">
+          <span class="info-label">Receiver Remark</span>
+          <span class="info-val">{{ request.recieverRemark || '—' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Remark -->
+    <div class="section-card" *ngIf="request.remark">
+      <h3 class="section-heading"><i class="bi bi-chat-left-text"></i> Remark</h3>
+      <p class="remark-text">{{ request.remark }}</p>
+    </div>
+
   </div>
+</div>

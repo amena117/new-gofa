@@ -254,6 +254,9 @@
             <label class="table-label">Serial Number / መለያ ቁጥር {{ i + 1 }}</label>
             <div class="input-group">
               <input class="table-input serial-input" [formControlName]="i" placeholder="Serial {{ i + 1 }}" [attr.aria-describedby]="'serialNumber' + i + '-error'" />
+              <div class="serial-warning" *ngIf="serialWarnings[i]">
+                <i class="icon-warning"></i> <strong>Duplicate Alert:</strong> {{ serialWarnings[i] }}
+              </div>
               <button class="action-btn secondary small" (click)="removeSerialNumber(i)" *ngIf="serialNumbers.length > 0 && itemForm.get('role')?.value === 'SPAREPART'" [attr.aria-label]="'Remove serial number ' + (i + 1)">Remove / አጥፋ</button>
               <div *ngIf="serial.invalid && serial.touched" [id]="'serialNumber' + i + '-error'" class="error">
                 Serial number is required. / መለያ ቁጥር ግዴታ ነው።
@@ -381,6 +384,9 @@
                        [class.error]="serial.invalid && serial.touched" />
                 <i class="serial-icon icon-tag"></i>
               </div>
+                <div class="serial-warning small" *ngIf="accessorySerialWarnings[i] && accessorySerialWarnings[i][j]">
+                  <i class="icon-warning"></i> <strong>Duplicate Alert:</strong> {{ accessorySerialWarnings[i][j] }}
+                </div>
               <div *ngIf="serial.invalid && serial.touched" [id]="'accessorySerial' + i + j + '-error'" class="error-message small">
                 <i class="icon-warning"></i> Required / ግዴታ
               </div>
@@ -1033,6 +1039,9 @@
                 <label class="table-label">Serial Number / መለያ ቁጥር {{ j + 1 }}</label>
                 <div class="input-group">
                   <input class="table-input serial-input" [formControlName]="j" placeholder="Serial {{ j + 1 }}" [attr.aria-describedby]="'bulkSerialNumber' + i + j + '-error'" />
+                  <div class="serial-warning" *ngIf="bulkSerialWarnings[i] && bulkSerialWarnings[i][j]">
+                    <i class="icon-warning"></i> <strong>Duplicate Alert:</strong> {{ bulkSerialWarnings[i][j] }}
+                  </div>
                   <button class="action-btn secondary small" (click)="removeSerialNumberFromItem(i, j)" *ngIf="getSerialNumbersForItem(i).length > 0 && item.get('role')?.value === 'SPAREPART'" [attr.aria-label]="'Remove serial number ' + (j + 1) + ' for item ' + (i + 1)">Remove / አጥፋ</button>
                   <div *ngIf="serial.invalid && serial.touched" [id]="'bulkSerialNumber' + i + j + '-error'" class="error">
                     Serial number is required. / መለያ ቁጥር ግዴታ ነው።
@@ -1159,6 +1168,9 @@
                        [attr.aria-describedby]="'bulkAccessorySerial' + i + j + k + '-error'"
                        [class.error]="serial.invalid && serial.touched" />
                 <i class="serial-icon icon-tag"></i>
+              </div>
+              <div class="serial-warning small" *ngIf="bulkAccessorySerialWarnings[i] && bulkAccessorySerialWarnings[i][j] && bulkAccessorySerialWarnings[i][j][k]">
+                <i class="icon-warning"></i> <strong>Duplicate Alert:</strong> {{ bulkAccessorySerialWarnings[i][j][k] }}
               </div>
               <div *ngIf="serial.invalid && serial.touched" [id]="'bulkAccessorySerial' + i + j + k + '-error'" class="error-message small">
                 <i class="icon-warning"></i> Required / ግዴታ

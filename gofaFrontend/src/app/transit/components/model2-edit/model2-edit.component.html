@@ -316,8 +316,9 @@
     <!-- Approval Information Section -->
     <div class="section-title">Approval Information / የማረጋገጫ መረጃ</div>
     <div class="table-container">
+      <!-- Prepared By -->
       <div class="table-row">
-        <div class="table-label">Prepared By / ያዘጋጀው</div>
+        <div class="table-label">ያዘጋጀው ስም / Prepared By Name</div>
         <div class="table-input">
           <input formControlName="preparedBy" />
           <small class="error" *ngIf="editForm.get('preparedBy')?.touched && editForm.get('preparedBy')?.hasError('required')">
@@ -326,7 +327,13 @@
         </div>
       </div>
       <div class="table-row">
-        <div class="table-label">Prepared By Title / ያዘጋጀው ማዕረግ</div>
+        <div class="table-label">ያዘጋጀው ማዕረግ / Prepared By Rank</div>
+        <div class="table-input">
+          <input formControlName="pRank" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">ያዘጋጀው ሃላፊነት / Prepared By Title</div>
         <div class="table-input">
           <input formControlName="pTitle" />
           <small class="error" *ngIf="editForm.get('pTitle')?.touched && editForm.get('pTitle')?.hasError('required')">
@@ -334,8 +341,10 @@
           </small>
         </div>
       </div>
+
+      <!-- Checked By -->
       <div class="table-row">
-        <div class="table-label">Checked By / ያረጋገጠው ሃላፊ</div>
+        <div class="table-label">ያረጋገጠው ስም / Checked By Name</div>
         <div class="table-input">
           <input formControlName="checkedBy" />
           <small class="error" *ngIf="editForm.get('checkedBy')?.touched && editForm.get('checkedBy')?.hasError('required')">
@@ -344,7 +353,13 @@
         </div>
       </div>
       <div class="table-row">
-        <div class="table-label">Checked By Title / ያረጋገጠው ሃላፊ ማዕረግ</div>
+        <div class="table-label">ያረጋገጠው ማዕረግ / Checked By Rank</div>
+        <div class="table-input">
+          <input formControlName="cRank" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">ያረጋገጠው ሃላፊነት / Checked By Title</div>
         <div class="table-input">
           <input formControlName="cTitle" />
           <small class="error" *ngIf="editForm.get('cTitle')?.touched && editForm.get('cTitle')?.hasError('required')">
@@ -352,8 +367,10 @@
           </small>
         </div>
       </div>
+
+      <!-- Approved By -->
       <div class="table-row">
-        <div class="table-label">Approved By / ያጸደቀው</div>
+        <div class="table-label">ያጸደቀው ስም / Approved By Name</div>
         <div class="table-input">
           <input formControlName="approvedBy" />
           <small class="error" *ngIf="editForm.get('approvedBy')?.touched && editForm.get('approvedBy')?.hasError('required')">
@@ -362,7 +379,13 @@
         </div>
       </div>
       <div class="table-row">
-        <div class="table-label">Approved By Title / ያጸደቀው ማዕረግ</div>
+        <div class="table-label">ያጸደቀው ማዕረግ / Approved By Rank</div>
+        <div class="table-input">
+          <input formControlName="aRank" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">ያጸደቀው ሃላፊነት / Approved By Title</div>
         <div class="table-input">
           <input formControlName="aTitle" />
           <small class="error" *ngIf="editForm.get('aTitle')?.touched && editForm.get('aTitle')?.hasError('required')">
@@ -370,26 +393,10 @@
           </small>
         </div>
       </div>
+
+      <!-- Issued By (Issuer) -->
       <div class="table-row">
-        <div class="table-label">Issued/Turned By / ወጪ / ተመላሽ ያደረገው</div>
-        <div class="table-input">
-          <input formControlName="issuedTurnBy" />
-          <small class="error" *ngIf="editForm.get('issuedTurnBy')?.touched && editForm.get('issuedTurnBy')?.hasError('required')">
-            Issued/Turned By is required
-          </small>
-        </div>
-      </div>
-      <div class="table-row">
-        <div class="table-label">Issued/Turned By Title / ወጪ / ተመላሽ ያደረገው ማዕረግ</div>
-        <div class="table-input">
-          <input formControlName="iTitle" />
-          <small class="error" *ngIf="editForm.get('iTitle')?.touched && editForm.get('iTitle')?.hasError('required')">
-            Issued/Turned By Title is required
-          </small>
-        </div>
-      </div>
-      <div class="table-row">
-        <div class="table-label">Issued By / ያረካከበው</div>
+        <div class="table-label">የአረካካቢ ስም / Issued By Name</div>
         <div class="table-input">
           <input formControlName="issBy" />
           <small class="error" *ngIf="editForm.get('issBy')?.touched && editForm.get('issBy')?.hasError('required')">
@@ -398,7 +405,13 @@
         </div>
       </div>
       <div class="table-row">
-        <div class="table-label">Issued By Title / ያረካከበው ማዕረግ</div>
+        <div class="table-label">የአረካካቢ ማዕረግ / Issued By Rank</div>
+        <div class="table-input">
+          <input formControlName="isRank" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">የአረካካቢ ሃላፊነት / Issued By Title</div>
         <div class="table-input">
           <input formControlName="isTitle" />
           <small class="error" *ngIf="editForm.get('isTitle')?.touched && editForm.get('isTitle')?.hasError('required')">
@@ -406,8 +419,36 @@
           </small>
         </div>
       </div>
+
+      <!-- Issued/Turned By -->
       <div class="table-row">
-        <div class="table-label">Received By / የተረከበው / የመለሰው</div>
+        <div class="table-label">ወጪ/ተመላሽ ያደረገው ስም / Issued/Turned By Name</div>
+        <div class="table-input">
+          <input formControlName="issuedTurnBy" />
+          <small class="error" *ngIf="editForm.get('issuedTurnBy')?.touched && editForm.get('issuedTurnBy')?.hasError('required')">
+            Issued/Turned By is required
+          </small>
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">ወጪ/ተመላሽ ያደረገው ማዕረግ / Issued/Turned By Rank</div>
+        <div class="table-input">
+          <input formControlName="iRank" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">ወጪ/ተመላሽ ያደረገው ሃላፊነት / Issued/Turned By Title</div>
+        <div class="table-input">
+          <input formControlName="iTitle" />
+          <small class="error" *ngIf="editForm.get('iTitle')?.touched && editForm.get('iTitle')?.hasError('required')">
+            Issued/Turned By Title is required
+          </small>
+        </div>
+      </div>
+
+      <!-- Received By -->
+      <div class="table-row">
+        <div class="table-label">የተረከበው/የመለሰው ስም / Received/Returned By Name</div>
         <div class="table-input">
           <input formControlName="receivedBy" />
           <small class="error" *ngIf="editForm.get('receivedBy')?.touched && editForm.get('receivedBy')?.hasError('required')">
@@ -416,7 +457,13 @@
         </div>
       </div>
       <div class="table-row">
-        <div class="table-label">Received By Title / የተረከበው / የመለሰው ማዕረግ</div>
+        <div class="table-label">የተረከበው/የመለሰው ማዕረግ / Received/Returned By Rank</div>
+        <div class="table-input">
+          <input formControlName="rRank" />
+        </div>
+      </div>
+      <div class="table-row">
+        <div class="table-label">የተረከበው/የመለሰው ሃላፊነት / Received/Returned By Title</div>
         <div class="table-input">
           <input formControlName="rTitle" />
           <small class="error" *ngIf="editForm.get('rTitle')?.touched && editForm.get('rTitle')?.hasError('required')">

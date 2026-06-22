@@ -1,88 +1,534 @@
-<div class="container">
-  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Maintenance Request List</h2>
-  <p>
-    Filtered by Maintenance Type:
-    <strong>{{ getMaintenanceTypeByRole(userRole) }}</strong>
-    and Requested To:
-    <strong>{{ getRequestedToByRole(userRole) }}</strong>
-  </p>
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Maintenance Request List / የጥገና መጠየቂያ ዝርዝር</h1>
+    <p class="filter-label">
+      Department: <strong>{{ getDepartmentLabel() }}</strong>
+    </p>
+  </div>
 
-  <!-- Table Wrapper for Scroll -->
-  <div class="table-container">
-    <table class="maintenance-table">
+  <!-- Info Cards -->
+  <div class="info-cards">
+    <div class="info-card" (click)="onStatusFilterChange('')" [class.active]="selectedStatusFilter === ''">
+      <div class="card-icon">
+        <i class="bi bi-inbox"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ maintenanceRequests.length }}</div>
+        <div class="card-label">Total Requests / ጠቅላላ</div>
+      </div>
+    </div>
+    <div class="info-card" (click)="onStatusFilterChange('PENDING')" [class.active]="selectedStatusFilter === 'PENDING'">
+      <div class="card-icon pending">
+        <i class="bi bi-clock"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ getPendingCount() }}</div>
+        <div class="card-label">Pending / Waiting for Approval</div>
+      </div>
+    </div>
+    <div class="info-card" (click)="onStatusFilterChange('PROGRESS')" [class.active]="selectedStatusFilter === 'PROGRESS'">
+      <div class="card-icon progress">
+        <i class="bi bi-gear-wide-connected"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ getInProgressCount() }}</div>
+        <div class="card-label">On Maintenance / በጥገና ላይ</div>
+      </div>
+    </div>
+    <div class="info-card" (click)="onStatusFilterChange('SPARE')" [class.active]="selectedStatusFilter === 'SPARE'">
+      <div class="card-icon spare-part">
+        <i class="bi bi-tools"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ getWaitingSparePartCount() }}</div>
+        <div class="card-label">Waiting for Spare Part / የስፓርፓርት ጥያቄ</div>
+      </div>
+    </div>
+    <div class="info-card" (click)="onStatusFilterChange('COMPLETED')" [class.active]="selectedStatusFilter === 'COMPLETED'">
+      <div class="card-icon completed">
+        <i class="bi bi-check-circle"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ getCompletedCount() }}</div>
+        <div class="card-label">Maintained / የተጠገኑ</div>
+      </div>
+    </div>
+    <div class="info-card" (click)="onStatusFilterChange('QUALITY')" [class.active]="selectedStatusFilter === 'QUALITY'">
+      <div class="card-icon quality">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ getQualityCheckCount() }}</div>
+        <div class="card-label">Quality Check / የጥራት ፍተሻ</div>
+      </div>
+    </div>
+    <div class="info-card" (click)="onStatusFilterChange('DO_OUT')" [class.active]="selectedStatusFilter === 'DO_OUT'">
+      <div class="card-icon do-out">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ getDoOutCount() }}</div>
+        <div class="card-label">Do Out / ዶ አውት</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="filter-section">
+    <div class="search-wrapper">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search by serial number, model, or requester..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()">
+    </div>
+
+    <!-- Date Filter -->
+    <div class="filter-dropdown-wrapper">
+      <select class="filter-select" [(ngModel)]="selectedDateFilter" (change)="onFilterChange()">
+        <option value="">All Time / ሁሉም ጊዜ</option>
+        <option value="1WEEK">Last 1 Week / 1 ሳምንት</option>
+        <option value="1MONTH">Last 1 Month / 1 ወር</option>
+        <option value="3MONTHS">Last 3 Months / 3 ወር</option>
+        <option value="6MONTHS">Last 6 Months / 6 ወር</option>
+        <option value="9MONTHS">Last 9 Months / 9 ወር</option>
+        <option value="12MONTHS">Last 12 Months / 1 አመት</option>
+      </select>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="filter-dropdown-wrapper">
+      <select class="filter-select" [(ngModel)]="selectedStatusFilter" (change)="onFilterChange()">
+        <option value="">All Status / ሁሉም ሁኔታ</option>
+        <option value="COMPLETED">Maintenance Finished / ጥገና ተጠናቋል</option>
+        <option value="QUALITY">Quality Check / የጥራት ፍተሻ</option>
+        <option value="SPARE">Waiting for Spare / ስፔርፓርት በመጠባበቅ ላይ</option>
+        <option value="PROGRESS">On Maintenance / በጥገና ላይ</option>
+        <option value="PENDING">Pending / በመጠባበቅ ላይ</option>
+        <option value="DO_OUT">Do Out / ዶ አውት</option>
+      </select>
+    </div>
+
+    <!-- Manager (MAINTENANCE_LEADER) Filter Dropdown -->
+    <div class="filter-dropdown-wrapper" *ngIf="userRole === 'MAINTENANCE_LEADER'">
+      <select class="filter-select" [(ngModel)]="selectedRoleFilter" (change)="onFilterChange()">
+        <option value="">All Departments / ሁሉንም የስራ ክፍል</option>
+        <option value="POWER">Power Maintenance / ፓወር ሜንቴናንስ</option>
+        <option value="OFFICE_MACHINE">Office Machine Maintenance / ኦፊስ ማሽን ሜንቴናንስ</option>
+        <option value="RADIO_MAINTENANCE">Radio Maintenance / ራዲዮ ሜንቴናንስ</option>
+      </select>
+    </div>
+
+    <!-- RTEAM_LEADER Radio Sub-unit Filter Dropdown -->
+    <div class="filter-dropdown-wrapper" *ngIf="userRole === 'RTEAM_LEADER'">
+      <select class="filter-select" [(ngModel)]="selectedRadioFilter" (change)="onFilterChange()">
+        <option value="">All Sub-units / ሁሉንም ክፍሎች</option>
+        <option value="VHF">VHF Radio / ቪ.ኤች.ኤፍ ራዲዮ</option>
+        <option value="HF">HF Radio / ኤች.ኤፍ ራዲዮ</option>
+        <option value="NOT_ASSIGNED">Not Assigned / ያልተመደበ</option>
+      </select>
+    </div>
+
+    <!-- OTEAM_LEADER Office Sub-unit Filter Dropdown -->
+    <div class="filter-dropdown-wrapper" *ngIf="userRole === 'OTEAM_LEADER'">
+      <select class="filter-select" [(ngModel)]="selectedOfficeFilter" (change)="onFilterChange()">
+        <option value="">All Sub-units / ሁሉንም ክፍሎች</option>
+        <option value="OFFICE_MACHINE">Office Machine / ኦፊስ ማሽን</option>
+        <option value="COMPUTER">Computer / ኮምፒዩተር</option>
+        <option value="NOT_ASSIGNED">Not Assigned / ያልተመደበ</option>
+      </select>
+    </div>
+
+    <div class="result-info">
+      <span>{{ filteredRequests.length }} requests / መጠየቂያዎች</span>
+    </div>
+
+    <div class="export-actions">
+      <button class="action-btn excel small" (click)="downloadExcel()" title="Download Excel">
+        <i class="bi bi-file-earmark-excel"></i> Excel
+      </button>
+      <button class="action-btn pdf small" (click)="downloadPDF()" title="Download PDF">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div *ngIf="filteredRequests.length > 0" class="table-container">
+    <table class="data-table">
       <thead>
         <tr>
-          <th>Works Order Number</th>
-          <th>Nomenclature</th>
-          <th>Quantity</th>
-          <th>Model</th>
-          <th>Serial Number</th>
-          <th>Maintenance Type</th>
-          <th>Requested To</th>
-          <th>Status</th>
-          <th>Actions</th>
+          <th>#</th>
+          <th>Works Order No / የስራ ትዕዛዝ</th>
+          <th>Model / ሞዴል</th>
+          <th>Serial Number / ተ.ቁ</th>
+          <th>Category Type / የመሳሪያ አይነት</th>
+          <th>Qty / ብዛት</th>
+          <th>Requested By / ጠያቂ</th>
+          <th>Maintained By / ጠጋኝ</th>
+          <th>Date Received / ቀን</th>
+          <th>Status / ሁኔታ</th>
+          <th *ngIf="userRole === 'RTEAM_LEADER' || userRole === 'OTEAM_LEADER'">Routed To / የተላከበት</th>
+          <th>Actions / ተግባር</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let request of maintenanceRequests">
-          <td>{{ request.worksOrderNumber }}</td>
-          <td>{{ request.nomenclature }}</td>
+        <tr *ngFor="let request of paginatedRequests; let i = index">
+          <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+          <td><strong>{{ request.worksOrderNumber }}</strong></td>
+          <td>{{ request.model || 'N/A' }}</td>
+          <td>{{ request.serialNoOfEquip || 'N/A' }}</td>
+          <td>{{ request.nomenclature || request.equipmentType?.equipmentTypeName || 'N/A' }}</td>
           <td>{{ request.quantity }}</td>
-          <td>{{ request.model }}</td>
-          <td>{{ request.serialNoOfEquip }}</td>
-          <td>{{ request.maintenanceType }}</td>
-          <td>{{ request.requestedTo }}</td>
-          <td>{{ request.status }}</td>
-          <td class="actions-container">
-
-            <!-- Show ASSIGN dropdown for team leaders -->
-            <ng-container *ngIf="['RTEAM_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER'].includes(userRole); else normalActions">
-              <button (click)="assignRequest(request)" class="btn btn-assign">Assign</button>
+          <td>{{ request.requestedBy || 'N/A' }}</td>
+          <td>{{ request.maintainedBy || 'Not Yet' }}</td>
+          <td>{{ request.dateWorkOrderReceived | date:'MMM d, y' }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="{
+              'status-danger':  request.status === 'Do Out' || request.status === 'Rejected' || request.status === 'Cancelled',
+              'status-success': request.status === 'Maintenance Finished' || request.status === 'Client Received' || request.status === 'Completed',
+              'status-warning': request.status?.includes('Waiting') || request.status?.includes('Pending') || request.status?.includes('Needs'),
+              'status-info':    request.status === 'On Maintenance' || request.status === 'On Maintaining' || request.status === 'Spare Part Issued' || request.status === 'Quality Check' || request.status === 'In Progress'
+            }">
+              <i class="bi" [ngClass]="{
+                'bi-exclamation-triangle-fill': request.status === 'Do Out' || request.status === 'Rejected',
+                'bi-check-circle-fill': request.status === 'Maintenance Finished' || request.status === 'Client Received' || request.status === 'Completed',
+                'bi-clock-history': request.status?.includes('Waiting') || request.status?.includes('Pending'),
+                'bi-gear-wide-connected': request.status === 'On Maintenance' || request.status === 'On Maintaining' || request.status === 'In Progress',
+                'bi-shield-check': request.status === 'Quality Check',
+                'bi-box-seam': request.status === 'Spare Part Issued'
+              }"></i>
+              {{ request.status }}
+            </span>
+          </td>
+          <td *ngIf="userRole === 'RTEAM_LEADER' || userRole === 'OTEAM_LEADER'">
+            <!-- RTEAM_LEADER sub-units -->
+            <ng-container *ngIf="userRole === 'RTEAM_LEADER'">
+              <span *ngIf="request.requestedTo === 'VHF_Radio Maintenance'" class="status-badge status-info">VHF Radio</span>
+              <span *ngIf="request.requestedTo === 'HF_Radio Maintenance'" class="status-badge status-info">HF Radio</span>
+              <span *ngIf="request.requestedTo === 'RADIO_MAINTENANCE Maintenance' || !request.requestedTo" class="status-badge status-secondary">Not Assigned</span>
             </ng-container>
+            <!-- OTEAM_LEADER sub-units -->
+            <ng-container *ngIf="userRole === 'OTEAM_LEADER'">
+              <span *ngIf="request.requestedTo === 'Office_Machine Maintenance'" class="status-badge status-info">Office Machine</span>
+              <span *ngIf="request.requestedTo === 'Computer_Maintenance'" class="status-badge status-info">Computer</span>
+              <span *ngIf="request.requestedTo === 'OFFICE_MACHINE Maintenance' || !request.requestedTo" class="status-badge status-secondary">Not Assigned</span>
+            </ng-container>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <!-- View Details Button -->
+              <button class="action-btn info small" (click)="viewDetails(request)" title="View Details">
+                <i class="bi bi-eye"></i> View Details
+              </button>
 
-            <!-- Standard actions for other roles -->
-            <ng-template #normalActions>
-              <ng-container *ngIf="
-                request.status !== 'Client Received' &&
-                request.status !== 'On Maintenance' &&
-                request.status !== 'Maintenance Finished' &&
-                request.status !== 'Quality Check' &&
-                request.status !== 'Do Out';
-                else noAction">
-                <button (click)="requestPart(request)" class="btn btn-request">Request Part</button>
-                <button (click)="goToMaintainForm(request)" class="btn btn-maintain">Maintain</button>
+              <!-- Team leader: assign when waiting for approval OR already on maintaining (legacy records) -->
+              <ng-container *ngIf="['RTEAM_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER', 'VTEAM_LEADER', 'HTEAM_LEADER'].includes(userRole)">
+                <ng-container *ngIf="request.status === 'Waiting for Approval' || request.status === 'On Maintaining'">
+                  <!-- For RTEAM_LEADER: hide if already routed to VHF or HF -->
+                  <!-- For OTEAM_LEADER: hide if already routed to Office Machine or Computer -->
+                  <button
+                    class="action-btn primary small"
+                    (click)="assignRequest(request)"
+                    *ngIf="
+                      (userRole !== 'RTEAM_LEADER' || (request.requestedTo !== 'VHF_Radio Maintenance' && request.requestedTo !== 'HF_Radio Maintenance')) &&
+                      (userRole !== 'OTEAM_LEADER' || (request.requestedTo !== 'Office_Machine Maintenance' && request.requestedTo !== 'Computer_Maintenance')) &&
+                      (userRole !== 'PTEAM_LEADER' || (request.requestedTo !== 'Electrical Maintenance' && request.requestedTo !== 'Mechanical Maintenance' && request.requestedTo !== 'Welding Maintenance'))
+                    "
+                  >
+                    <i class="bi bi-person-check"></i> Assign / Approve
+                  </button>
+                  <span
+                    *ngIf="userRole === 'RTEAM_LEADER' && (request.requestedTo === 'VHF_Radio Maintenance' || request.requestedTo === 'HF_Radio Maintenance')"
+                    class="status-badge badge bg-info text-dark"
+                  >Assigned</span>
+                  <span
+                    *ngIf="userRole === 'OTEAM_LEADER' && (request.requestedTo === 'Office_Machine Maintenance' || request.requestedTo === 'Computer_Maintenance')"
+                    class="status-badge badge bg-info text-dark"
+                  >Assigned</span>
+                  <span
+                    *ngIf="userRole === 'PTEAM_LEADER' && (request.requestedTo === 'Electrical Maintenance' || request.requestedTo === 'Mechanical Maintenance' || request.requestedTo === 'Welding Maintenance')"
+                    class="status-badge badge bg-info text-dark"
+                  >Assigned</span>
+                </ng-container>
+                <span
+                  *ngIf="request.status !== 'Waiting for Approval' && request.status !== 'On Maintaining'"
+                  class="status-badge badge bg-secondary"
+                >No Action</span>
               </ng-container>
-            </ng-template>
 
-            <ng-template #noAction>
-              <button disabled class="btn btn-noaction">No Action Needed</button>
-            </ng-template>
+              <!-- Regular technician actions: only after leader assigns (On Maintaining / On Maintenance / Rejected) -->
+              <ng-container *ngIf="!['RTEAM_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER', 'VTEAM_LEADER', 'HTEAM_LEADER', 'MAINTENANCE_LEADER'].includes(userRole)">
+                <!-- Active work: show Request Part + Maintain only when NOT waiting for spare part -->
+                <ng-container *ngIf="request.status === 'On Maintaining' || request.status === 'On Maintenance' || request.status === 'Spare Part Rejected' || request.status === 'Rejected by Maintenance Leader'">
+                  <button class="action-btn warning small" (click)="requestPart(request)">
+                    <i class="bi bi-box-seam"></i> Request Part
+                  </button>
+                  <button class="action-btn primary small" (click)="goToMaintainForm(request)">
+                    <i class="bi bi-gear"></i> Maintain
+                  </button>
+                </ng-container>
 
+                <!-- Rejected badge -->
+                <ng-container *ngIf="request.status === 'Spare Part Rejected' || request.status === 'Rejected by Maintenance Leader'">
+                  <span class="status-badge badge bg-danger text-white mb-1">
+                    <i class="bi bi-x-circle"></i> Part Rejected
+                  </span>
+                </ng-container>
+
+                <!-- Spare part already requested: lock both buttons -->
+                <ng-container *ngIf="request.status === 'Waiting for Spare Part' || request.status === 'Approved - Waiting for Parts'">
+                  <span class="status-badge badge bg-warning text-dark">
+                    <i class="bi bi-hourglass-split"></i> {{ request.status }}
+                  </span>
+                </ng-container>
+
+                <!-- Spare part already issued: hide Request Part but show Maintain -->
+                <ng-container *ngIf="request.status === 'Spare Part Issued'">
+                  <span class="status-badge badge bg-info text-dark mb-1">
+                    <i class="bi bi-check-circle"></i> Spare Part Issued
+                  </span>
+                  <button class="action-btn primary small" (click)="goToMaintainForm(request)">
+                    <i class="bi bi-gear"></i> Maintain
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="request.status === 'Waiting for Approval'">
+                  <span class="status-badge badge bg-warning text-dark">Awaiting Approval</span>
+                </ng-container>
+                <ng-container *ngIf="
+                  request.status !== 'On Maintaining' &&
+                  request.status !== 'On Maintenance' &&
+                  request.status !== 'Waiting for Spare Part' &&
+                  request.status !== 'Waiting for Approval'">
+                  <span class="status-badge badge bg-success">No Action Needed</span>
+                </ng-container>
+              </ng-container>
+            </div>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Assignment Form (only shows when assignMode=true AND selectedRequest is defined) -->
-  <div *ngIf="isAssignMode && selectedRequest" class="assignment-form">
-    <h3>Assign Maintenance Task</h3>
-    <p><strong>Works Order:</strong> {{ selectedRequest.worksOrderNumber }}</p>
-    <p><strong>Maintenance Type:</strong> {{ selectedRequest.maintenanceType }}</p>
+  <!-- Empty State -->
+  <div *ngIf="filteredRequests.length === 0" class="empty-state">
+    <i class="bi bi-inbox empty-icon"></i>
+    <h3>No maintenance requests found</h3>
+    <p>ምንም የጥገና መጠየቂያ አልተገኘም</p>
+  </div>
 
-    <label for="requestedTo">Assign To:</label>
-    <select
-      id="requestedTo"
-      [(ngModel)]="selectedRequest.requestedTo"
-      class="input-field"
-    >
-      <option *ngFor="let opt of assignOptions" [value]="opt">{{ opt }}</option>
-    </select>
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="pagination-controls">
+    <div class="page-info">Page {{ currentPage }} of {{ totalPages }}</div>
+    <div class="page-size">
+      Items per page:
+      <select [(ngModel)]="itemsPerPage" (ngModelChange)="updatePagination()">
+        <option [value]="10">10</option>
+        <option [value]="20">20</option>
+        <option [value]="50">50</option>
+      </select>
+    </div>
+    <div class="nav-buttons">
+      <button class="action-btn secondary small" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+        Prev / ቀዳሚ
+      </button>
+      <button class="action-btn primary small" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        Next / ቀጣይ
+      </button>
+    </div>
+  </div>
 
+  <!-- Assignment modal overlay (RTEAM_LEADER and OTEAM_LEADER) -->
+  <div *ngIf="isAssignMode && selectedRequest" class="assign-modal-backdrop">
+    <div class="assign-modal">
+      <h3>Assign to Sub-Unit / ንዑስ ክፍል ምደባ</h3>
+      <div class="assign-modal-info">
+        <p><strong>Works Order:</strong> {{ selectedRequest.worksOrderNumber }}</p>
+        <p><strong>Model:</strong> {{ selectedRequest.model }}</p>
+        <p><strong>Category Type:</strong> {{ selectedRequest.nomenclature || selectedRequest.equipmentType?.equipmentTypeName }}</p>
+      </div>
+      <label for="requestedTo">
+        <span *ngIf="userRole === 'RTEAM_LEADER'">Assign Radio Sub-unit / ምደብ ወደ ራዲዮ ክፍል:</span>
+        <span *ngIf="userRole === 'OTEAM_LEADER'">Assign Office Sub-unit / ምደብ ወደ ኦፊስ ክፍል:</span>
+      </label>
+      <select id="requestedTo" [(ngModel)]="selectedRequest.requestedTo" class="form-select-inline">
+        <option *ngFor="let opt of assignOptions" [value]="opt">
+          <ng-container *ngIf="opt === 'VHF_Radio Maintenance'">VHF Radio</ng-container>
+          <ng-container *ngIf="opt === 'HF_Radio Maintenance'">HF Radio</ng-container>
+          <ng-container *ngIf="opt === 'Office_Machine Maintenance'">Office Machine / ኦፊስ ማሽን</ng-container>
+          <ng-container *ngIf="opt === 'Computer_Maintenance'">Computer / ኮምፒዩተር</ng-container>
+          <ng-container *ngIf="opt === 'Electrical Maintenance'">Electrical Maintenance / ኤሌክትሪካል ጥገና</ng-container>
+          <ng-container *ngIf="opt === 'Mechanical Maintenance'">Mechanical Maintenance / መካኒካል ጥገና</ng-container>
+          <ng-container *ngIf="opt === 'Welding Maintenance'">Welding Maintenance / ወልዲንግ ጥገና</ng-container>
+        </option>
+      </select>
+      <div class="assignment-actions">
+        <button class="action-btn primary small" (click)="submitAssignment()">
+          <i class="bi bi-check-circle"></i> Confirm / አረጋግጥ
+        </button>
+        <button class="action-btn secondary small" (click)="isAssignMode = false; selectedRequest = null">
+          <i class="bi bi-x-circle"></i> Cancel / ሰርዝ
+        </button>
+      </div>
+    </div>
+  </div>
 
-    <button (click)="submitAssignment()" class="btn btn-assign">
-      Submit Assignment
-    </button>
+  <!-- Modal for Viewing Full Details -->
+  <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewModalLabel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 8px; vertical-align: middle;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Request Details / የጥገና ጥያቄ ዝርዝሮች
+          </h5>
+          <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body custom-scrollbar">
+          <div *ngIf="viewingRequest">
+            <!-- Initial View -->
+            <div *ngIf="!showFullDetails" class="details-summary-grid">
+              <div class="detail-item">
+                <span class="detail-label">ID / መለያ</span>
+                <span class="detail-val">{{ viewingRequest.id }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Works Order Number / የስራ ትዕዛዝ ቁጥር</span>
+                <span class="detail-val highlight">{{ viewingRequest.worksOrderNumber }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Nomenclature / መግለጫ</span>
+                <span class="detail-val">{{ viewingRequest.nomenclature || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Quantity / ብዛት</span>
+                <span class="detail-val">{{ viewingRequest.quantity }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Requested By / የጠየቀው</span>
+                <span class="detail-val">{{ viewingRequest.requestedBy || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Maintained By / ጠጋኝ</span>
+                <span class="detail-val">{{ viewingRequest.maintainedBy || 'Not Yet' }}</span>
+              </div>
+              <div class="detail-full-btn-wrapper">
+                <button class="show-more-btn-modal" (click)="toggleFullDetails()">
+                  Show All Details / ሁሉንም ዝርዝር አሳይ
+                </button>
+              </div>
+            </div>
+
+            <!-- Full Details View -->
+            <div *ngIf="showFullDetails" class="details-full-grid">
+              <div class="detail-item">
+                <span class="detail-label">ID / መለያ</span>
+                <span class="detail-val">{{ viewingRequest.id }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Works Order Number / የስራ ትዕዛዝ ቁጥር</span>
+                <span class="detail-val highlight">{{ viewingRequest.worksOrderNumber }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Nomenclature / መግለጫ</span>
+                <span class="detail-val">{{ viewingRequest.nomenclature || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Quantity / ብዛት</span>
+                <span class="detail-val">{{ viewingRequest.quantity }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Requested By / የጠየቀው</span>
+                <span class="detail-val">{{ viewingRequest.requestedBy || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Maintained By / ጠጋኝ</span>
+                <span class="detail-val">{{ viewingRequest.maintainedBy || 'Not Yet' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Serial No Of Equip / የመሳሪያ ተራ ቁጥር</span>
+                <span class="detail-val">{{ viewingRequest.serialNoOfEquip || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Brief Description of Work / የስራው አጭር መግለጫ</span>
+                <span class="detail-val">{{ viewingRequest.briefDescriptionOfWork || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Date Work Order Received / የስራ ትዕዛዝ የተቀበለበት ቀን</span>
+                <span class="detail-val">{{ viewingRequest.dateWorkOrderReceived | date:'medium' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Maintenance Type / የጥገና አይነት</span>
+                <span class="detail-val">{{ viewingRequest.maintenanceType || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Model / ሞዴል</span>
+                <span class="detail-val">{{ viewingRequest.model || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Requested To / የተጠየቀበት</span>
+                <span class="detail-val">
+                  <span *ngIf="viewingRequest.requestedTo" class="status-badge badge bg-info text-dark">
+                    assigned to {{ viewingRequest.requestedTo }}
+                  </span>
+                  <span *ngIf="!viewingRequest.requestedTo" class="status-badge badge bg-secondary">
+                    Not Assigned
+                  </span>
+                </span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Repair Start Date / የጥገና መጀመሪያ ቀን</span>
+                <span class="detail-val">{{ viewingRequest.repairStartDate ? (viewingRequest.repairStartDate | date:'medium') : 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Repair Finish Date / የጥገና መጨረሻ ቀን</span>
+                <span class="detail-val">{{ viewingRequest.repairFinishDate ? (viewingRequest.repairFinishDate | date:'medium') : 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Status / ሁኔታ</span>
+                <span class="detail-val">{{ viewingRequest.status || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Man Hours / የሰራተኛ ሰዓታት</span>
+                <span class="detail-val">{{ viewingRequest.manHours || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Parts Cost / የክፍል ዋጋ</span>
+                <span class="detail-val">{{ viewingRequest.partsCost != null ? (viewingRequest.partsCost | currency:'ETB':'symbol':'1.2-2') : 'N/A' }}</span>
+              </div>
+              <div class="detail-item full-width-detail">
+                <span class="detail-label">Remark / ማስታወሻ</span>
+                <span class="detail-val">{{ viewingRequest.remark || 'N/A' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Equipment Type ID / የመሳሪያ አይነት መለያ</span>
+                <span class="detail-val">{{ viewingRequest.equipmentTypeId }}</span>
+              </div>
+              <div class="detail-full-btn-wrapper">
+                <button class="show-more-btn-modal secondary" (click)="toggleFullDetails()">
+                  Hide Details / ዝርዝር ደብቅ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="close-btn-modal" data-bs-dismiss="modal">Close / ዝጋ</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

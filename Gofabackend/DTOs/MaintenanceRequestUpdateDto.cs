@@ -15,5 +15,7 @@ namespace Gofabackend.DTO
         public string RequestedTo { get; set; }
 
         public string Status { get; set; } // Optional field
+
+        public string? StatusStage { get; set; } // Optional — sync with MaintenanceType on reassign
     }
 }

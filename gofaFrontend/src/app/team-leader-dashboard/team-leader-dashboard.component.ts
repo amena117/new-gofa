@@ -5,6 +5,8 @@ import { AuthService } from '../services/auth.service';
 import { Item } from '../model/item.model';
 import Kenat from 'kenat';
 import { ChartConfiguration } from 'chart.js';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface RoleSummary {
   role: string;
@@ -12,6 +14,9 @@ interface RoleSummary {
   totalQuantity: number;
   lowStockItems: number;
   mostRecentRegistration: string | null;
+  totalValueByCurrency: { currency: string; value: number }[];
+  accessoryValueByCurrency: { currency: string; value: number }[];
+  combinedValueByCurrency: { currency: string; value: number }[];
 }
 
 interface SummaryData {
@@ -57,6 +62,24 @@ export class TeamLeaderDashboardComponent implements OnInit {
   // 🔥 Pagination state — no dependencies
   lowStockPageSize = 10;
   lowStockCurrentPage = 1;
+  lowStockWarehouseFilter = '';
+  lowStockCategoryFilter = '';
+  filteredLowStockItems: LowStockItem[] = [];
+
+  get uniqueLowStockCategories(): string[] {
+    const categories = new Set(this.lowStockItems.map(item => item.category));
+    return Array.from(categories).sort();
+  }
+
+  get lowStockPageNumbers(): number[] {
+    const total = this.lowStockTotalPages;
+    const current = this.lowStockCurrentPage;
+    const pages: number[] = [];
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  }
 
   constructor(
     private itemService: ItemService,
@@ -88,6 +111,7 @@ export class TeamLeaderDashboardComponent implements OnInit {
         this.lowStockItems = this.computeLowStockItems(items);
         this.monthlyTrends = this.computeMonthlyTrends(items);
         this.lowStockCurrentPage = 1;
+        this.lowStockWarehouseFilter = '';
         this.updatePagedItems();
         this.updateChartConfigs();
         this.isLoading = false;
@@ -104,7 +128,9 @@ export class TeamLeaderDashboardComponent implements OnInit {
 
   computeSummaryData(items: Item[]): SummaryData {
     const roleSummaries: RoleSummary[] = this.availableRoles.map(role => {
-      const roleItems = items.filter(item => item.role === role || item.category === role);
+      const roleItems = items.filter(item =>
+        item.role === role && !item.isStandaloneAccessory
+      );
       const totalItems = roleItems.length;
       const totalQuantity = roleItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
       const lowStockItems = roleItems.filter(item => (item.quantity || 0) < 10).length;
@@ -113,12 +139,50 @@ export class TeamLeaderDashboardComponent implements OnInit {
         .filter(date => date > 0)
         .sort((a, b) => b - a)[0] || null;
 
+      // Compute item value per currency
+      const valueMap = new Map<string, number>();
+      roleItems.forEach(item => {
+        if ((item.unitPrice || 0) > 0 && item.currency !== 'FOC') {
+          const currency = item.currency || 'ETB';
+          valueMap.set(currency, (valueMap.get(currency) || 0) + (item.unitPrice || 0) * (item.quantity || 0));
+        }
+      });
+      const totalValueByCurrency = Array.from(valueMap.entries())
+        .map(([currency, value]) => ({ currency, value }))
+        .sort((a, b) => b.value - a.value);
+
+      // Compute accessory value per currency
+      const accValueMap = new Map<string, number>();
+      roleItems.forEach(item => {
+        (item.accessories || []).forEach((acc: any) => {
+          if ((acc.unitPrice || 0) > 0 && acc.currency !== 'FOC' && !acc.isStandalone) {
+            const currency = acc.currency || 'ETB';
+            accValueMap.set(currency, (accValueMap.get(currency) || 0) + (acc.unitPrice || 0) * (acc.quantity || 0));
+          }
+        });
+      });
+      const accessoryValueByCurrency = Array.from(accValueMap.entries())
+        .map(([currency, value]) => ({ currency, value }))
+        .sort((a, b) => b.value - a.value);
+
+      // Combine both
+      const combinedMap = new Map<string, number>();
+      [...valueMap.entries(), ...accValueMap.entries()].forEach(([currency, value]) => {
+        combinedMap.set(currency, (combinedMap.get(currency) || 0) + value);
+      });
+      const combinedValueByCurrency = Array.from(combinedMap.entries())
+        .map(([currency, value]) => ({ currency, value }))
+        .sort((a, b) => b.value - a.value);
+
       return {
         role,
         totalItems,
         totalQuantity,
         lowStockItems,
-        mostRecentRegistration: mostRecentRegistration ? new Date(mostRecentRegistration).toISOString() : null
+        mostRecentRegistration: mostRecentRegistration ? new Date(mostRecentRegistration).toISOString() : null,
+        totalValueByCurrency,
+        accessoryValueByCurrency,
+        combinedValueByCurrency
       };
     });
 
@@ -309,26 +373,36 @@ export class TeamLeaderDashboardComponent implements OnInit {
     this.loadAllData();
   }
 
-  // 🔥 PAGINATION — 100% WORKING
   updatePagedItems(): void {
+    this.filteredLowStockItems = this.lowStockItems.filter(i => {
+      const warehouseMatch = !this.lowStockWarehouseFilter || i.role === this.lowStockWarehouseFilter;
+      const categoryMatch = !this.lowStockCategoryFilter || i.category === this.lowStockCategoryFilter;
+      return warehouseMatch && categoryMatch;
+    });
     const start = (this.lowStockCurrentPage - 1) * this.lowStockPageSize;
-    this.pagedLowStockItems = this.lowStockItems.slice(start, start + this.lowStockPageSize);
+    this.pagedLowStockItems = this.filteredLowStockItems.slice(start, start + this.lowStockPageSize);
+  }
+
+  onLowStockFilterChange(): void {
+    this.lowStockCurrentPage = 1;
+    this.updatePagedItems();
+    this.cdr.detectChanges();
   }
 
   get lowStockTotalPages(): number {
-    return this.lowStockPageSize > 0 
-      ? Math.ceil(this.lowStockItems.length / this.lowStockPageSize) 
+    return this.lowStockPageSize > 0
+      ? Math.ceil(this.filteredLowStockItems.length / this.lowStockPageSize)
       : 1;
   }
 
   get lowStockStartIndex(): number {
-    return this.lowStockItems.length > 0 
-      ? (this.lowStockCurrentPage - 1) * this.lowStockPageSize + 1 
+    return this.filteredLowStockItems.length > 0
+      ? (this.lowStockCurrentPage - 1) * this.lowStockPageSize + 1
       : 0;
   }
 
   get lowStockEndIndex(): number {
-    return Math.min(this.lowStockCurrentPage * this.lowStockPageSize, this.lowStockItems.length);
+    return Math.min(this.lowStockCurrentPage * this.lowStockPageSize, this.filteredLowStockItems.length);
   }
 
   goToPage(page: number): void {
@@ -346,9 +420,54 @@ export class TeamLeaderDashboardComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  downloadLowStockReport(): void {
+    const doc = new jsPDF();
+    const date = new Date().toLocaleDateString();
+    const warehouse = this.lowStockWarehouseFilter || 'All Warehouses';
+    const category = this.lowStockCategoryFilter || 'All Categories';
+
+    // Title
+    doc.setFontSize(18);
+    doc.text('Team Leader: Low Stock Inventory Report', 14, 20);
+    
+    // Subtitle
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Warehouse Filter: ${warehouse}`, 14, 30);
+    doc.text(`Category Filter: ${category}`, 14, 37);
+    doc.text(`Generated on: ${date}`, 14, 44);
+
+    const tableData = this.filteredLowStockItems.map(item => [
+      item.name,
+      item.category,
+      item.role,
+      item.quantity,
+      item.quantity < 5 ? 'Critical' : 'Low'
+    ]);
+
+    autoTable(doc, {
+      startY: 55,
+      head: [['Item Name', 'Category', 'Role', 'Quantity', 'Status']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillColor: [0, 32, 60] }, // Dark blue header
+      styles: { fontSize: 10 }
+    });
+
+    const fileName = `TL_Low_Stock_Report_${date.replace(/\//g, '-')}.pdf`;
+    doc.save(fileName);
+  }
+
   navigateToItemDetails(itemId: number): void {
     if (itemId) {
       this.router.navigate(['/item', itemId]);
     }
+  }
+
+  getRoleIcon(role: string): string {
+    const icons: Record<string, string> = {
+      VHF: '📡', HF: '📻', ELECTRONICS: '⚡', SPAREPART: '🔩'
+    };
+    return icons[role] ?? '🏪';
   }
 }

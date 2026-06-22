@@ -9,8 +9,8 @@
   <div class="form-card">
     <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()">
       
+      <!-- Row 1: Letter ID and Equipment Type -->
       <div class="form-row">
-        <!-- Letter ID -->
         <div class="form-group">
           <label for="letterId">Letter ID / የደብዳቤ መለያ <span class="required">*</span></label>
           <select 
@@ -28,18 +28,6 @@
           </small>
         </div>
 
-        <!-- Works Order Number -->
-        <div class="form-group">
-          <label for="worksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር <span class="required">*</span></label>
-          <input type="number" id="worksOrderNumber" formControlName="worksOrderNumber" class="form-control" />
-          <small *ngIf="submitted && maintenanceForm.get('worksOrderNumber')?.invalid" class="error-text">
-            Works Order Number is required / የስራ ትዕዛዝ ቁጥር አስፈላጊ ነው
-          </small>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <!-- Equipment Type -->
         <div class="form-group">
           <label for="equipmentTypeId">Equipment Type / የመሳሪያ አይነት <span class="required">*</span></label>
           <select id="equipmentTypeId" formControlName="equipmentTypeId" class="form-control">
@@ -52,8 +40,10 @@
             Equipment Type is required / የመሳሪያ አይነት አስፈላጊ ነው
           </small>
         </div>
+      </div>
 
-        <!-- Model Number -->
+      <!-- Row 2: Model Number and Serial Number -->
+      <div class="form-row">
         <div class="form-group">
           <label for="modelNumber">Model Number / የሞዴል ቁጥር <span class="required">*</span></label>
           <input type="text" id="modelNumber" formControlName="model" class="form-control" placeholder="e.g., HP LaserJet Pro M404n" />
@@ -61,55 +51,34 @@
             Model Number is required / የሞዴል ቁጥር አስፈላጊ ነው
           </small>
         </div>
-      </div>
 
-      <div class="form-row">
-        <!-- Nomenclature -->
         <div class="form-group">
-          <label for="nomenclature">Name / ስም <span class="required">*</span></label>
-          <input type="text" id="nomenclature" formControlName="nomenclature" class="form-control" />
-          <small *ngIf="submitted && maintenanceForm.get('nomenclature')?.invalid" class="error-text">
-            Name is required / ስሙ አስፈላጊ ነው
-          </small>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <!-- Serial No of Equipment -->
-        <div class="form-group">
-          <label for="serialNoOfEquip">Serial No of Equipment / የመሳሪያው ተራ ቁጥር <span class="required">*</span></label>
-          <input type="text" id="serialNoOfEquip" formControlName="serialNoOfEquip" class="form-control" />
+          <label for="serialNoOfEquip">Serial No of Equipment / መለያ ቁጥር <span class="required">*</span></label>
+          <input type="text" id="serialNoOfEquip" formControlName="serialNoOfEquip" class="form-control" placeholder="Enter serial number" />
           <small *ngIf="submitted && maintenanceForm.get('serialNoOfEquip')?.invalid" class="error-text">
             Serial Number is required / የተራ ቁጥር አስፈላጊ ነው
           </small>
         </div>
+      </div>
 
-        <!-- Quantity -->
+      <!-- Row 3: Requested By and Quantity -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="requestedBy">Requested By / የጠየቀው <span class="required">*</span></label>
+          <input type="text" id="requestedBy" formControlName="requestedBy" class="form-control" placeholder="Enter requester name" />
+          <small *ngIf="submitted && maintenanceForm.get('requestedBy')?.invalid" class="error-text">
+            Requested By is required / የጠየቀው አስፈላጊ ነው
+          </small>
+        </div>
+
         <div class="form-group">
           <label for="quantity">Quantity / ብዛት</label>
           <input type="number" id="quantity" formControlName="quantity" class="form-control" [readonly]="true" />
         </div>
       </div>
 
+      <!-- Row 4: Date and Status Stage -->
       <div class="form-row">
-        <!-- Requested By -->
-        <div class="form-group">
-          <label for="requestedBy">Requested By / የጠየቀው <span class="required">*</span></label>
-          <input type="text" id="requestedBy" formControlName="requestedBy" class="form-control" />
-          <small *ngIf="submitted && maintenanceForm.get('requestedBy')?.invalid" class="error-text">
-            Requested By is required / የጠየቀው አስፈላጊ ነው
-          </small>
-        </div>
-
-        <!-- Current Handler -->
-        <div class="form-group">
-          <label for="currentHandler">Current Handler / የህላው ተቋም</label>
-          <input type="text" id="currentHandler" formControlName="currentHandler" class="form-control" readonly />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <!-- Date Work Order Received -->
         <div class="form-group">
           <label for="dateWorkOrderReceived">Date Work Order Received / የተቀበለበት ቀን <span class="required">*</span></label>
           <input type="date" id="dateWorkOrderReceived" formControlName="dateWorkOrderReceived" class="form-control" />
@@ -118,9 +87,9 @@
           </small>
         </div>
 
-        <!-- Status Stage -->
         <div class="form-group">
-          <label for="statusStage">Status Stage / የስታጎች ሁኔታ <span class="required">*</span></label>
+          <label for="statusStage"> 
+Department to send / የሚላክበት ክፍል <span class="required">*</span></label>
           <select id="statusStage" formControlName="statusStage" class="form-control">
             <option value="" disabled>Select Status Stage / የስታጎች ሁኔታ ይምረጡ</option>
             <option value="POWER">POWER</option>
@@ -133,18 +102,38 @@
         </div>
       </div>
 
-      <!-- Description of Work -->
-      <div class="form-group full-width">
-        <label for="briefDescriptionOfWork">Description of Work / የስራው መግለጫ <span class="required">*</span></label>
-        <textarea id="briefDescriptionOfWork" formControlName="briefDescriptionOfWork" class="form-control" rows="4"></textarea>
-        <small *ngIf="submitted && maintenanceForm.get('briefDescriptionOfWork')?.invalid" class="error-text">
-          Description is required / መግለጫ አስፈላጊ ነው
-        </small>
+      <!-- Row 5: Current Handler and Registered By -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="currentHandler">ደንበኛ አገልግሎት ክፍል</label>
+          <input type="text" id="currentHandler" formControlName="currentHandler" class="form-control" readonly />
+        </div>
+
+        <div class="form-group">
+          <label for="registeredBy">Registered By / የመዘገበው</label>
+          <input type="text" id="registeredBy" formControlName="registeredBy" class="form-control" readonly style="background: #e9ecef; cursor: not-allowed;" />
+        </div>
+      </div>
+
+      <!-- Row 6: Description of Work (Full Width) -->
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label for="briefDescriptionOfWork">የብልሽት ሁኔታ <span class="required">*</span></label>
+          <textarea 
+            id="briefDescriptionOfWork" 
+            formControlName="briefDescriptionOfWork" 
+            class="form-control" 
+            rows="4" 
+            placeholder="Enter detailed description of the maintenance work required..."></textarea>
+          <small *ngIf="submitted && maintenanceForm.get('briefDescriptionOfWork')?.invalid" class="error-text">
+            Description is required / መግለጫ አስፈላጊ ነው
+          </small>
+        </div>
       </div>
 
       <!-- Buttons -->
       <div class="button-container">
-        <button type="submit" class="action-btn primary">
+        <button type="submit" class="action-btn primary" [disabled]="maintenanceForm.invalid && submitted">
           <i class="bi bi-check-circle"></i> Submit / አስገባ
         </button>
         <button type="button" class="action-btn secondary" (click)="clearForm()">

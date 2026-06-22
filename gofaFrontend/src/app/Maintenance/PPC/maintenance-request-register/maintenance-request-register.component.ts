@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MaintenanceRequestService } from '../../../services/maintenance-request.service';
+import { AuthService } from '../../../services/auth.service';
 import { Letter } from '../../Models/letter.model';
 
 @Component({
@@ -19,18 +20,26 @@ export class MaintenanceRequestRegisterComponent implements OnInit {
     { value: 'RADIO_MAINTENANCE', label: 'RADIO_MAINTENANCE' }
   ];
   submitted = false;
+  currentUserFirstName: string = '';
+  currentUserLastName: string = '';
 
   constructor(
     private fb: FormBuilder,
     private maintenanceRequestService: MaintenanceRequestService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Get current user information and combine first and last name
+    this.currentUserFirstName = this.authService.getFirstName() || '';
+    this.currentUserLastName = this.authService.getLastName() || '';
+    const fullName = `${this.currentUserFirstName} ${this.currentUserLastName}`.trim();
+
     this.maintenanceForm = this.fb.group({
       letterId: ['', Validators.required],
-      worksOrderNumber: ['', Validators.required],
-      nomenclature: ['', Validators.required],
+      worksOrderNumber: [''], // Removed required validator
+      nomenclature: [''], // Removed required validator
       model: ['', Validators.required],
       quantity: [{ value: 1, disabled: true }],
       requestedBy: ['', Validators.required],
@@ -45,6 +54,7 @@ export class MaintenanceRequestRegisterComponent implements OnInit {
       equipmentTypeId: ['', Validators.required],
       currentHandler: [{ value: 'PPC', disabled: true }, Validators.required],
       statusStage: ['', Validators.required],
+      registeredBy: [{ value: fullName, disabled: true }],
     });
 
     // Load equipment types
@@ -53,22 +63,19 @@ export class MaintenanceRequestRegisterComponent implements OnInit {
       (err: any) => console.error('Error loading equipment types', err)
     );
 
-    // Load letters
+    // Load letters — most recent (highest ID) first
     this.maintenanceRequestService.getInitialLetters().subscribe(
-      (letters: Letter[]) => this.letters = letters,
+      (letters: Letter[]) => this.letters = letters.slice().sort((a, b) => b.letterId - a.letterId),
       (err: any) => console.error('Error loading letters', err)
     );
   }
 
-  /** Auto-fill worksOrderNumber using selected Letter ID */
+  /** Auto-fill requestedBy using selected Letter */
 onLetterChange(event: Event): void {
   const selectElement = event.target as HTMLSelectElement;
   const letterId = parseInt(selectElement.value, 10); // convert to number
 
   if (!isNaN(letterId)) {
-    // Set worksOrderNumber to the selected letterId
-    this.maintenanceForm.get('worksOrderNumber')?.setValue(letterId);
-
     // Find the selected letter from the letters array
     const selectedLetter = this.letters.find(letter => letter.letterId === letterId);
 
@@ -77,7 +84,6 @@ onLetterChange(event: Event): void {
       this.maintenanceForm.get('requestedBy')?.setValue(selectedLetter.from || '');
     }
   } else {
-    this.maintenanceForm.get('worksOrderNumber')?.setValue('');
     this.maintenanceForm.get('requestedBy')?.setValue('');
   }
 }
@@ -89,20 +95,31 @@ onLetterChange(event: Event): void {
 
     if (this.maintenanceForm.invalid) return;
 
+    // Get the registered by value (enabled temporarily to get the value)
+    const registeredByValue = `${this.currentUserFirstName} ${this.currentUserLastName}`.trim();
+
+    // Get the selected equipment type name to use as nomenclature
+    const equipmentTypeId = this.maintenanceForm.get('equipmentTypeId')?.value;
+    const selectedEquipmentType = this.equipmentTypes.find(t => t.equipmentTypeId === +equipmentTypeId);
+    const nomenclatureValue = selectedEquipmentType ? selectedEquipmentType.equipmentTypeName : null;
+
     const formData = {
-      letterId: this.maintenanceForm.get('letterId')?.value,
-      worksOrderNumber: this.maintenanceForm.get('worksOrderNumber')?.value,
-      nomenclature: this.maintenanceForm.get('nomenclature')?.value,
+      letterId: parseInt(this.maintenanceForm.get('letterId')?.value) || null,
+      worksOrderNumber: this.maintenanceForm.get('worksOrderNumber')?.value || null,
+      nomenclature: nomenclatureValue, // ✅ Auto-fill with equipment type name
       model: this.maintenanceForm.get('model')?.value,
       quantity: 1,
       requestedBy: this.maintenanceForm.get('requestedBy')?.value,
       serialNoOfEquip: this.maintenanceForm.get('serialNoOfEquip')?.value,
       briefDescriptionOfWork: this.maintenanceForm.get('briefDescriptionOfWork')?.value,
       dateWorkOrderReceived: this.maintenanceForm.get('dateWorkOrderReceived')?.value,
-      equipmentTypeId: this.maintenanceForm.get('equipmentTypeId')?.value,
-      currentHandler: this.maintenanceForm.get('currentHandler')?.value,
+      equipmentTypeId: parseInt(this.maintenanceForm.get('equipmentTypeId')?.value) || 0,
+      currentHandler: 'PPC', // Always PPC for this form
       statusStage: this.maintenanceForm.get('statusStage')?.value,
+      registeredBy: registeredByValue, // ✅ NEW: Include who registered this request
     };
+
+    console.log('Submitting form data:', formData); // Debug log
 
     this.maintenanceRequestService.submitMaintenanceRequest(formData).subscribe(
       (response) => {
@@ -113,11 +130,19 @@ onLetterChange(event: Event): void {
       },
       (error) => {
         console.error('Error submitting maintenance request:', error);
+        console.error('Error details:', error.error); // Log full error details
+        
         if (error.status === 409) {
           // Conflict - duplicate WorksOrderNumber
           alert(`Error: A maintenance request with Works Order Number ${formData.worksOrderNumber} already exists. Please use a different Works Order Number.`);
+        } else if (error.status === 400 && error.error?.errors) {
+          // Validation errors
+          const validationErrors = Object.entries(error.error.errors)
+            .map(([field, messages]: [string, any]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+            .join('\n');
+          alert(`Validation errors:\n${validationErrors}`);
         } else {
-          alert(`Failed to submit maintenance request: ${error.error?.message || 'Unknown error'}`);
+          alert(`Failed to submit maintenance request: ${error.error?.message || error.message || 'Unknown error'}`);
         }
       }
     );

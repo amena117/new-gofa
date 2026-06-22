@@ -5,7 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { ItemReceiveRequest, BulkReceiveRequest, Item, ShelfDto, WarehouseDto } from '../../model/item.model';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { map, startWith, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import Kenat from 'kenat';
 
@@ -37,6 +37,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   showBulkSerialNumbers: boolean[] = [];
   showBulkAccessories: boolean[] = [];
   
+  // Real-time serial warnings
+  serialWarnings: { [key: string]: string } = {};
+  bulkSerialWarnings: { [itemIdx: number]: { [serialIdx: number]: string } } = {};
+  accessorySerialWarnings: { [accIdx: number]: { [serialIdx: number]: string } } = {};
+  bulkAccessorySerialWarnings: { [itemIdx: number]: { [accIdx: number]: { [serialIdx: number]: string } } } = {};
+
   // Parent item search for accessory mode
   parentItemSearchControl: FormControl = new FormControl('');
   filteredParentItems: Observable<Item[]> = of([]);
@@ -354,11 +360,30 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   }
 
   addSerialNumber(): void {
-    this.serialNumbers.push(this.fb.control('', Validators.required));
+    const control = this.fb.control('', Validators.required);
+    this.serialNumbers.push(control);
+
+    const index = this.serialNumbers.length - 1;
+    control.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const role = this.itemForm.get('role')?.value;
+        if (role === 'SPAREPART' || role === 'ELECTRONICS') return of(null);
+        return value ? this.itemService.checkSerialNumber(value) : of(null);
+      })
+    ).subscribe(result => {
+      if (result && result.exists) {
+        this.serialWarnings[index] = `Warning: This serial exists on ${result.description} (${result.model}) in ${result.role} warehouse.`;
+      } else {
+        delete this.serialWarnings[index];
+      }
+    });
   }
 
   removeSerialNumber(index: number): void {
     this.serialNumbers.removeAt(index);
+    delete this.serialWarnings[index];
   }
 
   addAccessory(): void {
@@ -436,6 +461,28 @@ export class RegistrationComponent implements OnInit, OnDestroy {
       accessory.get('currency')?.disable();
       accessory.get('requiresSerialNumbers')?.disable();
       // Note: unitPrice remains enabled so user can update it
+      
+      // ✅ NEW: Populate sub-accessories if they exist
+      const subAccessoriesArray = accessory.get('subAccessories') as FormArray;
+      
+      // Clear existing sub-accessories first
+      while (subAccessoriesArray.length > 0) {
+        subAccessoriesArray.removeAt(0);
+      }
+      
+      // Add sub-accessories from the existing accessory
+      if (existingAcc.subAccessories && existingAcc.subAccessories.length > 0) {
+        existingAcc.subAccessories.forEach(subAcc => {
+          subAccessoriesArray.push(this.fb.group({
+            name: [subAcc.name, Validators.required],
+            quantity: [subAcc.quantity, [Validators.required, Validators.min(1)]],
+            unitPrice: [subAcc.unitPrice, [Validators.required, Validators.min(0)]],
+            currency: [subAcc.currency || 'ETB', Validators.required]
+          }));
+        });
+        
+        console.log(`✅ Populated ${existingAcc.subAccessories.length} sub-accessories for existing accessory: ${existingAcc.name}`);
+      }
     }
   }
 
@@ -503,11 +550,34 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   }
 
   addSerialNumberToItem(index: number): void {
-    this.getSerialNumbersForItem(index).push(this.fb.control('', Validators.required));
+    const control = this.fb.control('', Validators.required);
+    this.getSerialNumbersForItem(index).push(control);
+
+    const serialIdx = this.getSerialNumbersForItem(index).length - 1;
+    if (!this.bulkSerialWarnings[index]) this.bulkSerialWarnings[index] = {};
+
+    control.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const role = this.items.at(index).get('role')?.value;
+        if (role === 'SPAREPART') return of(null);
+        return value ? this.itemService.checkSerialNumber(value) : of(null);
+      })
+    ).subscribe(result => {
+      if (result && result.exists) {
+        this.bulkSerialWarnings[index][serialIdx] = `Warning: This serial exists on ${result.description} (${result.model}) in ${result.role} warehouse.`;
+      } else {
+        delete this.bulkSerialWarnings[index][serialIdx];
+      }
+    });
   }
 
   removeSerialNumberFromItem(itemIndex: number, serialIndex: number): void {
     this.getSerialNumbersForItem(itemIndex).removeAt(serialIndex);
+    if (this.bulkSerialWarnings[itemIndex]) {
+      delete this.bulkSerialWarnings[itemIndex][serialIndex];
+    }
   }
 
   addAccessoryToItem(index: number): void {
@@ -538,19 +608,67 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   }
 
   addAccessorySerialNumber(accessoryIndex: number): void {
-    this.getAccessorySerialNumbers(accessoryIndex).push(this.fb.control('', Validators.required));
+    const control = this.fb.control('', Validators.required);
+    this.getAccessorySerialNumbers(accessoryIndex).push(control);
+
+    const serialIdx = this.getAccessorySerialNumbers(accessoryIndex).length - 1;
+    if (!this.accessorySerialWarnings[accessoryIndex]) this.accessorySerialWarnings[accessoryIndex] = {};
+
+    control.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(value => {
+        // Accessories under regular items use the parent item's role
+        const role = this.itemForm.get('role')?.value;
+        if (role === 'SPAREPART') return of(null);
+        return value ? this.itemService.checkSerialNumber(value) : of(null);
+      })
+    ).subscribe(result => {
+      if (result && result.exists) {
+        this.accessorySerialWarnings[accessoryIndex][serialIdx] = `Warning: This serial exists on ${result.description} (${result.model}).`;
+      } else {
+        delete this.accessorySerialWarnings[accessoryIndex][serialIdx];
+      }
+    });
   }
 
   removeAccessorySerialNumber(accessoryIndex: number, serialIndex: number): void {
     this.getAccessorySerialNumbers(accessoryIndex).removeAt(serialIndex);
+    if (this.accessorySerialWarnings[accessoryIndex]) {
+      delete this.accessorySerialWarnings[accessoryIndex][serialIndex];
+    }
   }
 
   addAccessorySerialNumberToItem(itemIndex: number, accessoryIndex: number): void {
-    this.getAccessorySerialNumbersForItem(itemIndex, accessoryIndex).push(this.fb.control('', Validators.required));
+    const control = this.fb.control('', Validators.required);
+    this.getAccessorySerialNumbersForItem(itemIndex, accessoryIndex).push(control);
+
+    const serialIdx = this.getAccessorySerialNumbersForItem(itemIndex, accessoryIndex).length - 1;
+    if (!this.bulkAccessorySerialWarnings[itemIndex]) this.bulkAccessorySerialWarnings[itemIndex] = {};
+    if (!this.bulkAccessorySerialWarnings[itemIndex][accessoryIndex]) this.bulkAccessorySerialWarnings[itemIndex][accessoryIndex] = {};
+
+    control.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const role = this.items.at(itemIndex).get('role')?.value;
+        if (role === 'SPAREPART') return of(null);
+        return value ? this.itemService.checkSerialNumber(value) : of(null);
+      })
+    ).subscribe(result => {
+      if (result && result.exists) {
+        this.bulkAccessorySerialWarnings[itemIndex][accessoryIndex][serialIdx] = `Warning: This serial exists on ${result.description} (${result.model}).`;
+      } else {
+        delete this.bulkAccessorySerialWarnings[itemIndex][accessoryIndex][serialIdx];
+      }
+    });
   }
 
   removeAccessorySerialNumberFromItem(itemIndex: number, accessoryIndex: number, serialIndex: number): void {
     this.getAccessorySerialNumbersForItem(itemIndex, accessoryIndex).removeAt(serialIndex);
+    if (this.bulkAccessorySerialWarnings[itemIndex] && this.bulkAccessorySerialWarnings[itemIndex][accessoryIndex]) {
+      delete this.bulkAccessorySerialWarnings[itemIndex][accessoryIndex][serialIndex];
+    }
   }
 
   // Helper methods for sub-accessories

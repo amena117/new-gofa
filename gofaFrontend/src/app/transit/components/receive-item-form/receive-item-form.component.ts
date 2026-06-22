@@ -46,11 +46,21 @@ interface Model1Dto {
   location: string;
   remark: string;
   checkedByName: string;
+  checkedByRank: string;
   cTitle: string;
   recivedByName: string;
+  recivedByRank: string;
   rTitle: string;
   authorizedByName: string;
+  authorizedByRank: string;
   aTitle: string;
+  preparedBy: string;
+  preparedByRank: string;
+  pTitle: string;
+  issuedTurnBy: string;
+  iTitle: string;
+  issBy: string;
+  isTitle: string;
   model19Ref: string;
   status: string;
   storeType: string;
@@ -60,6 +70,8 @@ interface Model1Dto {
   extraItems: ExtraItem[];
   vat: number;
   grandTotal: number;
+  isAccessoryOnly?: boolean;
+  parentItemDescription?: string | null;
 }
 
 @Component({
@@ -101,12 +113,17 @@ export class ReceiveItemFormComponent {
 
       // Approval
       checkedByName: ['', Validators.required],
+      checkedByRank: [''],
       cTitle: ['', Validators.required],
       recivedByName: ['', Validators.required],
+      recivedByRank: [''],
       rTitle: ['', Validators.required],
       authorizedByName: ['', Validators.required],
+      authorizedByRank: [''],
       aTitle: ['', Validators.required],
-
+      preparedBy: ['', Validators.required],
+      preparedByRank: [''],
+      pTitle: ['', Validators.required],
       // Ethiopian Date
       transactionDate: [{ value: ethiopianDate, disabled: true }],
 
@@ -123,6 +140,8 @@ export class ReceiveItemFormComponent {
 
   createItem(): FormGroup {
     const group = this.fb.group({
+      isAccessoryOnly: [false],
+      parentItemDescription: [''],
       serialNumber: ['', Validators.required],
       description: ['', Validators.required],
       unitOfMeasurment: ['', Validators.required],
@@ -159,6 +178,49 @@ export class ReceiveItemFormComponent {
 
   addItem(): void {
     this.itemDetails.push(this.createItem());
+  }
+
+  toggleAccessoryOnly(itemIndex: number): void {
+    const item = this.itemDetails.at(itemIndex);
+    const isAccessoryOnly = item.get('isAccessoryOnly')?.value;
+
+    if (isAccessoryOnly) {
+      // Clear validators for fields not needed in accessory-only mode
+      item.get('serialNumber')?.clearValidators();
+      item.get('description')?.clearValidators();
+      item.get('unitOfMeasurment')?.clearValidators();
+      item.get('ordered')?.clearValidators();
+      item.get('received')?.clearValidators();
+      item.get('unitOfPrice')?.clearValidators();
+      item.get('amount')?.clearValidators();
+      item.get('vat')?.clearValidators();
+      item.get('grandTotal')?.clearValidators();
+      item.get('parentItemDescription')?.setValidators(Validators.required);
+      item.patchValue({ hasAccessories: true });
+      // Add one accessory if none exist
+      if (this.getAccessoryControls(itemIndex).length === 0) {
+        this.addAccessory(itemIndex);
+      }
+    } else {
+      // Restore validators
+      item.get('serialNumber')?.setValidators(Validators.required);
+      item.get('description')?.setValidators(Validators.required);
+      item.get('unitOfMeasurment')?.setValidators(Validators.required);
+      item.get('ordered')?.setValidators([Validators.required, Validators.min(1)]);
+      item.get('received')?.setValidators([Validators.required, Validators.min(1)]);
+      item.get('unitOfPrice')?.setValidators([Validators.required, Validators.min(0)]);
+      item.get('amount')?.setValidators([Validators.required, Validators.min(0)]);
+      item.get('vat')?.setValidators([Validators.required, Validators.min(0)]);
+      item.get('grandTotal')?.setValidators([Validators.required, Validators.min(0)]);
+      item.get('parentItemDescription')?.clearValidators();
+      item.patchValue({ serialNumber: '', description: '', unitOfMeasurment: '' });
+    }
+
+    // Update validity
+    ['serialNumber','description','unitOfMeasurment','ordered','received',
+     'unitOfPrice','amount','vat','grandTotal','parentItemDescription'].forEach(f => {
+      item.get(f)?.updateValueAndValidity();
+    });
   }
 
   removeItem(index: number): void {
@@ -303,11 +365,21 @@ export class ReceiveItemFormComponent {
         location: formValue.location,
         remark: formValue.remark,
         checkedByName: formValue.checkedByName,
+        checkedByRank: formValue.checkedByRank,
         cTitle: formValue.cTitle,
         recivedByName: formValue.recivedByName,
+        recivedByRank: formValue.recivedByRank,
         rTitle: formValue.rTitle,
         authorizedByName: formValue.authorizedByName,
+        authorizedByRank: formValue.authorizedByRank,
         aTitle: formValue.aTitle,
+        preparedBy: formValue.preparedBy,
+        preparedByRank: formValue.preparedByRank,
+        pTitle: formValue.pTitle,
+        issuedTurnBy: '',
+        iTitle: '',
+        issBy: '',
+        isTitle: '',
         model19Ref: formValue.model19Ref,
 
         // Item-specific
@@ -319,6 +391,8 @@ export class ReceiveItemFormComponent {
         unitOfPrice: +item.unitOfPrice,
         amount: +item.amount,
         storeType: item.storeType,
+        isAccessoryOnly: item.isAccessoryOnly,
+        parentItemDescription: item.parentItemDescription || null,
 
         hasAccessories: item.hasAccessories,
         accessories: item.hasAccessories
@@ -371,7 +445,7 @@ export class ReceiveItemFormComponent {
         error: (err) => {
           console.error('Submission failed:', err);
           let msg = err.error?.message || err.message || 'Unknown error';
-          if (typeof err.error === 'object') {
+          if (err.error && typeof err.error === 'object' && !Array.isArray(err.error)) {
             msg = Object.keys(err.error)
               .map(k => `${k}: ${err.error[k]}`)
               .join('; ');

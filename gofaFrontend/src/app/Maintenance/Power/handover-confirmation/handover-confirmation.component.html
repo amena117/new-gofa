@@ -1,0 +1,88 @@
+<div class="page-container">
+  <div class="page-header">
+    <span class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</span>
+    <h1 class="page-title">Handover Confirmation / የርክክብ ማረጋገጫ</h1>
+    <p class="filter-label">Confirm receipt of spare parts issued to you</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading handovers... / በመጫን ላይ...</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <!-- Pending Confirmations -->
+    <div class="data-card">
+      <h3 class="section-title">
+        <i class="bi bi-clock-history"></i> Pending Confirmations / በመጠባበቅ ላይ ያሉ
+        <span class="badge-count" *ngIf="pendingHandovers.length > 0">{{ pendingHandovers.length }}</span>
+      </h3>
+
+      <div class="table-container">
+        <table *ngIf="pendingHandovers.length > 0">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Stock No.</th>
+              <th>Description</th>
+              <th>Serial No.</th>
+              <th>WO No.</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of pendingHandovers">
+              <td>{{ h.issueDate | date:'dd/MM/yyyy' }}</td>
+              <td><span class="stock-badge">{{ h.stockNumber }}</span></td>
+              <td>{{ h.description }}</td>
+              <td><code>{{ h.serialNumber }}</code></td>
+              <td>{{ h.worksOrderNumber || '—' }}</td>
+              <td>
+                <button class="action-btn primary small" (click)="printSlip(h)">
+                  <i class="bi bi-printer"></i> Print Slip / አትም
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="pendingHandovers.length === 0" class="empty-state">
+          <i class="bi bi-check-all" style="font-size: 3rem; color: #22c55e;"></i>
+          <p>No pending handovers to confirm.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recently Confirmed -->
+    <div class="data-card mt-4" *ngIf="confirmedHandovers.length > 0">
+      <h3 class="section-title">
+        <i class="bi bi-file-earmark-check"></i> Recently Confirmed / በቅርቡ የተረጋገጡ
+      </h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Stock No.</th>
+              <th>Description</th>
+              <th>Serial No.</th>
+              <th>WO No.</th>
+              <th>Confirmed At</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of confirmedHandovers">
+              <td><span class="stock-badge">{{ h.stockNumber }}</span></td>
+              <td>{{ h.description }}</td>
+              <td><code>{{ h.serialNumber }}</code></td>
+              <td>{{ h.worksOrderNumber || '—' }}</td>
+              <td>
+                <span class="status-badge confirmed">
+                  {{ h.confirmedAt | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

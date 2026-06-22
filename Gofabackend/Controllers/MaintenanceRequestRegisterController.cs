@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Gofabackend.Models;
 using System.Collections.Generic;
@@ -49,11 +50,30 @@ namespace Gofabackend.Controllers
                 _logger.LogInformation("Fetching all maintenance request registers");
 
                 // Fetch and sort the data by CreatedAt in descending order (newest first)
+                // Include EquipmentType and LetterRegistration
                 var requests = await _context.MaintenanceRequestRegisters
-                    .OrderByDescending(r => r.DateWorkOrderReceived) // Sort by the CreatedAt field
+                    .Include(r => r.EquipmentType)
+                    .Include(r => r.LetterRegistration)
+                    .OrderByDescending(r => r.DateWorkOrderReceived)
+                    .Select(r => new
+                    {
+                        r.Id, r.WorksOrderNumber, r.Nomenclature, r.Quantity,
+                        r.RequestedBy, r.SerialNoOfEquip, r.BriefDescriptionOfWork,
+                        r.DateWorkOrderReceived, r.MaintenanceType, r.Model,
+                        r.RequestedTo, r.RepairStartDate, r.RepairFinishDate,
+                        r.Status, r.Recommendation, r.ManHours, r.PartsCost,
+                        r.LaborCost, r.TotalCost, r.Remark,
+                        r.GivenTo, r.Approval, r.RecieverRemark, r.RecievedDate,
+                        r.EquipmentTypeId, r.LetterId, r.CurrentHandler, r.StatusStage,
+                        r.RegisteredBy, r.RejectReason, r.UpdatedAt, r.Quality,
+                        r.MaintainedBy, r.MaintainedByUserId, r.TechnicianRole,
+                        letterFrom = r.LetterRegistration != null ? r.LetterRegistration.From : null,
+                        letterRecommendBy = r.LetterRegistration != null ? r.LetterRegistration.RecommendBy : null,
+                        equipmentTypeName = r.EquipmentType != null ? r.EquipmentType.EquipmentTypeName : null
+                    })
                     .ToListAsync();
 
-                return Ok(requests); // Return the sorted list
+                return Ok(requests);
             }
             catch (Exception ex)
             {
@@ -79,6 +99,46 @@ namespace Gofabackend.Controllers
             }
         }
 
+        [HttpGet("active-work-orders")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetActiveWorkOrders()
+        {
+            try
+            {
+                // Fetch all work orders regardless of status, newest first
+                var workOrders = await _context.MaintenanceRequestRegisters
+                    .OrderByDescending(r => r.DateWorkOrderReceived)
+                    .Select(r => new
+                    {
+                        worksOrderNumber = r.WorksOrderNumber,
+                        nomenclature = r.Nomenclature,
+                        serialNumber = r.SerialNoOfEquip,
+                        model = r.Model,
+                        status = r.Status
+                    })
+                    .Take(1000) 
+                    .ToListAsync();
+
+                Console.WriteLine($"[Debug] Fetched {workOrders.Count} work orders from DB.");
+
+                var result = workOrders.Select(r => new {
+                    worksOrderNumber = r.worksOrderNumber.ToString(),
+                    nomenclature = r.nomenclature ?? "Unknown",
+                    serialNumber = r.serialNumber ?? "N/A",
+                    model = r.model ?? "N/A",
+                    status = r.status ?? "No Status"
+                }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Error] GetActiveWorkOrders failed: {ex.Message}");
+                _logger.LogError(ex, "Error fetching work orders");
+                return StatusCode(500, new { message = "Internal Server Error", error = ex.Message });
+            }
+        }
+
         // GET: api/MaintenanceRequestRegister/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MaintenanceRequestRegister>> GetMaintenanceRequestRegister(int id)
@@ -86,7 +146,9 @@ namespace Gofabackend.Controllers
             try
             {
                 _logger.LogInformation($"Fetching maintenance request register with ID {id}");
-                var maintenanceRequestRegister = await _context.MaintenanceRequestRegisters.FindAsync(id);
+                var maintenanceRequestRegister = await _context.MaintenanceRequestRegisters
+                    .Include(r => r.EquipmentType)
+                    .FirstOrDefaultAsync(r => r.Id == id);
 
                 if (maintenanceRequestRegister == null)
                 {
@@ -107,28 +169,41 @@ namespace Gofabackend.Controllers
         // GET: api/MaintenanceRequestRegister/filtered
         [HttpGet("filtered")]
         public async Task<ActionResult<IEnumerable<MaintenanceRequestRegister>>> GetFilteredMaintenanceRequests(
-    [FromQuery] string maintenanceType,
-    [FromQuery] string requestedTo)
+    [FromQuery] string? requestedTo = null,
+    [FromQuery] string? maintenanceType = null)
         {
             try
             {
                 _logger.LogInformation($"Fetching filtered maintenance request registers with MaintenanceType: {maintenanceType} and RequestedTo: {requestedTo}");
 
-                if (string.IsNullOrEmpty(maintenanceType) || string.IsNullOrEmpty(requestedTo))
+                if (string.IsNullOrEmpty(requestedTo) && string.IsNullOrEmpty(maintenanceType))
                 {
-                    _logger.LogWarning("Invalid or missing query parameters.");
-                    return BadRequest("Both maintenanceType and requestedTo are required.");
+                    _logger.LogWarning("At least one of requestedTo or maintenanceType is required.");
+                    return BadRequest("At least one of requestedTo or maintenanceType is required.");
                 }
 
-                var filteredRequests = await _context.MaintenanceRequestRegisters
-                    .Where(m =>
-                        m.MaintenanceType.ToUpper().Trim() == maintenanceType.ToUpper().Trim() &&
-                        m.RequestedTo.ToUpper().Trim() == requestedTo.ToUpper().Trim())
-                    .ToListAsync();
+                var query = _context.MaintenanceRequestRegisters
+                    .Include(r => r.EquipmentType)
+                    .AsQueryable();
+
+                // Filter by requestedTo when provided
+                if (!string.IsNullOrEmpty(requestedTo))
+                {
+                    query = query.Where(m => m.RequestedTo != null &&
+                        m.RequestedTo.ToUpper().Trim() == requestedTo.ToUpper().Trim());
+                }
+
+                // Filter by maintenanceType when provided
+                if (!string.IsNullOrEmpty(maintenanceType))
+                {
+                    query = query.Where(m => m.MaintenanceType != null &&
+                        m.MaintenanceType.ToUpper().Trim() == maintenanceType.ToUpper().Trim());
+                }
+
+                var filteredRequests = await query.ToListAsync();
 
                 if (!filteredRequests.Any())
                 {
-                    _logger.LogWarning($"No maintenance request registers found with MaintenanceType: {maintenanceType} and RequestedTo: {requestedTo}");
                     return NotFound("No matching records found.");
                 }
 
@@ -136,7 +211,7 @@ namespace Gofabackend.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error fetching filtered maintenance request registers with MaintenanceType: {maintenanceType} and RequestedTo: {requestedTo}");
+                _logger.LogError(ex, $"Error fetching filtered maintenance request registers");
                 var innerException = ex.InnerException?.Message ?? "No inner exception";
                 return StatusCode(500, $"Internal Server Error: {ex.Message}. Inner Exception: {innerException}");
             }
@@ -152,6 +227,7 @@ namespace Gofabackend.Controllers
                 _logger.LogInformation("Fetching maintenance requests with Status = 'Maintenance Finished'");
 
                 var finishedRequests = await _context.MaintenanceRequestRegisters
+                    .Include(r => r.EquipmentType)
                     .Where(m => m.Status == "Maintenance Finished")
                     .ToListAsync();
 
@@ -174,21 +250,29 @@ namespace Gofabackend.Controllers
         [HttpGet("by-worksorder/{worksOrderNumber}")]
         public async Task<IActionResult> GetByWorksOrder(int worksOrderNumber)
         {
-            var request = await _context.MaintenanceRequestRegisters
+            var r = await _context.MaintenanceRequestRegisters
+                .Include(r => r.EquipmentType)
+                .Include(r => r.LetterRegistration)
                 .FirstOrDefaultAsync(r => r.WorksOrderNumber == worksOrderNumber);
 
-            if (request == null)
-            {
+            if (r == null)
                 return NotFound($"Maintenance request with WorksOrderNumber {worksOrderNumber} not found.");
-            }
 
-            // Shape the response to always include these fields
             var response = new
             {
-                id = request.Id,
-                worksOrderNumber = request.WorksOrderNumber,
-                serialNoOfEquip = request.SerialNoOfEquip ?? string.Empty,
-                model = request.Model ?? string.Empty
+                r.Id, r.WorksOrderNumber, r.Nomenclature, r.Quantity,
+                r.RequestedBy, r.SerialNoOfEquip, r.BriefDescriptionOfWork,
+                r.DateWorkOrderReceived, r.MaintenanceType, r.Model,
+                r.RequestedTo, r.RepairStartDate, r.RepairFinishDate,
+                r.Status, r.Recommendation, r.ManHours, r.PartsCost,
+                r.LaborCost, r.TotalCost, r.Remark,
+                r.GivenTo, r.Approval, r.RecieverRemark, r.RecievedDate,
+                r.EquipmentTypeId, r.LetterId, r.CurrentHandler, r.StatusStage,
+                r.RegisteredBy, r.RejectReason, r.UpdatedAt, r.Quality,
+                r.MaintainedBy, r.MaintainedByUserId, r.TechnicianRole,
+                letterFrom = r.LetterRegistration != null ? r.LetterRegistration.From : null,
+                letterRecommendBy = r.LetterRegistration != null ? r.LetterRegistration.RecommendBy : null,
+                equipmentTypeName = r.EquipmentType != null ? r.EquipmentType.EquipmentTypeName : null
             };
 
             return Ok(response);
@@ -204,17 +288,24 @@ public async Task<IActionResult> GetDoOutRequests()
         {
             r.Id,
             r.WorksOrderNumber,
+            // Accessing navigation property directly in Select ensures EF handles the join correctly
+            nomenclature = (r.Nomenclature != null && r.Nomenclature != "") 
+                ? r.Nomenclature 
+                : (r.EquipmentType != null ? r.EquipmentType.EquipmentTypeName : "N/A"),
             r.SerialNoOfEquip,
             r.Model,
+            r.MaintenanceType,
+            r.StatusStage,
+            r.RequestedBy,
+            r.RequestedTo,
             r.Status,
-            r.DateWorkOrderReceived
+            r.MaintainedBy,
+            r.DateWorkOrderReceived, // Requested Date
+            r.RepairFinishDate,      // Do Out / Maintained Date
+            r.UpdatedAt              // Tracking last update date
         })
+        .OrderByDescending(r => r.DateWorkOrderReceived)
         .ToListAsync();
-
-    if (!requests.Any())
-    {
-        return NotFound("No maintenance requests found with status 'do out'.");
-    }
 
     return Ok(requests);
 }
@@ -244,6 +335,7 @@ public async Task<IActionResult> GetDoOutRequests()
             try
             {
                 var requests = await _context.MaintenanceRequestRegisters
+                    .Include(r => r.EquipmentType)
                     .Where(r => r.Status == status)
                     .OrderByDescending(r => r.DateWorkOrderReceived)
                     .ToListAsync();
@@ -272,7 +364,14 @@ public async Task<IActionResult> GetDoOutRequests()
             request.SerialNoOfEquip = dto.SerialNoOfEquip;
             request.Model = dto.Model;
 
-            request.Status = "On Maintenance";
+            if (!string.IsNullOrEmpty(dto.Status))
+            {
+                request.Status = dto.Status;
+            }
+            else
+            {
+                request.Status = "On Maintenance";
+            }
 
             await _context.SaveChangesAsync();
             return NoContent();
@@ -281,13 +380,29 @@ public async Task<IActionResult> GetDoOutRequests()
 
         // GET: Return only Quality Check records
         [HttpGet("Qualify")]
-public IActionResult GetQualityCheckRequests()
-{
-    var requests = _context.MaintenanceRequestRegisters
-        .Where(r => r.Status == "Quality Check")
-        .ToList();
-    return Ok(requests);
-}
+        public IActionResult GetQualityCheckRequests()
+        {
+            var requests = _context.MaintenanceRequestRegisters
+                .Include(r => r.LetterRegistration)
+                .Where(r => r.Status == "Quality Check")
+                .Select(r => new
+                {
+                    r.Id, r.WorksOrderNumber, r.Nomenclature, r.Quantity,
+                    r.RequestedBy, r.SerialNoOfEquip, r.BriefDescriptionOfWork,
+                    r.DateWorkOrderReceived, r.MaintenanceType, r.Model,
+                    r.RequestedTo, r.RepairStartDate, r.RepairFinishDate,
+                    r.Status, r.Recommendation, r.ManHours, r.PartsCost,
+                    r.LaborCost, r.TotalCost, r.Remark,
+                    r.GivenTo, r.Approval, r.RecieverRemark, r.RecievedDate,
+                    r.EquipmentTypeId, r.LetterId, r.CurrentHandler, r.StatusStage,
+                    r.RegisteredBy, r.RejectReason, r.UpdatedAt, r.Quality,
+                    r.MaintainedBy, r.MaintainedByUserId, r.TechnicianRole,
+                    letterFrom = r.LetterRegistration != null ? r.LetterRegistration.From : null,
+                    letterRecommendBy = r.LetterRegistration != null ? r.LetterRegistration.RecommendBy : null
+                })
+                .ToList();
+            return Ok(requests);
+        }
 
 // PUT: Qualify one item (change its status)
 [HttpPut("qualify/{worksOrderNumber:int}")]
@@ -434,20 +549,26 @@ public IActionResult QualifyRequest(int worksOrderNumber)
             {
                 _logger.LogInformation("Creating new maintenance request register");
 
+                // Auto-generate WorksOrderNumber from LetterId if not provided
+                int worksOrderNumber = createDto.WorksOrderNumber ?? createDto.LetterId ?? 0;
+                
                 // Check if a maintenance request with the same WorksOrderNumber already exists
-                var existingRequest = await _context.MaintenanceRequestRegisters
-                    .FirstOrDefaultAsync(m => m.WorksOrderNumber == createDto.WorksOrderNumber);
-
-                if (existingRequest != null)
+                if (worksOrderNumber > 0)
                 {
-                    _logger.LogWarning($"Maintenance request with Works Order Number {createDto.WorksOrderNumber} already exists");
-                    return Conflict(new { message = $"A maintenance request with Works Order Number {createDto.WorksOrderNumber} already exists." });
+                    var existingRequest = await _context.MaintenanceRequestRegisters
+                        .FirstOrDefaultAsync(m => m.WorksOrderNumber == worksOrderNumber);
+
+                    if (existingRequest != null)
+                    {
+                        _logger.LogWarning($"Maintenance request with Works Order Number {worksOrderNumber} already exists");
+                        return Conflict(new { message = $"A maintenance request with Works Order Number {worksOrderNumber} already exists." });
+                    }
                 }
 
                 var maintenanceRequest = new MaintenanceRequestRegister
                 {
-                    WorksOrderNumber = createDto.WorksOrderNumber,
-                    Nomenclature = createDto.Nomenclature,
+                    WorksOrderNumber = worksOrderNumber,
+                    Nomenclature = createDto.Nomenclature ?? string.Empty,
                     Quantity = createDto.Quantity,
                     RequestedBy = createDto.RequestedBy,
                     SerialNoOfEquip = createDto.SerialNoOfEquip,
@@ -457,10 +578,11 @@ public IActionResult QualifyRequest(int worksOrderNumber)
                     CurrentHandler = createDto.CurrentHandler,
                     StatusStage = createDto.StatusStage,
                     LetterId = createDto.LetterId,
+                    RegisteredBy = createDto.RegisteredBy, // ✅ Save who registered this request
 
                     // Optional fields set to default values
                     MaintenanceType = null,
-                    Model = null,
+                    Model = createDto.Model,
                     RequestedTo = null,
                     RepairStartDate = null,
                     RepairFinishDate = null,
@@ -519,10 +641,9 @@ public IActionResult QualifyRequest(int worksOrderNumber)
                     return NotFound($"Maintenance request register with ID {id} not found");
                 }
 
-                // Update the fields
+                // Update the fields — RequestedBy is intentionally excluded to preserve the original requester
                 maintenanceRequest.Nomenclature = updateDto.Nomenclature;
                 maintenanceRequest.Quantity = updateDto.Quantity;
-                maintenanceRequest.RequestedBy = updateDto.RequestedBy;
                 maintenanceRequest.SerialNoOfEquip = updateDto.SerialNoOfEquip;
                 maintenanceRequest.BriefDescriptionOfWork = updateDto.BriefDescriptionOfWork;
                 maintenanceRequest.DateWorkOrderReceived = updateDto.DateWorkOrderReceived;
@@ -566,10 +687,15 @@ public IActionResult QualifyRequest(int worksOrderNumber)
 
                 // Update fields
                 maintenanceRequest.MaintenanceType = updateDto.MaintenanceType;
-                maintenanceRequest.Model = updateDto.Model;
+                // Do NOT overwrite Model — it was set during registration
                 maintenanceRequest.RequestedTo = updateDto.RequestedTo;
-                maintenanceRequest.Status = "On Maintaining";
-                maintenanceRequest.RepairStartDate = DateTime.UtcNow;
+                // Status moves to "Waiting for Approval" — team leader must approve before work starts
+                maintenanceRequest.Status = "Waiting for Approval";
+                // Keep StatusStage in sync so the details page reflects the current department
+                if (!string.IsNullOrEmpty(updateDto.StatusStage))
+                {
+                    maintenanceRequest.StatusStage = updateDto.StatusStage;
+                }
 
                 _context.MaintenanceRequestRegisters.Update(maintenanceRequest);
                 await _context.SaveChangesAsync();
@@ -699,10 +825,17 @@ public IActionResult QualifyRequest(int worksOrderNumber)
                 maintenanceRequest.Remark = updateDto.Remark;
                 maintenanceRequest.MaintainedBy = updateDto.MaintainedBy;
 
+                // Update PartsCost if provided
+                if (updateDto.PartsCost.HasValue)
+                {
+                    maintenanceRequest.PartsCost = updateDto.PartsCost.Value;
+                }
+
                 _context.MaintenanceRequestRegisters.Update(maintenanceRequest);
 
-                // Calculate labor cost (for example: 250 per hour)
-                decimal laborCost = (decimal)(updateDto.ManHours * 250);
+                // Calculate labor cost (250 per hour)
+                decimal laborCost = (decimal)(updateDto.ManHours ?? 0) * 250;
+                decimal partsCost = maintenanceRequest.PartsCost ?? 0;
 
                 // Update SparePartsRequests for this WorksOrderNumber
                 var sparePartsRequests = await _context.SparePartsRequests
@@ -712,7 +845,7 @@ public IActionResult QualifyRequest(int worksOrderNumber)
                 foreach (var request in sparePartsRequests)
                 {
                     request.LabourCost = laborCost;
-                    request.TotalCost = request.PartCost + laborCost;
+                    request.TotalCost = partsCost + laborCost;
                 }
 
                 await _context.SaveChangesAsync();
@@ -744,7 +877,8 @@ public IActionResult QualifyRequest(int worksOrderNumber)
                 var validStatuses = new[]
                 {
                     "Pending", "On Maintenance", "Quality Check", "Maintenance Finished", 
-                    "Client Received", "Rejected", "Waiting for Spare Part"
+                    "Client Received", "Rejected", "Waiting for Spare Part", "Approved - Waiting for Parts",
+                    "Waiting for Maintenance Leader Approval", "Waiting for Ministore"
                 };
 
                 if (!validStatuses.Contains(dto.Status))
@@ -852,6 +986,15 @@ public async Task<IActionResult> AssignMaintenanceRequest(int worksOrderNumber, 
 
         // Update the RequestedTo field
         maintenanceRequest.RequestedTo = dto.RequestedTo;
+
+        // Team leader approval: move status to "On Maintaining" and record start time
+        maintenanceRequest.Status = "On Maintaining";
+        maintenanceRequest.RepairStartDate = DateTime.UtcNow;
+
+        // NOTE: MaintenanceType is intentionally NOT changed here.
+        // It stays as set by PPC (e.g. RADIO_MAINTENANCE) so the team leader
+        // can always see all requests under their department.
+        // RequestedTo is what routes to VHF/HF sub-units.
 
         // Optional: update a recommendation column if needed
         if (!string.IsNullOrWhiteSpace(dto.Recommendation))

@@ -37,9 +37,11 @@ export class RegisterComponent implements OnInit {
     'VHF', 'HF', 'ELECTRONICS', 'SPAREPART', 'SUPPLY_AND_DISTRIBUTION_TEAMLEADER', 
     'PROPERTY_CONTROL_TEAMLEADER', 'PROPERTY_CONTROL', 'SUPPLY_AND_DISTRIBUTION_HEAD',
     'TRANSIT', 'PPC', 'POWER', 'QUALITY', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE', 
+    'ELECTRICAL_MAINTENANCE', 'MECHANICAL_MAINTENANCE', 'WELDING_MAINTENANCE',
+    'VHF_RADIO', 'HF_RADIO', 'COMPUTER_MAINTENANCE', 'IT_MAINTENANCE',
     'ELECTRONICS_PTEAM', 'ELECTRONICS_HTEAM', 'MINISTORE', 'RADIO', 'SUPER_ADMIN', 
-    'MAINTENANCE_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER', 'RTEAM_LEADER',
-    'SANDD_ADMIN', 'MAINTENANCE_ADMIN'
+    'MAINTENANCE_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER', 'RTEAM_LEADER', 'VTEAM_LEADER', 'HTEAM_LEADER',
+    'SANDD_ADMIN', 'MAINTENANCE_ADMIN', 'MAINTENANCE_REPORTING'
   ];
 
   // Roles that SANDD_ADMIN can assign
@@ -52,8 +54,11 @@ export class RegisterComponent implements OnInit {
   // Roles that MAINTENANCE_ADMIN can assign
   maintenanceRoles = [
     'PPC', 'POWER', 'QUALITY', 'OFFICE_MACHINE', 'RADIO_MAINTENANCE', 
+    'ELECTRICAL_MAINTENANCE', 'MECHANICAL_MAINTENANCE', 'WELDING_MAINTENANCE',
+    'VHF_RADIO', 'HF_RADIO', 'COMPUTER_MAINTENANCE', 'IT_MAINTENANCE',
     'ELECTRONICS_PTEAM', 'ELECTRONICS_HTEAM', 'MINISTORE', 'RADIO', 
-    'MAINTENANCE_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER', 'RTEAM_LEADER'
+    'MAINTENANCE_LEADER', 'PTEAM_LEADER', 'OTEAM_LEADER', 'RTEAM_LEADER', 'VTEAM_LEADER', 'HTEAM_LEADER',
+    'MAINTENANCE_REPORTING'
   ];
 
   availableRoles: string[] = [];
@@ -95,6 +100,18 @@ export class RegisterComponent implements OnInit {
     } else {
       this.availableRoles = [];
     }
+  }
+
+  /** Human-readable label for a role value */
+  getRoleLabel(role: string): string {
+    const labels: Record<string, string> = {
+      VHF_RADIO:            'VHF Maintenance',
+      HF_RADIO:             'HF Maintenance',
+      COMPUTER_MAINTENANCE: 'Computer Maintenance',
+      IT_MAINTENANCE:       'IT Maintenance',
+      OFFICE_MACHINE:       'Office Machine Maintenance',
+    };
+    return labels[role] ?? role;
   }
 
   get hasPasswordError(): boolean {

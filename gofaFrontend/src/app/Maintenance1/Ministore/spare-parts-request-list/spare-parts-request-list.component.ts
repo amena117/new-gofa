@@ -73,29 +73,32 @@ export class SparePartsRequestListComponent implements OnInit {
       next: (data) => {
         console.log('Raw API Response:', data);
 
-        // Normalize property casing (camelCase or PascalCase)
+        // ✅ Normalize property names for consistency
         const normalizedData = data.map(item => ({
           ...item,
           requestedBy: item.requestedBy ?? item.RequestedBy,
+          requestType: item.requestType ?? item.RequestType,
           currentStage: item.currentStage ?? item.CurrentStage,
           id: item.id ?? item.Id,
           stockNumber: item.stockNumber ?? item.StockNumber,
           quantityAsked: item.quantityAsked ?? item.QuantityAsked,
-          worksOrderNumber: item.worksOrderNumber ?? item.WorksOrderNumber
+          worksOrderNumber: item.worksOrderNumber ?? item.WorksOrderNumber,
+          requestDate: item.requestDate ?? item.RequestDate ?? item.createdDate ?? item.CreatedDate
         }));
 
+        // ✅ Filter based on user role
         const filteredRequests = normalizedData.filter(req => {
           switch (this.userRole) {
             case 'PTEAM_LEADER':
-              return req.requestedBy === 'POWER' && req.currentStage === 'PTEAM_LEADER';
+              return req.requestType === 'POWER' && req.currentStage === 'PTEAM_LEADER';
             case 'OTEAM_LEADER':
-              return req.requestedBy === 'OFFICE_MACHINE' && req.currentStage === 'OTEAM_LEADER';
+              return req.requestType === 'OFFICE_MACHINE' && req.currentStage === 'OTEAM_LEADER';
             case 'VTEAM_LEADER':
-              return req.requestedBy === 'VHF_RADIO' && req.currentStage === 'VTEAM_LEADER';
+              return req.requestType === 'VHF_RADIO' && req.currentStage === 'VTEAM_LEADER';
             case 'HTEAM_LEADER':
-              return req.requestedBy === 'HF_RADIO' && req.currentStage === 'HTEAM_LEADER';
+              return req.requestType === 'HF_RADIO' && req.currentStage === 'HTEAM_LEADER';
             case 'RTEAM_LEADER':
-              return req.requestedBy === 'HEAVY_MACHINE' && req.currentStage === 'RTEAM_LEADER';
+              return req.requestType === 'RADIO_MAINTENANCE' && req.currentStage === 'RTEAM_LEADER';
             case 'MAINTENANCE_LEADER':
               return (
                 ['PTEAM_LEADER', 'OTEAM_LEADER', 'RTEAM_LEADER', 'VTEAM_LEADER', 'HTEAM_LEADER']
@@ -310,28 +313,26 @@ export class SparePartsRequestListComponent implements OnInit {
       return;
     }
 
+    // ✅ Update Status based on who is approving
+    let newStatus = request.status;
+    if (userRole === 'MAINTENANCE_LEADER') {
+      newStatus = 'Accepted';
+    } else if (userRole.includes('TEAM_LEADER')) {
+      newStatus = 'Waiting for Maintenance Leader';
+    }
+
     const updatedDto = {
       RequestedBy: userRole,
-      CurrentStage: nextStage
+      CurrentStage: nextStage,
+      Status: newStatus
     };
-
-    const validStages = [
-      'PTEAM_LEADER', 'OTEAM_LEADER', 'RTEAM_LEADER',
-      'MAINTENANCE_LEADER', 'MINISTORE', 'COMPLETED'
-    ];
-
-    if (!validStages.includes(updatedDto.CurrentStage)) {
-      alert('Invalid CurrentStage value.');
-      return;
-    }
 
     const url = `${this.apiBase}/api/SparePartsRequest/${request.id}/update-requested-by`;
     this.http.patch(url, updatedDto).subscribe({
       next: () => {
-        alert(`Request approved by ${userRole} and moved to ${nextStage}.`);
-        this.sparePartsRequests = this.sparePartsRequests.map(req =>
-          req.id === request.id ? { ...req, ...updatedDto } : req
-        );
+        alert(`Request approved and moved to ${nextStage}.`);
+        // ✅ Remove from list after approval so it doesn't show for the same person twice
+        this.sparePartsRequests = this.sparePartsRequests.filter(req => req.id !== request.id);
       },
       error: (err) => {
         console.error('Error approving request:', err);

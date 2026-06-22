@@ -334,7 +334,7 @@
           </div>
 
           <!-- Accessories Section -->
-          <div *ngIf="(useAccessories || isAccessoryOnlyMode(i)) && selectedItem[i]?.accessories?.length" class="accessories-section">
+          <div *ngIf="(useAccessories || isAccessoryOnlyMode(i)) && selectedItem[i]" class="accessories-section">
             <h4 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px 0; color: #03203c;">
               Accessories / አባሪዎች
               <span style="font-size: 13px; font-weight: normal; color: #6b7280;">
@@ -345,7 +345,21 @@
               </span>
             </h4>
             
-            <div class="accessories-list">
+            <!-- No accessories message -->
+            <div *ngIf="!selectedItem[i]?.accessories || selectedItem[i]?.accessories?.length === 0" 
+                 style="padding: 16px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; color: #92400e;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 20px;">ℹ️</span>
+                <div>
+                  <strong>No Accessories Available</strong>
+                  <p style="margin: 4px 0 0 0; font-size: 13px;">
+                    This item does not have any accessories registered in the system.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="selectedItem[i]?.accessories?.length" class="accessories-list">
               <div *ngFor="let accessory of selectedItem[i]?.accessories; trackBy: trackByAccessoryId" class="accessory-item" style="margin-bottom: 16px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 16px;">
                   <div style="flex: 2;">
@@ -489,13 +503,13 @@
               </div>
             </div>
             
-            <div *ngIf="getSelectedAccessoriesCount(i) > 0" style="margin-top: 8px; font-size: 13px; color: #059669;">
+            <div *ngIf="selectedItem[i]?.accessories?.length && getSelectedAccessoriesCount(i) > 0" style="margin-top: 8px; font-size: 13px; color: #059669;">
               {{ getSelectedAccessoriesCount(i) }} accessory(ies) selected / {{ getSelectedAccessoriesCount(i) }} አብራጭ(ዎች) ተመርጠዋል
             </div>
           </div>
 
           <!-- Serial Numbers Section (only for regular item withdrawals, not accessory-only) -->
-          <div *ngIf="!isAccessoryOnlyMode(i) && selectedItem[i]?.serialNumbers?.length" class="serial-numbers-section">
+          <div *ngIf="!isAccessoryOnlyMode(i) && selectedItem[i]" class="serial-numbers-section">
             <h4 style="font-size: 16px; font-weight: 600; margin: 0 0 12px 0; color: #03203c;">
               Serial Numbers / ተከታታይ ቁጥሮች
               <span style="font-size: 13px; font-weight: normal; color: #6b7280;">
@@ -503,7 +517,21 @@
               </span>
             </h4>
             
-            <div class="serial-inputs">
+            <!-- No serial numbers message -->
+            <div *ngIf="!selectedItem[i]?.serialNumbers || selectedItem[i]?.serialNumbers?.length === 0" 
+                 style="padding: 16px; background: #e0f2fe; border: 1px solid #0ea5e9; border-radius: 8px; color: #0369a1;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 20px;">ℹ️</span>
+                <div>
+                  <strong>No Serial Numbers Available</strong>
+                  <p style="margin: 4px 0 0 0; font-size: 13px;">
+                    This item does not have any serial numbers registered in the system. You can proceed without serial numbers.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="selectedItem[i]?.serialNumbers?.length" class="serial-inputs">
               <div *ngFor="let serial of model22.items[i].serialNumbers; let j = index" class="serial-row" style="position: relative;">
                 <div style="flex: 1;">
                   <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #6b7280;">
@@ -551,7 +579,7 @@
             </div>
 
             <!-- Add Serial Button -->
-            <div *ngIf="canAddMoreSerials(i)" class="form-actions" style="margin-top: 12px; justify-content: flex-start;">
+            <div *ngIf="selectedItem[i]?.serialNumbers?.length && canAddMoreSerials(i)" class="form-actions" style="margin-top: 12px; justify-content: flex-start;">
               <button
                 type="button"
                 class="action-btn secondary small"
@@ -583,6 +611,22 @@
             attr.aria-label="Add new item">
             Add Item / እቃ ጨምር
           </button>
+        </div>
+      </div>
+
+      <!-- Comment -->
+      <div class="table-container" style="margin-top: 24px;">
+        <div class="table-row">
+          <div class="table-label">Comment / አስተያየት</div>
+          <div class="table-input">
+            <textarea
+              [(ngModel)]="model22.comment"
+              name="comment"
+              rows="3"
+              placeholder="Enter any additional notes or remarks (optional) / ተጨማሪ ማስታወሻ ወይም አስተያየት ያስገቡ (አማራጭ)"
+              style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb; font-size: 15px; resize: vertical; font-family: inherit;">
+            </textarea>
+          </div>
         </div>
       </div>
 

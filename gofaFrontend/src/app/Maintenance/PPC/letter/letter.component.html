@@ -1,29 +1,160 @@
-<h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  የሜንቴናንስ ደብዳቤዎች</h2>
-<div *ngIf="loading">Loading letters...</div>
-<div *ngIf="error" class="error">{{ error }}</div>
+<div class="page-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <p class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</p>
+    <h1 class="page-title">Maintenance Letters / የሜንቴናንስ ደብዳቤዎች</h1>
+  </div>
 
-<table *ngIf="!loading && letters.length > 0" class="letter-table">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>From</th>
-      <th>Reason</th>
-      <th>Status</th>
-      <th>Created Date</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let letter of letters">
-      <td>{{ letter.letterId }}</td>
-      <td>{{ letter.from }}</td>
-      <td>{{ letter.recommendBy }}</td>
-      <td>{{ letter.status }}</td>
-      <td>{{ letter.createdDate | date: 'short' }}</td>
-    </tr>
-  </tbody>
-</table>
+  <!-- Summary Cards -->
+  <div class="summary-cards" *ngIf="!loading">
+    <div class="summary-card total">
+      <div class="card-icon"><i class="bi bi-envelope-paper"></i></div>
+      <div class="card-content">
+        <span class="card-label">Total Letters / ጠቅላላ</span>
+        <span class="card-value">{{ totalLetters }}</span>
+      </div>
+    </div>
+    <div class="summary-card pending">
+      <div class="card-icon"><i class="bi bi-clock-history"></i></div>
+      <div class="card-content">
+        <span class="card-label">Initial / ገና አልተመዘገበም</span>
+        <span class="card-value">{{ pendingLettersCount }}</span>
+      </div>
+    </div>
+    <div class="summary-card approved">
+      <div class="card-icon"><i class="bi bi-check-circle"></i></div>
+      <div class="card-content">
+        <span class="card-label">Approved / ተመዝግቧል</span>
+        <span class="card-value">{{ approvedLettersCount }}</span>
+      </div>
+    </div>
+  </div>
 
-<div *ngIf="!loading && letters.length === 0">
-  No letters found.
+  <!-- Filters Section -->
+  <div class="filter-card">
+    <div class="filter-row">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input 
+          type="text" 
+          placeholder="Search by ID, sender, or reason..." 
+          [(ngModel)]="searchTerm" 
+          (input)="applyFilters()"
+        >
+      </div>
+
+      <div class="filter-actions">
+        <select class="status-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option value="">All Status / ሁሉም ሁኔታ</option>
+          <option value="initial">Initial / ገና አልተመዘገበም</option>
+          <option value="Approved">Approved / ተመዝግቧል</option>
+        </select>
+
+        <select class="status-select" [(ngModel)]="dateFilter" (change)="applyFilters()">
+          <option value="ALL">All Time / ሁሉም</option>
+          <option value="1WEEK">Last 1 Week / 1 ሳምንት</option>
+          <option value="1MONTH">Last 1 Month / 1 ወር</option>
+          <option value="3MONTHS">Last 3 Months / 3 ወር</option>
+          <option value="6MONTHS">Last 6 Months / 6 ወር</option>
+          <option value="9MONTHS">Last 9 Months / 9 ወር</option>
+          <option value="12MONTHS">Last 12 Months / 1 አመት</option>
+        </select>
+
+        <button class="btn-refresh" (click)="loadLetters()" [disabled]="loading">
+          <i class="bi bi-arrow-clockwise" [class.spin]="loading"></i>
+        </button>
+
+        <div class="export-actions">
+          <button class="btn-export excel" (click)="exportToExcel()" title="Export to Excel">
+            <i class="bi bi-file-earmark-excel"></i>
+          </button>
+          <button class="btn-export pdf" (click)="exportToPDF()" title="Export to PDF">
+            <i class="bi bi-file-earmark-pdf"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  <div class="table-card">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="state-container">
+      <div class="spinner"></div>
+      <p>Fetching letters... / ደብዳቤዎች በመጫን ላይ...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="state-container error">
+      <i class="bi bi-exclamation-triangle"></i>
+      <p>{{ error }}</p>
+      <button (click)="loadLetters()">Retry</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive" *ngIf="!loading && filteredLetters.length > 0">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>From / ከማን</th>
+            <th>Reason / ምክንያት</th>
+            <th>Status / ሁኔታ</th>
+            <th>Created Date / ቀን</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let letter of pagedLetters">
+            <td class="id-cell">#{{ letter.letterId }}</td>
+            <td>
+              <div class="sender-info">
+                <i class="bi bi-person-circle"></i>
+                <span>{{ letter.from }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="reason-text" [title]="letter.recommendBy">
+                {{ letter.recommendBy }}
+              </div>
+            </td>
+            <td>
+              <span [class]="getStatusClass(letter.status)">
+                {{ letter.status }}
+              </span>
+            </td>
+            <td class="date-cell">
+              <div class="date-display">
+                <i class="bi bi-calendar3"></i>
+                <span>{{ letter.createdDate | date: 'MMM d, y' }}</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && filteredLetters.length === 0" class="state-container empty">
+      <i class="bi bi-envelope-open"></i>
+      <p>No letters found. / ምንም ደብዳቤ አልተገኘም::</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="!loading && filteredLetters.length > pageSize">
+      <span class="page-info">Showing {{ (currentPage-1)*pageSize + 1 }} - {{ Math.min(currentPage*pageSize, filteredLetters.length) }} of {{ filteredLetters.length }}</span>
+      <div class="page-controls">
+        <button [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button *ngFor="let p of [].constructor(totalPages); let i = index" 
+                [class.active]="currentPage === i + 1" 
+                (click)="changePage(i + 1)">
+          {{ i + 1 }}
+        </button>
+        <button [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

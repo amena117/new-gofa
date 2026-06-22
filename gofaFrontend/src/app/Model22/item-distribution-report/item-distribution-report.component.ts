@@ -8,6 +8,7 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import html2canvas from 'html2canvas';
+import { NOTO_ETHIOPIC_BASE64 } from '../../../assets/fonts/noto-ethiopic-base64';
 
 interface ItemDistribution {
   description: string;
@@ -546,253 +547,433 @@ export class ItemDistributionReportComponent implements OnInit, OnDestroy {
     this.loadReport();
   }
 
-  exportToExcel(): void {
-    const data: any[] = [];
-
-    // Add summary sheet data
-    const summaryData = [
-      ['Item Distribution Report', 'የእቃ ስርጭት ሪፖርት'],
-      ['Generated Date', new Date().toLocaleString()],
-      ['Date Filter', this.dateFilter || 'All Dates'],
-      ['Selected Roles', this.selectedRoles.join(', ')],
-      [''],
-      ['Summary Statistics', ''],
-      ['Total Items', this.reportSummary.totalItems],
-      ['Total Withdrawals', this.reportSummary.totalWithdrawals],
-      ['Total Quantity Distributed', this.reportSummary.totalQuantityDistributed],
-      ['Total Value', this.getTotalValueFormatted()],
-      ['']
-    ];
-
-    // Add detailed distribution data
-    this.filteredDistributions.forEach(dist => {
-      // Item header row
-      data.push({
-        'Item': dist.description,
-        'Model': dist.model,
-        'Total Qty': dist.totalQuantity,
-        'Total Value': `${dist.totalValue.toFixed(2)} ${dist.currency}`,
-        'Withdrawals': dist.withdrawalCount,
-        'Voucher': '',
-        'Date': '',
-        'Recipient': '',
-        'Organization': '',
-        'Qty': '',
-        'Unit Price': '',
-        'Total Price': '',
-        'Serial Numbers': ''
-      });
-
-      // Withdrawal details
-      dist.withdrawals.forEach((w, index) => {
-        data.push({
-          'Item': index === 0 ? '' : '',
-          'Model': '',
-          'Total Qty': '',
-          'Total Value': '',
-          'Withdrawals': '',
-          'Voucher': w.voucherNumber,
-          'Date': w.date,
-          'Recipient': w.recipient,
-          'Organization': w.organization,
-          'Qty': w.quantity,
-          'Unit Price': `${w.unitPrice.toFixed(2)} ${w.currency}`,
-          'Total Price': `${w.totalPrice.toFixed(2)} ${w.currency}`,
-          'Serial Numbers': w.serialNumbers.join(', ')
-        });
-      });
-      
-      // Add empty row between items
-      data.push({});
-    });
-
-    // Create worksheets
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
-    
-    // Create workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
-    XLSX.utils.book_append_sheet(wb, ws, 'Distribution Details');
-
-    // Add top items sheet
-    if (this.reportSummary.topItems.length > 0) {
-      const topItemsData = [
-        ['Rank', 'Item', 'Model', 'Quantity'],
-        ...this.reportSummary.topItems.map((item, index) => [
-          index + 1,
-          item.description,
-          item.model,
-          item.quantity
-        ])
-      ];
-      const wsTopItems = XLSX.utils.aoa_to_sheet(topItemsData);
-      XLSX.utils.book_append_sheet(wb, wsTopItems, 'Top Items');
-    }
-
-    // Export file
-    const timestamp = new Date().toISOString().slice(0, 19).replace(/[:]/g, '-');
-    const filename = `Item_Distribution_Report_${timestamp}.xlsx`;
-    XLSX.writeFile(wb, filename);
+  private registerEthiopicFont(doc: jsPDF): void {
+    doc.addFileToVFS('NotoSerifEthiopic.ttf', NOTO_ETHIOPIC_BASE64);
+    doc.addFont('NotoSerifEthiopic.ttf', 'NotoEthiopic', 'normal');
+    doc.addFont('NotoSerifEthiopic.ttf', 'NotoEthiopic', 'bold');
   }
 
-  downloadItemPDF(dist: ItemDistribution, event: Event): void {
-    event.stopPropagation(); // Prevent expanding/collapsing the item
+  private pdfText(
+    doc: jsPDF,
+    text: string,
+    x: number,
+    y: number,
+    size: number,
+    weight: 'normal' | 'bold' = 'normal',
+    color: [number, number, number] = [55, 65, 81],
+    align: 'left' | 'center' | 'right' = 'left'
+  ): void {
+    const hasEthiopic = /[\u1200-\u137F]/.test(text);
+    doc.setFontSize(size);
+    doc.setTextColor(color[0], color[1], color[2]);
     
-    // Create a temporary container for the PDF content
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.width = '800px';
-    container.style.padding = '40px';
-    container.style.backgroundColor = '#ffffff';
-    container.style.fontFamily = 'Arial, sans-serif';
+    if (hasEthiopic) {
+      doc.setFont('NotoEthiopic', 'normal');
+    } else {
+      doc.setFont('helvetica', weight);
+    }
     
-    // Build HTML content
-    let html = `
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="margin: 0 0 10px 0; font-size: 24px; color: #03203c;">${dist.description}</h1>
-        <p style="margin: 0; font-size: 16px; color: #666;">Model: ${dist.model}</p>
-      </div>
-      
-      <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; background: #f5f5f5;">Units / ብዛት</td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${dist.totalQuantity}</td>
-        </tr>
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; background: #f5f5f5;">Value / ዋጋ</td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${this.getItemValueFormatted(dist)}</td>
-        </tr>
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; background: #f5f5f5;">Transactions / ግብይቶች</td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${dist.withdrawalCount}</td>
-        </tr>
-      </table>
-      
-      <h2 style="font-size: 18px; color: #03203c; margin: 20px 0 10px 0;">Transaction Details / የግብይት ዝርዝሮች</h2>
-      
-      <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-        <thead>
-          <tr style="background: #03203c; color: white;">
-            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Voucher No.</th>
-            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Date</th>
-            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Recipient</th>
-            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Organization</th>
-            <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Qty</th>
-            <th style="padding: 8px; border: 1px solid #ddd; text-align: right;">Unit Price</th>
-            <th style="padding: 8px; border: 1px solid #ddd; text-align: right;">Total</th>
-            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Serial Numbers</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-    
-    dist.withdrawals.forEach((w, index) => {
-      const bgColor = index % 2 === 0 ? '#ffffff' : '#f9f9f9';
-      html += `
-        <tr style="background: ${bgColor};">
-          <td style="padding: 8px; border: 1px solid #ddd;">${w.voucherNumber}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${w.date}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${w.recipient}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${w.organization}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${w.quantity}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${w.unitPrice.toFixed(2)} ${w.currency}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${w.totalPrice.toFixed(2)} ${w.currency}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; font-size: 10px;">${w.serialNumbers.join(', ')}</td>
-        </tr>
-      `;
-      
-      // Add accessories if any
-      if (w.accessories && w.accessories.length > 0) {
-        html += `
-          <tr style="background: #f0f8ff;">
-            <td colspan="8" style="padding: 10px; border: 1px solid #ddd;">
-              <strong>📦 Withdrawn Accessories / የወጡ አባሪዎች:</strong>
-              <table style="width: 100%; margin-top: 5px; border-collapse: collapse; font-size: 10px;">
-                <thead>
-                  <tr style="background: #0a4b78; color: white;">
-                    <th style="padding: 5px; border: 1px solid #ddd;">Name</th>
-                    <th style="padding: 5px; border: 1px solid #ddd;">Model</th>
-                    <th style="padding: 5px; border: 1px solid #ddd;">Qty</th>
-                    <th style="padding: 5px; border: 1px solid #ddd;">Unit Price</th>
-                    <th style="padding: 5px; border: 1px solid #ddd;">Total</th>
-                    <th style="padding: 5px; border: 1px solid #ddd;">Serial Numbers</th>
-                  </tr>
-                </thead>
-                <tbody>
-        `;
-        
+    doc.text(text, x, y, { align });
+    doc.setFont('helvetica', 'normal');
+  }
+
+  exportToPDF(): void {
+  const doc = new jsPDF('p', 'mm', 'a4');
+
+  // Register Ethiopic font — must be first
+  this.registerEthiopicFont(doc);
+
+  const pageW  = doc.internal.pageSize.getWidth();
+  const pageH  = doc.internal.pageSize.getHeight();
+  const ml     = 14;
+  const mr     = 14;
+  const cw     = pageW - ml - mr;
+  let   y      = 0;
+
+  const navy     = [4,  44,  83]  as [number,number,number];
+  const blue     = [24, 95, 165]  as [number,number,number];
+  const blueLight= [230,241,251]  as [number,number,number];
+  const blueMid  = [55, 138, 221] as [number,number,number];
+  const white    = [255,255,255]  as [number,number,number];
+  const rowAlt   = [248,249,250]  as [number,number,number];
+  const greenBg  = [234,243,222]  as [number,number,number];
+  const greenTxt = [39, 80, 10]   as [number,number,number];
+  const amberBg  = [250,238,218]  as [number,number,number];
+  const amberTxt = [99, 56, 6]    as [number,number,number];
+  const bodyTxt  = [55, 65, 81]   as [number,number,number];
+  const mutedTxt = [107,114,128]  as [number,number,number];
+  const borderClr= [220,225,230]  as [number,number,number];
+
+  const h = (text: string, x: number, yy: number, size: number,
+             color: [number,number,number], align: 'left'|'center'|'right' = 'left') =>
+    this.pdfText(doc, text, x, yy, size, 'bold', color, align);
+
+  const p = (text: string, x: number, yy: number, size: number,
+             color: [number,number,number], align: 'left'|'center'|'right' = 'left') =>
+    this.pdfText(doc, text, x, yy, size, 'normal', color, align);
+
+  const setFill  = (c: [number,number,number]) => doc.setFillColor(c[0], c[1], c[2]);
+  const setDraw  = (c: [number,number,number]) => doc.setDrawColor(c[0], c[1], c[2]);
+  const clip = (str: string, max: number) => str?.length > max ? str.slice(0, max) + '...' : (str || '-');
+
+  const checkBreak = (need: number) => {
+    if (y + need > pageH - 12) {
+      drawFooter();
+      doc.addPage();
+      y = drawPageHeader();
+    }
+  };
+
+  const drawPageHeader = (): number => {
+    setFill(blueMid);
+    doc.rect(0, 0, pageW, 2, 'F');
+    return 8;
+  };
+
+  const drawFooter = () => {
+    const pg    = (doc as any).internal.getCurrentPageInfo().pageNumber;
+    const total = (doc as any).internal.getNumberOfPages();
+    setDraw(borderClr);
+    doc.setLineWidth(0.3);
+    doc.line(ml, pageH - 10, ml + cw, pageH - 10);
+    p(`Distribution Analytics Report`, ml, pageH - 5, 7, mutedTxt);
+    p(`Page ${pg} of ${total}`, ml + cw, pageH - 5, 7, mutedTxt, 'right');
+  };
+
+  // Cover header
+  setFill(navy);
+  doc.rect(0, 0, pageW, 36, 'F');
+  setFill(blueMid);
+  doc.rect(0, 36, pageW, 2, 'F');
+
+  h('Distribution Analytics Report', ml, 14, 15, white);
+  p(`Generated: ${new Date().toLocaleString()}   ·   Roles: ${this.selectedRoles.join(', ')}   ·   Period: ${this.dateFilter || 'All Time'}`,
+    ml, 26, 8, [133, 183, 235] as [number,number,number]);
+
+  y = 46;
+
+  // Summary stat cards
+  const stats = [
+    { label: 'Item Types',        value: String(this.reportSummary.totalItems) },
+    { label: 'Total Withdrawals', value: String(this.reportSummary.totalWithdrawals) },
+    { label: 'Qty Distributed',   value: String(this.reportSummary.totalQuantityDistributed) },
+    { label: 'Total Value',       value: this.getTotalValueFormatted() },
+  ];
+
+  const cardW = cw / stats.length - 2;
+  stats.forEach((s, i) => {
+    const cx = ml + i * (cardW + 2.7);
+    setFill(blueLight);
+    doc.roundedRect(cx, y, cardW, 22, 2, 2, 'F');
+    setFill(blue);
+    doc.rect(cx, y, cardW, 1.5, 'F');
+    p(s.label, cx + cardW / 2, y + 9, 6.5, mutedTxt, 'center');
+    const valFont = s.value.length > 14 ? 9 : 12;
+    h(s.value, cx + cardW / 2, y + 19, valFont, navy, 'center');
+  });
+
+  y += 30;
+  setDraw(borderClr);
+  doc.setLineWidth(0.3);
+  doc.line(ml, y, ml + cw, y);
+  y += 6;
+
+  const COL = {
+    voucher:   { x: ml,       w: 28 },
+    date:      { x: ml + 28,  w: 26 },
+    recipient: { x: ml + 54,  w: 36 },
+    org:       { x: ml + 90,  w: 36 },
+    qty:       { x: ml + 126, w: 12 },
+    unitPrice: { x: ml + 138, w: 22 },
+    total:     { x: ml + 160, w: 22 },
+  };
+
+  const drawTableHeader = () => {
+    setFill(blue);
+    doc.rect(ml, y, cw, 9, 'F');
+    h('Voucher No.',  COL.voucher.x + 1,   y + 6, 6.5, white);
+    h('Date',         COL.date.x + 1,       y + 6, 6.5, white);
+    h('Recipient',    COL.recipient.x + 1,  y + 6, 6.5, white);
+    h('Organization', COL.org.x + 1,        y + 6, 6.5, white);
+    h('Qty',          COL.qty.x + 1,        y + 6, 6.5, white);
+    h('Unit Price',   COL.unitPrice.x + 1,  y + 6, 6.5, white);
+    h('Total',        COL.total.x + 1,      y + 6, 6.5, white);
+    y += 9;
+  };
+
+  this.filteredDistributions.forEach((dist, di) => {
+    checkBreak(28);
+    setFill(navy);
+    doc.roundedRect(ml, y, cw, 11, 2, 2, 'F');
+    h(`${di + 1}.  ${clip(dist.description, 48)}`, ml + 3, y + 7.5, 9, white);
+    p(`Model: ${dist.model}`, ml + cw - 3, y + 7.5, 7.5, white, 'right');
+    y += 11;
+
+    setFill(blueLight);
+    doc.rect(ml, y, cw, 9, 'F');
+    p(`Units distributed: ${dist.totalQuantity}     Value: ${this.getItemValueFormatted(dist)}     Transactions: ${dist.withdrawalCount}`,
+      ml + 3, y + 6.5, 7.5, [12, 68, 124] as [number,number,number]);
+    y += 9;
+
+    checkBreak(12);
+    drawTableHeader();
+
+    dist.withdrawals.forEach((w, wi) => {
+      checkBreak(9);
+      setFill(wi % 2 === 0 ? white : rowAlt);
+      doc.rect(ml, y, cw, 9, 'F');
+      p(clip(w.voucherNumber, 16), COL.voucher.x + 1,   y + 6, 7, bodyTxt);
+      p(clip(w.date, 14),          COL.date.x + 1,       y + 6, 7, bodyTxt);
+      p(clip(w.recipient, 20),     COL.recipient.x + 1,  y + 6, 7, bodyTxt);
+      p(clip(w.organization, 20),  COL.org.x + 1,        y + 6, 7, bodyTxt);
+      p(String(w.quantity),        COL.qty.x + 1,        y + 6, 7, bodyTxt);
+      p(`${w.unitPrice.toFixed(2)} ${w.currency}`,       COL.unitPrice.x + 1, y + 6, 7, bodyTxt);
+      h(`${w.totalPrice.toFixed(2)} ${w.currency}`,      COL.total.x + 1,     y + 6, 7, bodyTxt);
+      y += 9;
+
+      if (w.serialNumbers?.length > 0) {
+        checkBreak(7);
+        setFill(greenBg);
+        doc.rect(ml, y, cw, 7, 'F');
+        const snText = doc.splitTextToSize(`  S/N: ${w.serialNumbers.join(', ')}`, cw - 4);
+        p(snText[0], ml + 2, y + 5, 6.5, greenTxt);
+        y += 7;
+      }
+
+      if (w.accessories?.length) {
+        checkBreak(7);
+        setFill(amberBg);
+        doc.rect(ml, y, cw, 7, 'F');
+        h('  Accessories withdrawn:', ml + 2, y + 5, 6.5, amberTxt);
+        y += 7;
+
         w.accessories.forEach(acc => {
-          html += `
-            <tr>
-              <td style="padding: 5px; border: 1px solid #ddd;">${acc.name}</td>
-              <td style="padding: 5px; border: 1px solid #ddd;">${acc.model}</td>
-              <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${acc.quantity}</td>
-              <td style="padding: 5px; border: 1px solid #ddd; text-align: right;">${acc.unitPrice.toFixed(2)} ${acc.currency}</td>
-              <td style="padding: 5px; border: 1px solid #ddd; text-align: right;">${acc.totalPrice.toFixed(2)} ${acc.currency}</td>
-              <td style="padding: 5px; border: 1px solid #ddd;">${acc.withdrawnSerialNumbers?.join(', ') || '-'}</td>
-            </tr>
-          `;
+          checkBreak(7);
+          setFill([255, 251, 235] as [number,number,number]);
+          doc.rect(ml, y, cw, 7, 'F');
+          const snPart = acc.withdrawnSerialNumbers?.length ? `  S/N: ${acc.withdrawnSerialNumbers.join(', ')}` : '';
+          const accLine = doc.splitTextToSize(
+            `    - ${acc.name} (${acc.model})   Qty: ${acc.quantity}   Unit: ${acc.unitPrice.toFixed(2)} ${acc.currency}   Total: ${acc.totalPrice.toFixed(2)} ${acc.currency}${snPart}`,
+            cw - 4
+          );
+          p(accLine[0], ml + 2, y + 5, 6.5, amberTxt);
+          y += 7;
+
+          acc.subAccessories?.forEach(sub => {
+            checkBreak(6);
+            setFill([255, 253, 244] as [number,number,number]);
+            doc.rect(ml, y, cw, 6, 'F');
+            p(`          -> ${sub.name}   Qty: ${sub.quantity}   Unit: ${sub.unitPrice.toFixed(2)} ${sub.currency}`,
+              ml + 2, y + 4.5, 6, mutedTxt);
+            y += 6;
+          });
         });
-        
-        html += `
-                </tbody>
-              </table>
-            </td>
-          </tr>
-        `;
       }
     });
-    
-    html += `
-        </tbody>
-      </table>
-    `;
-    
-    container.innerHTML = html;
-    document.body.appendChild(container);
-    
-    // Generate PDF from HTML
-    setTimeout(() => {
-      html2canvas(container, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false
-      }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 10;
-        const contentWidth = pageWidth - 2 * margin;
-        const contentHeight = pageHeight - 2 * margin;
-        
-        const imgWidth = contentWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        const totalPages = Math.ceil(imgHeight / contentHeight);
-        
-        for (let page = 0; page < totalPages; page++) {
-          if (page > 0) {
-            pdf.addPage();
-          }
-          
-          const yOffset = -(page * contentHeight);
-          pdf.addImage(imgData, 'PNG', margin, yOffset + margin, imgWidth, imgHeight);
-        }
-        
-        const filename = `${dist.description.replace(/[^a-z0-9]/gi, '_')}_${dist.model}_Distribution.pdf`;
-        pdf.save(filename);
-        
-        // Clean up
-        document.body.removeChild(container);
-      }).catch(error => {
-        console.error('Error generating PDF:', error);
-        document.body.removeChild(container);
-      });
-    }, 100);
+
+    y += 3;
+    setDraw(borderClr);
+    doc.setLineWidth(0.3);
+    doc.setLineDashPattern([2, 1.5], 0);
+    doc.line(ml, y, ml + cw, y);
+    doc.setLineDashPattern([], 0);
+    y += 5;
+  });
+
+  const totalPg = (doc as any).internal.getNumberOfPages();
+  for (let pg = 1; pg <= totalPg; pg++) {
+    doc.setPage(pg);
+    drawFooter();
+  }
+
+  doc.save(`Distribution_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
+  downloadItemPDF(dist: ItemDistribution, event: Event): void {
+    event.stopPropagation();
+
+    const doc = new jsPDF('p', 'mm', 'a4');
+    this.registerEthiopicFont(doc);
+
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const ml = 14;
+    const cw = pageW - ml - ml;
+    let y = 0;
+
+    const navy = [4, 44, 83] as [number, number, number];
+    const blue = [24, 95, 165] as [number, number, number];
+    const blueLight = [230, 241, 251] as [number, number, number];
+    const blueMid = [55, 138, 221] as [number, number, number];
+    const white = [255, 255, 255] as [number, number, number];
+    const rowAlt = [248, 249, 250] as [number, number, number];
+    const greenBg = [234, 243, 222] as [number, number, number];
+    const greenTxt = [39, 80, 10] as [number, number, number];
+    const amberBg = [250, 238, 218] as [number, number, number];
+    const amberTxt = [99, 56, 6] as [number, number, number];
+    const bodyTxt = [55, 65, 81] as [number, number, number];
+    const mutedTxt = [107, 114, 128] as [number, number, number];
+    const borderClr = [220, 225, 230] as [number, number, number];
+
+    const h = (text: string, x: number, yy: number, size: number,
+               color: [number, number, number], align: 'left' | 'center' | 'right' = 'left') =>
+      this.pdfText(doc, text, x, yy, size, 'bold', color, align);
+
+    const p = (text: string, x: number, yy: number, size: number,
+               color: [number, number, number], align: 'left' | 'center' | 'right' = 'left') =>
+      this.pdfText(doc, text, x, yy, size, 'normal', color, align);
+
+    const setFill = (c: [number, number, number]) => doc.setFillColor(c[0], c[1], c[2]);
+    const setDraw = (c: [number, number, number]) => doc.setDrawColor(c[0], c[1], c[2]);
+    const clip = (str: string, max: number) => str?.length > max ? str.slice(0, max) + '...' : (str || '-');
+
+    const checkBreak = (need: number) => {
+      if (y + need > pageH - 12) {
+        drawFooter();
+        doc.addPage();
+        y = drawPageHeader();
+      }
+    };
+
+    const drawPageHeader = (): number => {
+      setFill(blueMid);
+      doc.rect(0, 0, pageW, 2, 'F');
+      return 8;
+    };
+
+    const drawFooter = () => {
+      const pg = (doc as any).internal.getCurrentPageInfo().pageNumber;
+      const total = (doc as any).internal.getNumberOfPages();
+      setDraw(borderClr);
+      doc.setLineWidth(0.3);
+      doc.line(ml, pageH - 10, ml + cw, pageH - 10);
+      p(`Item Distribution Report`, ml, pageH - 5, 7, mutedTxt);
+      p(`Page ${pg} of ${total}`, ml + cw, pageH - 5, 7, mutedTxt, 'right');
+    };
+
+    // Cover header
+    setFill(navy);
+    doc.rect(0, 0, pageW, 36, 'F');
+    setFill(blueMid);
+    doc.rect(0, 36, pageW, 2, 'F');
+
+    h(dist.description, ml, 14, 15, white);
+    p(`Model: ${dist.model}`, ml, 26, 8, [133, 183, 235] as [number, number, number]);
+
+    y = 46;
+
+    // Summary stat cards
+    const stats = [
+      { label: 'Units / ብዛት', value: String(dist.totalQuantity) },
+      { label: 'Value / ዋጋ', value: this.getItemValueFormatted(dist) },
+      { label: 'Transactions / ግብይቶች', value: String(dist.withdrawalCount) },
+    ];
+
+    const cardW = cw / stats.length - 2;
+    stats.forEach((s, i) => {
+      const cx = ml + i * (cardW + 2.7);
+      setFill(blueLight);
+      doc.roundedRect(cx, y, cardW, 22, 2, 2, 'F');
+      setFill(blue);
+      doc.rect(cx, y, cardW, 1.5, 'F');
+      p(s.label, cx + cardW / 2, y + 9, 6.5, mutedTxt, 'center');
+      const valFont = s.value.length > 14 ? 9 : 12;
+      h(s.value, cx + cardW / 2, y + 19, valFont, navy, 'center');
+    });
+
+    y += 30;
+    setDraw(borderClr);
+    doc.setLineWidth(0.3);
+    doc.line(ml, y, ml + cw, y);
+    y += 6;
+
+    const COL = {
+      voucher: { x: ml, w: 28 },
+      date: { x: ml + 28, w: 26 },
+      recipient: { x: ml + 54, w: 36 },
+      org: { x: ml + 90, w: 36 },
+      qty: { x: ml + 126, w: 12 },
+      unitPrice: { x: ml + 138, w: 22 },
+      total: { x: ml + 160, w: 22 },
+    };
+
+    const drawTableHeader = () => {
+      setFill(blue);
+      doc.rect(ml, y, cw, 9, 'F');
+      h('Voucher No.', COL.voucher.x + 1, y + 6, 6.5, white);
+      h('Date', COL.date.x + 1, y + 6, 6.5, white);
+      h('Recipient', COL.recipient.x + 1, y + 6, 6.5, white);
+      h('Organization', COL.org.x + 1, y + 6, 6.5, white);
+      h('Qty', COL.qty.x + 1, y + 6, 6.5, white);
+      h('Unit Price', COL.unitPrice.x + 1, y + 6, 6.5, white);
+      h('Total', COL.total.x + 1, y + 6, 6.5, white);
+      y += 9;
+    };
+
+    checkBreak(12);
+    drawTableHeader();
+
+    dist.withdrawals.forEach((w, wi) => {
+      checkBreak(9);
+      setFill(wi % 2 === 0 ? white : rowAlt);
+      doc.rect(ml, y, cw, 9, 'F');
+      p(clip(w.voucherNumber, 16), COL.voucher.x + 1, y + 6, 7, bodyTxt);
+      p(clip(w.date, 14), COL.date.x + 1, y + 6, 7, bodyTxt);
+      p(clip(w.recipient, 20), COL.recipient.x + 1, y + 6, 7, bodyTxt);
+      p(clip(w.organization, 20), COL.org.x + 1, y + 6, 7, bodyTxt);
+      p(String(w.quantity), COL.qty.x + 1, y + 6, 7, bodyTxt);
+      p(`${w.unitPrice.toFixed(2)} ${w.currency}`, COL.unitPrice.x + 1, y + 6, 7, bodyTxt);
+      h(`${w.totalPrice.toFixed(2)} ${w.currency}`, COL.total.x + 1, y + 6, 7, bodyTxt);
+      y += 9;
+
+      if (w.serialNumbers?.length > 0) {
+        checkBreak(7);
+        setFill(greenBg);
+        doc.rect(ml, y, cw, 7, 'F');
+        const snText = doc.splitTextToSize(`  S/N: ${w.serialNumbers.join(', ')}`, cw - 4);
+        p(snText[0], ml + 2, y + 5, 6.5, greenTxt);
+        y += 7;
+      }
+
+      if (w.accessories?.length) {
+        checkBreak(7);
+        setFill(amberBg);
+        doc.rect(ml, y, cw, 7, 'F');
+        h('  Accessories withdrawn:', ml + 2, y + 5, 6.5, amberTxt);
+        y += 7;
+
+        w.accessories.forEach(acc => {
+          checkBreak(7);
+          setFill([255, 251, 235] as [number, number, number]);
+          doc.rect(ml, y, cw, 7, 'F');
+          const snPart = acc.withdrawnSerialNumbers?.length ? `  S/N: ${acc.withdrawnSerialNumbers.join(', ')}` : '';
+          const accLine = doc.splitTextToSize(
+            `    - ${acc.name} (${acc.model})   Qty: ${acc.quantity}   Unit: ${acc.unitPrice.toFixed(2)} ${acc.currency}   Total: ${acc.totalPrice.toFixed(2)} ${acc.currency}${snPart}`,
+            cw - 4
+          );
+          p(accLine[0], ml + 2, y + 5, 6.5, amberTxt);
+          y += 7;
+
+          acc.subAccessories?.forEach(sub => {
+            checkBreak(6);
+            setFill([255, 253, 244] as [number, number, number]);
+            doc.rect(ml, y, cw, 6, 'F');
+            p(`          -> ${sub.name}   Qty: ${sub.quantity}   Unit: ${sub.unitPrice.toFixed(2)} ${sub.currency}`,
+              ml + 2, y + 4.5, 6, mutedTxt);
+            y += 6;
+          });
+        });
+      }
+    });
+
+    const totalPg = (doc as any).internal.getNumberOfPages();
+    for (let pg = 1; pg <= totalPg; pg++) {
+      doc.setPage(pg);
+      drawFooter();
+    }
+
+    const filename = `${dist.description.replace(/[^a-z0-9]/gi, '_')}_${dist.model}_Distribution.pdf`;
+    doc.save(filename);
   }
 }
 

@@ -1,67 +1,87 @@
-<div class="container">
-  <h2>Assign Maintenance / ጥገና መመደቢያ</h2>
+<div class="container mt-4" style="max-width:700px">
+  <h2>Assign Maintenance / የጥገና ንብረት መመደቢያ</h2>
 
-  <!-- Form for Maintenance Assignment -->
-  <form (ngSubmit)="onSubmit()">
-    <!-- Works Order Number -->
-    <div class="form-group">
-      <label for="worksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
-      <input
-        type="text"
-        id="worksOrderNumber"
-        class="form-control"
-        [(ngModel)]="worksOrderNumber"
-        name="worksOrderNumber"
-        readonly
-      />
+  <div *ngIf="isLoading" class="text-center py-3">Loading request data...</div>
+
+  <!-- Request Info (read-only display) -->
+  <div class="card mb-4" *ngIf="requestData">
+    <div class="card-header fw-bold">Request Information / የጥያቄ መረጃ</div>
+    <div class="card-body">
+      <div class="row g-2">
+        <div class="col-6">
+          <small class="text-muted">Works Order No / የስራ ትዕዛዝ ቁጥር</small>
+          <div class="fw-bold">{{ requestData.worksOrderNumber }}</div>
+        </div>
+        <div class="col-6">
+          <small class="text-muted">Nomenclature / ስያሜ</small>
+          <div>{{ requestData.nomenclature || '—' }}</div>
+        </div>
+        <div class="col-6">
+          <small class="text-muted">Serial No / ተራ ቁጥር</small>
+          <div>{{ requestData.serialNoOfEquip || '—' }}</div>
+        </div>
+        <div class="col-6">
+          <small class="text-muted">Requested By / የጠየቀው</small>
+          <div>{{ requestData.requestedBy || '—' }}</div>
+        </div>
+        <div class="col-6">
+          <small class="text-muted">Date Received / የተቀበለበት ቀን</small>
+          <div>{{ requestData.dateWorkOrderReceived ? (requestData.dateWorkOrderReceived | date:'mediumDate') : '—' }}</div>
+        </div>
+        <div class="col-6">
+          <small class="text-muted">Description / መግለጫ</small>
+          <div>{{ requestData.briefDescriptionOfWork || '—' }}</div>
+        </div>
+        <div class="col-6">
+          <small class="text-muted">Status / ሁኔታ</small>
+          <div><span class="badge bg-warning text-dark">{{ requestData.status || 'Pending' }}</span></div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Model Number -->
-    <div class="form-group">
-      <label for="modelNumber">Model Number / የሞዴል ቁጥር</label>
-      <input
-        type="text"
-        id="modelNumber"
-        class="form-control"
-        [(ngModel)]="modelNumber"
-        name="modelNumber"
-        required
-      />
+  <!-- Assignment Form -->
+  <div class="card">
+    <div class="card-header fw-bold">Assignment Details / የመመደቢያ ዝርዝር</div>
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" #assignForm="ngForm">
+
+        <div class="mb-3">
+          <label class="form-label">Maintenance Type / የጥገና አይነት <span class="text-danger">*</span></label>
+          <select class="form-select" [(ngModel)]="maintenanceType" name="maintenanceType"
+            (change)="updateRequestedTo()" required>
+            <option value="">Select Maintenance Type / የጥገና አይነት ይምረጡ</option>
+            <option value="Office_Machine">Office / IT Maintenance</option>
+            <option value="Power">POWER</option>
+            <option value="VHF_Radio">VHF RADIO</option>
+            <option value="HF_Radio">HF RADIO</option>
+            <option value="RADIO_MAINTENANCE">RADIO MAINTENANCE</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Model Number / የሞዴል ቁጥር <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="modelNumber"
+            name="modelNumber" required placeholder="Enter model number" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Assigned To / የተመደበው ቦታ</label>
+          <input type="text" class="form-control" [value]="requestedTo" readonly />
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary"
+            [disabled]="isSubmitting || assignForm.invalid">
+            {{ isSubmitting ? 'Saving...' : 'Assign / መድብ' }}
+          </button>
+          <button type="button" class="btn btn-secondary"
+            (click)="router.navigate(['/maintenance/request-list'])">
+            Cancel / ሰርዝ
+          </button>
+        </div>
+
+      </form>
     </div>
-
-    <!-- Maintenance Type -->
-    <div class="form-group">
-      <label for="maintenanceType">Maintenance Type / የጥገና አይነት</label>
-      <select
-        id="maintenanceType"
-        class="form-control"
-        [(ngModel)]="maintenanceType"
-        name="maintenanceType"
-        (change)="updateRequestedTo()"
-        required
-      >
-        <option value="">-- Select Maintenance Type / የጥገና አይነት ይምረጡ --</option>
-        <option value="Office_machine">Office_machine</option>
-        <option value="POWER">POWER</option>
-        <option value="Vhf_radio">Vhf_radio</option>
-        <option value="HF_RADIO">HF_RADIO</option>
-      </select>
-    </div>
-
-    <!-- Requested To -->
-    <div class="form-group">
-      <label for="requestedTo">Requested To / የተጠየቀው ቦታ</label>
-      <input
-        type="text"
-        id="requestedTo"
-        class="form-control"
-        [(ngModel)]="requestedTo"
-        name="requestedTo"
-        readonly
-      />
-    </div>
-
-    <!-- Submit Button -->
-    <button type="submit" class="btn btn-primary">Submit / አስገባ</button>
-  </form>
+  </div>
 </div>

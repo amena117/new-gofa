@@ -38,6 +38,10 @@
             }}</span></div>
         <div class="detail-item"><span class="label">Registered By / የመዘገበው:</span><span class="value">{{
             model22.registeredByFullName || model22.registeredBy || 'Unknown' }}</span></div>
+        <div class="detail-item" *ngIf="model22.comment" style="grid-column: 1 / -1;">
+          <span class="label">Comment / አስተያየት:</span>
+          <span class="value" style="white-space: pre-wrap;">{{ model22.comment }}</span>
+        </div>
       </div>
     </div>
 
@@ -118,23 +122,28 @@
               </div>
               
               <!-- Sub-Accessories Display -->
-              <div *ngIf="acc.withdrawnSubAccessories && acc.withdrawnSubAccessories.length > 0" 
-                   style="margin-top: 8px; padding: 8px; background: #fef3c7; border-radius: 4px; border-left: 3px solid #fbbf24;">
-                <div style="font-size: 11px; font-weight: 600; color: #92400e; margin-bottom: 6px;">
-                  📦 Sub-Accessories ({{ acc.quantity }} × accessory):
+              <div *ngIf="acc.withdrawnSubAccessories && acc.withdrawnSubAccessories.length > 0" class="sub-accessories-section">
+                <div class="sub-acc-header">
+                  <i class="bi bi-box-seam"></i> Sub-Accessories
                 </div>
-                <div *ngFor="let subAcc of acc.withdrawnSubAccessories" 
-                     style="font-size: 10px; color: #78350f; margin-bottom: 4px; padding-left: 8px;">
-                  • {{ subAcc.name }}: 
-                  <span style="font-weight: 600;">{{ subAcc.quantity }} units total</span>
-                  <span style="color: #92400e; margin-left: 4px;">
-                    ({{ (subAcc.quantity / acc.quantity) | number:'1.0-2' }} per accessory)
-                  </span>
-                  &#64; {{ subAcc.unitPrice | number:'1.2-2' }} {{ subAcc.currency }}
-                  <span style="font-weight: 600; margin-left: 4px;">
-                    = {{ (subAcc.unitPrice * subAcc.quantity) | number:'1.2-2' }} {{ subAcc.currency }}
-                  </span>
-                </div>
+                <table class="sub-acc-table">
+                  <thead>
+                    <tr>
+                      <th>Name / ስም</th>
+                      <th>Qty / ብዛት</th>
+                      <th>Unit Price / ዋጋ</th>
+                      <th>Total / ጠቅላላ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let subAcc of acc.withdrawnSubAccessories">
+                      <td>{{ subAcc.name }}</td>
+                      <td>{{ subAcc.quantity }}</td>
+                      <td>{{ subAcc.unitPrice | number:'1.2-2' }} {{ subAcc.currency }}</td>
+                      <td><strong>{{ (subAcc.unitPrice * subAcc.quantity) | number:'1.2-2' }} {{ subAcc.currency }}</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

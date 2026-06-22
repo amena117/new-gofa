@@ -1,15 +1,39 @@
-<div class="reject-container">
-  <h2>Reject Spare Parts Request</h2>
-  
-  <form (ngSubmit)="submitRejection()">
-    <div class="form-group">
-      <label for="reason">Reason for Rejection:</label>
-      <textarea id="reason" [(ngModel)]="reason" name="reason" required></textarea>
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Reject Spare Parts Request / የስፔርፓርት ጥያቄ ውድቅ ማድረጊያ</h1>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <div class="card-header">
+      <h3>
+        <i class="bi bi-x-octagon-fill text-danger"></i> Works Order / የስራ ትዕዛዝ #: {{ worksOrderNumber }}
+      </h3>
     </div>
 
-    <div class="button-group">
-      <button type="submit" class="btn reject">Submit</button>
-      <button type="button" (click)="cancel()" class="btn cancel">Cancel</button>
-    </div>
-  </form>
+    <form (ngSubmit)="submitRejection()" #rejectForm="ngForm" class="reject-form">
+      <div class="form-group mb-4">
+        <label for="reason" class="form-label required">Reason for Rejection / የውድቅ ማድረጊያ ምክንያት</label>
+        <textarea 
+          id="reason" 
+          [(ngModel)]="reason" 
+          name="reason" 
+          required 
+          class="form-control text-area"
+          placeholder="Please type the reason for rejecting this request...">
+        </textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" (click)="cancel()" class="action-btn secondary">
+          <i class="bi bi-arrow-left-circle"></i> Cancel / ተመለስ
+        </button>
+        <button type="submit" [disabled]="!rejectForm.form.valid" class="action-btn danger">
+          <i class="bi bi-x-circle-fill"></i> Reject Request / ውድቅ አድርግ
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

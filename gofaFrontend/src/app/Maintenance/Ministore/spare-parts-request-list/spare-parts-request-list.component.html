@@ -1,151 +1,350 @@
-<div class="container">
-  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Spare Parts Requests / የተጠየቁ ስፔርፓርት ዝርዝር</h2>
-
-  <!-- Debug Info -->
-  <div class="debug-info" *ngIf="false"> <!-- Set to true to show debug info -->
-    <p><strong>User Role:</strong> {{ userRole }}</p>
-    
-    <pre>{{ sparePartsRequests | json }}</pre>
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Spare Parts Requests / የተጠየቁ ስፔርፓርት ዝርዝር</h1>
   </div>
 
   <!-- Loading Indicator -->
-  <div *ngIf="isLoading" class="loading-indicator">
-    Loading spare parts requests...
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading spare parts requests / የተጠየቁ ስፔርፓርት በመጫን ላይ...</p>
   </div>
 
   <!-- Error Message -->
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
+  <div *ngIf="errorMessage" class="error-state">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <p>{{ errorMessage }}</p>
   </div>
 
-  <!-- Table -->
-  <table class="request-table" *ngIf="!isLoading && !errorMessage">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Stock number</th>
-        <th>Quantity Asked</th>
-        <th>Requested By</th>
-        <th>Reason</th>
-        <th>Works Order Number</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let request of sparePartsRequests">
-        <td>{{ request.id }}</td>
-        <td>{{ request.stockNumber }}</td>
-        <td>{{ request.quantityAsked }}</td>
-        <td>{{ request.requestedBy }}</td>
-        <td>{{ request.reason }}</td>
-        <td>{{ request.worksOrderNumber }}</td>
-       <td>
-  <!-- ✅ MINISTORE Actions -->
-  <ng-container *ngIf="isMinistore()">
-    <button 
-      (click)="goToRejectForm(request.worksOrderNumber)" 
-      [disabled]="request.isResponded">
-      Reject
-    </button>
-
-    <button 
-      (click)="openRespondForm(request)" 
-      [disabled]="request.isResponded">
-      Respond
-    </button>
-
-    <!-- Optional: Uncomment if MINISTORE should approve after responding -->
-    <!--
-    <button 
-      (click)="approveRequest(request)" 
-      *ngIf="request.currentStage === 'MINISTORE' && request.isResponded">
-      Approve (Complete)
-    </button>
-    -->
-  </ng-container>
-
-  <!-- ✅ Team Leader & Maintenance Leader Actions -->
-  <ng-container *ngIf="isTeamLeader() || userRole === 'MAINTENANCE_LEADER'">
-    <button 
-      (click)="goToRejectForm(request.worksOrderNumber)" 
-      [disabled]="request.isResponded">
-      Reject
-    </button>
-
-    <button 
-      (click)="approveRequest(request)" 
-      [disabled]="request.isResponded">
-      Approve
-    </button>
-  </ng-container>
-</td>
-
-      </tr>
-
-      <!-- No Data Found -->
-      <tr *ngIf="sparePartsRequests.length === 0">
-        <td colspan="7" style="text-align:center;">
-          No spare parts requests found for your role.
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- Response Form -->
-  <div *ngIf="selectedRequest" class="respond-form">
-    <!-- Prevent default form submission behavior if necessary, though ngSubmit should handle it -->
-    <form #responseForm="ngForm" (ngSubmit)="submitResponse(); responseForm.form.markAsPristine();"> <!-- Mark as pristine to help prevent accidental resubmission -->
-      <div>
-        <label>Works Order Number:</label>
-        <input type="text"
-               [(ngModel)]="selectedRequest.worksOrderNumber"
-               name="worksOrderNumber"
-               readonly />
+  <!-- Summary Cards -->
+  <div class="summary-cards" *ngIf="!isLoading && userRole === 'MAINTENANCE_LEADER'">
+    <div class="summary-card total">
+      <div class="card-icon"><i class="bi bi-list-task"></i></div>
+      <div class="card-content">
+        <span class="card-label">Total Requests / ጠቅላላ</span>
+        <span class="card-value">{{ totalRequests }}</span>
       </div>
-      <div>
-        <label>Stock Number:</label>
-        <input type="text"
-               [(ngModel)]="selectedRequest.stockNumber"
-               name="stockNumber"
-               readonly />
+    </div>
+    <div class="summary-card pending">
+      <div class="card-icon"><i class="bi bi-clock-history"></i></div>
+      <div class="card-content">
+        <span class="card-label">Pending Approval / በመጠባበቅ ላይ</span>
+        <span class="card-value">{{ pendingApprovalCount }}</span>
       </div>
-      <div>
-        <label>Quantity Asked:</label>
-        <input type="number"
-               [(ngModel)]="selectedRequest.quantityAsked"
-               name="quantityAsked"
-               readonly />
+    </div>
+    <div class="summary-card approved">
+      <div class="card-icon"><i class="bi bi-check-circle"></i></div>
+      <div class="card-content">
+        <span class="card-label">Issued / የተሰጡ</span>
+        <span class="card-value">{{ approvedCount }}</span>
       </div>
-      <div>
-        <label>Serial Number:</label>
-        <select [(ngModel)]="response.serialNumber"
-                name="serialNumber"
-                required>
-          <option *ngFor="let serial of availableSerialNumbers"
-                  [value]="serial">
-            {{ serial }}
-          </option>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section" *ngIf="!isLoading">
+    <div class="search-filter-group">
+      <div class="search-group">
+        <label class="filter-label">Search / ፈልግ</label>
+        <div class="input-with-icon">
+          <i class="bi bi-search"></i>
+          <input type="text" [(ngModel)]="searchTerm" (input)="onFilterChange()" placeholder="Order #, Requester, Stock... / ፈልግ...">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Status / ሁኔታ</label>
+        <select [(ngModel)]="selectedStatusFilter" (change)="onFilterChange()">
+          <option value="ALL">All Status / ሁሉም</option>
+          <option value="Pending Maintenance Leader Approval">Pending Maint Leader</option>
+          <option value="Approved - Ready for Pickup">Ready for Pickup</option>
+          <option value="Issued">Issued / የተሰጠ</option>
         </select>
       </div>
-      <div>
-        <label>Quantity Approved:</label>
-        <input type="number"
-               [(ngModel)]="response.quantityApproved"
-               name="quantityApproved"
-               required
-               min="1"
-               [max]="selectedRequest.quantityAsked" />
+
+      <div class="filter-group">
+        <label class="filter-label">Date Range / በጊዜ</label>
+        <select [(ngModel)]="selectedDateFilter" (change)="onFilterChange()">
+          <option value="ALL">All Time / ሁሉም</option>
+          <option value="1WEEK">Last 1 Week / 1 ሳምንት</option>
+          <option value="1MONTH">Last 1 Month / 1 ወር</option>
+          <option value="3MONTHS">Last 3 Months / 3 ወር</option>
+          <option value="6MONTHS">Last 6 Months / 6 ወር</option>
+          <option value="12MONTHS">Last 12 Months / 1 አመት</option>
+        </select>
       </div>
-      <div>
-        <label>Remark:</label>
-        <textarea [(ngModel)]="response.remark" name="remark"></textarea>
-      </div>
-      <!-- Add [disabled] to prevent double-clicking during submission -->
-      <button type="submit" [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Submitting...' : 'Submit Response' }}
+    </div>
+  </div>
+
+  <!-- Main Content Card (Grouped Batch List) -->
+  <div class="table-card" *ngIf="!isLoading && !errorMessage">
+    <div class="table-responsive">
+      <table class="parts-table">
+        <thead>
+          <tr>
+            <th style="width: 15%;">Works Order No / የስራ ትዕዛዝ</th>
+            <th style="width: 18%;">Requested By / ጠያቂ</th>
+            <th style="width: 15%;">Request Date / ቀን</th>
+            <th style="width: 25%;">Spare Parts / የስፔርፓርት ዝርዝር</th>
+            <th style="width: 17%;">Status / ሁኔታ</th>
+            <th style="width: 10%; text-align: center;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let batch of paginatedBatches">
+            <td class="highlight-val">{{ batch.worksOrderNumber }}</td>
+            <td>{{ batch.requestedBy }}</td>
+            <td>{{ batch.requestDate | date:'mediumDate' }}</td>
+            <td>
+              <span class="stock-badge">{{ batch.stockNumbersSummary }}</span>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="{
+                'status-pending': batch.status === 'Pending Team Leader Approval',
+                'status-waiting-leader': batch.status === 'Pending Maintenance Leader Approval',
+                'status-ready': batch.status === 'Approved - Ready for Pickup',
+                'status-accepted': batch.status === 'Issued' || batch.status === 'Issued to Technician'
+              }">
+                {{ batch.status }}
+              </span>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" class="action-btn primary small" (click)="viewingBatch = batch">
+                <i class="bi bi-eye-fill"></i> View Details / ዝርዝር እይ
+              </button>
+            </td>
+          </tr>
+
+          <!-- No Data Found -->
+          <tr *ngIf="filteredBatches.length === 0">
+            <td colspan="6" class="empty-table-cell">
+              <i class="bi bi-inbox-fill"></i>
+              <p>No spare parts requests found for your role.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <button class="page-btn" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+        <i class="bi bi-chevron-left"></i> Previous
       </button>
-      <button type="button" (click)="cancelResponse()">Cancel</button>
-    </form>
+      
+      <div class="page-info">
+        Page <strong>{{ currentPage }}</strong> of {{ totalPages }}
+      </div>
+      
+      <button class="page-btn" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        Next <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal overlay for Viewing Batch Details -->
+  <div class="modal-overlay" *ngIf="viewingBatch && !selectedRequest">
+    <div class="modal-container" style="max-width: 900px;">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="bi bi-info-circle-fill"></i> Request Details / የስራ ትዕዛዝ #{{ viewingBatch.worksOrderNumber }}
+        </h3>
+        <button type="button" class="close-btn" (click)="viewingBatch = null">&times;</button>
+      </div>
+      
+      <div class="modal-body" style="padding: 24px;">
+        <!-- Summary Info Grid -->
+        <div class="info-grid mb-4">
+          <div class="info-field">
+            <span class="info-label">Works Order No</span>
+            <span class="info-val">{{ viewingBatch.worksOrderNumber }}</span>
+          </div>
+          <div class="info-field">
+            <span class="info-label">Requested By</span>
+            <span class="info-val">{{ viewingBatch.requestedBy }}</span>
+          </div>
+          <div class="info-field">
+            <span class="info-label">Request Date</span>
+            <span class="info-val">{{ viewingBatch.requestDate | date:'mediumDate' }}</span>
+          </div>
+        </div>
+
+        <!-- Parts Table Inside Modal -->
+        <div class="table-responsive" style="border: 1px solid #e2e8f0; border-radius: 8px;">
+          <table class="parts-table">
+            <thead>
+              <tr>
+                <th style="width: 8%;">ID</th>
+                <th style="width: 25%;">Stock Number</th>
+                <th style="width: 12%; text-align: center;">Qty Asked</th>
+                <th style="width: 28%;">Reason</th>
+                <th style="width: 15%;">Status</th>
+                <th style="width: 12%; text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let part of viewingBatch.parts">
+                <td class="row-id">#{{ part.id }}</td>
+                <td>
+                  <span class="stock-badge">{{ part.stockNumber }}</span>
+                </td>
+                <td style="text-align: center; font-weight: 700;">{{ part.quantityAsked }}</td>
+                <td class="reason-cell" [title]="part.reason">{{ part.reason }}</td>
+                <td>
+                  <span class="status-badge" [ngClass]="{
+                    'status-pending': part.status === 'Pending Team Leader Approval',
+                    'status-waiting-leader': part.status === 'Pending Maintenance Leader Approval',
+                    'status-ready': part.status === 'Approved - Ready for Pickup',
+                    'status-accepted': part.status === 'Issued to Technician' || part.status === 'Issued'
+                  }">
+                    {{ part.status || 'Pending' }}
+                  </span>
+                </td>
+                <td style="text-align: center;">
+                  <div class="action-buttons-cell">
+                    <!-- ✅ MINISTORE Actions -->
+                    <ng-container *ngIf="isMinistore()">
+                      <button type="button"
+                        class="action-btn primary small"
+                        (click)="openRespondForm(part)" 
+                        *ngIf="part.currentStage === 'MINISTORE' && !part.isResponded">
+                        Respond
+                      </button>
+                    </ng-container>
+
+                    <!-- ✅ Team Leader & Maintenance Leader Actions -->
+                    <ng-container *ngIf="(isTeamLeader() || userRole === 'MAINTENANCE_LEADER')">
+                      <button type="button"
+                        class="action-btn danger small"
+                        (click)="goToRejectPartForm(part)"
+                        *ngIf="part.currentStage === userRole && !part.isResponded">
+                        Reject
+                      </button>
+                      <button type="button"
+                        class="action-btn primary small"
+                        (click)="approveRequest(part)"
+                        *ngIf="part.currentStage === userRole && !part.isResponded">
+                        Approve
+                      </button>
+                      <span class="no-action-badge" *ngIf="part.currentStage !== userRole">
+                        Approved / የተላከ
+                      </span>
+                    </ng-container>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="modal-footer" style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <!-- Batch Actions inside the modal for Team/Maintenance Leaders -->
+          <div class="action-buttons-cell" *ngIf="(isTeamLeader() || userRole === 'MAINTENANCE_LEADER') && hasPendingParts(viewingBatch)">
+            <button type="button" class="action-btn danger" (click)="goToRejectForm(viewingBatch.worksOrderNumber)">
+              <i class="bi bi-x-octagon-fill"></i> Reject Batch / የስራ ትዕዛዝ ውድቅ አድርግ
+            </button>
+            <button type="button" class="action-btn primary" (click)="approveAllParts(viewingBatch)">
+              <i class="bi bi-check-all"></i> Approve Batch / ሁሉንም አጽድቅ
+            </button>
+          </div>
+        </div>
+        <button type="button" class="action-btn secondary" (click)="viewingBatch = null">Close / ዝጋ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal overlay for Respond Form (Ministore Respond) -->
+  <div class="modal-overlay" *ngIf="selectedRequest">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="bi bi-reply-fill"></i> Respond to Spare Parts Request / የስፓርፓርት ጥያቄ ምላሽ መስጫ
+        </h3>
+        <button type="button" class="close-btn" (click)="cancelResponse()">&times;</button>
+      </div>
+      
+      <form #responseForm="ngForm" (ngSubmit)="submitResponse(); responseForm.form.markAsPristine();" class="modal-form">
+        <!-- Grid for Readonly reference info -->
+        <div class="info-grid mb-4">
+          <div class="info-field">
+            <span class="info-label">Works Order No</span>
+            <span class="info-val">{{ selectedRequest.worksOrderNumber }}</span>
+          </div>
+          <div class="info-field">
+            <span class="info-label">Stock Number</span>
+            <span class="info-val">{{ selectedRequest.stockNumber }}</span>
+          </div>
+          <div class="info-field">
+            <span class="info-label">Quantity Asked</span>
+            <span class="info-val highlight">{{ selectedRequest.quantityAsked }}</span>
+          </div>
+        </div>
+
+        <!-- Inputs section -->
+        <div class="form-group mb-3">
+          <label class="form-label required">Quantity Approved / የጸደቀው ብዛት</label>
+          <input type="number"
+                 [(ngModel)]="response.quantityApproved"
+                 name="quantityApproved"
+                 required
+                 min="1"
+                 [max]="selectedRequest.quantityAsked"
+                 class="form-control"
+                 (ngModelChange)="onQuantityApprovedChange()"
+                 placeholder="Enter quantity approved..." />
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label required">Select Serial Numbers / የመሳሪያ ተራ ቁጥሮች ምረጥ</label>
+          <div *ngFor="let sn of response.serialNumbers; let j = index" style="margin-bottom: 8px;">
+            <div class="select-wrapper">
+              <select [(ngModel)]="response.serialNumbers[j]"
+                      [name]="'serialNumber' + j"
+                      required
+                      class="form-control">
+                <option value="" disabled selected>Serial {{ j + 1 }} — Select...</option>
+                <option *ngFor="let serial of getAvailableForSlot(j)" [value]="serial">
+                  {{ serial }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <p class="form-help" *ngIf="availableSerialNumbers.length === 0">
+            No serial numbers available in stock for this part number.
+          </p>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label required">Part Cost (ETB) / የስፓርፓርቱ ዋጋ <span style="color:#ef4444">*</span></label>
+          <input type="number"
+                 [(ngModel)]="response.partCost"
+                 name="partCost"
+                 required
+                 min="0.01"
+                 step="0.01"
+                 class="form-control"
+                 placeholder="Enter part cost in ETB..." />
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="form-label">Remark / አስተያየት</label>
+          <textarea [(ngModel)]="response.remark" name="remark" class="form-control text-area" placeholder="Enter remark..."></textarea>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="modal-actions">
+          <button type="button" class="action-btn secondary" (click)="cancelResponse()">
+            <i class="bi bi-x-circle"></i> Cancel / ተመለስ
+          </button>
+          <button type="submit" [disabled]="isSubmitting || !responseForm.form.valid" class="action-btn primary">
+            <i class="bi bi-send-fill"></i>
+            {{ isSubmitting ? 'Submitting...' : 'Submit Response / ምላሽ ላክ' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

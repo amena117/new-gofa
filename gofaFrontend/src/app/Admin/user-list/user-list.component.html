@@ -21,7 +21,7 @@
       >
       <select [(ngModel)]="selectedRole" (change)="applyFilters()">
         <option value="">All Roles / ሁሉም ሚናዎች</option>
-        <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+        <option *ngFor="let role of availableRoles" [value]="role">{{ getRoleLabel(role) }}</option>
       </select>
     </div>
 
@@ -48,9 +48,9 @@
           </td>
           <td>{{ user.username }}</td>
           <td>
-            <span *ngIf="!user.isEditing">{{ user.role }}</span>
+            <span *ngIf="!user.isEditing">{{ getRoleLabel(user.role) }}</span>
             <select *ngIf="user.isEditing" [(ngModel)]="user.role" name="role_{{user.id}}">
-              <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+              <option *ngFor="let role of availableRoles" [value]="role">{{ getRoleLabel(role) }}</option>
             </select>
           </td>
           <td>

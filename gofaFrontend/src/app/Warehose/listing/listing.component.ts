@@ -369,82 +369,145 @@ export class ListingComponent implements OnInit, OnDestroy {
 
   // Export filtered items to PDF
   exportToPDF(): void {
-    if (!this.listingContent || !this.listingContent.nativeElement) {
-      console.error('Listing content element not available for PDF generation');
-      return;
-    }
+  if (!this.listingContent?.nativeElement) return;
 
-    const element = this.listingContent.nativeElement;
+  const element = this.listingContent.nativeElement as HTMLElement;
 
-    // Add print-mode class and hide buttons
-    document.body.classList.add('print-mode');
-    const buttons = element.querySelectorAll('.action-btn, .header-actions, .filters-header');
-    buttons.forEach((btn: Element) => btn.classList.add('hide-for-pdf'));
+  // ── 1. Expand to all rows ──────────────────────────────────────────
+  const originalPage    = this.currentPage;
+  const originalPerPage = this.itemsPerPage;
+  this.itemsPerPage     = this.filteredItems.length || 1;
+  this.setPage(1);
 
-    setTimeout(() => {
-      html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        scrollX: 0,
-        scrollY: -window.scrollY,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-        logging: false,
-        imageTimeout: 0,
-        removeContainer: true,
-        onclone: (clonedDoc) => {
-          // Ensure all content is visible in the clone
-          const clonedElement = clonedDoc.querySelector('.item-listing');
-          if (clonedElement) {
-            (clonedElement as HTMLElement).style.maxHeight = 'none';
-            (clonedElement as HTMLElement).style.overflow = 'visible';
+  // ── 2. Hide UI chrome via inline styles (more reliable than classes) 
+  const hideSelectors = [
+    '.header-actions',
+    '.filters-section',
+    '.pagination-controls',
+    '.action-btn',
+    '.filters-header',
+    '.search-filter-group',
+    '.filter-controls',
+    '.filter-group',
+    '.clear-filters-btn',
+  ];
+
+  const hiddenElements: { el: HTMLElement; prev: string }[] = [];
+  hideSelectors.forEach(sel => {
+    element.querySelectorAll<HTMLElement>(sel).forEach(el => {
+      hiddenElements.push({ el, prev: el.style.display });
+      el.style.display = 'none';
+    });
+  });
+
+  const cleanup = () => {
+    this.itemsPerPage = originalPerPage;
+    this.setPage(originalPage);
+    hiddenElements.forEach(({ el, prev }) => (el.style.display = prev));
+  };
+
+  // ── 3. Double rAF ensures Angular has painted the new rows ──────────
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+
+        html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          scrollX: 0,
+          scrollY: -window.scrollY,
+          windowWidth:  element.scrollWidth,
+          windowHeight: element.scrollHeight,
+          logging: false,
+          imageTimeout: 0,
+          removeContainer: true,
+          onclone: (clonedDoc: Document) => {
+            const cloned = clonedDoc.querySelector('.item-listing') as HTMLElement | null;
+            if (cloned) {
+              cloned.style.maxHeight = 'none';
+              cloned.style.overflow  = 'visible';
+            }
+            // Also hide inside the clone, in case any survived
+            hideSelectors.forEach(sel => {
+              clonedDoc.querySelectorAll<HTMLElement>(sel).forEach(el => {
+                el.style.display = 'none';
+              });
+            });
           }
-        }
-      }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 10;
-        const contentWidth = pageWidth - 2 * margin;
-        const contentHeight = pageHeight - 2 * margin;
-        
-        // Calculate image dimensions
-        const imgWidth = contentWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        // Calculate number of pages needed
-        const totalPages = Math.ceil(imgHeight / contentHeight);
-        
-        // Add pages with proper content splitting
-        for (let page = 0; page < totalPages; page++) {
-          if (page > 0) {
-            pdf.addPage();
+        }).then((canvas: HTMLCanvasElement) => {
+
+          const pdf           = new jsPDF('p', 'mm', 'a4');
+          const pageW         = pdf.internal.pageSize.getWidth();
+          const pageH         = pdf.internal.pageSize.getHeight();
+          const margin        = 10;
+          const imgW          = pageW - margin * 2;
+          const pxPerMm       = canvas.width / imgW;
+          const pageContentPx = (pageH - margin * 2) * pxPerMm;
+          const totalH        = canvas.height;
+
+          const containerTop = element.getBoundingClientRect().top + window.scrollY;
+          const scaleRatio   = canvas.width / element.scrollWidth;
+
+          const safeYs: number[] = [0];
+          element.querySelectorAll('tr, h1, h2, h3').forEach((el: Element) => {
+            const r     = (el as HTMLElement).getBoundingClientRect();
+            const top   = (r.top + window.scrollY - containerTop) * scaleRatio;
+            const bot   = top + r.height * scaleRatio;
+            safeYs.push(top, bot);
+          });
+          safeYs.push(totalH);
+          safeYs.sort((a, b) => a - b);
+
+          const cuts: number[] = [0];
+          let cursor = 0;
+          while (cursor < totalH) {
+            const naiveCut = cursor + pageContentPx;
+            if (naiveCut >= totalH) break;
+            let bestCut = naiveCut;
+            for (let i = safeYs.length - 1; i >= 0; i--) {
+              if (safeYs[i] <= naiveCut && safeYs[i] > cursor) {
+                bestCut = safeYs[i];
+                break;
+              }
+            }
+            cuts.push(bestCut);
+            cursor = bestCut;
           }
-          
-          const yOffset = -(page * contentHeight);
-          pdf.addImage(imgData, 'PNG', margin, yOffset + margin, imgWidth, imgHeight);
-        }
+          cuts.push(totalH);
 
-        // Save PDF
-        const fileName = this.hasActiveFilters() 
-          ? `items-filtered-${new Date().getTime()}.pdf`
-          : `items-all-${new Date().getTime()}.pdf`;
-        pdf.save(fileName);
+          cuts.forEach((cutStart: number, idx: number) => {
+            if (idx === cuts.length - 1) return;
+            const sliceH  = cuts[idx + 1] - cutStart;
+            const sliceMm = sliceH / pxPerMm;
 
-        // Clean up
-        document.body.classList.remove('print-mode');
-        buttons.forEach((btn: Element) => btn.classList.remove('hide-for-pdf'));
-      }).catch(error => {
-        console.error('Error generating PDF:', error);
+            const sliceCanvas    = document.createElement('canvas');
+            sliceCanvas.width    = canvas.width;
+            sliceCanvas.height   = Math.ceil(sliceH);
+            sliceCanvas.getContext('2d')!.drawImage(
+              canvas, 0, cutStart, canvas.width, sliceH,
+              0, 0, canvas.width, sliceH
+            );
 
-        // Clean up on error
-        document.body.classList.remove('print-mode');
-        buttons.forEach((btn: Element) => btn.classList.remove('hide-for-pdf'));
-      });
-    }, 500);
-  }
+            if (idx > 0) pdf.addPage();
+            pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgW, sliceMm);
+          });
+
+          const fileName = this.hasActiveFilters()
+            ? `items-filtered-${Date.now()}.pdf`
+            : `items-all-${Date.now()}.pdf`;
+          pdf.save(fileName);
+          cleanup();
+
+        }).catch((err: Error) => {
+          console.error('PDF generation error:', err);
+          cleanup();
+        });
+
+      }, 200); // small extra wait for any CSS transitions
+    });
+  });
+}
 
   setPage(page: number): void {
     this.currentPage = page;

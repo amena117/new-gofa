@@ -25,12 +25,26 @@
         [(ngModel)]="formData.status"
         name="status"
         required
+        (change)="onStatusChange()"
       >
         <option value="">-- Select Status --</option>
-        <option value="Quality Check">Quality Check</option>
-        <option value="Maintenance Finished">Maintenance Finished</option>
-        <option value="Do Out">Do Out</option>
+        <option *ngFor="let s of allowedStatuses" [value]="s.value">{{ s.label }}</option>
       </select>
+    </div>
+
+    <!-- Maintained By / Recorded By (auto-filled, read-only) -->
+    <div class="form-group">
+      <label for="maintainedBy">Maintained By / ጠጋኝ (Recorded Automatically)</label>
+      <input
+        type="text"
+        id="maintainedBy"
+        class="form-control"
+        [value]="currentUserFullName"
+        name="maintainedBy"
+        readonly
+        style="background: #f8f9fa; border: 1px solid #ced4da; font-weight: 600; color: #495057;"
+      />
+      <small class="text-muted">This name will be saved as the technician for this record / ይህ ስም እንደ ጠጋኝ ይመዘገባል</small>
     </div>
 
     <!-- Repair Finish Date -->
@@ -62,14 +76,23 @@
 
     <!-- Remark -->
     <div class="form-group">
-      <label for="remark">Remark</label>
+      <label for="remark">
+        Remark / ማስታወሻ
+        <span *ngIf="isDoOut" class="req-star"> * </span>
+        <span *ngIf="isDoOut" class="do-out-hint">(Required for Do Out — explain why the item cannot be repaired)</span>
+      </label>
       <textarea
         id="remark"
         class="form-control"
+        [class.remark-required]="isDoOut"
         [(ngModel)]="formData.remark"
         name="remark"
         rows="3"
+        [placeholder]="isDoOut ? 'Required: Explain why the item is Do Out (e.g. beyond repair, missing parts, etc.)' : 'Optional remark...'"
       ></textarea>
+      <small *ngIf="isDoOut && !formData.remark.trim()" class="remark-warning">
+        ⚠️ Remark is required for Do Out
+      </small>
     </div>
 
     <button type="submit" class="btn btn-success">Update</button>

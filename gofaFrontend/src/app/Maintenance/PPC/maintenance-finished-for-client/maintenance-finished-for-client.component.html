@@ -1,122 +1,386 @@
-<div class="container">
-  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Maintained Lists   /  (ጥገና ተጠናቀቀ )</h2>
+<div class="page-container">
 
-  <!-- Loading Indicator -->
-  <div *ngIf="isLoading" class="loading-indicator">
-    Loading maintenance requests... / የጥገና ጥያቄዎችን በመጫን ላይ...
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Maintained Lists / ጥገና ተጠናቀቀ</h1>
   </div>
 
-  <!-- Error Message -->
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="search-wrapper">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input type="text" class="search-input"
+        placeholder="Search by order#, serial, name... / ፈልግ..."
+        [(ngModel)]="searchValue"
+        (input)="applySearchAndFilter()" />
+    </div>
+
+    <!-- All Types filter: PPC and MAINTENANCE_LEADER only -->
+    <div class="filter-dropdown-wrapper"
+      *ngIf="userRole === 'PPC' || userRole === 'MAINTENANCE_LEADER' || userRole === 'MAINTENANCE_REPORTING'">
+      <select class="filter-select" [(ngModel)]="selectedMaintenanceType" (change)="applySearchAndFilter()">
+        <option value="">All Departments / ሁሉም</option>
+        <option value="POWER">Power / ፓወር</option>
+        <option value="RADIO_MAINTENANCE">Radio / ራዲዮ</option>
+        <option value="OFFICE_MACHINE">Office / ኦፊስ ማሽን</option>
+      </select>
+    </div>
+
+    <!-- VHF / HF sub-filter: RTEAM_LEADER only -->
+    <div class="filter-dropdown-wrapper" *ngIf="userRole === 'RTEAM_LEADER'">
+      <select class="filter-select" [(ngModel)]="selectedRadioFilter" (change)="applySearchAndFilter()">
+        <option value="">All Radio / ሁሉም ራዲዮ</option>
+        <option value="VHF">VHF Radio</option>
+        <option value="HF">HF Radio</option>
+      </select>
+    </div>
+
+    <!-- Office Machine / Computer sub-filter: OTEAM_LEADER only -->
+    <div class="filter-dropdown-wrapper" *ngIf="userRole === 'OTEAM_LEADER'">
+      <select class="filter-select" [(ngModel)]="selectedOfficeFilter" (change)="applySearchAndFilter()">
+        <option value="">All Office / ሁሉም ኦፊስ</option>
+        <option value="OFFICE_MACHINE">Office Machine</option>
+        <option value="COMPUTER">Computer</option>
+      </select>
+    </div>
+
+    <!-- Power / Electrical / Mechanical sub-filter: PTEAM_LEADER only -->
+    <div class="filter-dropdown-wrapper" *ngIf="userRole === 'PTEAM_LEADER'">
+      <select class="filter-select" [(ngModel)]="selectedPowerFilter" (change)="applySearchAndFilter()">
+        <option value="">All Power / ሁሉም ፓወር</option>
+        <option value="POWER">Power</option>
+        <option value="ELECTRICAL">Electrical</option>
+        <option value="MECHANICAL">Mechanical</option>
+        <option value="WELDING">Welding</option>
+      </select>
+    </div>
+
+    <!-- Date Range filter: Quality and PPC roles -->
+    <div class="filter-dropdown-wrapper" *ngIf="userRole === 'QUALITY' || userRole === 'PPC' || userRole === 'MAINTENANCE_LEADER' || userRole === 'MAINTENANCE_REPORTING'">
+      <select class="filter-select" [(ngModel)]="selectedDateFilter" (change)="applySearchAndFilter()">
+        <option value="">All Time / በማንኛውም ጊዜ</option>
+        <option value="1w">Last 1 Week</option>
+        <option value="1m">Last 1 Month</option>
+        <option value="3m">Last 3 Months</option>
+        <option value="6m">Last 6 Months</option>
+        <option value="9m">Last 9 Months</option>
+        <option value="12m">Last 12 Months</option>
+      </select>
+    </div>
+
+    <button class="action-btn secondary small" (click)="resetFilters()">
+      <i class="bi bi-arrow-counterclockwise"></i> Reset / ዳግም
+    </button>
+
+    <div class="result-info">
+      <span>{{ filteredRequests.length }} record(s) / ምዝገባ</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="empty-state">
+    <div class="spinner-border text-secondary" role="status"></div>
+    <p style="margin-top:12px; color:#6b7280;">Loading... / በመጫን ላይ...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage && !isLoading" class="empty-state">
+    <i class="bi bi-exclamation-triangle empty-icon" style="color:#f59e0b;"></i>
+    <p>{{ errorMessage }}</p>
   </div>
 
   <!-- Table -->
-  <!-- Table -->
-<table class="request-table" *ngIf="!isLoading && !errorMessage && maintenanceRequests.length > 0">
-  <thead>
-    <tr>
-      <th>Works Order Number</th>
-      <th>Maintenance Type</th>
-      <th>Serial Number</th>
-      <th>Repair Start Date</th>
-      <th>Repair Finish Date</th>
-      <th>Maintained By</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let request of maintenanceRequests">
-      <td data-label="Works Order Number">{{ request.worksOrderNumber }}</td>
-      <td data-label="Maintenance Type">{{ request.maintenanceType || 'N/A' }}</td>
-      <td data-label="Serial Number">{{ request.serialNoOfEquip || 'N/A' }}</td>
-      <td data-label="Repair Start Date">{{ request.repairStartDate ? (request.repairStartDate | date:'medium') : 'N/A' }}</td>
-      <td data-label="Repair Finish Date">{{ request.repairFinishDate ? (request.repairFinishDate | date:'medium') : 'N/A' }}</td>
-      <td data-label="Maintained By">{{ request.maintainedBy || 'N/A' }}</td>
-      <td data-label="Status">{{ request.status || 'N/A' }}</td>
-<td data-label="Actions" class="text-end">
+  <div *ngIf="!isLoading && !errorMessage">
+    <div class="table-container">
+      <table class="data-table" *ngIf="paginatedRequests.length > 0; else noData">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Works Order # / ትዕዛዝ</th>
+            <th>Maintenance Type / አይነት</th>
+            <th>Serial No / ተ.ቁ</th>
+            <th>Repair Finish / ያለቀበት</th>
+            <th>Maintained By / ጠጋኝ</th>
+            <th>Status / ሁኔታ</th>
+            <th>Actions / ተግባር</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let request of paginatedRequests; let i = index">
+            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+            <td><strong>{{ request.worksOrderNumber }}</strong></td>
+            <td>
+              <span class="status-badge status-info">
+                {{ request.requestedTo || request.maintenanceType || request.statusStage || 'N/A' }}
+              </span>
+            </td>
+            <td><code>{{ request.serialNoOfEquip || 'N/A' }}</code></td>
+            <td>{{ request.repairFinishDate ? (request.repairFinishDate | date:'mediumDate') : '—' }}</td>
+            <td>{{ request.maintainedBy || '—' }}</td>
+            <td>
+              <span class="status-badge"
+                [ngClass]="{
+                  'status-warning':   request.status === 'Quality Check',
+                  'status-success':   request.status === 'Maintenance Finished' || request.status === 'Client Received',
+                  'status-danger':    request.status === 'Do Out',
+                  'status-secondary': !request.status
+                }">
+                <i class="bi" [ngClass]="{
+                  'bi-shield-check':      request.status === 'Quality Check',
+                  'bi-check-circle-fill': request.status === 'Maintenance Finished' || request.status === 'Client Received',
+                  'bi-x-circle-fill':     request.status === 'Do Out'
+                }"></i>
+                {{ request.status || 'N/A' }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="action-btn info small" (click)="openDetails(request)">
+                  <i class="bi bi-eye"></i> View Details
+                </button>
+                <button *ngIf="userRole === 'PPC' && request.status !== 'Client Received'"
+                  class="action-btn primary small" (click)="giveForClients(request)">
+                  <i class="bi bi-box-arrow-right"></i> Deliver
+                </button>
+                <button *ngIf="userRole === 'QUALITY' && request.status === 'Quality Check'"
+                  class="action-btn primary small" (click)="qualify(request)">
+                  <i class="bi bi-check-circle"></i> Qualify
+                </button>
+                <span *ngIf="request.status === 'Client Received'"
+                  class="status-badge status-success">✓ Delivered</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <!-- PPC: Give for clients -->
-  <button 
-    *ngIf="userRole === 'PPC'" 
-    (click)="giveForClients(request)" 
-    class="action-button give-button">
-    Give for Clients / ለደንበኞች ስጥ
-  </button>
+    <ng-template #noData>
+      <div class="empty-state">
+        <i class="bi bi-inbox empty-icon"></i>
+        <h3>No finished maintenance items found</h3>
+        <p>ምንም የተጠናቀቀ ጥገና አልተገኘም።</p>
+      </div>
+    </ng-template>
 
-  <!-- QUALITY: Qualify -->
-  <button 
-    *ngIf="userRole === 'QUALITY'" 
-    (click)="qualify(request)" 
-    class="action-button give-button">
-    Qualify / አረጋግጥ
-  </button>
-
-</td>
-
-    </tr>
-  </tbody>
-</table>
-
-  <!-- No Data -->
-  <div *ngIf="!isLoading && !errorMessage && maintenanceRequests.length === 0" class="no-data">
-    No maintenance requests found with Status: Maintenance Finished. <br>
-    ምንም የጠናቀቀ ጥገና ጥያቄ አልተገኘም።
+    <!-- Pagination -->
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <div class="page-info">Page {{ currentPage }} of {{ totalPages }}</div>
+      <div class="nav-buttons">
+        <button class="action-btn secondary small" (click)="previousPage()" [disabled]="currentPage === 1">
+          ← Prev
+        </button>
+        <button class="action-btn primary small" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Next →
+        </button>
+      </div>
+    </div>
   </div>
+</div>
 
-  <!-- Delivery Form -->
-  <div *ngIf="showDeliveryForm" class="delivery-form-container">
-    <h3>Deliver Maintenance Request / የጥገና ጥያቄን አስረክብ</h3>
+<!-- ── Detail Modal ─────────────────────────────────────────────── -->
+<div class="modal-backdrop-custom" *ngIf="viewingItem" (click)="closeDetails()">
+  <div class="modal-card-custom modal-lg-custom" (click)="$event.stopPropagation()">
 
-    <div *ngIf="isFormLoading" class="loading-indicator">
-      Loading delivery form... / የመስጠት ቅጽ በመጫን ላይ...
+    <div class="modal-header-custom">
+      <h5 class="modal-title-custom">Works Order #{{ viewingItem.worksOrderNumber }} — Details / ዝርዝር</h5>
+      <button class="btn-close-custom" (click)="closeDetails()">×</button>
     </div>
 
-    <div *ngIf="formErrorMessage" class="error-message">
-      {{ formErrorMessage }}
+    <div class="modal-body-custom printable-content custom-scrollbar">
+      <div class="org-header-print">
+        <p>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</p>
+        <p>Maintenance Request Register / የተመዘገቡ የሜንቴናንስ ዝርዝር</p>
+      </div>
+
+      <div class="details-full-grid">
+        <div class="detail-item">
+          <span class="detail-label">Works Order No</span>
+          <span class="detail-val highlight">#{{ viewingItem.worksOrderNumber }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Status / ሁኔታ</span>
+          <span class="detail-val status-tag" [attr.data-status]="viewingItem.status">
+            {{ viewingItem.status || '—' }}
+          </span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Maintenance Type / አይነት</span>
+          <span class="detail-val">{{ viewingItem.requestedTo || viewingItem.maintenanceType || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Nomenclature / ስም</span>
+          <span class="detail-val">{{ viewingItem.nomenclature || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Serial Number / ተ.ቁ</span>
+          <span class="detail-val"><code>{{ viewingItem.serialNoOfEquip || '—' }}</code></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Model</span>
+          <span class="detail-val">{{ viewingItem.model || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Requested By / ጠያቂ</span>
+          <span class="detail-val">{{ viewingItem.requestedBy || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Maintained By / ጠጋኝ</span>
+          <span class="detail-val">{{ viewingItem.maintainedBy || '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Date Received / የመጣበት</span>
+          <span class="detail-val">{{ viewingItem.dateWorkOrderReceived | date:'mediumDate' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Repair Start / ጥገና ጀምሮ</span>
+          <span class="detail-val">{{ viewingItem.repairStartDate ? (viewingItem.repairStartDate | date:'mediumDate') : '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Repair Finish / ጥገና ጠናቅቆ</span>
+          <span class="detail-val">{{ viewingItem.repairFinishDate ? (viewingItem.repairFinishDate | date:'mediumDate') : '—' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Man Hours</span>
+          <span class="detail-val">{{ viewingItem.manHours || 0 }} hrs</span>
+        </div>
+
+        <div class="detail-item full-width-detail">
+          <span class="detail-label">Description / መግለጫ</span>
+          <span class="detail-val note-box">{{ viewingItem.briefDescriptionOfWork || '—' }}</span>
+        </div>
+        <div class="detail-item full-width-detail">
+          <span class="detail-label">Solved Remark / አስተያየት</span>
+          <span class="detail-val note-box highlight">{{ viewingItem.remark || '—' }}</span>
+        </div>
+
+        <!-- Costs -->
+        <div class="detail-item">
+          <span class="detail-label">Labor Cost (ETB)</span>
+          <span class="detail-val">{{ ((viewingItem.manHours || 0) * 250) | currency:'ETB':'':'1.2-2' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Parts Cost (ETB)</span>
+          <span class="detail-val">{{ (viewingItem.partsCost || 0) | currency:'ETB':'':'1.2-2' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Total Cost (ETB) / ጠቅላላ</span>
+          <span class="detail-val total-price">{{ ((viewingItem.partsCost || 0) + (viewingItem.manHours || 0) * 250) | currency:'ETB':'':'1.2-2' }}</span>
+        </div>
+
+        <!-- Delivery Info -->
+        <div class="detail-item">
+          <span class="detail-label">Given To / የተቀበለው</span>
+          <span class="detail-val">{{ viewingItem.givenTo || 'N/A' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Approval / ያረጋገጠው</span>
+          <span class="detail-val">{{ viewingItem.approval || 'N/A' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Received Date / ቀን</span>
+          <span class="detail-val">{{ viewingItem.recievedDate | date:'mediumDate' || 'N/A' }}</span>
+        </div>
+        <div class="detail-item full-width-detail">
+          <span class="detail-label">Receiver Remark</span>
+          <span class="detail-val">{{ viewingItem.recieverRemark || 'N/A' }}</span>
+        </div>
+
+        <div class="detail-item full-width-detail signature-section">
+          <span class="detail-label">Receiver Signature / የተቀባይ ፊርማ</span>
+          <span class="detail-val signature-line">________________________</span>
+        </div>
+
+        <div class="detail-item full-width-detail signature-section">
+          <span class="detail-label">Issued By Signature / ያወጣው ፊርማ</span>
+          <span class="detail-val signature-line">________________________</span>
+        </div>
+      </div>
     </div>
 
-    <form (ngSubmit)="submitDeliveryForm()" #deliveryForm="ngForm">
-      <div class="form-group">
-        <label for="worksOrderNumber">Works Order Number / የስራ ትዕዛዝ ቁጥር:</label>
-        <input type="text" id="worksOrderNumber" name="worksOrderNumber" [(ngModel)]="deliveryFormData.worksOrderNumber" readonly />
-      </div>
+    <div class="modal-footer-custom">
+      <button class="action-btn secondary small" (click)="downloadPdf()">
+        <i class="bi bi-file-earmark-pdf"></i> Download PDF
+      </button>
+      <button *ngIf="userRole === 'QUALITY' && viewingItem.status === 'Quality Check'"
+        class="action-btn primary small" (click)="qualify(viewingItem)">
+        <i class="bi bi-check-circle"></i> Qualify / አረጋግጥ
+      </button>
+      <button *ngIf="userRole === 'PPC' && viewingItem.status !== 'Client Received'"
+        class="action-btn primary small" (click)="giveForClients(viewingItem); closeDetails()">
+        <i class="bi bi-box-arrow-right"></i> Deliver
+      </button>
+      <button class="action-btn secondary small" (click)="closeDetails()">
+        <i class="bi bi-x-circle"></i> Close / ዝጋ
+      </button>
+    </div>
+  </div>
+</div>
 
-      <div class="form-group">
-        <label for="serialNoOfEquip">Serial Number / ተከታታይ ቁጥር:</label>
-        <input type="text" id="serialNoOfEquip" name="serialNoOfEquip" [(ngModel)]="deliveryFormData.serialNoOfEquip" readonly />
-      </div>
+<!-- ── Delivery Form Modal ─────────────────────────────────────── -->
+<div class="modal-backdrop-custom" *ngIf="showDeliveryForm" (click)="cancelDeliveryForm()">
+  <div class="modal-card-custom" (click)="$event.stopPropagation()">
 
-      <div class="form-group">
-        <label for="givenTo">Given To / ለማን ተሰጠ:</label>
-        <input type="text" id="givenTo" name="givenTo" [(ngModel)]="deliveryFormData.givenTo" required />
-      </div>
+    <div class="modal-header-custom">
+      <h5 class="modal-title-custom">Deliver Maintenance Request / የጥገና ጥያቄን አስረክብ</h5>
+      <button class="btn-close-custom" (click)="cancelDeliveryForm()">×</button>
+    </div>
 
-      <div class="form-group">
-        <label for="approval">Approval / እሺ ተብሎ የተሰጠ:</label>
-        <input type="text" id="approval" name="approval" [(ngModel)]="deliveryFormData.approval" required />
-      </div>
+    <div class="modal-body-custom">
+      <div *ngIf="isFormLoading" class="text-center py-3">Loading...</div>
+      <div *ngIf="formErrorMessage" class="alert-error">{{ formErrorMessage }}</div>
 
-      <div class="form-group">
-        <label for="recieverRemark">Receiver Remark / የተቀባይ አስተያየት:</label>
-        <input type="text" id="recieverRemark" name="recieverRemark" [(ngModel)]="deliveryFormData.recieverRemark" />
-      </div>
-
-      <div class="form-group">
-        <label for="recievedDate">Received Date / የተቀበለበት ቀን:</label>
-        <input type="date" id="recievedDate" name="recievedDate" [(ngModel)]="deliveryFormData.recievedDate" required />
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" [disabled]="!deliveryForm.form.valid" class="action-button submit-button">
-          Submit / አስገባ
-        </button>
-        <button type="button" (click)="cancelDeliveryForm()" class="action-button cancel-button">
-          Cancel / ተወው
-        </button>
-      </div>
-    </form>
+      <form (ngSubmit)="submitDeliveryForm()" #deliveryForm="ngForm">
+        <div class="form-group-custom">
+          <label>Works Order Number / የስራ ትዕዛዝ ቁጥር</label>
+          <input type="text" class="form-input-custom" name="worksOrderNumber"
+            [(ngModel)]="deliveryFormData.worksOrderNumber" readonly />
+        </div>
+        <div class="form-group-custom">
+          <label>Serial Number / ተከታታይ ቁጥር</label>
+          <input type="text" class="form-input-custom" name="serialNoOfEquip"
+            [(ngModel)]="deliveryFormData.serialNoOfEquip" readonly />
+        </div>
+        <div class="form-group-custom">
+          <label>Given To / ለማን ተሰጠ <span class="required">*</span></label>
+          <input type="text" class="form-input-custom" name="givenTo"
+            [(ngModel)]="deliveryFormData.givenTo" required />
+        </div>
+        <div class="form-group-custom">
+          <label>Approval / እሺ ተብሎ የተሰጠ <span class="required">*</span></label>
+          <input type="text" class="form-input-custom" name="approval"
+            [(ngModel)]="deliveryFormData.approval" required />
+        </div>
+        <div class="form-group-custom">
+          <label>Receiver Remark / የተቀባይ አስተያየት</label>
+          <input type="text" class="form-input-custom" name="recieverRemark"
+            [(ngModel)]="deliveryFormData.recieverRemark" />
+        </div>
+        <div class="form-group-custom">
+          <label>Received Date / የተቀበለበት ቀን <span class="required">*</span></label>
+          <input type="date" class="form-input-custom" name="recievedDate"
+            [(ngModel)]="deliveryFormData.recievedDate" required />
+        </div>
+        <div class="modal-footer-custom">
+          <button type="submit" class="action-btn primary small"
+            [disabled]="!deliveryForm.form.valid || isFormLoading">
+            <i class="bi bi-send"></i> Submit / አስገባ
+          </button>
+          <button type="button" class="action-btn secondary small" (click)="cancelDeliveryForm()">
+            <i class="bi bi-x-circle"></i> Cancel / ተወው
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

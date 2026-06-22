@@ -28,6 +28,24 @@
           <span *ngIf="item.link === '/from-transit' && pendingItemsCount > 0" class="notification-badge">
             {{ pendingItemsCount }}
           </span>
+          <span *ngIf="item.link === '/maintenance/request-form' && pendingLettersCount > 0" class="notification-badge">
+            {{ pendingLettersCount }}
+          </span>
+          <span *ngIf="item.link === '/maintenance/spare-parts-requests' && pendingSparePartsCount > 0" class="notification-badge">
+            {{ pendingSparePartsCount }}
+          </span>
+          <span *ngIf="item.link === '/maintenance/power-maintReqList' && (pendingAssignmentsCount > 0 || pendingMaintRequestsCount > 0)" class="notification-badge">
+            {{ pendingAssignmentsCount + pendingMaintRequestsCount }}
+          </span>
+          <span *ngIf="item.link === '/maintenance/givenSparesto' && sparePartIssuedCount > 0" class="notification-badge notification-badge--alert">
+            {{ sparePartIssuedCount }}
+          </span>
+          <span *ngIf="item.link === '/maintenance/Give-maintainedEqupment' && undeliveredMaintainedCount > 0 && role === 'PPC'" class="notification-badge">
+            {{ undeliveredMaintainedCount }}
+          </span>
+          <span *ngIf="item.link === '/maintenance/doOut' && doOutCount > 0" class="notification-badge notification-badge--alert">
+            {{ doOutCount }}
+          </span>
         </a>
       </li>
       <li>

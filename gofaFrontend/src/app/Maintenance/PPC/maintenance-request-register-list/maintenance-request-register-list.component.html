@@ -1,43 +1,41 @@
 <div class="page-container">
-  <!-- Page Header -->
+
+  <!-- Header -->
   <div class="page-header">
-    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
-    <h1 class="page-title">Registered Maintenance Requests / የተመዘገቡ የጥገና መጠየቂያዎች</h1>
+    <div>
+      <p class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</p>
+      <h1 class="page-title">Maintenance Request Register / የተመዘገቡ የሜንቴናንስ ዝርዝር</h1>
+    </div>
+    <button class="btn-register" (click)="registerNew()">
+      <i class="bi bi-plus-lg"></i> New Request
+    </button>
   </div>
 
-  <!-- Info Cards -->
+  <!-- Stats cards -->
   <div class="info-cards">
-    <div class="info-card">
-      <div class="card-icon">
-        <i class="bi bi-inbox"></i>
-      </div>
+    <div class="info-card" (click)="statusFilter='all'; applyFilters()" [class.active-card]="statusFilter==='all'">
+      <div class="card-icon"><i class="bi bi-inbox"></i></div>
       <div class="card-content">
         <div class="card-value">{{ getTotalRequests() }}</div>
-        <div class="card-label">Total Requests / ጠቅላላ መጠየቂያዎች</div>
+        <div class="card-label">Total / ጠቅላላ</div>
       </div>
     </div>
-    <div class="info-card">
-      <div class="card-icon pending">
-        <i class="bi bi-clock"></i>
-      </div>
+    <div class="info-card" (click)="statusFilter='pending'; applyFilters()" [class.active-card]="statusFilter==='pending'">
+      <div class="card-icon pending"><i class="bi bi-clock"></i></div>
       <div class="card-content">
         <div class="card-value">{{ getPendingRequests() }}</div>
-        <div class="card-label">Pending / በመጠባበቅ ላይ</div>
+        <div class="card-label">Not Sent by PPC / ያልተላከ</div>
       </div>
     </div>
-    <div class="info-card">
-      <div class="card-icon progress">
-        <i class="bi bi-gear"></i>
-      </div>
+    <div class="info-card" (click)="statusFilter='inprogress'; applyFilters()" [class.active-card]="statusFilter==='inprogress'">
+      <div class="card-icon progress"><i class="bi bi-gear-fill"></i></div>
       <div class="card-content">
         <div class="card-value">{{ getInProgressRequests() }}</div>
         <div class="card-label">In Progress / በሂደት ላይ</div>
       </div>
     </div>
-    <div class="info-card">
-      <div class="card-icon completed">
-        <i class="bi bi-check-circle"></i>
-      </div>
+    <div class="info-card" (click)="statusFilter='completed'; applyFilters()" [class.active-card]="statusFilter==='completed'">
+      <div class="card-icon completed"><i class="bi bi-check-circle-fill"></i></div>
       <div class="card-content">
         <div class="card-value">{{ getCompletedRequests() }}</div>
         <div class="card-label">Completed / የተጠናቀቁ</div>
@@ -45,77 +43,102 @@
     </div>
   </div>
 
-  <!-- Search and Filter -->
-  <div class="filter-section">
-    <div class="search-wrapper">
-      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-      <input 
-        type="text" 
-        class="search-input" 
-        placeholder="Search by serial number, nomenclature, or requester... / በተከታታይ ቁጥር፣ ስያሜ ወይም ጠያቂ ፈልግ..."
-        [(ngModel)]="searchSerialNo"
-        (input)="onSearchSerialNo()">
+  <!-- Search bar -->
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <i class="bi bi-search search-ico"></i>
+      <input type="text" class="search-input"
+             placeholder="Search by WO#, serial, model, requester, description..."
+             [(ngModel)]="searchTerm" (input)="applyFilters()" />
+      <button *ngIf="searchTerm" class="clear-search" (click)="searchTerm=''; applyFilters()">✕</button>
     </div>
-    <div class="result-info">
-      <span>{{ filteredRequests.length }} requests / መጠየቂያዎች</span>
-    </div>
+    <select class="status-dropdown" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
+      <option value="all">All Statuses</option>
+      <option value="Pending">Not Sent (Pending)</option>
+      <option value="Waiting for Approval">Waiting for Approval</option>
+      <option value="In Progress">In Progress</option>
+      <option value="On Maintaining">On Maintenance</option>
+      <option value="On Maintenance">On Maintenance (Alt)</option>
+      <option value="Quality Check">Quality Check</option>
+      <option value="Waiting for Spare Part">Waiting for Spare Part</option>
+      <option value="Approved - Waiting for Parts">Approved - Waiting for Parts</option>
+      <option value="Spare Part Issued">Spare Part Issued</option>
+      <option value="Waiting for Maintenance Leader Approval">Waiting for Leader Approval</option>
+      <option value="Waiting for Ministore">Waiting for Ministore</option>
+      <option value="Maintenance Finished">Maintenance Finished</option>
+      <option value="Client Received">Client Received</option>
+    </select>
+    <span class="result-count">{{ filteredRequests.length }} result(s)</span>
   </div>
 
   <!-- Loading -->
   <div *ngIf="isLoading" class="loading-state">
-    <div class="spinner-border" role="status"></div>
-    <p>Loading requests...</p>
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
 
   <!-- Error -->
-  <div *ngIf="error" class="alert alert-danger">
+  <div *ngIf="error" class="alert-error">
     {{ error }}
-    <button class="btn-close-alert" (click)="error = null">&times;</button>
+    <button (click)="error=null">✕</button>
   </div>
 
-  <!-- Data Table -->
-  <div *ngIf="!isLoading && filteredRequests.length > 0" class="table-container">
+  <!-- Table -->
+  <div *ngIf="!isLoading && paginatedRequests.length > 0" class="table-wrap">
     <table class="data-table">
       <thead>
         <tr>
           <th>#</th>
-          <th>Nomenclature / ስያሜ</th>
-          <th>Qty / ብዛት</th>
-          <th>Requested By / ጠያቂ</th>
-          <th>Serial Number / ተ.ቁ</th>
-          <th>Date Received / የተቀበለበት ቀን</th>
-          <th>Status / ሁኔታ</th>
-          <th>Actions / ተግባር</th>
+          <th>WO No.</th>
+          <th>Model</th>
+          <th>Equipment Type</th>
+          <th>Requested By</th>
+          <th>Serial No.</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let request of paginatedRequests; let i = index">
+        <tr *ngFor="let req of paginatedRequests; let i = index"
+            (click)="viewDetails(req)" class="clickable-row">
           <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-          <td><strong>{{ request.nomenclature || 'N/A' }}</strong></td>
-          <td>{{ request.quantity }}</td>
-          <td>{{ request.requestedBy || 'N/A' }}</td>
-          <td>{{ request.serialNoOfEquip || 'N/A' }}</td>
-          <td>{{ request.dateWorkOrderReceived | date:'MMM d, y' }}</td>
+          <td><span class="wo-badge">#{{ req.worksOrderNumber }}</span></td>
+          <td><strong>{{ req.model || '—' }}</strong></td>
+          <td>{{ req.equipmentTypeName || '—' }}</td>
+          <td>{{ req.requestedBy || '—' }}</td>
+          <td><code>{{ req.serialNoOfEquip || '—' }}</code></td>
+          <td class="date-cell">{{ req.dateWorkOrderReceived | date:'dd/MM/yy' }}</td>
           <td>
-            <span class="status-badge" [ngClass]="getStatusClass(request)">
-              {{ getStatusText(request) }}
+            <span class="status-badge" [ngClass]="getStatusClass(req)">
+              <i class="bi" [ngClass]="{
+                'bi-clock-history': req.status === 'Pending',
+                'bi-hourglass-split': req.status === 'Waiting for Approval' || req.status.includes('Waiting'),
+                'bi-tools': req.status === 'In Progress' || req.status === 'On Maintaining' || req.status === 'On Maintenance',
+                'bi-shield-check': req.status === 'Quality Check',
+                'bi-check-circle-fill': req.status === 'Maintenance Finished' || req.status === 'Client Received',
+                'bi-x-circle-fill': req.status === 'Do Out' || req.status === 'Rejected',
+                'bi-gear-wide-connected': req.status === 'Spare Part Issued'
+              }"></i>
+              {{ getStatusText(req) }}
             </span>
           </td>
-          <td>
-            <div class="action-buttons">
-              <button class="action-btn secondary small" (click)="viewDetails(request)" title="View / ዝርዝር">
-                <i class="bi bi-eye"></i> Detail
-              </button>
-              <button class="action-btn secondary small" (click)="openEditModal(request)" 
-                [disabled]="isSendRequestDisabled(request.status)" title="Edit / አርትዕ">
+          <td (click)="$event.stopPropagation()">
+            <div class="action-btns">
+              <!-- Edit: only for Pending -->
+              <button *ngIf="req.status === 'Pending'"
+                      class="act-btn edit" (click)="openEditModal(req, $event)" title="Edit">
                 <i class="bi bi-pencil"></i> Edit
               </button>
-              <button class="action-btn primary small" (click)="sendRequest(request.worksOrderNumber)" 
-                [disabled]="isSendRequestDisabled(request.status)" title="Send / ላክ">
+              <!-- Send: only for Pending -->
+              <button *ngIf="req.status === 'Pending'"
+                      class="act-btn send" (click)="sendRequest(req.worksOrderNumber)" title="Send to technician">
                 <i class="bi bi-send"></i> Send
+              </button>
+              <!-- Change Dept: only for Waiting for Approval -->
+              <button *ngIf="req.status === 'Waiting for Approval'"
+                      class="act-btn change" (click)="changeDepartment(req.worksOrderNumber)" title="Change Department">
+                <i class="bi bi-arrow-left-right"></i> Change Dept
               </button>
             </div>
           </td>
@@ -124,34 +147,23 @@
     </table>
   </div>
 
-  <!-- Empty State -->
+  <!-- Empty -->
   <div *ngIf="!isLoading && filteredRequests.length === 0" class="empty-state">
-    <i class="bi bi-inbox empty-icon"></i>
-    <h3>No maintenance requests found</h3>
-    <p>ምንም የጥገና መጠየቂያ አልተገኘም</p>
+    <i class="bi bi-inbox"></i>
+    <p>No requests found</p>
   </div>
 
   <!-- Pagination -->
-  <div *ngIf="!isLoading && totalPages > 1" class="pagination-controls">
-    <div class="page-info">
-      Page {{ currentPage }} of {{ totalPages }} / ገጽ {{ currentPage }} ለ {{ totalPages }}
-    </div>
-    <div class="page-size">
-      Items per page / በገጽ:
-      <select [(ngModel)]="itemsPerPage" (ngModelChange)="updatePagination()">
-        <option [value]="10">10</option>
-        <option [value]="20">20</option>
-        <option [value]="50">50</option>
-      </select>
-    </div>
-    <div class="nav-buttons">
-      <button class="action-btn secondary small" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
-        Prev / ቀዳሚ
-      </button>
-      <button class="action-btn primary small" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
-        Next / ቀጣይ
-      </button>
-    </div>
+  <div *ngIf="!isLoading && totalPages > 1" class="pagination">
+    <button class="pg-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">‹ Prev</button>
+    <span class="pg-info">Page {{ currentPage }} / {{ totalPages }}</span>
+    <button class="pg-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next ›</button>
+    <select class="pg-size" [(ngModel)]="itemsPerPage" (ngModelChange)="updatePagination()">
+      <option [value]="10">10</option>
+      <option [value]="15">15</option>
+      <option [value]="25">25</option>
+      <option [value]="50">50</option>
+    </select>
   </div>
 </div>
 
@@ -161,51 +173,33 @@
     <div class="modal-content">
       <form (ngSubmit)="onFullEditSubmit()" #editForm="ngForm">
         <div class="modal-header">
-          <h5 class="modal-title">Edit Maintenance Request</h5>
+          <h5 class="modal-title">Edit Request — WO #{{ editRequest.worksOrderNumber }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">Works Order Number</label>
-              <input type="number" class="form-control" [(ngModel)]="editRequest.worksOrderNumber" name="worksOrderNumber" readonly />
+              <label class="form-label">Serial Number</label>
+              <input type="text" class="form-control" [(ngModel)]="editRequest.serialNoOfEquip" name="serialNoOfEquip" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Model</label>
+              <input type="text" class="form-control" [(ngModel)]="editRequest.model" name="model" />
             </div>
             <div class="col-md-6">
               <label class="form-label">Quantity</label>
               <input type="number" class="form-control" [(ngModel)]="editRequest.quantity" name="quantity" required />
             </div>
             <div class="col-md-6">
-              <label class="form-label">Serial Number</label>
-              <input type="text" class="form-control" [(ngModel)]="editRequest.serialNoOfEquip" name="serialNoOfEquip" />
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Equipment Type ID</label>
-              <input type="number" class="form-control" [(ngModel)]="editRequest.equipmentTypeId" name="equipmentTypeId" />
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Nomenclature</label>
-              <input type="text" class="form-control" [(ngModel)]="editRequest.nomenclature" name="nomenclature" required />
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Requested By</label>
-              <input type="text" class="form-control" [(ngModel)]="editRequest.requestedBy" name="requestedBy" />
+              <label class="form-label">Requested By <small class="text-muted">(read-only)</small></label>
+              <input type="text" class="form-control" [value]="editRequest.requestedBy" readonly style="background:#f8fafc;color:#64748b" />
             </div>
             <div class="col-md-6">
               <label class="form-label">Date Received</label>
               <input type="date" class="form-control" [(ngModel)]="editRequest.dateWorkOrderReceived" name="dateWorkOrderReceived" />
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Status Stage</label>
-              <select class="form-control" [(ngModel)]="editRequest.statusStage" name="statusStage">
-                <option value="">Select</option>
-                <option value="POWER">POWER</option>
-                <option value="OFFICE_MACHINE">OFFICE_MACHINE</option>
-                <option value="VHF_RADIO">VHF_Radio</option>
-                <option value="HF_RADIO">HF_Radio</option>
-              </select>
-            </div>
             <div class="col-12">
-              <label class="form-label">Description</label>
+              <label class="form-label">Description of Fault</label>
               <textarea class="form-control" rows="3" [(ngModel)]="editRequest.briefDescriptionOfWork" name="briefDescriptionOfWork"></textarea>
             </div>
           </div>

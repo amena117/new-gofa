@@ -1,0 +1,208 @@
+<div class="performance-container">
+  <!-- Header -->
+  <div class="header">
+    <h1 class="title">User Performance Analytics / የተጠቃሚ አፈጻጸም ትንተና</h1>
+    <div class="header-actions">
+      <button class="action-btn secondary" (click)="exportToCSV()" [disabled]="filteredPerformances.length === 0">
+        📊 Export CSV / ወደ CSV ላክ
+      </button>
+    </div>
+  </div>
+
+  <!-- Store Performance Summary Cards -->
+  <div class="summary-cards">
+    <div class="summary-card" *ngFor="let store of storePerformances">
+      <div class="card-header">
+        <h3>{{ store.store }}</h3>
+        <span class="store-badge">{{ store.activeUsers }}/{{ store.totalUsers }} Active</span>
+      </div>
+      <div class="card-stats">
+        <div class="stat-item">
+          <span class="stat-label">Registrations</span>
+          <span class="stat-value">{{ store.totalRegistrations }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Withdrawals</span>
+          <span class="stat-value">{{ store.totalWithdrawals }}</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="top-user">🏆 Top: {{ store.topUser || 'N/A' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-header" *ngIf="selectedStore || searchQuery">
+      <span class="active-filters-badge">
+        Filters Active / ማጣሪያዎች ንቁ
+      </span>
+      <button class="clear-filters-btn" (click)="clearFilters()">
+        Clear All / ሁሉንም አጽዳ
+      </button>
+    </div>
+
+    <div class="search-filter-group">
+      <div class="search-group">
+        <label for="searchInput" class="search-label">Search User: </label>
+        <input
+          id="searchInput"
+          type="text"
+          class="search-input"
+          placeholder="Search by username or full name..."
+          [value]="searchQuery"
+          (input)="onSearchChange($event)"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label for="storeFilter" class="filter-label">Store / ግምጃ ቤት: </label>
+        <select
+          id="storeFilter"
+          class="filter-select"
+          [(ngModel)]="selectedStore"
+          (change)="onStoreChange()">
+          <option value="">All Stores / ሁሉም ({{ userPerformances.length }})</option>
+          <option *ngFor="let store of availableStores" [value]="store">
+            {{ store }} ({{ (userPerformances | filter: 'store': store).length }})
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading performance data...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="message error-message" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Performance Table -->
+  <div *ngIf="!isLoading && filteredPerformances.length > 0" class="content-section">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th (click)="onSortChange('name')" class="sortable">
+              User / ተጠቃሚ
+              <span class="sort-icon" *ngIf="sortBy === 'name'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+            <th>Store / ግምጃ ቤት</th>
+            <th (click)="onSortChange('registrations')" class="sortable">
+              Registered / የተመዘገቡ
+              <span class="sort-icon" *ngIf="sortBy === 'registrations'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+            <th (click)="onSortChange('withdrawals')" class="sortable">
+              Withdrawn / የወጡ
+              <span class="sort-icon" *ngIf="sortBy === 'withdrawals'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+            <th (click)="onSortChange('total')" class="sortable">
+              Total Transactions / ጠቅላላ
+              <span class="sort-icon" *ngIf="sortBy === 'total'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+            <th>Activity % / እንቅስቃሴ %</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of paginatedPerformances; let i = index" class="table-row">
+            <td data-label="User">
+              <div class="user-info">
+                <div class="user-avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
+                <div class="user-details">
+                  <div class="user-name">{{ user.fullName }}</div>
+                  <div class="user-username">{{ '@' }}{{ user.username }}</div>
+                </div>
+              </div>
+            </td>
+            <td data-label="Store">
+              <span class="store-tag">{{ user.store }}</span>
+            </td>
+            <td data-label="Registered">
+              <span class="stat-badge registrations">{{ user.itemsRegistered }}</span>
+            </td>
+            <td data-label="Withdrawn">
+              <span class="stat-badge withdrawals">{{ user.itemsWithdrawn }}</span>
+            </td>
+            <td data-label="Total">
+              <span class="stat-badge total">{{ user.totalTransactions }}</span>
+            </td>
+            <td data-label="Activity %">
+              <div class="percentage-display">
+                <div class="percentage-item">
+                  <span class="percentage-label">Reg:</span>
+                  <span class="percentage-value registration">{{ user.registrationPercentage.toFixed(1) }}%</span>
+                </div>
+                <div class="percentage-item">
+                  <span class="percentage-label">With:</span>
+                  <span class="percentage-value withdrawal">{{ user.withdrawalPercentage.toFixed(1) }}%</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls">
+      <div class="pagination-info">
+        Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to 
+        {{ Math.min(currentPage * itemsPerPage, filteredPerformances.length) }} of {{ filteredPerformances.length }} users
+      </div>
+
+      <div class="pagination-size">
+        <label for="pageSize">Users per page: </label>
+        <select id="pageSize" [value]="itemsPerPage" (change)="onItemsPerPageChange($event)">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+
+      <div class="pagination-buttons">
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage - 1)">
+          Previous
+        </button>
+
+        <span class="page-indicator">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(currentPage + 1)">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredPerformances.length === 0" class="empty-state">
+    <h3>{{ userPerformances.length === 0 ? 'No performance data available.' : 'No users match your filters.' }}</h3>
+    <p *ngIf="selectedStore || searchQuery">
+      <button class="action-btn secondary" (click)="clearFilters()">
+        Clear Filters / ማጣሪያዎችን አጽዳ
+      </button>
+    </p>
+  </div>
+</div>

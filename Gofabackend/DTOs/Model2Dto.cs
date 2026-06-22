@@ -26,16 +26,22 @@ namespace Gofabackend.Models
         public float TotalPrice { get; set; }
         public string Currency { get; set; }
         public string PreparedBy { get; set; }
+        public string pRank { get; set; } = string.Empty;
         public string pTitle { get; set; }
         public string CheckedBy { get; set; }
+        public string cRank { get; set; } = string.Empty;
         public string cTitle { get; set; }
         public string ApprovedBy { get; set; }
+        public string aRank { get; set; } = string.Empty;
         public string aTitle { get; set; }
         public string IssuedTurnBy { get; set; }
+        public string iRank { get; set; } = string.Empty;
         public string iTitle { get; set; }
         public string IssBy { get; set; }
+        public string isRank { get; set; } = string.Empty;
         public string isTitle { get; set; }
         public string ReceivedBy { get; set; }
+        public string rRank { get; set; } = string.Empty;
         public string rTitle { get; set; }
         public bool HasAccessories { get; set; }
         public List<M2AccessoryDto> Accessories { get; set; } = new List<M2AccessoryDto>();

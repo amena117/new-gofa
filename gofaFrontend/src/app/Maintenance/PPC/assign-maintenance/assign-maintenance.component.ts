@@ -13,6 +13,7 @@ export class AssignMaintenanceComponent implements OnInit {
   worksOrderNumber: number | null = null;
   maintenanceType: string = '';
   requestedTo: string = '';
+  modelNumber: string = '';
   
   // Existing request data
   requestData: any = null;
@@ -39,9 +40,20 @@ export class AssignMaintenanceComponent implements OnInit {
   loadRequestData(): void {
     this.maintenanceRequestService.getMaintenanceRequestByWorksOrder(this.worksOrderNumber!).subscribe(
       (data: any) => {
-        this.requestData = data;
-        this.isLoading = false;
-        console.log('Loaded request data:', data);
+        // by-worksorder returns minimal shape — fetch full record by id
+        this.maintenanceRequestService.getMaintenanceRequestById(data.id).subscribe(
+          (full: any) => {
+            this.requestData = full;
+            // Pre-fill model number if already set from registration
+            if (full.model) this.modelNumber = full.model;
+            this.isLoading = false;
+          },
+          () => {
+            // fallback to minimal data if full fetch fails
+            this.requestData = data;
+            this.isLoading = false;
+          }
+        );
       },
       (error: any) => {
         console.error('Error loading request data:', error);
@@ -51,34 +63,25 @@ export class AssignMaintenanceComponent implements OnInit {
     );
   }
 
-  updateRequestedTo(): void {
-    switch (this.maintenanceType) {
-      case 'Office_machine':
-        this.requestedTo = 'Office_machine Maintenance';
-        break;
-      case 'POWER':
-        this.requestedTo = 'POWER Maintenance';
-        break;
-      case 'RADIO_MAINTENANCE':
-        this.requestedTo = 'RADIO_MAINTENANCE Maintenance';
-        break;
-      case 'HF_RADIO':
-        this.requestedTo = 'HF_RADIO Maintenance';
-        break;
-      default:
-        this.requestedTo = '';
-    }
+  updateRequestedTo(value?: string): void {
+    const type = value ?? this.maintenanceType;
+    const map: Record<string, string> = {
+      'Office_Machine': 'OFFICE_MACHINE Maintenance',
+      'Power': 'Power Maintenance',
+      'RADIO_MAINTENANCE': 'RADIO_MAINTENANCE Maintenance',
+    };
+    this.requestedTo = map[type] || '';
   }
 
   onSubmit(): void {
-    if (!this.maintenanceType || !this.requestedTo) {
+    if (!this.maintenanceType || !this.requestedTo || !this.modelNumber) {
       alert('Please fill in all required fields.');
       return;
     }
 
     const updateData = {
       maintenanceType: this.maintenanceType,
-      model: this.requestData.model,
+      model: this.modelNumber,
       requestedTo: this.requestedTo,
       status: 'On Maintaining',
     };
@@ -92,6 +95,7 @@ export class AssignMaintenanceComponent implements OnInit {
     this.http.put(apiUrl, updateData).subscribe(
       (response) => {
         console.log('Maintenance request updated successfully:', response);
+        this.maintenanceRequestService.triggerNotificationsRefresh();
         alert('Maintenance assigned successfully!');
         this.router.navigate(['/maintenance/request-list']);
       },

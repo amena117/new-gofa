@@ -1,5 +1,7 @@
 /* Add Font Awesome for icons */
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+/* Add Bootstrap Icons */
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
 
 /* You can add global styles to this file, and also import other style files */
 
@@ -103,6 +105,60 @@ body {
 .mb-2 { margin-bottom: 0.5rem; }
 .mb-3 { margin-bottom: 0.75rem; }
 .mb-4 { margin-bottom: 1rem; }
+
+/* ── Modern Status Badges ─────────────────────────────────────────────── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+/* Success (Finished / Approved) */
+.status-success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border-color: #d1fae5;
+}
+
+/* Danger (Do Out / Rejected) */
+.status-danger {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-color: #fee2e2;
+}
+
+/* Warning (Pending / Needs Parts) */
+.status-warning {
+  background-color: #fffbeb;
+  color: #92400e;
+  border-color: #fef3c7;
+}
+
+/* Info (In Progress / Maintenance) */
+.status-info {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border-color: #dbeafe;
+}
+
+/* Secondary (Default / N/A) */
+.status-secondary {
+  background-color: #f8fafc;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.status-badge i {
+  font-size: 14px;
+}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

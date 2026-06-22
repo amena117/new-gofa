@@ -34,9 +34,9 @@ export class RequestDetailsComponent implements OnInit {
   }
 
   fetchRequestDetails(worksOrderNumber: number): void {
-    console.log('Fetching details for worksOrderNumber:', worksOrderNumber); // Log the ID
+    console.log('Fetching details for worksOrderNumber:', worksOrderNumber);
     this.isLoading = true;
-    this.maintenanceRequestService.getMaintenanceRequestById(worksOrderNumber).subscribe(
+    this.maintenanceRequestService.getMaintenanceRequestByWorksOrder(worksOrderNumber).subscribe(
       (data) => {
         if (!data) {
           this.error = 'No data found for the selected request.';
@@ -55,7 +55,15 @@ export class RequestDetailsComponent implements OnInit {
   }
 
   goBack(): void {
-    // Navigate back to the maintenance request list
     this.router.navigate(['/maintenance/request-list']);
+  }
+
+  getStatusClass(): string {
+    const s = this.request?.status;
+    if (!s) return 'pill-secondary';
+    if (s === 'Maintenance Finished' || s === 'Client Received') return 'pill-success';
+    if (s === 'Quality Check' || s === 'On Maintaining' || s === 'On Maintenance') return 'pill-info';
+    if (s === 'Pending') return 'pill-secondary';
+    return 'pill-warning';
   }
 }

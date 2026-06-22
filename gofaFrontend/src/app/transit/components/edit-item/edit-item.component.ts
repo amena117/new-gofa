@@ -114,6 +114,7 @@ export class EditItemComponent implements OnInit {
   itemId!: string;
   storeTypes: string[] = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
   isFormEditable = true;
+  isAccessoryOnly = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
@@ -157,11 +158,17 @@ export class EditItemComponent implements OnInit {
       Currency: ['', Validators.required],
       Location: ['', Validators.required],
       Remark: [''],
+      PreparedBy: ['', Validators.required],
+      PreparedByRank: [''],
+      PTitle: ['', Validators.required],
       CheckedByName: ['', Validators.required],
+      CheckedByRank: [''],
       CTitle: ['', Validators.required],
       RecivedByName: ['', Validators.required],
+      RecivedByRank: [''],
       RTitle: ['', Validators.required],
       AuthorizedByName: ['', Validators.required],
+      AuthorizedByRank: [''],
       ATitle: ['', Validators.required],
       StoreType: ['', Validators.required],
       Status: ['Waiting For Stores', Validators.required],
@@ -169,7 +176,9 @@ export class EditItemComponent implements OnInit {
       Vat: [0, [Validators.required, Validators.min(0)]],
       GrandTotal: [0, [Validators.required, Validators.min(0)]],
       Accessories: this.fb.array([]),
-      ExtraItems: this.fb.array([])
+      ExtraItems: this.fb.array([]),
+      IsAccessoryOnly: [false],
+      ParentItemDescription: ['']
     });
 
     // Auto-calculate Amount and GrandTotal
@@ -267,16 +276,26 @@ export class EditItemComponent implements OnInit {
       Currency: item.currency,
       Location: item.location,
       Remark: item.remark,
+      PreparedBy: item.preparedBy,
+      PreparedByRank: item.preparedByRank,
+      PTitle: item.pTitle,
       CheckedByName: item.checkedByName,
+      CheckedByRank: item.checkedByRank,
       CTitle: item.cTitle,
       RecivedByName: item.recivedByName,
+      RecivedByRank: item.recivedByRank,
       RTitle: item.rTitle,
       AuthorizedByName: item.authorizedByName,
+      AuthorizedByRank: item.authorizedByRank,
       ATitle: item.aTitle,
       Model19Ref: item.model19Ref,
       Vat: item.vat,
-      GrandTotal: item.grandTotal
+      GrandTotal: item.grandTotal,
+      IsAccessoryOnly: item.isAccessoryOnly || false,
+      ParentItemDescription: item.parentItemDescription || ''
     });
+
+    this.isAccessoryOnly = !!item.isAccessoryOnly;
 
     if (item.status === 'Stores Recieved') {
       this.isFormEditable = false;

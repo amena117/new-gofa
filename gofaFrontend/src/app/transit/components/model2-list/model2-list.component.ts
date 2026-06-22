@@ -130,7 +130,8 @@ export class Model2ListComponent implements OnInit {
   sortRecords(sortBy: string) {
     switch (sortBy) {
       case 'date':
-        this.filteredRecords.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        // Sort by ID descending to show newest records first
+        this.filteredRecords.sort((a, b) => (b.model2Id || 0) - (a.model2Id || 0));
         break;
       case 'status':
         this.filteredRecords.sort((a, b) => (b.status || '').localeCompare(a.status || ''));

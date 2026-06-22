@@ -115,6 +115,7 @@ export interface Model22WithAccessoriesRequest {
   ethiopianDate: string;
   role: string;
   registeredBy: string;
+  comment?: string;
   items: Model22ItemWithAccessoriesRequest[];
 }
 
@@ -166,6 +167,7 @@ export interface Model22Dto {
   description?: string;
   totalPrice?: string;
   registeredByFullName?: string;
+  comment?: string;
 }
 
 /**

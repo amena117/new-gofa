@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gofabackend.DTO
@@ -7,6 +7,7 @@ namespace Gofabackend.DTO
     {
         public string RequestedBy { get; set; }
         public string CurrentStage { get; set; }
+        public string? Status { get; set; }
     }
 
 }

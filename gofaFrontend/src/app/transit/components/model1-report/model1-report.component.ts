@@ -216,7 +216,7 @@ export class Model1ReportComponent implements OnInit {
       );
     }
     
-    this.filteredRecords = filtered;
+    this.filteredRecords = filtered.slice().reverse();
     this.updatePagination();
   }
 
@@ -487,7 +487,8 @@ export class Model1ReportComponent implements OnInit {
   }
 
   onItemsPerPageChange(event: any): void {
-    this.itemsPerPage = parseInt(event.target.value, 10);
+    const value = event.target ? event.target.value : event;
+    this.itemsPerPage = parseInt(value, 10);
     this.currentPage = 1;
     this.updatePagination();
   }

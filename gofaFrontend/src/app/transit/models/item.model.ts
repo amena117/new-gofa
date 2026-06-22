@@ -15,6 +15,7 @@ export interface Accessory {
   subAccessories?: SubAccessory[];
 }
 
+// Updated Model1 Item Interface
 export interface Item {
   model1Id: number;
   supplier: string;
@@ -36,11 +37,17 @@ export interface Item {
   currency: string;
   location: string;
   remark: string;
+  preparedBy?: string;
+  preparedByRank?: string;
+  pTitle?: string;
   checkedByName: string;
+  checkedByRank?: string;
   cTitle: string;
   recivedByName?: string;
+  recivedByRank?: string;
   rTitle: string;
   authorizedByName: string;
+  authorizedByRank?: string;
   aTitle: string;
   model19Ref: string;
 
@@ -65,6 +72,8 @@ export interface Item {
   accessories?: Accessory[];
   hasExtraItems?: boolean;
   extraItems?: { name: string; quantity: number; store: string; extraStatus: string; extraRecivedByName?: string; }[];
+  isAccessoryOnly?: boolean;
+  parentItemDescription?: string;
 
 }
 

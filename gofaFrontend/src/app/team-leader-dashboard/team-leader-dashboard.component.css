@@ -308,13 +308,42 @@
 }
 
 .item-count {
-  background: #03203c;
-  color: white;
-  padding: 6px 14px;
-  border-radius: 3px;
+  background: #eef2f7;
+  color: #475569;
+  padding: 4px 12px;
+  border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.3px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.download-btn {
+  padding: 8px 16px;
+  background: #03203c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.download-btn:hover:not([disabled]) {
+  background: #0a4b78;
+  transform: translateY(-1px);
+}
+
+.download-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Table */
@@ -560,4 +589,203 @@
   .data-table td {
     padding: 8px 10px;
   }
+}
+
+/* Store Value Cards */
+.section-block { margin: 32px 0; }
+
+.svc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 16px;
+}
+
+.svc-card {
+  background: #02172a;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(2,23,42,0.18);
+}
+
+/* Left accent stripe per warehouse */
+.svc-card[data-role="VHF"]         { border-left: 4px solid #3b82f6; }
+.svc-card[data-role="HF"]          { border-left: 4px solid #10b981; }
+.svc-card[data-role="ELECTRONICS"] { border-left: 4px solid #f59e0b; }
+.svc-card[data-role="SPAREPART"]   { border-left: 4px solid #a78bfa; }
+
+.svc-card-header {
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.svc-card-role {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.svc-card-meta {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.svc-card-body {
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.svc-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.svc-line-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.svc-line-val {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.svc-line-val.acc { color: #34d399; }
+
+.svc-cur {
+  font-size: 0.7rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.svc-nil { color: #334155; }
+
+.svc-card-footer {
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.svc-total-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.svc-total-vals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.svc-total-num {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  font-variant-numeric: tabular-nums;
+}
+
+.svc-total-cur {
+  font-size: 0.72rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* Low stock controls (warehouse filter + page size) */
+.low-stock-controls {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.low-stock-controls .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.low-stock-controls label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.low-stock-controls .filter-select {
+  padding: 6px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* Pagination bar */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.page-btn {
+  padding: 4px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+
+.page-btn:hover:not([disabled]) {
+  background: #f1f5f9;
+}
+
+.page-btn.active {
+  background: #02172a;
+  color: #fff;
+  border-color: #02172a;
+}
+
+.page-btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

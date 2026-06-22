@@ -49,6 +49,9 @@ namespace Gofabackend.Models
         public string CurrentHandler { get; set; } = "PPC"; // Default
         public string StatusStage { get; set; } = string.Empty;
 
+        // ✅ NEW: Track who registered this maintenance request
+        public string? RegisteredBy { get; set; }  // Full name of person who registered
+
         public string? RejectReason { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

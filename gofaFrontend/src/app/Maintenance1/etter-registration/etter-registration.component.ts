@@ -18,13 +18,17 @@ export class EtterRegistrationComponent {
 
   constructor(private http: HttpClient) {}
 
-  onSubmit() {
+  onSubmit(form: any) {
     const apiUrl = `${environment.apiBaseUrl}/api/LetterRegistration`; // ✅ Use environment variable
 
     this.http.post(apiUrl, this.etter).subscribe({
       next: () => {
         this.successMessage = 'Letter registered successfully!';
-        this.etter = { from: '', recommendBy: '', status: 'initial' };
+        form.resetForm({
+          from: '',
+          recommendBy: '',
+          status: 'initial'
+        });
       },
       error: (err) => {
         console.error('Error submitting letter', err);

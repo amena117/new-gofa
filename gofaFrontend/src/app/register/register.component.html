@@ -99,7 +99,7 @@
       #roleInput="ngModel"
     >
       <option value="">Select a role / ሚና ይምረጡ</option>
-      <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+      <option *ngFor="let role of availableRoles" [value]="role">{{ getRoleLabel(role) }}</option>
     </select>
     <div *ngIf="roleInput.touched && roleInput.errors?.['required']" class="error-message">
       <small>Role is required.</small>

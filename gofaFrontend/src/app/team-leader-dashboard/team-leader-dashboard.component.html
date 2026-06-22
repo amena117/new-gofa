@@ -74,6 +74,56 @@
     </div>
   </div>
 
+  <!-- Store Value Cards -->
+  <div *ngIf="!isLoading && summaryData" class="section-block">
+    <div class="section-header">
+      <h2>Store Inventory Value / የስቶር ክምችት ዋጋ</h2>
+    </div>
+    <div class="svc-grid">
+      <div class="svc-card" *ngFor="let rs of summaryData.roleSummaries" [attr.data-role]="rs.role">
+        <div class="svc-card-header">
+          <div class="svc-card-role">{{ rs.role }}</div>
+          <div class="svc-card-meta">{{ rs.totalItems }} items &nbsp;·&nbsp; {{ rs.totalQuantity }} units</div>
+        </div>
+        <div class="svc-card-body">
+          <div class="svc-line">
+            <span class="svc-line-label">Items</span>
+            <span class="svc-line-val">
+              <ng-container *ngIf="rs.totalValueByCurrency.length > 0; else d1">
+                <span *ngFor="let v of rs.totalValueByCurrency">
+                  {{ v.value | number:'1.2-2' }}<span class="svc-cur"> {{ v.currency }}</span>
+                </span>
+              </ng-container>
+              <ng-template #d1><span class="svc-nil">—</span></ng-template>
+            </span>
+          </div>
+          <div class="svc-line">
+            <span class="svc-line-label">Accessories</span>
+            <span class="svc-line-val acc">
+              <ng-container *ngIf="rs.accessoryValueByCurrency.length > 0; else d2">
+                <span *ngFor="let v of rs.accessoryValueByCurrency">
+                  {{ v.value | number:'1.2-2' }}<span class="svc-cur"> {{ v.currency }}</span>
+                </span>
+              </ng-container>
+              <ng-template #d2><span class="svc-nil">—</span></ng-template>
+            </span>
+          </div>
+        </div>
+        <div class="svc-card-footer">
+          <span class="svc-total-label">Total</span>
+          <div class="svc-total-vals">
+            <ng-container *ngIf="rs.combinedValueByCurrency.length > 0; else d3">
+              <span class="svc-total-num" *ngFor="let v of rs.combinedValueByCurrency">
+                {{ v.value | number:'1.2-2' }}<span class="svc-total-cur"> {{ v.currency }}</span>
+              </span>
+            </ng-container>
+            <ng-template #d3><span class="svc-nil">—</span></ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Charts Section -->
   <div *ngIf="!isLoading && barChartConfig" class="chart-container">
     <div class="section-header">
@@ -92,9 +142,49 @@
         <h2>Low Stock Items</h2>
         <p class="section-subtitle">ዝቅተኛ ክምችት እቃዎች</p>
       </div>
-      <span class="item-count">{{ lowStockItems.length }} Items</span>
+      <div class="header-actions">
+        <span class="item-count">{{ filteredLowStockItems.length }} Items</span>
+        <button (click)="downloadLowStockReport()" class="download-btn" [disabled]="filteredLowStockItems.length === 0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download Report / ሪፖርት አውርድ
+        </button>
+      </div>
     </div>
-    
+
+    <!-- Warehouse filter + category filter + page size -->
+    <div class="low-stock-controls">
+      <div class="filter-group">
+        <label for="warehouseFilter">Warehouse / ግምጃ ቤት:</label>
+        <select id="warehouseFilter" class="filter-select"
+          [(ngModel)]="lowStockWarehouseFilter" (change)="onLowStockFilterChange()">
+          <option value="">All Warehouses</option>
+          <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="categoryFilter">Category / ምድብ:</label>
+        <select id="categoryFilter" class="filter-select"
+          [(ngModel)]="lowStockCategoryFilter" (change)="onLowStockFilterChange()">
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of uniqueLowStockCategories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="lowStockPageSizeSelect">Per page:</label>
+        <select id="lowStockPageSizeSelect" class="filter-select"
+          [(ngModel)]="lowStockPageSize" (change)="changePageSize(lowStockPageSize)">
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+          <option [value]="50">50</option>
+        </select>
+      </div>
+    </div>
+
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -107,7 +197,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of lowStockItems" 
+          <tr *ngFor="let item of pagedLowStockItems"
               [class.critical]="item.quantity < 5"
               class="clickable-row"
               (click)="navigateToItemDetails(item.itemId)"
@@ -125,8 +215,29 @@
               </span>
             </td>
           </tr>
+          <tr *ngIf="pagedLowStockItems.length === 0">
+            <td colspan="5" class="text-center" style="padding:1rem; color:#888;">
+              No items match the selected filters.
+            </td>
+          </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="pagination-bar" *ngIf="lowStockTotalPages > 1">
+      <span class="pagination-info">
+        {{ lowStockStartIndex }}–{{ lowStockEndIndex }} of {{ filteredLowStockItems.length }}
+      </span>
+      <div class="pagination-buttons">
+        <button class="page-btn" [disabled]="lowStockCurrentPage === 1"
+          (click)="goToPage(lowStockCurrentPage - 1)">‹ Prev</button>
+        <button *ngFor="let p of lowStockPageNumbers" class="page-btn"
+          [class.active]="p === lowStockCurrentPage"
+          (click)="goToPage(p)">{{ p }}</button>
+        <button class="page-btn" [disabled]="lowStockCurrentPage === lowStockTotalPages"
+          (click)="goToPage(lowStockCurrentPage + 1)">Next ›</button>
+      </div>
     </div>
   </div>
 

@@ -30,7 +30,8 @@ public async Task<ActionResult<IEnumerable<Model22>>> GetModel22s([FromQuery] st
 {
     IQueryable<Model22> query = _context.Model22s
         .Include(m => m.Items)
-            .ThenInclude(i => i.WithdrawnAccessories); // Add this
+            .ThenInclude(i => i.WithdrawnAccessories)
+                .ThenInclude(a => a.WithdrawnSubAccessories);
     
     if (!string.IsNullOrEmpty(role))
     {
@@ -47,7 +48,8 @@ public async Task<ActionResult<Model22>> GetModel22(int id, [FromQuery] string? 
 {
     var query = _context.Model22s
         .Include(m => m.Items)
-            .ThenInclude(i => i.WithdrawnAccessories) // Include accessories
+            .ThenInclude(i => i.WithdrawnAccessories)
+                .ThenInclude(a => a.WithdrawnSubAccessories)
         .Where(m => m.Model22Id == id);
     
     if (!string.IsNullOrEmpty(role))
@@ -77,7 +79,8 @@ public async Task<ActionResult<IEnumerable<Model22>>> FilterModel22s(
     {
         IQueryable<Model22> query = _context.Model22s
             .Include(m => m.Items)
-                .ThenInclude(i => i.WithdrawnAccessories); // Include accessories
+                .ThenInclude(i => i.WithdrawnAccessories)
+                    .ThenInclude(a => a.WithdrawnSubAccessories);
 
         // Handle legacy 'role' parameter (single role)
         if (!string.IsNullOrEmpty(role))
@@ -843,6 +846,7 @@ public async Task<ActionResult<Model22>> PostModel22WithAccessories(Model22WithA
             EthiopianDate = request.EthiopianDate,
             Role = request.Role,
             RegisteredBy = request.RegisteredBy,
+            Comment = request.Comment,
             Items = new List<Model22Item>()
         };
 

@@ -1,55 +1,130 @@
-<div *ngIf="isLoading" class="loading">Loading report...</div>
-<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+<div class="report-page">
+  <!-- Header -->
+  <header class="report-header">
+    <span class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</span>
+    <h1 class="report-title">Ministore Inventory & Distribution Report</h1>
+  </header>
 
-<!-- ✅ Added bilingual header -->
-<h2 class="report-title">
-  በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Spare Parts Report / ስፔርፓርት ዝርዝር ሪፖርት>
-</h2>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Generating reports, please wait...</p>
+  </div>
 
-<div class="report-table" *ngIf="!isLoading && reportData.length">
-  <table>
-    <thead>
-      <tr>
-        <th>Stock Number</th>
-        <th>Information by Part Numbers</th>
-         <th>Balance</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of paginatedData">
-        <td>{{ item.stockNumber }}</td>
-        <td>
-          <table class="inner-table">
-            <thead>
-              <tr>
-                <th>Part Number</th>
-                <th>Status</th>
-                <th>In Date</th>
-                <th>Out Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let sn of item.serialNumbers.slice().reverse()">
-                <td>{{ sn.serialNumber }}</td>
-                <td>{{ sn.status }}</td>
-                <td>{{ sn.inDate | date:'short' }}</td>
-                <td>{{ sn.outDate | date:'short' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-         <td>{{ item.balance }}</td>
-      </tr>
-     
-    </tbody>
-    
-  </table>
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ errorMessage }}</p>
+  </div>
 
-  <!-- Pagination Controls -->
-  <div class="pagination" *ngIf="totalPages > 1">
-    <button (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">Previous</button>
-    <span>Page {{ currentPage }} of {{ totalPages }}</span>
-    <button (click)="currentPage = currentPage + 1" [disabled]="currentPage === totalPages">Next</button>
+  <div *ngIf="!isLoading && !errorMessage">
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-box-seam"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ totalInventoryItems }}</span>
+          <span class="stat-label">Total Items</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="bi bi-graph-down"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ lowStockCount }}</span>
+          <span class="stat-label">Low Stock</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red"><i class="bi bi-x-circle"></i></div>
+        <div class="stat-info">
+          <span class="stat-value">{{ outOfStockCount }}</span>
+          <span class="stat-label">Out of Stock</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Section -->
+    <section class="section-container">
+      <div class="section-header">
+        <h2 class="section-title"><i class="bi bi-boxes"></i> Stock Inventory</h2>
+        <div class="section-actions">
+          <div class="search-input-group">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control" [(ngModel)]="inventorySearch" placeholder="Search stock or serial...">
+          </div>
+          <select class="form-select" [(ngModel)]="inventoryStatusFilter">
+            <option value="all">All Inventory</option>
+            <option value="low">Low Stock (< 10)</option>
+            <option value="out">Out of Stock</option>
+          </select>
+          <button class="btn-action btn-excel" (click)="exportInventoryExcel()">
+            <i class="bi bi-file-earmark-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th style="width: 25%">Stock Number</th>
+              <th style="width: 15%">Balance</th>
+              <th style="width: 15%">Status</th>
+              <th style="width: 45%">Detailed Serials (History)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of paginatedData" 
+                [class.row-low-stock]="(item.balance ?? 0) < 10 && (item.balance ?? 0) > 0"
+                [class.row-out-stock]="(item.balance ?? 0) === 0">
+              <td><strong>{{ item.stockNumber }}</strong></td>
+              <td><span class="stat-value" style="font-size: 1rem">{{ item.balance }}</span></td>
+              <td>
+                <span class="badge-status" 
+                  [class.badge-low]="(item.balance ?? 0) < 10 && (item.balance ?? 0) > 0"
+                  [class.badge-out]="(item.balance ?? 0) === 0"
+                  [class.badge-ok]="(item.balance ?? 0) >= 10">
+                  {{ (item.balance ?? 0) === 0 ? 'Out of Stock' : ((item.balance ?? 0) < 10 ? 'Low Stock' : 'In Stock') }}
+                </span>
+              </td>
+              <td>
+                <div class="serial-history-wrap" *ngIf="item.serialNumbers?.length > 0">
+                  <table class="serial-table">
+                    <thead>
+                      <tr>
+                        <th>Serial No.</th>
+                        <th>Status</th>
+                        <th>In Date</th>
+                        <th>Out Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let sn of item.serialNumbers.slice().reverse().slice(0, 5)">
+                        <td><code>{{ sn.serialNumber }}</code></td>
+                        <td>{{ sn.status }}</td>
+                        <td>{{ sn.inDate | date:'dd/MM/yy' }}</td>
+                        <td>{{ sn.outDate ? (sn.outDate | date:'dd/MM/yy') : '—' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p *ngIf="item.serialNumbers.length > 5" class="text-muted" style="font-size: 0.7rem; margin-top: 0.5rem">
+                    + {{ item.serialNumbers.length - 5 }} more records
+                  </p>
+                </div>
+                <span *ngIf="!item.serialNumbers?.length" class="text-muted">No serial data</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-container" *ngIf="totalPages > 1">
+        <button class="page-btn" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"><i class="bi bi-chevron-left"></i></button>
+        <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button class="page-btn" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages"><i class="bi bi-chevron-right"></i></button>
+      </div>
+    </section>
+
+
   </div>
 </div>

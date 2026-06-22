@@ -100,10 +100,40 @@ h2 {
 }
 
 .request-table tbody tr:hover {
-  background-color: #f1f8ff;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background-color: #f8f9fa;
+  transform: scale(1.002);
 }
+
+.status-badge.completed { background-color: #28a745; color: #fff; }
+.status-badge.progress { background-color: #17a2b8; color: #fff; }
+.status-badge.warning { background-color: #ffc107; color: #212529; }
+.status-badge.critical { background-color: #d32f2f; color: #fff; }
+.status-badge.secondary { background-color: #6c757d; color: #fff; }
+
+/* Existing Badge Styles */
+.badge {
+  display: inline-block;
+  padding: 0.35em 0.65em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bg-success { background-color: #28a745 !important; }
+.bg-info { background-color: #17a2b8 !important; }
+.bg-warning { background-color: #ffc107 !important; color: #212529 !important; }
+.bg-danger { background-color: #d32f2f !important; }
+.bg-secondary { background-color: #6c757d !important; }
+.text-dark { color: #212529 !important; }
+
+/* Pagination Styling */
 
 /* Button Styling - Modern with Black Theme */
 .btn {

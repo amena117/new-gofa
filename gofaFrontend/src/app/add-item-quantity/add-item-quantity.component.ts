@@ -43,6 +43,9 @@ export class AddItemQuantityComponent implements OnInit {
   filteredBulkAccessories: Observable<any[]>[][] = []; // For bulk mode accessory autocomplete
   filteredSerialNumbers: Observable<string[]>[] = []; // For serial number autocomplete
   filteredBulkSerialNumbers: Observable<string[]>[][] = []; // For bulk mode serial number autocomplete
+  serialWarnings: { [key: string]: string } = {}; // Store serial number warnings
+  bulkSerialWarnings: { [itemIdx: number]: { [serialIdx: number]: string } } = {}; // Bulk mode warnings
+  accessorySerialWarnings: { [accIdx: number]: { [serialIdx: number]: string } } = {}; // Accessory serial warnings
 
   constructor(
     private fb: FormBuilder,
@@ -72,7 +75,7 @@ export class AddItemQuantityComponent implements OnInit {
       voucherNumber: [''],
       hasVoucherNumber: [false],
       receivedFrom: ['', Validators.required],
-      source: ['', Validators.required], // Add source field
+      source: ['Purchase', Validators.required],
       registeredBy: [{ value: registeredBy, disabled: true }, Validators.required],
       warehouseId: [{ value: userRole, disabled: true }, Validators.required],
       unitPrice: [0, [Validators.required, Validators.min(0)]],
@@ -87,7 +90,7 @@ export class AddItemQuantityComponent implements OnInit {
       voucherNumber: [''],
       hasVoucherNumber: [false],
       receivedFrom: ['', Validators.required],
-      source: ['', Validators.required], // Add source field
+      source: ['Purchase', Validators.required], // Add source field
       registeredBy: [{ value: registeredBy, disabled: true }, Validators.required],
       transactionDate: [{ value: currentEthiopianDate, disabled: true }],
       items: this.fb.array([])
@@ -104,72 +107,29 @@ export class AddItemQuantityComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isLoadingCategories = true;
-this.itemService.getAllCategories().subscribe({
-  next: (categories) => {
-    // Filter on frontend for safety (SUPER_ADMIN sees all, others only their role)
-    const userRole = this.authService.getRole();
-    if (userRole === 'SUPER_ADMIN') {
-      this.categories = categories.map(c => c.name);
-    } else {
-      this.categories = categories
-        .filter(c => c.role === userRole)
-        .map(c => c.name);
-    }
-    this.isLoadingCategories = false;
-  },
-  error: (err) => {
-    this.errorMessage = 'Failed to load categories. Using default values.';
-    this.isLoadingCategories = false;
-  }
-});
+    // Run all independent init calls in parallel
+    forkJoin({
+      categories: this.itemService.getAllCategories(),
+      shelves: this.itemService.getShelvesByWarehouse(this.authService.getRole() || 'SPAREPART'),
+      currencies: this.itemService.getCurrencies(),
+      sources: this.itemService.getSources()
+    }).subscribe({
+      next: ({ categories, shelves, currencies, sources }) => {
+        const userRole = this.authService.getRole();
+        this.categories = userRole === 'SUPER_ADMIN'
+          ? categories.map(c => c.name)
+          : categories.filter(c => c.role === userRole).map(c => c.name);
 
-    const warehouseId = this.authService.getRole() || 'SPAREPART';
-    this.isLoadingShelves = true;
-    this.itemService.getShelvesByWarehouse(warehouseId).subscribe({
-      next: (shelves) => {
         this.shelves = shelves;
-        this.isLoadingShelves = false;
-      },
-      error: (err) => {
-        this.errorMessage = 'Failed to load shelves. Please try again.';
-        this.isLoadingShelves = false;
-      }
-    });
-
-    this.isLoadingCurrencies = true;
-    this.itemService.getCurrencies().subscribe({
-      next: (currencies) => {
         this.currencies = currencies;
-        this.isLoadingCurrencies = false;
-      },
-      error: (err) => {
-        this.isLoadingCurrencies = false;
-      }
-    });
-
-    // Load sources
-    this.isLoadingSources = true;
-    this.itemService.getSources().subscribe({
-      next: (sources) => {
         this.sources = sources;
-        this.isLoadingSources = false;
-        const defaultSource = this.sources[0] || 'Purchase';
+
+        const defaultSource = sources[0] || 'Purchase';
         this.itemForm.patchValue({ source: defaultSource });
         this.bulkForm.patchValue({ source: defaultSource });
       },
       error: (err) => {
-        this.errorMessage = 'Failed to load sources: ' + err.message;
-        this.isLoadingSources = false;
-      }
-    });
-
-    this.itemService.getItems().subscribe({
-      next: (items) => {
-        this.items = items;
-      },
-      error: (err) => {
-        this.errorMessage = 'Failed to load items for search.';
+        this.errorMessage = 'Failed to load form data. Please refresh.';
       }
     });
   }
@@ -324,8 +284,26 @@ this.itemService.getAllCategories().subscribe({
       });
       this.serialNumbers.push(serialControl);
       
-      // Setup autocomplete for this serial number (SPAREPART only)
       const index = this.serialNumbers.length - 1;
+      
+      // Subscribe to serialNumber changes for real-time duplicate check
+      serialControl.get('serialNumber')!.valueChanges.pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap(value => {
+          const role = this.itemForm.get('role')?.value;
+          if (role === 'SPAREPART') return of(null);
+          return value ? this.itemService.checkSerialNumber(value) : of(null);
+        })
+      ).subscribe(result => {
+        if (result && result.exists) {
+          this.serialWarnings[index] = `Warning: This serial exists on ${result.description} (${result.model}) in ${result.role} warehouse.`;
+        } else {
+          delete this.serialWarnings[index];
+        }
+      });
+
+      // Setup autocomplete for this serial number (SPAREPART only)
       this.filteredSerialNumbers[index] = serialControl.get('serialSearch')!.valueChanges.pipe(
         startWith(''),
         map(value => this.filterSerialNumbers(value || ''))
@@ -338,6 +316,7 @@ this.itemService.getAllCategories().subscribe({
     if (role === 'SPAREPART') {
       this.serialNumbers.removeAt(index);
       this.filteredSerialNumbers.splice(index, 1);
+      delete this.serialWarnings[index];
     }
   }
 
@@ -393,7 +372,7 @@ this.itemService.getAllCategories().subscribe({
   // Filter accessories based on search term
   private filterAccessories(value: string | any): any[] {
     if (!value || !this.existingAccessories.length) {
-      return [];
+      return this.existingAccessories.slice(0, 10); // show first 10 when empty
     }
     
     // If value is an object (selected accessory), return empty array
@@ -403,8 +382,8 @@ this.itemService.getAllCategories().subscribe({
     
     const filterValue = value.toLowerCase();
     return this.existingAccessories.filter(acc =>
-      acc.name?.toLowerCase().includes(filterValue) ||
-      acc.model?.toLowerCase().includes(filterValue)
+      (acc.name?.toLowerCase().includes(filterValue) || '') ||
+      (acc.model?.toLowerCase().includes(filterValue) || '')
     );
   }
 
@@ -440,7 +419,13 @@ this.itemService.getAllCategories().subscribe({
 
   // Get accessory display name for autocomplete
   displayAccessory(accessory: any): string {
-    return accessory ? `${accessory.name} - ${accessory.model}` : '';
+    if (!accessory) return '';
+    const name = accessory.name || '';
+    const model = accessory.model || '';
+    if (!name && !model) return '';
+    if (!model) return name;
+    if (!name) return model;
+    return `${name} - ${model}`;
   }
 
   addSerialNumberToItem(itemIndex: number): void {
@@ -455,6 +440,25 @@ this.itemService.getAllCategories().subscribe({
       
       // Setup autocomplete for this bulk serial number
       const serialIndex = serials.length - 1;
+      
+      // Subscribe to serialNumber changes for real-time duplicate check (Bulk)
+      if (!this.bulkSerialWarnings[itemIndex]) this.bulkSerialWarnings[itemIndex] = {};
+      serialControl.get('serialNumber')!.valueChanges.pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap(value => {
+          const role = this.itemsFormArray.at(itemIndex).get('role')?.value;
+          if (role === 'SPAREPART') return of(null);
+          return value ? this.itemService.checkSerialNumber(value) : of(null);
+        })
+      ).subscribe(result => {
+        if (result && result.exists) {
+          this.bulkSerialWarnings[itemIndex][serialIndex] = `Warning: This serial exists on ${result.description} (${result.model}) in ${result.role} warehouse.`;
+        } else {
+          delete this.bulkSerialWarnings[itemIndex][serialIndex];
+        }
+      });
+
       if (!this.filteredBulkSerialNumbers[itemIndex]) {
         this.filteredBulkSerialNumbers[itemIndex] = [];
       }
@@ -476,6 +480,9 @@ this.itemService.getAllCategories().subscribe({
       this.getSerialNumbersForItem(itemIndex).removeAt(serialIndex);
       if (this.filteredBulkSerialNumbers[itemIndex]) {
         this.filteredBulkSerialNumbers[itemIndex].splice(serialIndex, 1);
+      }
+      if (this.bulkSerialWarnings[itemIndex]) {
+        delete this.bulkSerialWarnings[itemIndex][serialIndex];
       }
     }
   }
@@ -596,6 +603,20 @@ this.itemService.getAllCategories().subscribe({
             serialNumber: ['', Validators.required]
           });
           this.serialNumbers.push(serialControl);
+
+          // Real-time check for these automatically added serials
+          const idx = i;
+          serialControl.get('serialNumber')!.valueChanges.pipe(
+            debounceTime(500),
+            distinctUntilChanged(),
+            switchMap(value => value ? this.itemService.checkSerialNumber(value) : of(null))
+          ).subscribe(result => {
+            if (result && result.exists) {
+              this.serialWarnings[idx] = `Warning: This serial exists on ${result.description} (${result.model}) in ${result.role} warehouse.`;
+            } else {
+              delete this.serialWarnings[idx];
+            }
+          });
         }
       } else if (role === 'SPAREPART' && currentSerialCount === 0) {
         // For SPAREPART, add one serial number control if none exist
@@ -626,11 +647,34 @@ this.itemService.getAllCategories().subscribe({
   }
 
   addAccessorySerialNumber(accessoryIndex: number): void {
-    this.getAccessorySerialNumbers(accessoryIndex).push(this.fb.control('', Validators.required));
+    const control = this.fb.control('', Validators.required);
+    this.getAccessorySerialNumbers(accessoryIndex).push(control);
+    
+    const serialIdx = this.getAccessorySerialNumbers(accessoryIndex).length - 1;
+    if (!this.accessorySerialWarnings[accessoryIndex]) this.accessorySerialWarnings[accessoryIndex] = {};
+    
+    control.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(value => {
+        const role = this.itemForm.get('role')?.value;
+        if (role === 'SPAREPART') return of(null);
+        return value ? this.itemService.checkSerialNumber(value) : of(null);
+      })
+    ).subscribe(result => {
+      if (result && result.exists) {
+        this.accessorySerialWarnings[accessoryIndex][serialIdx] = `Warning: This serial exists on ${result.description} (${result.model}).`;
+      } else {
+        delete this.accessorySerialWarnings[accessoryIndex][serialIdx];
+      }
+    });
   }
 
   removeAccessorySerialNumber(accessoryIndex: number, serialIndex: number): void {
     this.getAccessorySerialNumbers(accessoryIndex).removeAt(serialIndex);
+    if (this.accessorySerialWarnings[accessoryIndex]) {
+      delete this.accessorySerialWarnings[accessoryIndex][serialIndex];
+    }
   }
 
   addAccessorySerialNumberToItem(itemIndex: number, accessoryIndex: number): void {
@@ -788,76 +832,64 @@ this.itemService.getAllCategories().subscribe({
 
     const quantity = this.itemForm.get('quantity')?.value || 0;
     const role = this.itemForm.get('role')?.value || 'SPAREPART';
-    const category = this.itemForm.get('category')?.value;
-    const warehouseId = this.itemForm.get('warehouseId')?.value;
 
-    this.itemService.getWarehouses().subscribe({
-      next: (warehouses) => {
-        if (!warehouses.some(w => w.warehouseId === warehouseId)) {
-          this.errorMessage = `Warehouse with ID ${warehouseId} does not exist.`;
+    if (quantity > 0) {
+      if (role === 'SPAREPART' && this.serialNumbers.length > 2) {
+        this.errorMessage = 'SPAREPART items can have up to 2 serial numbers.';
+        return;
+      }
+      if (role !== 'SPAREPART' && role !== 'ELECTRONICS' && this.serialNumbers.length !== quantity) {
+        this.errorMessage = 'Non-SPAREPART items must have serial numbers equal to quantity.';
+        return;
+      }
+      const hasEmptySerials = this.serialNumbers.controls.some(control => {
+        const value = control.value;
+        if (typeof value === 'string') {
+          return !value || !value.trim();
+        } else {
+          return !value.serialNumber || !value.serialNumber.trim();
+        }
+      });
+      if (hasEmptySerials) {
+        this.errorMessage = 'All serial number fields must be filled.';
+        return;
+      }
+
+      // Check for duplicates within the submitted list
+      const serialValues: string[] = this.serialNumbers.value.map((s: any) =>
+        (typeof s === 'string' ? s : s?.serialNumber || '').trim().toLowerCase()
+      ).filter((s: string) => s !== '');
+
+      const serialSet = new Set<string>();
+      for (const sn of serialValues) {
+        if (serialSet.has(sn)) {
+          this.errorMessage = `Duplicate serial number in your list: "${sn.toUpperCase()}"`;
           return;
         }
+        serialSet.add(sn);
+      }
+    }
 
-        if (quantity > 0) {
-          if (role === 'SPAREPART' && this.serialNumbers.length > 2) {
-            this.errorMessage = 'SPAREPART items can have up to 2 serial numbers.';
-            return;
-          }
-          // Only non-SPAREPART and non-ELECTRONICS items must have serial numbers equal to quantity
-          if (role !== 'SPAREPART' && role !== 'ELECTRONICS' && this.serialNumbers.length !== quantity) {
-            this.errorMessage = 'Non-SPAREPART items must have serial numbers equal to quantity.';
-            return;
-          }
-          // Check if serial numbers are filled (handle both string and FormGroup)
-          const hasEmptySerials = this.serialNumbers.controls.some(control => {
-            const value = control.value;
-            if (typeof value === 'string') {
-              return !value || !value.trim();
-            } else {
-              return !value.serialNumber || !value.serialNumber.trim();
-            }
-          });
-          if (hasEmptySerials) {
-            this.errorMessage = 'All serial number fields must be filled.';
-            return;
-          }
+    // Validate accessory serial numbers
+    for (let i = 0; i < this.accessories.length; i++) {
+      const accessory = this.accessories.at(i);
+      const requiresSerialNumbers = accessory.get('requiresSerialNumbers')?.value;
+      const accessoryQuantity = accessory.get('quantity')?.value || 0;
+      const serialNumbers = this.getAccessorySerialNumbers(i);
+
+      if (requiresSerialNumbers) {
+        if (accessoryQuantity !== serialNumbers.length) {
+          this.errorMessage = `Accessory "${accessory.get('name')?.value}" quantity (${accessoryQuantity}) must match serial numbers count (${serialNumbers.length}).`;
+          return;
         }
-
-        // Validate accessory serial numbers
-        for (let i = 0; i < this.accessories.length; i++) {
-          const accessory = this.accessories.at(i);
-          const requiresSerialNumbers = accessory.get('requiresSerialNumbers')?.value;
-          const accessoryQuantity = accessory.get('quantity')?.value || 0;
-          const serialNumbers = this.getAccessorySerialNumbers(i);
-
-          if (requiresSerialNumbers) {
-            if (accessoryQuantity !== serialNumbers.length) {
-              this.errorMessage = `Accessory "${accessory.get('name')?.value}" quantity (${accessoryQuantity}) must match serial numbers count (${serialNumbers.length}).`;
-              return;
-            }
-            if (serialNumbers.controls.some(control => !control.value || control.value.trim() === '')) {
-              this.errorMessage = `All serial number fields for accessory "${accessory.get('name')?.value}" must be filled.`;
-              return;
-            }
-          }
+        if (serialNumbers.controls.some(control => !control.value || control.value.trim() === '')) {
+          this.errorMessage = `All serial number fields for accessory "${accessory.get('name')?.value}" must be filled.`;
+          return;
         }
+      }
+    }
 
-        this.itemService.getCategories().subscribe({
-          next: (categories) => {
-            if (!categories.includes(category)) {
-              this.createCategoryIfNotExists(category, `Category for ${category}`).subscribe({
-                next: () => this.submitItem(),
-                error: (err) => this.errorMessage = `Failed to create category: ${err.message}`
-              });
-            } else {
-              this.submitItem();
-            }
-          },
-          error: (err) => this.errorMessage = `Failed to fetch categories: ${err.message}`
-        });
-      },
-      error: (err) => this.errorMessage = `Failed to validate warehouse: ${err.message}`
-    });
+    this.submitItem();
   }
 
   private submitItem(): void {
@@ -901,9 +933,6 @@ this.itemService.getAllCategories().subscribe({
       accessories: formattedAccessories
     };
 
-    console.log('🔍 DEBUG: Request payload being sent:', JSON.stringify(request, null, 2));
-    console.log('🔍 DEBUG: Serial numbers array:', serialNumbersArray);
-
     this.itemService.addItemQuantity(request).subscribe({
       next: (response) => {
         this.successMessage = response.message;
@@ -915,7 +944,8 @@ this.itemService.getAllCategories().subscribe({
         }, 500);
       },
       error: (err: any) => {
-        this.errorMessage = err.error?.detailedMessage || err.error?.message || 'An error occurred while adding the item.';
+        // Use the error message formatted by ItemService.handleError
+        this.errorMessage = err.message || 'An error occurred while adding the item.';
         this.itemForm.get('registeredBy')?.disable();
         this.itemForm.get('warehouseId')?.disable();
         this.itemForm.get('role')?.disable();
@@ -1072,7 +1102,7 @@ this.itemService.getAllCategories().subscribe({
         }, 500);
       },
       error: (err: any) => {
-        this.errorMessage = err.error?.detailedMessage || err.error?.message || 'An error occurred while adding bulk items.';
+        this.errorMessage = err.message || 'An error occurred while adding bulk items.';
         this.resetBulkFormControls();
       }
     });

@@ -1,6 +1,6 @@
 <div class="container">
   <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Maintenance Request Register / የጥገና ጥያቄ መዝገብ</h2>
+  Maintenance Request Register / የተመዘገቡ የሜንቴናንስ ዝርዝር</h2>
 
   <!-- Loading Indicator -->
   <div *ngIf="isLoading === true" class="loading-indicator">
@@ -12,34 +12,64 @@
     {{ errorMessage }}
   </div>
 
+  <!-- Search & Filter -->
+  <div *ngIf="!isLoading" style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+    <input type="text" [(ngModel)]="searchValue" (input)="applySearchAndFilter()"
+      placeholder="Search by order#, name, serial... / ፈልግ..."
+      style="flex:1;min-width:200px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;" />
+    <select [(ngModel)]="selectedStatus" (change)="applySearchAndFilter()"
+      style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;">
+      <option value="">All Statuses / ሁሉም ሁኔታ</option>
+      <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+    </select>
+    <select [(ngModel)]="selectedType" (change)="applySearchAndFilter()"
+      style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;">
+      <option value="">All Types / ሁሉም አይነት</option>
+      <option *ngFor="let t of maintenanceTypes" [value]="t">{{ t }}</option>
+    </select>
+  </div>
+
   <!-- Table to display all maintenance requests -->
-  <table class="request-table" *ngIf="!isLoading && (!errorMessage || errorMessage.trim() === '') && maintenanceRequests.length > 0">
+  <table class="request-table" *ngIf="!isLoading && (!errorMessage || errorMessage.trim() === '') && paginatedRequests.length > 0">
     <thead>
       <tr>
-        <th>ID / መለያ</th>
-        <th>Works Order Number / የስራ ትዕዛዝ ቁጥር</th>
-        <th>Nomenclature / መግለጫ</th>
-        <th>Quantity / ብዛት</th>
+        <th>Works Order # / የስራ ትዕዛዝ ቁጥር</th>
+        <th>Category Type / የመሳሪያ አይነት</th>
+        <th>Maintenance Type / አይነት</th>
+        <th>Status / ሁኔታ</th>
         <th>Requested By / የጠየቀው</th>
+        <th>Maintained By / ጠጋኝ</th>
         <th>Actions / እርምጃዎች</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let request of maintenanceRequests">
-        <td>{{ request.id }}</td>
+      <tr *ngFor="let request of paginatedRequests">
         <td>{{ request.worksOrderNumber }}</td>
         <td>{{ request.nomenclature || 'N/A' }}</td>
-        <td>{{ request.quantity }}</td>
-        <td>{{ request.requestedBy || 'N/A' }}</td>
+        <td>{{ request.maintenanceType || 'N/A' }}</td>
         <td>
-          <button class="btn btn-primary" (click)="viewDetails(request)">View Details / ዝርዝር አሳይ</button>
+          <span class="status-badge" [ngClass]="getStatusClass(request.status)">
+            {{ getStatusText(request.status) }}
+          </span>
+        </td>
+        <td>{{ request.requestedBy || 'N/A' }}</td>
+        <td>{{ request.maintainedBy || 'Not Yet' }}</td>
+        <td>
+          <button class="btn btn-primary" (click)="viewDetails(request)">View / ዝርዝር</button>
         </td>
       </tr>
     </tbody>
   </table>
 
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+    <button (click)="previousPage()" [disabled]="currentPage === 1" class="btn btn-secondary">← Prev</button>
+    <span>Page {{ currentPage }} of {{ totalPages }} ({{ filteredRequests.length }} records)</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="btn btn-secondary">Next →</button>
+  </div>
+
   <!-- No Data Message -->
-  <div *ngIf="!isLoading && (!errorMessage || errorMessage.trim() === '') && maintenanceRequests.length === 0" class="no-data">
+  <div *ngIf="!isLoading && (!errorMessage || errorMessage.trim() === '') && filteredRequests.length === 0" class="no-data">
     No maintenance requests found. / ምንም የጥገና ጥያቄ አልተገኘም።
   </div>
 
@@ -60,6 +90,7 @@
               <p><strong>Nomenclature:</strong> {{ selectedRequest.nomenclature || 'N/A' }}</p>
               <p><strong>Quantity:</strong> {{ selectedRequest.quantity }}</p>
               <p><strong>Requested By:</strong> {{ selectedRequest.requestedBy || 'N/A' }}</p>
+              <p><strong>Maintained By:</strong> {{ selectedRequest.maintainedBy || 'Not Yet' }}</p>
               <button class="btn btn-info mt-3" (click)="toggleFullDetails()">Show All Details / ሁሉንም ዝርዝር አሳይ</button>
             </div>
 
@@ -70,6 +101,7 @@
               <p><strong>Nomenclature / መግለጫ:</strong> {{ selectedRequest.nomenclature || 'N/A' }}</p>
               <p><strong>Quantity / ብዛት:</strong> {{ selectedRequest.quantity }}</p>
               <p><strong>Requested By / የጠየቀው:</strong> {{ selectedRequest.requestedBy || 'N/A' }}</p>
+              <p><strong>Maintained By / ጠጋኝ:</strong> {{ selectedRequest.maintainedBy || 'Not Yet' }}</p>
               <p><strong>Serial No Of Equip / የመሳሪያ ተራ ቁጥር:</strong> {{ selectedRequest.serialNoOfEquip || 'N/A' }}</p>
               <p><strong>Brief Description Of Work / የስራው አጭር መግለጫ:</strong> {{ selectedRequest.briefDescriptionOfWork || 'N/A' }}</p>
               <p><strong>Date Work Order Received / የስራ ትዕዛዝ የተቀበለበት ቀን:</strong> {{ selectedRequest.dateWorkOrderReceived | date:'medium' }}</p>

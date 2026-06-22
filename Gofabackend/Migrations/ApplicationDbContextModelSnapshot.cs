@@ -617,6 +617,9 @@ namespace Gofabackend.Migrations
                     b.Property<string>("MaintainedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("MaintainedByUserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("MaintenanceType")
                         .HasColumnType("nvarchar(max)");
 
@@ -648,6 +651,9 @@ namespace Gofabackend.Migrations
                     b.Property<string>("Recommendation")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RegisteredBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RejectReason")
                         .HasColumnType("nvarchar(max)");
 
@@ -677,6 +683,9 @@ namespace Gofabackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("TechnicianRole")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -686,6 +695,8 @@ namespace Gofabackend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EquipmentTypeId");
+
+                    b.HasIndex("LetterId");
 
                     b.ToTable("MaintenanceRequestRegisters");
                 });
@@ -1152,7 +1163,15 @@ namespace Gofabackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("aRank")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("aTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("cRank")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1160,7 +1179,15 @@ namespace Gofabackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("iRank")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("iTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("isRank")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1168,7 +1195,15 @@ namespace Gofabackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("pRank")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("pTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("rRank")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1188,6 +1223,9 @@ namespace Gofabackend.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Model22Id"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Department")
                         .IsRequired()
@@ -1561,6 +1599,59 @@ namespace Gofabackend.Migrations
                     b.ToTable("Shelves");
                 });
 
+            modelBuilder.Entity("Gofabackend.Models.SparePartHandoverLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ConfirmedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsConfirmedByTechnician")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IssuedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StockNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TechnicianName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WorksOrderNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SparePartHandoverLogs");
+                });
+
             modelBuilder.Entity("Gofabackend.Models.SparePartsRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -1741,7 +1832,6 @@ namespace Gofabackend.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("History")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ItemId")
@@ -1809,6 +1899,10 @@ namespace Gofabackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AuthorizedByRank")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CTitle")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1818,6 +1912,10 @@ namespace Gofabackend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CheckedByName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CheckedByRank")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1846,7 +1944,26 @@ namespace Gofabackend.Migrations
                     b.Property<bool>("HasExtraItems")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ITitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("InvoiceNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAccessoryOnly")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IsTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IssBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IssuedTurnBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1873,6 +1990,21 @@ namespace Gofabackend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ParentItemDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreparedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreparedByRank")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RTitle")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1881,6 +2013,10 @@ namespace Gofabackend.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RecivedByName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecivedByRank")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -2082,7 +2218,14 @@ namespace Gofabackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Gofabackend.Models.LetterRegistration", "LetterRegistration")
+                        .WithMany()
+                        .HasForeignKey("LetterId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("EquipmentType");
+
+                    b.Navigation("LetterRegistration");
                 });
 
             modelBuilder.Entity("Gofabackend.Models.MasterCardItemIssued", b =>

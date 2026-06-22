@@ -1,28 +1,65 @@
-<h2>የ Do Out ዝርዝር </h2>
+<div class="do-out-container">
+  <h2>Do Out List / የ Do Out ዝርዝር</h2>
 
-<table *ngIf="doOutRequests.length > 0; else noData">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Works Order Number</th>
-      <th>Serial No</th>
-      <th>Model</th>
-      <th>Status</th>
-      <th>Request Date</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let request of doOutRequests">
-      <td>{{ request.id }}</td>
-      <td>{{ request.worksOrderNumber }}</td>
-      <td>{{ request.serialNoOfEquip }}</td>
-      <td>{{ request.model }}</td>
-      <td>{{ request.status }}</td>
-      <td>{{ request.dateWorkOrderReceived | date }}</td>
-    </tr>
-  </tbody>
-</table>
+  <!-- Search -->
+  <div class="search-bar">
+    <select [(ngModel)]="searchType" class="form-select search-type-select">
+      <option *ngFor="let t of searchTypes" [value]="t.value">{{ t.label }}</option>
+    </select>
+    <input type="text" [(ngModel)]="searchTerm" (input)="applySearch()"
+      placeholder="Search..." class="form-control search-input" />
+    <button class="btn btn-secondary btn-sm" (click)="resetSearch()">Reset</button>
+  </div>
 
-<ng-template #noData>
-  <p>No 'do out' requests found.</p>
-</ng-template>
+  <div *ngIf="isLoading" class="loading">Loading...</div>
+  <div *ngIf="errorMessage" class="alert alert-warning">{{ errorMessage }}</div>
+
+  <div *ngIf="!isLoading && !errorMessage">
+    <p class="record-count">{{ filteredRequests.length }} record(s) found</p>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover" *ngIf="paginatedRequests.length > 0; else noData">
+        <thead class="table-dark">
+          <tr>
+            <th>Works Order No</th>
+            <th>Nomenclature</th>
+            <th>Serial No</th>
+            <th>Model</th>
+            <th>Maintenance Type</th>
+            <th>Requested By</th>
+            <th>Requested To</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of paginatedRequests">
+            <td>{{ r.worksOrderNumber }}</td>
+            <td>{{ r.nomenclature || '—' }}</td>
+            <td>{{ r.serialNoOfEquip || '—' }}</td>
+            <td>{{ r.model || '—' }}</td>
+            <td>{{ r.maintenanceType || '—' }}</td>
+            <td>{{ r.requestedBy || '—' }}</td>
+            <td>{{ r.requestedTo || '—' }}</td>
+            <td><span class="badge bg-secondary">{{ r.status }}</span></td>
+            <td>{{ r.dateWorkOrderReceived | date:'mediumDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #noData>
+      <p class="no-data">No Do Out requests found.</p>
+    </ng-template>
+
+    <!-- Pagination -->
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+      <button class="btn btn-sm btn-outline-secondary" (click)="previousPage()" [disabled]="currentPage === 1">← Prev</button>
+      <button *ngFor="let p of pages" class="btn btn-sm"
+        [class.btn-primary]="p === currentPage"
+        [class.btn-outline-secondary]="p !== currentPage"
+        (click)="goToPage(p)">{{ p }}</button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="currentPage === totalPages">Next →</button>
+    </div>
+  </div>
+</div>

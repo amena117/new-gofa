@@ -108,6 +108,9 @@
             <div class="card-content">
               <h4>{{ category.name }}</h4>
               <p>Count / ብዛት: {{ category.count }}</p>
+              <p *ngIf="category.lowStockCount > 0" class="low-stock-count">
+                Low Stock / ዝቅተኛ ክምችት: <strong>{{ category.lowStockCount }}</strong>
+              </p>
             </div>
           </div>
           <div *ngIf="filteredCategories.length === 0" class="no-data">
@@ -132,7 +135,29 @@
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
           Low Stock Alert / ዝቅተኛ ክምችት ማስጠንቀቂያ
+          <button (click)="downloadLowStockReport()" class="download-report-btn" [disabled]="filteredLowStockItems.length === 0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download / አውርድ
+          </button>
         </h3>
+
+        <!-- Category Filter for Low Stock -->
+        <div class="table-filters" *ngIf="summaryData.itemsByCategory.length > 0">
+          <div class="filter-group">
+            <label>Filter by Category / በምድብ አጣራ:</label>
+            <select [(ngModel)]="lowStockCategoryFilter" (change)="onLowStockCategoryChange()" class="filter-select">
+              <option value="">All Categories / ሁሉም ምድቦች</option>
+              <option *ngFor="let cat of summaryData.itemsByCategory" [value]="cat.name">
+                {{ cat.name }} ({{ cat.lowStockCount }} low)
+              </option>
+            </select>
+          </div>
+        </div>
+
         <div class="table-container">
           <table>
             <thead>
@@ -144,7 +169,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of summaryData.lowStockItems" (click)="onItemClick(item.itemId)"
+              <tr *ngFor="let item of pagedLowStockItems" (click)="onItemClick(item.itemId)"
                 class="clickable-row">
                 <td>{{ item.description }}</td>
                 <td>{{ item.model }}</td>
@@ -159,6 +184,21 @@
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Low stock pagination -->
+        <div class="low-stock-pagination" *ngIf="lowStockTotalPages > 1">
+          <span class="ls-info">
+            {{ (lowStockPage - 1) * lowStockPageSize + 1 }}–{{ lowStockPage * lowStockPageSize > summaryData.lowStockItems.length ? summaryData.lowStockItems.length : lowStockPage * lowStockPageSize }}
+            of {{ summaryData.lowStockItems.length }}
+          </span>
+          <div class="ls-buttons">
+            <button class="ls-btn" [disabled]="lowStockPage === 1" (click)="lowStockGoToPage(lowStockPage - 1)">&#8249;</button>
+            <button *ngFor="let p of [].constructor(lowStockTotalPages); let i = index"
+              class="ls-btn" [class.active]="lowStockPage === i + 1"
+              (click)="lowStockGoToPage(i + 1)">{{ i + 1 }}</button>
+            <button class="ls-btn" [disabled]="lowStockPage === lowStockTotalPages" (click)="lowStockGoToPage(lowStockPage + 1)">&#8250;</button>
+          </div>
         </div>
       </div>
     </div>

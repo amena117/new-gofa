@@ -1,29 +1,146 @@
-<h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  ጠጋኝ ንብረት የ Do Out ዝርዝር </h2>
+<div class="item-listing">
+  <!-- Header with Title -->
+  <div class="header">
+    <h1 class="title">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ<br>Do Out List / ጠጋኝ ንብረት የ Do Out ዝርዝር</h1>
+    <div class="stats-card" *ngIf="!isLoading">
+      <div class="stat-item">
+        <span class="stat-label">Total Records / ጠቅላላ:</span>
+        <span class="stat-value">{{ filteredRequests.length }}</span>
+      </div>
+    </div>
+  </div>
 
-<table *ngIf="doOutRequests.length > 0; else noData">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Works Order Number</th>
-      <th>Serial No</th>
-      <th>Model</th>
-      <th>Status</th>
-      <th>Request Date</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let request of doOutRequests">
-      <td>{{ request.id }}</td>
-      <td>{{ request.worksOrderNumber }}</td>
-      <td>{{ request.serialNoOfEquip }}</td>
-      <td>{{ request.model }}</td>
-      <td>{{ request.status }}</td>
-      <td>{{ request.dateWorkOrderReceived | date }}</td>
-    </tr>
-  </tbody>
-</table>
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-filter-group">
+      <div class="search-group">
+        <label for="searchInput" class="search-label">Search / ፈልግ: </label>
+        <input
+          id="searchInput"
+          type="text"
+          class="search-input"
+          placeholder="Order #, Serial, Model, Requester... / ፈልግ..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+        />
+      </div>
 
-<ng-template #noData>
-  <p>No 'do out' requests found.</p>
-</ng-template>
+      <!-- Role Filter for Managers -->
+      <div class="filter-group" *ngIf="isManager()">
+        <label class="search-label">Filter by Team / በቡድን: </label>
+        <select class="filter-select" [(ngModel)]="selectedRoleFilter" (change)="onFilterChange()">
+          <option value="ALL">All Teams / ሁሉም</option>
+          <option value="POWER">Power / ፓወር</option>
+          <option value="RADIO">Radio / ራዲዮ</option>
+          <option value="OFFICE_MACHINE">Office / ኦፊስ ማሽን</option>
+        </select>
+      </div>
+
+      <!-- Sub-unit Filter for Team Leaders -->
+      <div class="filter-group" *ngIf="userRole === 'PTEAM_LEADER'">
+        <label class="search-label">Filter by Unit / በንዑስ ቡድን: </label>
+        <select class="filter-select" [(ngModel)]="selectedSubUnitFilter" (change)="onFilterChange()">
+          <option value="ALL">All Power Units / ሁሉም</option>
+          <option value="Electrical Maintenance">Electrical / ኤሌክትሪካል</option>
+          <option value="Mechanical Maintenance">Mechanical / ሜካኒካል</option>
+          <option value="Welding Maintenance">Welding / ብየዳ</option>
+        </select>
+      </div>
+
+      <div class="filter-group" *ngIf="userRole === 'OTEAM_LEADER'">
+        <label class="search-label">Filter by Unit / በንዑስ ቡድን: </label>
+        <select class="filter-select" [(ngModel)]="selectedSubUnitFilter" (change)="onFilterChange()">
+          <option value="ALL">All Office Units / ሁሉም</option>
+          <option value="Office_Machine Maintenance">Office Machine / ኦፊስ ማሽን</option>
+          <option value="Computer_Maintenance">Computer / ኮምፒዩተር</option>
+        </select>
+      </div>
+
+      <div class="filter-group" *ngIf="['RTEAM_LEADER', 'VTEAM_LEADER', 'HTEAM_LEADER'].includes(userRole!)">
+        <label class="search-label">Filter by Unit / በንዑስ ቡድን: </label>
+        <select class="filter-select" [(ngModel)]="selectedSubUnitFilter" (change)="onFilterChange()">
+          <option value="ALL">All Radio Units / ሁሉም</option>
+          <option value="VHF_Radio Maintenance">VHF Radio / ቪ.ኤች.ኤፍ</option>
+          <option value="HF_Radio Maintenance">HF Radio / ኤች.ኤፍ</option>
+        </select>
+      </div>
+
+      <!-- Date Filter -->
+      <div class="filter-group">
+        <label class="search-label">Filter by Date / በጊዜ: </label>
+        <select class="filter-select" [(ngModel)]="selectedDateFilter" (change)="onFilterChange()">
+          <option value="ALL">All Time / ሁሉም</option>
+          <option value="1WEEK">1 Week / 1 ሳምንት</option>
+          <option value="1MONTH">1 Month / 1 ወር</option>
+          <option value="3MONTHS">3 Months / 3 ወር</option>
+          <option value="6MONTHS">6 Months / 6 ወር</option>
+          <option value="9MONTHS">9 Months / 9 ወር</option>
+          <option value="12MONTHS">12 Months / 1 አመት</option>
+        </select>
+      </div>
+
+      <div class="button-group">
+        <button class="action-btn excel small" (click)="downloadExcel()" *ngIf="filteredRequests.length > 0">
+          <i class="bi bi-file-earmark-excel"></i> Excel
+        </button>
+        <button class="action-btn pdf small" (click)="downloadPDF()" *ngIf="filteredRequests.length > 0">
+          <i class="bi bi-file-earmark-pdf"></i> PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading requests... / በመጫን ላይ...</p>
+  </div>
+
+  <!-- Table and Content -->
+  <div *ngIf="!isLoading && filteredRequests.length > 0" class="content-section">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Category Type</th>
+            <th>Serial No</th>
+            <th>Model</th>
+            <th>Maint. Type</th>
+            <th>Requested By</th>
+            <th>Do Out By</th>
+            <th>Status</th>
+            <th>Req. Date</th>
+            <th>Do Out Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let request of filteredRequests" class="table-row">
+            <td data-label="Order #"><strong>{{ request.worksOrderNumber }}</strong></td>
+            <td data-label="Category Type">{{ request.nomenclature || 'N/A' }}</td>
+            <td data-label="Serial No">{{ request.serialNoOfEquip || 'N/A' }}</td>
+            <td data-label="Model">{{ request.model || 'N/A' }}</td>
+            <td data-label="Maint. Type">{{ request.maintenanceType || 'N/A' }}</td>
+            <td data-label="Requested By">{{ request.requestedBy || 'N/A' }}</td>
+            <td data-label="Do Out By">{{ request.maintainedBy || 'N/A' }}</td>
+            <td data-label="Status">
+              <span class="status-badge-do-out">{{ request.status }}</span>
+            </td>
+            <td data-label="Req. Date">{{ request.dateWorkOrderReceived | date:'MMM d, y' }}</td>
+            <td data-label="Do Out Date">{{ request.repairFinishDate | date:'MMM d, y' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="pagination-info" style="margin-top: 15px; color: #64748b; font-size: 14px;">
+      Found {{ filteredRequests.length }} records
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredRequests.length === 0" class="empty-state">
+    <h3>No records found. / ምንም መረጃ አልተገኘም።</h3>
+    <p>Try adjusting your search to find what you're looking for.</p>
+  </div>
+</div>

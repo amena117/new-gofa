@@ -103,3 +103,32 @@ button.btn-secondary:hover {
     margin-bottom: 1rem;
   }
 }
+
+/* Do Out remark required state */
+.req-star {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.do-out-hint {
+  color: #dc2626;
+  font-size: 0.82rem;
+  font-weight: 400;
+  margin-left: 0.3rem;
+}
+
+.remark-required {
+  border-color: #dc2626 !important;
+  background-color: #fff5f5;
+}
+
+.remark-required:focus {
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.25) !important;
+}
+
+.remark-warning {
+  color: #dc2626;
+  font-size: 0.82rem;
+  margin-top: 0.3rem;
+  display: block;
+}

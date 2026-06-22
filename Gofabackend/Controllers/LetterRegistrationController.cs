@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Gofabackend.Models;
@@ -27,12 +27,12 @@ namespace Gofabackend.Controllers
             return await _context.Letters.ToListAsync();
         }
 
-        // ✅ NEW: GET only letters where Status = "initial"
+        // ✅ NEW: GET only letters where Status = "initial" or "Initial" (not yet approved)
         [HttpGet("initial")]
         public async Task<ActionResult<IEnumerable<LetterRegistration>>> GetInitialLetters()
         {
             var initialLetters = await _context.Letters
-                .Where(l => l.Status == "initial")
+                .Where(l => l.Status.ToLower() == "initial")
                 .ToListAsync();
 
             return Ok(initialLetters);
@@ -97,6 +97,27 @@ namespace Gofabackend.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // POST: api/LetterRegistration/seed-test
+        [HttpPost("seed-test")]
+        public async Task<IActionResult> SeedTestLetters()
+        {
+            var testLetters = new List<LetterRegistration>();
+            for (int i = 1; i <= 10; i++)
+            {
+                testLetters.Add(new LetterRegistration
+                {
+                    From = $"Test Sender {i}",
+                    RecommendBy = $"Test Reason for letter #{i} - Bulk generated for testing.",
+                    Status = "initial"
+                });
+            }
+
+            _context.Letters.AddRange(testLetters);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "10 test letters created successfully!", count = testLetters.Count });
         }
 
         private bool LetterExists(int id)

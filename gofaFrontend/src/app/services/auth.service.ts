@@ -78,6 +78,10 @@ isMaintenanceAdmin(): boolean {
   return this.getRole() === 'MAINTENANCE_ADMIN';
 }
 
+isMaintenanceReporting(): boolean {
+  return this.getRole() === 'MAINTENANCE_REPORTING';
+}
+
 isAnyAdmin(): boolean {
   const role = this.getRole();
   return role === 'SUPER_ADMIN' || role === 'SANDD_ADMIN' || role === 'MAINTENANCE_ADMIN';
@@ -175,23 +179,7 @@ isAnyAdmin(): boolean {
         'Accept': 'application/json'
       })
     }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          this.logoutGracefully();
-          return throwError(() => new Error('Session expired. Please log in again.'));
-        }
-
-        let errorMessage = 'An unexpected error occurred while deleting the user.';
-        if (error.status === 403) {
-          errorMessage = 'Forbidden: You do not have permission to delete users.';
-        } else if (error.status === 404) {
-          errorMessage = 'User not found';
-        } else if (error.status === 500) {
-          errorMessage = 'Server error: Could not delete user';
-        }
-
-        return throwError(() => new Error(errorMessage));
-      })
+      catchError(this.handleError('deleteUser'))
     );
   }
 
@@ -315,27 +303,46 @@ isAnyAdmin(): boolean {
         this.router.navigate(['/transit/received-items'], { replaceUrl: true });
         break;
       case 'PROPERTY_CONTROL':
+      case 'PROPERTY_CONTROL_TEAMLEADER':
         this.router.navigate(['/MasterCard/dashboard'], { replaceUrl: true });
         break;
       case 'PPC':
         this.router.navigate(['/maintenance/request-list'], { replaceUrl: true });
         break;
       case 'MINISTORE':
+        this.router.navigate(['/maintenance/spare-parts-requests'], { replaceUrl: true });
+        break;
       case 'PTEAM_LEADER':
       case 'OTEAM_LEADER':
       case 'RTEAM_LEADER':
-        this.router.navigate(['/maintenance/spare-parts-requests'], { replaceUrl: true });
+      case 'VTEAM_LEADER':
+      case 'HTEAM_LEADER':
+        this.router.navigate(['/maintenance/unit-leader-dashboard'], { replaceUrl: true });
         break;
       case 'POWER':
+      case 'POWER_MAINTENANCE':
       case 'OFFICE_MACHINE':
+      case 'OFFICE_MACHINE_MAINTENANCE':
       case 'RADIO_MAINTENANCE':
+      case 'VHF_RADIO':
+      case 'VHF_MAINTENANCE':
+      case 'HF_RADIO':
+      case 'HF_MAINTENANCE':
+      case 'IT_MAINTENANCE':
+      case 'COMPUTER_MAINTENANCE':
+      case 'ELECTRICAL_MAINTENANCE':
+      case 'MECHANICAL_MAINTENANCE':
+      case 'WELDING_MAINTENANCE':
         this.router.navigate(['/maintenance/power-maintReqList'], { replaceUrl: true });
         break;
       case 'MAINTENANCE_LEADER':
-        this.router.navigate(['/maintenance/spare-parts-requests'], { replaceUrl: true });
+        this.router.navigate(['/maintenance/dashboard'], { replaceUrl: true });
         break;
       case 'QUALITY':
-        this.router.navigate(['/maintenance/request-list'], { replaceUrl: true });
+        this.router.navigate(['/maintenance/Give-maintainedEqupment'], { replaceUrl: true });
+        break;
+      case 'MAINTENANCE_REPORTING':
+        this.router.navigate(['/maintenance/dashboard'], { replaceUrl: true });
         break;
       default:
         this.router.navigate(['/login'], { replaceUrl: true });
@@ -348,6 +355,12 @@ isAnyAdmin(): boolean {
   private handleError(operation: string) {
     return (error: HttpErrorResponse): Observable<never> => {
       if (error.status === 401) {
+        // If it's a login attempt, show specific error instead of "Session expired"
+        if (operation === 'login') {
+          const errorMessage = error.error?.message || 'Incorrect password or username';
+          return throwError(() => new Error(errorMessage));
+        }
+
         this.logoutGracefully();
         return throwError(() => new Error('Session expired. Please log in again.'));
       }

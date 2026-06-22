@@ -1,67 +1,227 @@
-<div class="container">
-  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Spare Parts Requests</h2>
+<div class="page-container">
 
-  <!-- Loading Indicator -->
-  <div *ngIf="isLoading" class="loading-indicator">
-    Loading spare parts requests...
+  <!-- Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Spare Parts Issuance History / የስፓርፓርት ታሪክ</h1>
   </div>
 
-  <!-- Error Message -->
-  <div *ngIf="errorMessage" class="error-message">
-    {{ errorMessage }}
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading history...</p>
   </div>
 
-  <!-- Table to display all spare parts requests -->
-  <table class="request-table" *ngIf="!isLoading && !errorMessage">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Stock Number</th>
-        <th>Works Order Number</th>
-        <th>Quantity Approved</th>
-        <th>Part Cost</th>
-        <th>Labour Cost</th>
-        <th>Total Cost</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let request of sparePartsRequests">
-        <td>{{ request.id }}</td>
-        <td>{{ request.stockNumber }}</td>
-        <td>{{ request.worksOrderNumber }}</td>
-        <td>{{ request.quantityApproved }}</td>
-        <td>{{ request.partCost | currency:'ETB':'symbol' }}</td>
-        <td>{{ request.labourCost | currency:'ETB':'symbol' }}</td>
-        <td>{{ request.totalCost | currency:'ETB':'symbol' }}</td>
-        <td>
-          <div *ngIf="request.partCost === 0; else noAction">
-            <button (click)="selectRequestForCost(request)">Add Cost</button>
-          </div>
-          <ng-template #noAction>
-            <span class="no-action-text">Cost Added</span>
-          </ng-template>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
 
-  <!-- Add Part Cost Form -->
-  <div class="cost-form-container" *ngIf="selectedRequest">
-    <h3>Add Part Cost for Request ID: {{ selectedRequest.id }}</h3>
-    <div class="cost-form">
-      <label>
-        Part Cost:
-        <input type="number" [(ngModel)]="partCost" min="0" />
-      </label>
+  <div *ngIf="!isLoading && !errorMessage">
 
-      <!-- Show LabourCost and Total dynamically -->
-      <p><strong>Labour Cost:</strong> {{ selectedRequest.labourCost | currency:'ETB':'symbol' }}</p>
-      <p><strong>Total Cost:</strong> {{ partCost + selectedRequest.labourCost | currency:'ETB':'symbol' }}</p>
+    <!-- Summary card -->
+    <div class="summary-bar">
+      <div class="summary-item">
+        <span class="summary-val">{{ filteredRecords.length }}</span>
+        <span class="summary-label">Total Issues</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-val">{{ getTotalPartsCost() | currency:'ETB':'symbol':'1.2-2' }}</span>
+        <span class="summary-label">Total Parts Cost</span>
+      </div>
+    </div>
 
-      <button (click)="submitCost()">Submit</button>
-      <button (click)="cancelCost()">Cancel</button>
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <i class="bi bi-search search-ico"></i>
+        <input type="text" class="search-input"
+               [(ngModel)]="searchTerm" (input)="applyFilters()"
+               placeholder="Search by WO#, stock number, technician, serial..." />
+        <button *ngIf="searchTerm" class="clear-btn" (click)="searchTerm=''; applyFilters()">✕</button>
+      </div>
+
+      <select class="status-select" [(ngModel)]="departmentFilter" (ngModelChange)="applyFilters()">
+        <option value="all">All Departments</option>
+        <option *ngFor="let dept of availableDepartments" [value]="dept">{{ dept }}</option>
+      </select>
+
+      <select class="status-select" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
+        <option value="all">All Statuses</option>
+        <option value="Issued to Technician">Issued to Technician</option>
+        <option value="Issued">Issued</option>
+        <option value="Approved - Ready for Pickup">Approved - Ready for Pickup</option>
+      </select>
+
+      <select class="status-select" [(ngModel)]="timeFilter" (ngModelChange)="applyFilters()">
+        <option value="all">All Time</option>
+        <option value="1w">Last 1 Week</option>
+        <option value="1m">Last 1 Month</option>
+        <option value="3m">Last 3 Months</option>
+        <option value="6m">Last 6 Months</option>
+        <option value="12m">Last 12 Months</option>
+      </select>
+
+      <button class="excel-btn" (click)="exportToExcel()">
+        <i class="bi bi-file-earmark-excel"></i> Export to Excel
+      </button>
+
+      <span class="result-count">{{ filteredRecords.length }} record(s)</span>
+
+      <!-- Active department filter badge -->
+      <span *ngIf="departmentFilter !== 'all'" class="dept-badge">
+        🏢 {{ departmentFilter }}
+        <button class="dept-badge-clear" (click)="departmentFilter='all'; applyFilters()">✕</button>
+      </span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap" *ngIf="filteredRecords.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>WO No.</th>
+            <th>Stock Number</th>
+            <th>Department</th>
+            <th>Model</th>
+            <th>Serial No.</th>
+            <th>Qty Issued</th>
+            <th>Approved By</th>
+            <th>Unit Price</th>
+            <th>Total Cost</th>
+            <th>Issue Date</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of pagedRecords; let i = index">
+            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+            <td><span class="wo-badge">#{{ r.worksOrderNumber }}</span></td>
+            <td><span class="stock-badge">{{ r.stockNumber }}</span></td>
+            <td>
+              <span *ngIf="r.department" class="dept-tag">{{ r.department }}</span>
+              <span *ngIf="!r.department" class="no-dept">—</span>
+            </td>
+            <td>{{ r.model || '—' }}</td>
+            <td><code>{{ r.serialNumber || '—' }}</code></td>
+            <td>{{ r.quantityApproved ?? '—' }}</td>
+            <td>{{ r.approvedBy || '—' }}</td>
+            <td>
+              <span *ngIf="r.partCost > 0" class="cost-val">
+                {{ r.partCost | currency:'ETB':'symbol':'1.2-2' }}
+              </span>
+              <span *ngIf="!r.partCost || r.partCost === 0" class="no-cost">—</span>
+            </td>
+            <td>
+              <span *ngIf="r.partCost > 0" class="cost-val">
+                {{ (r.partCost * (r.quantityApproved ?? 1)) | currency:'ETB':'symbol':'1.2-2' }}
+              </span>
+              <span *ngIf="!r.partCost || r.partCost === 0" class="no-cost">—</span>
+            </td>
+            <td class="date-cell">{{ r.approvalDate | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="status-badge"
+                [class.issued]="r.status === 'Issued to Technician' || r.status === 'Issued'"
+                [class.approved]="r.status === 'Approved - Ready for Pickup'">
+                {{ r.status }}
+              </span>
+            </td>
+            <td>
+              <button class="btn-view" (click)="openDetail(r)">View</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="filteredRecords.length === 0" class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <p>No issued spare parts found.</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button class="pg-btn" (click)="prevPage()" [disabled]="currentPage === 1">‹ Prev</button>
+      <span class="pg-info">Page {{ currentPage }} / {{ totalPages }}</span>
+      <button class="pg-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">Next ›</button>
     </div>
   </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" *ngIf="selectedRecord" (click)="closeDetail()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Issue Details — WO #{{ selectedRecord.worksOrderNumber }}</h3>
+        <button class="modal-close" (click)="closeDetail()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">Stock Number</span>
+            <span class="detail-val"><span class="stock-badge">{{ selectedRecord.stockNumber }}</span></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Department</span>
+            <span class="detail-val">
+              <span *ngIf="selectedRecord.department" class="dept-tag">{{ selectedRecord.department }}</span>
+              <span *ngIf="!selectedRecord.department">—</span>
+            </span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Model</span>
+            <span class="detail-val">{{ selectedRecord.model || '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Serial Number</span>
+            <span class="detail-val"><code>{{ selectedRecord.serialNumber || '—' }}</code></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Quantity Issued</span>
+            <span class="detail-val">{{ selectedRecord.quantityApproved }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Requested By</span>
+            <span class="detail-val">{{ selectedRecord.requestedBy || '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Approved By</span>
+            <span class="detail-val">{{ selectedRecord.approvedBy || '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Issue Date</span>
+            <span class="detail-val">{{ selectedRecord.approvalDate | date:'dd MMMM yyyy' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Part Cost</span>
+            <span class="detail-val cost-highlight">{{ selectedRecord.partCost | currency:'ETB':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Labour Cost</span>
+            <span class="detail-val">{{ selectedRecord.labourCost | currency:'ETB':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Total Cost</span>
+            <span class="detail-val cost-highlight">{{ selectedRecord.totalCost | currency:'ETB':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Reason</span>
+            <span class="detail-val">{{ selectedRecord.reason || '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Remark</span>
+            <span class="detail-val">{{ selectedRecord.remark || '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Status</span>
+            <span class="detail-val">{{ selectedRecord.status }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close-modal" (click)="closeDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+
 </div>

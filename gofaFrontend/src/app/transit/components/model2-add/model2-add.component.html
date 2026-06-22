@@ -273,18 +273,24 @@
           <div class="card-body">
             <div class="row g-3">
               <ng-container *ngFor="let f of [
-                {name: 'preparedBy', label: 'Prepared By / ያዘጋጀው'},
-                {name: 'pTitle', label: 'Prepared By Title / ያዘጋጀው ማዕረግ'},
-                {name: 'checkedBy', label: 'Checked By / ያረጋገጠው ሃላፊ'},
-                {name: 'cTitle', label: 'Checked By Title / ያረጋገጠው ሃላፊ ማዕረግ'},
-                {name: 'approvedBy', label: 'Approved By / ያጸደቀው'},
-                {name: 'aTitle', label: 'Approved By Title / ያጸደቀው ማዕረግ'},
-                {name: 'issuedTurnBy', label: 'Issued/Turned By / ወጪ / ተመላሽ ያደረገው'},
-                {name: 'iTitle', label: 'Issued/Turned By Title / ወጪ / ተመላሽ ያደረገው ማዕረግ'},
-                {name: 'issBy', label: 'Issued By / ያረካከበው'},
-                {name: 'isTitle', label: 'Issued By Title / ያረካከበው ማዕረግ'},
-                {name: 'receivedBy', label: 'Received By / የተረከበው / የመለሰው'},
-                {name: 'rTitle', label: 'Received By Title / የተረከበው / የመለሰው ማዕረግ'}
+                {name: 'preparedBy', label: 'ያዘጋጀው ስም / Prepared By Name'},
+                {name: 'pRank', label: 'ያዘጋጀው ማዕረግ / Prepared By Rank'},
+                {name: 'pTitle', label: 'ያዘጋጀው ሃላፊነት / Prepared By Title'},
+                {name: 'checkedBy', label: 'ያረጋገጠው ስም / Checked By Name'},
+                {name: 'cRank', label: 'ያረጋገጠው ማዕረግ / Checked By Rank'},
+                {name: 'cTitle', label: 'ያረጋገጠው ሃላፊነት / Checked By Title'},
+                {name: 'approvedBy', label: 'ያጸደቀው ስም / Approved By Name'},
+                {name: 'aRank', label: 'ያጸደቀው ማዕረግ / Approved By Rank'},
+                {name: 'aTitle', label: 'ያጸደቀው ሃላፊነት / Approved By Title'},
+                {name: 'issBy', label: 'የአረካካቢ ስም / Issued By Name'},
+                {name: 'isRank', label: 'የአረካካቢ ማዕረግ / Issued By Rank'},
+                {name: 'isTitle', label: 'የአረካካቢ ሃላፊነት / Issued By Title'},
+                {name: 'issuedTurnBy', label: 'ወጪ/ተመላሽ ያደረገው ስም / Issued/Turned By Name'},
+                {name: 'iRank', label: 'ወጪ/ተመላሽ ያደረገው ማዕረግ / Issued/Turned By Rank'},
+                {name: 'iTitle', label: 'ወጪ/ተመላሽ ያደረገው ሃላፊነት / Issued/Turned By Title'},
+                {name: 'receivedBy', label: 'የተረከበው/የመለሰው ስም / Received/Returned By Name'},
+                {name: 'rRank', label: 'የተረከበው/የመለሰው ማዕረግ / Received/Returned By Rank'},
+                {name: 'rTitle', label: 'የተረከበው/የመለሰው ሃላፊነት / Received/Returned By Title'}
               ]">
                 <div class="col-md-4">
                   <label>{{f.label}}</label>

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
 import { environment } from '../../../../environments/environment';
+import { MaintenanceRequestService } from '../../../services/maintenance-request.service';
 
 interface SparePart {
   stockNumber: string;
@@ -37,13 +38,25 @@ export class SparePartsRequestFormComponent implements OnInit {
     office_machine: { currentStage: 'OTEAM_LEADER', requestType: 'OFFICE_MACHINE' },
     radio_maintenance: { currentStage: 'RTEAM_LEADER', requestType: 'RADIO_MAINTENANCE' },
     hf_radio: { currentStage: 'HTEAM_LEADER', requestType: 'HF_RADIO' },
+    vhf_radio: { currentStage: 'RTEAM_LEADER', requestType: 'RADIO_MAINTENANCE' },
+    hf: { currentStage: 'HTEAM_LEADER', requestType: 'HF_RADIO' },
+    power_maintenance: { currentStage: 'PTEAM_LEADER', requestType: 'POWER' },
+    office_machine_maintenance: { currentStage: 'OTEAM_LEADER', requestType: 'OFFICE_MACHINE' },
+    vhf_maintenance: { currentStage: 'RTEAM_LEADER', requestType: 'RADIO_MAINTENANCE' },
+    hf_maintenance: { currentStage: 'HTEAM_LEADER', requestType: 'HF_RADIO' },
+    it_maintenance: { currentStage: 'OTEAM_LEADER', requestType: 'OFFICE_MACHINE' },
+    computer_maintenance: { currentStage: 'OTEAM_LEADER', requestType: 'OFFICE_MACHINE' },
+    electrical_maintenance: { currentStage: 'PTEAM_LEADER', requestType: 'POWER' },
+    mechanical_maintenance: { currentStage: 'PTEAM_LEADER', requestType: 'POWER' },
+    welding_maintenance: { currentStage: 'PTEAM_LEADER', requestType: 'POWER' }
   };
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private maintenanceRequestService: MaintenanceRequestService
   ) {}
 
   ngOnInit(): void {
@@ -100,7 +113,7 @@ export class SparePartsRequestFormComponent implements OnInit {
     const payload = {
       SerialNoOfEquip: this.formData.serialNoOfEquip,
       Model: this.formData.model,
-      Status: "On Maintenance"
+      Status: "Waiting for Spare Part"
     };
     return this.http.put<void>(
       `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/by-worksorder/${this.formData.worksOrderNumber}/update-serial-model`,
@@ -135,13 +148,30 @@ export class SparePartsRequestFormComponent implements OnInit {
     this.formData.spareParts.splice(index, 1);
   }
 
+  isPartSelectedElsewhere(stockNumber: string, currentIndex: number): boolean {
+    if (!stockNumber) return false;
+    return this.formData.spareParts.some((part: SparePartForm, index: number) => index !== currentIndex && part.stockNumber === stockNumber);
+  }
+
 async submitRequest(): Promise<void> {
   try {
+    // Validate duplicates
+    const stockNumbers = this.formData.spareParts.map((p: SparePartForm) => p.stockNumber).filter((val: string) => !!val);
+    const hasDuplicates = stockNumbers.some((val: string, index: number) => stockNumbers.indexOf(val) !== index);
+    if (hasDuplicates) {
+      alert('Duplicate stock numbers are not allowed. Please remove the duplicate entry.');
+      return;
+    }
+
     // First update maintenance request
     await this.updateMaintenanceRequest();
 
     const userRoleKey = this.formData.requestedBy.toLowerCase();
     const config = this.ROLE_CONFIG[userRoleKey];
+
+    const firstName = this.authService.getFirstName() || '';
+    const lastName = this.authService.getLastName() || '';
+    const fullName = `${firstName} ${lastName}`.trim() || this.formData.requestedBy;
 
     // Ensure every object is a fresh literal and does not have Id
     const payload = this.formData.spareParts
@@ -151,7 +181,7 @@ async submitRequest(): Promise<void> {
     WorksOrderNumber: this.formData.worksOrderNumber,
     SerialNoOfEquip: this.formData.serialNoOfEquip,
     Model: this.formData.model,
-    RequestedBy: this.formData.requestedBy,
+    RequestedBy: fullName,
     StockNumber: part.stockNumber,
     QuantityAsked: part.quantityAsked,
     Reason: part.reason,
@@ -173,7 +203,8 @@ async submitRequest(): Promise<void> {
     ).toPromise();
 
     alert('Spare parts request submitted successfully.');
-    this.resetForm();
+    this.maintenanceRequestService.triggerNotificationsRefresh();
+    this.router.navigate(['/maintenance/requests']);
 
   } catch (err) {
     alert('Failed to submit spare parts request.');

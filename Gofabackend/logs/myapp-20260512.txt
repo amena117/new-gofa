@@ -1,0 +1,54 @@
+[2026-05-12 17:02:29 WRN] The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+[2026-05-12 17:02:29 WRN] Network IP 10.20.38.171 not available. Only localhost bindings will be active.
+[2026-05-12 17:02:29 WRN] Network IP 10.20.38.51 not available. Bindings for this IP will not be active.
+[2026-05-12 17:02:29 WRN] The WebRootPath was not found: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend\wwwroot". Static files may be unavailable.
+[2026-05-12 17:02:30 WRN] Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+[2026-05-12 17:02:30 WRN] The property '"Model22Item"."SerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-05-12 17:02:30 WRN] The property '"Model22ItemAccessory"."WithdrawnSerialNumbers"' is a collection or enumeration type with a value converter but with no value comparer. Set a value comparer to ensure the collection/enumeration elements are compared correctly.
+[2026-05-12 17:02:30 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Accessories"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-05-12 17:02:30 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"AccessorySubAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-05-12 17:02:30 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Item"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-05-12 17:02:30 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"MasterCardItemDetails"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-05-12 17:02:30 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Model1AccessorySubAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-05-12 17:02:30 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Model22ItemAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-05-12 17:02:30 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"Model22ItemSubAccessory"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-05-12 17:02:30 WRN] No store type was specified for the decimal property '"UnitPrice"' on entity type '"TransactionEntry"'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+[2026-05-12 17:02:31 INF] Executed DbCommand ("17"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-05-12 17:02:31 INF] Executed DbCommand ("15"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-05-12 17:02:31 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1"
+[2026-05-12 17:02:31 INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT OBJECT_ID(N'[__EFMigrationsHistory]');"
+[2026-05-12 17:02:31 INF] Executed DbCommand ("42"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];"
+[2026-05-12 17:02:31 INF] No migrations were applied. The database is already up to date.
+[2026-05-12 17:02:31 INF] Executed DbCommand ("16"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Users] AS [u]
+        WHERE [u].[Role] = N'SUPER_ADMIN') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END"
+[2026-05-12 17:02:31 INF] Database migrated and seeded successfully.
+[2026-05-12 17:02:31 INF] Application starting up in Development mode...
+[2026-05-12 17:02:31 INF] Available endpoints:
+[2026-05-12 17:02:31 INF] - http://localhost:5000
+[2026-05-12 17:02:31 INF] - https://localhost:5001
+[2026-05-12 17:02:31 INF] - https://localhost:7112
+[2026-05-12 17:02:31 INF] - http://10.20.38.171:2024
+[2026-05-12 17:02:31 INF] - http://10.20.38.51:2024
+[2026-05-12 17:02:31 INF] - https://10.20.38.171:2025
+[2026-05-12 17:02:31 INF] User profile is available. Using '"C:\Users\Josiah\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest.
+[2026-05-12 17:02:32 WRN] Overriding address(es) '"http://localhost:5000, http://10.20.38.171:2024, http://10.20.38.51:2024, http://localhost:2024"'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+[2026-05-12 17:02:32 INF] Now listening on: "http://localhost:5000"
+[2026-05-12 17:02:32 INF] Now listening on: "http://localhost:2024"
+[2026-05-12 17:02:32 INF] Now listening on: "https://localhost:5001"
+[2026-05-12 17:02:32 INF] Now listening on: "https://localhost:7112"
+[2026-05-12 17:02:32 INF] Application started. Press Ctrl+C to shut down.
+[2026-05-12 17:02:32 INF] Hosting environment: "Development"
+[2026-05-12 17:02:32 INF] Content root path: "C:\Users\Josiah\project\Gofa\GOFA_S_M\Gofabackend"

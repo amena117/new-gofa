@@ -14,7 +14,8 @@ export class SentForInspectionListComponent implements OnInit {
 
   ngOnInit() {
     this.transitService.getSentForInspection().subscribe((items) => {
-      this.sentForInspectionItems = items;
+      // Show newest first
+      this.sentForInspectionItems = items.sort((a, b) => (b.model1Id || 0) - (a.model1Id || 0));
     });
   }
 }

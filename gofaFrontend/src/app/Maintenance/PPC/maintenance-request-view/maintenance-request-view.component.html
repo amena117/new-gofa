@@ -1,107 +1,278 @@
-<div class="container">
-  <h2>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ <br>
-  Maintenance Request Register / የተመዘገቡ የሜንቴናንስ ዝርዝር</h2>
+<div class="item-listing">
+  <!-- Header with Title and Action Button -->
+  <div class="header">
+    <h1 class="title">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ<br>Maintenance Request Register / የተመዘገቡ የሜንቴናንስ ዝርዝር</h1>
+  </div>
 
-  <!-- Dropdown Filter -->
-  <div class="filter-container">
-    <label for="statusFilter">Filter by Status:</label>
-    <select id="statusFilter" [(ngModel)]="selectedStatus" (change)="applyFilter()">
-      <option value="">All</option>
-      <option value="Maintenance Finished">Maintenance Finished</option>
-      <option value="Client Received">Client Received</option>
-    </select>
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <!-- Filter Header with Clear Button -->
+    <div class="filters-header" *ngIf="selectedStatus || searchValue">
+      <span class="active-filters-badge">
+        {{ (selectedStatus ? 1 : 0) + (searchValue ? 1 : 0) }} filter(s) active / {{ (selectedStatus ? 1 : 0) + (searchValue ? 1 : 0) }} ማጣሪያ(ዎች) ንቁ
+      </span>
+      <button class="clear-filters-btn" (click)="resetFilters()" aria-label="Clear all filters">
+        Clear All / ሁሉንም አጽዳ
+      </button>
+    </div>
 
-    <!-- Search Bar -->
-    <div class="search-container">
-      <select [(ngModel)]="searchType">
-        <option value="worksOrderNumber">Works Order Number</option>
-        <option value="serialNoOfEquip">Serial Number</option>
-        <option value="id">ID</option>
-      </select>
-      <input
-        type="text"
-        placeholder="Enter search value"
-        [(ngModel)]="searchValue"
-        (keyup.enter)="applySearch()"
-      />
-      <button (click)="applySearch()" class="search-button">Search</button>
+    <!-- Search and Status Filter -->
+    <div class="search-filter-group">
+      <div class="search-group">
+        <label for="searchInput" class="search-label">Search: </label>
+        <select [(ngModel)]="searchType" class="filter-select search-type-select">
+          <option value="worksOrderNumber">Works Order Number</option>
+          <option value="serialNoOfEquip">Serial Number</option>
+          <option value="id">ID</option>
+        </select>
+        <input
+          id="searchInput"
+          type="text"
+          class="search-input"
+          placeholder="Enter search value..."
+          [(ngModel)]="searchValue"
+          (keyup.enter)="applySearch()"
+          aria-label="Search maintenance requests"
+        />
+        <button (click)="applySearch()" class="action-btn primary small">
+          Search / ፈልግ
+        </button>
+      </div>
+
+      <div class="filter-group" *ngIf="currentUserRole === 'MAINTENANCE_LEADER' || currentUserRole === 'PPC' || currentUserRole === 'MAINTENANCE_ADMIN'">
+        <label for="roleFilter" class="filter-label">Filter By Role / በክፍል ፈልግ: </label>
+        <select
+          id="roleFilter"
+          class="filter-select"
+          [(ngModel)]="selectedRoleFilter"
+          (change)="applyFilter()"
+          aria-label="Filter by role">
+          <option value="">All Roles / ሁሉም</option>
+          <option value="RADIO">Radio Team / የራዲዮ ቡድን</option>
+          <option value="POWER">Power Team / የኃይል ቡድን</option>
+          <option value="OFFICE">Office/IT Team / የቢሮ/አይቲ ቡድን</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="statusFilter" class="filter-label">Status / ሁኔታ: </label>
+        <select
+          id="statusFilter"
+          class="filter-select"
+          [(ngModel)]="selectedStatus"
+          (change)="applyFilter()"
+          aria-label="Filter by status">
+          <option value="">All Statuses / ሁሉም ({{ maintenanceRequests.length }})</option>
+          <option value="Pending">Pending</option>
+          <option value="On Maintenance">On Maintenance</option>
+          <option value="Waiting for Spare Part">Waiting for Spare Part</option>
+          <option value="Approved - Waiting for Parts">Approved - Waiting for Parts</option>
+          <option value="Spare Part Issued">Spare Part Issued</option>
+          <option value="Maintenance Finished">Maintenance Finished</option>
+          <option value="Client Received">Client Received</option>
+          <option value="Do Out">Do Out</option>
+        </select>
+      </div>
     </div>
   </div>
 
-  <!-- Loading Indicator -->
-  <div *ngIf="isLoading" class="loading-indicator">
-    Loading maintenance requests...
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading maintenance requests...</p>
   </div>
 
   <!-- Error Message -->
-  <div *ngIf="errorMessage" class="error-message">
+  <div *ngIf="errorMessage" class="message error-message" role="alert">
     {{ errorMessage }}
   </div>
 
-  <!-- Table to Display Paginated Maintenance Requests -->
- <table class="request-table" *ngIf="!isLoading && !errorMessage && paginatedRequests.length > 0">
-  <thead>
-    <tr>
-      <th>WON</th>
-      <th>Serial Number</th>
-      <th>Brief Description of Work</th>
-      <th>Date Work Order Received</th>
-      <th>Maintenance Type</th>
-      <th>Repair Start Date</th>
-      <th>Repair Finish Date</th>
-      <th>Maintained By</th>
-      <th>Total Cost</th>
-      <th>Status</th>
-      <th>Solved Remark</th>
-      <th>Given To</th>
-      <th>Approval</th>
-      <th>Receiver Remark</th>
-      <th>Received Date</th>
-      <th>Action</th> <!-- ✅ New column -->
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let request of paginatedRequests">
-      <td>{{ request.worksOrderNumber }}</td>
-      <td>{{ request.serialNoOfEquip || 'N/A' }}</td>
-      <td>{{ request.briefDescriptionOfWork || 'N/A' }}</td>
-      <td>{{ request.dateWorkOrderReceived ? (request.dateWorkOrderReceived | date:'yyyy-MM-dd') : 'N/A' }}</td>
-      <td>{{ request.maintenanceType || 'N/A' }}</td>
-      <td>{{ request.repairStartDate ? (request.repairStartDate | date:'yyyy-MM-dd') : 'N/A' }}</td>
-      <td>{{ request.repairFinishDate ? (request.repairFinishDate | date:'yyyy-MM-dd') : 'N/A' }}</td>
-      <td>{{ request.maintainedBy || 'N/A'}}</td>
-      <td>{{ request.totalCost | currency:'ETB':'symbol':'1.2-2' }}</td>
-      <td>{{ request.status || 'N/A' }}</td>
-      <td>{{ request.remark || 'N/A' }}</td>
-      <td>{{ request.givenTo || 'N/A' }}</td>
-      <td>{{ request.approval || 'N/A' }}</td>
-      <td>{{ request.recieverRemark || 'N/A' }}</td>
-      <td>{{ request.recievedDate ? (request.recievedDate | date:'yyyy-MM-dd') : 'N/A' }}</td>
-      
-      <!-- ✅ Action Button -->
-      <td>
-        <button (click)="viewRequest(request)" class="action-button">View</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <!-- Table and Pagination -->
+  <div *ngIf="!isLoading && filteredRequests.length > 0" class="content-section">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>WON</th>
+            <th>Serial Number</th>
+            <th>Date Received</th>
+            <th>Type</th>
+            <th>Maintained By</th>
+            <th>Total Cost</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let request of paginatedRequests" class="table-row">
+            <td data-label="WON">{{ request.worksOrderNumber }}</td>
+            <td data-label="Serial Number"><code>{{ request.serialNoOfEquip || 'N/A' }}</code></td>
+            <td data-label="Date Received">{{ request.dateWorkOrderReceived ? (request.dateWorkOrderReceived | date:'yyyy-MM-dd') : 'N/A' }}</td>
+            <td data-label="Type">{{ request.maintenanceType || 'N/A' }}</td>
+            <td data-label="Maintained By">{{ request.maintainedBy || 'N/A'}}</td>
+            <td data-label="Total Cost" class="cost-cell">{{ request.totalCost | currency:'ETB':'':'1.2-2' }}</td>
+            <td data-label="Status">
+              <span class="status-tag" [attr.data-status]="request.status">{{ request.status || 'N/A' }}</span>
+            </td>
+            <td data-label="Actions">
+              <button
+                class="action-btn secondary small"
+                (click)="viewRequest(request)"
+                aria-label="View details">
+                View Details
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
+    <!-- Pagination Controls -->
+    <div class="pagination-controls">
+      <div class="pagination-info">
+        Showing {{ (currentPage - 1) * pageSize + 1 }} to 
+        {{ Math.min(currentPage * pageSize, filteredRequests.length) }} of {{ filteredRequests.length }} requests
+      </div>
 
-  <!-- No Data Message -->
-  <div *ngIf="!isLoading && !errorMessage && maintenanceRequests.length === 0" class="no-data">
-    No maintenance requests found.
+      <div class="pagination-size">
+        <label for="pageSize">Items per page: </label>
+        <select id="pageSize" [(ngModel)]="pageSize" (change)="currentPage = 1; applyPagination()">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+
+      <div class="pagination-buttons">
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === 1"
+          (click)="previousPage()">
+          Previous
+        </button>
+
+        <span class="page-indicator">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+
+        <button 
+          class="action-btn secondary small" 
+          [disabled]="currentPage === totalPages"
+          (click)="nextPage()">
+          Next
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- Pagination Controls -->
-  <div class="pagination">
-    <button (click)="previousPage()" [disabled]="currentPage === 1">Prev</button>
+  <!-- Detail Modal -->
+  <div class="modal-backdrop" *ngIf="showDetailModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Works Order #{{ selectedRequest?.worksOrderNumber }} — Details / ዝርዝር</h2>
+        <button class="close-modal-btn" (click)="closeModal()">×</button>
+      </div>
+      
+      <div class="modal-body printable-content">
+        <div class="org-header-print">
+          <p>በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</p>
+          <p>Maintenance Request Register / የተመዘገቡ የሜንቴናንስ ዝርዝር</p>
+        </div>
 
-    <button *ngFor="let page of pages"
-            (click)="goToPage(page)"
-            [class.active]="currentPage === page">
-      {{ page }}
-    </button>
+        <div class="details-grid">
+          <!-- Primary Info -->
+          <div class="detail-item">
+            <span class="detail-label">Works Order No</span>
+            <span class="detail-value highlight">#{{ selectedRequest?.worksOrderNumber }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Status / ሁኔታ</span>
+            <span class="detail-value status-tag" [attr.data-status]="selectedRequest?.status">
+              {{ selectedRequest?.status }}
+            </span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Maintenance Type / አይነት</span>
+            <span class="detail-value">{{ selectedRequest?.maintenanceType }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Nomenclature / ስም</span>
+            <span class="detail-value">{{ selectedRequest?.nomenclature || 'N/A' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Serial Number / ተ.ቁ</span>
+            <span class="detail-value"><code>{{ selectedRequest?.serialNoOfEquip || 'N/A' }}</code></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Model</span>
+            <span class="detail-value">{{ selectedRequest?.model || 'N/A' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Requested By / ጠያቂ</span>
+            <span class="detail-value">{{ selectedRequest?.requestedBy || 'N/A' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Maintained By / ጠጋኝ</span>
+            <span class="detail-value">{{ selectedRequest?.maintainedBy || 'N/A' }}</span>
+          </div>
+          
+          <!-- Dates -->
+          <div class="detail-item">
+            <span class="detail-label">Date Received / የመጣበት</span>
+            <span class="detail-value">{{ selectedRequest?.dateWorkOrderReceived | date:'mediumDate' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Repair Start / ጥገና ጀምሮ</span>
+            <span class="detail-value">{{ selectedRequest?.repairStartDate | date:'mediumDate' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Repair Finish / ጥገና ጠናቅቆ</span>
+            <span class="detail-value">{{ selectedRequest?.repairFinishDate | date:'mediumDate' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Man Hours</span>
+            <span class="detail-value">{{ selectedRequest?.manHours || '0' }} hrs</span>
+          </div>
 
-    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+          <!-- Remarks & Descriptions -->
+          <div class="detail-item full-width">
+            <span class="detail-label">Description / መግለጫ</span>
+            <span class="detail-value note-box">{{ selectedRequest?.briefDescriptionOfWork || 'N/A' }}</span>
+          </div>
+          <div class="detail-item full-width">
+            <span class="detail-label">Solved Remark / አስተያየት</span>
+            <span class="detail-value note-box highlight">{{ selectedRequest?.remark || 'N/A' }}</span>
+          </div>
+
+          <!-- Costs -->
+          <div class="detail-item">
+            <span class="detail-label">Labor Cost (ETB)</span>
+            <span class="detail-value">{{ selectedRequest?.laborCost | currency:'ETB':'':'1.2-2' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Parts Cost (ETB)</span>
+            <span class="detail-value">{{ selectedRequest?.partsCost | currency:'ETB':'':'1.2-2' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Total Cost (ETB) / ጠቅላላ</span>
+            <span class="detail-value total-price">{{ selectedRequest?.totalCost | currency:'ETB':'':'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="action-btn primary" (click)="printModal()">
+          <i class="bi bi-printer"></i> Print Details / አትም
+        </button>
+        <button class="action-btn secondary" (click)="closeModal()">Close / ዝጋ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !errorMessage && maintenanceRequests.length === 0" class="empty-state">
+    <h3>No maintenance requests found.</h3>
+    <p>There are no maintenance requests in the system.</p>
   </div>
 </div>

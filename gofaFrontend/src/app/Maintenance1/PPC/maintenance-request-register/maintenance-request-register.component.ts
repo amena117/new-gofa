@@ -32,8 +32,8 @@ export class MaintenanceRequestRegisterComponent implements OnInit {
   ngOnInit(): void {
     this.maintenanceForm = this.fb.group({
       letterId: ['', Validators.required],
-      worksOrderNumber: ['', Validators.required],
-      nomenclature: ['', Validators.required],
+      worksOrderNumber: [''], // Removed required validator
+      nomenclature: [''], // Removed required validator
       quantity: [{ value: 1, disabled: true }],
       requestedBy: ['', Validators.required],
       serialNoOfEquip: ['', Validators.required],
@@ -55,7 +55,7 @@ export class MaintenanceRequestRegisterComponent implements OnInit {
     );
 
     this.maintenanceRequestService.getInitialLetters().subscribe(
-      (letters: Letter[]) => this.letters = letters,
+      (letters: Letter[]) => this.letters = letters.slice().sort((a, b) => b.letterId - a.letterId),
       (err: any) => console.error('Error loading letters', err)
     );
   }

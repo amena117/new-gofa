@@ -42,10 +42,17 @@
         <tbody>
           <ng-container *ngFor="let item of paginatedItems">
             <!-- Main Item Row (only if this store has the main item) -->
-            <tr *ngIf="item.storeType?.toLowerCase() === itemDetails.role?.toLowerCase()">
+            <tr *ngIf="item.storeType?.toLowerCase() === itemDetails.role?.toLowerCase()"
+                [class.accessory-only-row]="item.isAccessoryOnly">
               <td>{{ item.supplier }}</td>
               <td>{{ item.recivedByName }}</td>
-              <td>{{ item.itemType }}</td>
+              <td>
+                {{ item.itemType }}
+                <span *ngIf="item.isAccessoryOnly" class="accessory-only-badge">📎 Accessory Only</span>
+                <div *ngIf="item.isAccessoryOnly && item.parentItemDescription" class="parent-item-hint">
+                  Parent: {{ item.parentItemDescription }}
+                </div>
+              </td>
               <td>{{ item.serialNumber }}</td>
               <td>{{ item.storeType }}</td>
               <td>

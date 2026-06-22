@@ -32,11 +32,6 @@
         </div>
         
         <div class="info-item">
-          <label>Model Number / የሞዴል ቁጥር</label>
-          <div class="info-value">{{ requestData.model || 'N/A' }}</div>
-        </div>
-        
-        <div class="info-item">
           <label>Serial Number / ተራ ቁጥር</label>
           <div class="info-value">{{ requestData.serialNoOfEquip || 'N/A' }}</div>
         </div>
@@ -81,15 +76,28 @@
               class="form-control"
               [(ngModel)]="maintenanceType"
               name="maintenanceType"
-              (change)="updateRequestedTo()"
+              (ngModelChange)="updateRequestedTo()"
               required
             >
               <option value="">Select Maintenance Type / የጥገና አይነት ይምረጡ</option>
-              <option value="Office_machine">Office Machine</option>
-              <option value="POWER">POWER</option>
+              <option value="Office_Machine">Office / IT Maintenance</option>
+              <option value="Power">POWER</option>
               <option value="RADIO_MAINTENANCE">RADIO MAINTENANCE</option>
-              <option value="HF_RADIO">HF RADIO</option>
             </select>
+          </div>
+
+          <!-- Model Number (entered during assignment) -->
+          <div class="form-group">
+            <label for="modelNumber">Model Number / የሞዴል ቁጥር <span class="required">*</span></label>
+            <input
+              type="text"
+              id="modelNumber"
+              class="form-control"
+              [(ngModel)]="modelNumber"
+              name="modelNumber"
+              required
+              placeholder="Enter model number / ሞዴል ቁጥር ያስገቡ"
+            />
           </div>
 
           <!-- Requested To (Auto-filled) -->

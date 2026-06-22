@@ -1,0 +1,253 @@
+<div class="page-container">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h3 class="org-name">በኢፌዲሪ መከላከያ ሚኒስቴር በመገናኛና እንፎርሜሽን ዋና መምሪያ</h3>
+    <h1 class="page-title">Maintained Lists / ጥገና ተጠናቀቀ</h1>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="filter-card">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label class="filter-label">Search By / ፈልግ</label>
+        <select class="form-control filter-select" [(ngModel)]="searchType">
+          <option *ngFor="let t of searchTypes" [value]="t.value">{{ t.label }}</option>
+        </select>
+      </div>
+      <div class="filter-group flex-grow">
+        <label class="filter-label">Search Term / የፍለጋ ቃል</label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="searchTerm"
+          (input)="applySearch()"
+          placeholder="Search... / ፈልግ..." />
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Status / ሁኔታ</label>
+        <select class="form-control filter-select" [(ngModel)]="selectedStatus" (change)="applySearch()">
+          <option value="">All Statuses / ሁሉም</option>
+          <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+      <div class="filter-group align-end">
+        <button class="action-btn secondary" (click)="resetFilters()">
+          <i class="bi bi-arrow-counterclockwise"></i> Reset / ዳግም
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="state-card">
+    <div class="spinner-border text-dark" role="status"></div>
+    <p class="mt-3 text-muted">Loading... / በመጫን ላይ...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage && !isLoading" class="alert alert-warning mt-3">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ errorMessage }}
+  </div>
+
+  <!-- Table Section -->
+  <div *ngIf="!isLoading && !errorMessage" class="table-card">
+
+    <!-- Record Count -->
+    <div class="record-count">
+      <i class="bi bi-list-ul me-1"></i>
+      <span>{{ filteredItems.length }} record(s) found / ምዝገባ ተገኝቷል</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table" *ngIf="paginatedItems.length > 0; else noData">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Works Order No</th>
+            <th>Nomenclature / ስም</th>
+            <th>Serial No / ተከታታይ ቁጥር</th>
+            <th>Model</th>
+            <th>Status / ሁኔታ</th>
+            <th>Maintained By / የጠገነው</th>
+            <th>Finish Date / ያለቀበት ቀን</th>
+            <th>Man Hours</th>
+            <th>Total Cost (ETB)</th>
+            <th>Actions / ድርጊቶች</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of paginatedItems; let i = index">
+            <td class="row-num">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+            <td><strong>{{ r.worksOrderNumber }}</strong></td>
+            <td>{{ r.nomenclature || '—' }}</td>
+            <td><code class="serial-code">{{ r.serialNoOfEquip || '—' }}</code></td>
+            <td>{{ r.model || '—' }}</td>
+            <td>
+              <span [class]="getStatusClass(r.status)">{{ r.status || '—' }}</span>
+            </td>
+            <td>{{ r.maintainedBy || '—' }}</td>
+            <td>{{ r.repairFinishDate ? (r.repairFinishDate | date:'mediumDate') : '—' }}</td>
+            <td class="text-center">{{ r.manHours || 0 }}</td>
+            <td class="text-end cost-cell">{{ getTotalCost(r) | number:'1.2-2' }}</td>
+            <td>
+              <div class="action-cell">
+                <button class="action-btn info-btn" (click)="openDetails(r)" title="View Details">
+                  <i class="bi bi-eye"></i> View
+                </button>
+                <button
+                  *ngIf="canQualify(r)"
+                  class="action-btn qualify-btn"
+                  (click)="qualify(r)"
+                  title="Qualify — Mark as Maintenance Finished">
+                  <i class="bi bi-check-circle"></i> Qualify
+                </button>
+                <span
+                  *ngIf="r.status === 'Maintenance Finished' || r.status === 'Client Received'"
+                  class="done-badge">
+                  <i class="bi bi-check2-circle"></i> Done
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #noData>
+      <div class="empty-state">
+        <i class="bi bi-inbox empty-icon"></i>
+        <p>No maintained items found. / ምንም የተጠናቀቀ ጥገና አልተገኘም።</p>
+      </div>
+    </ng-template>
+
+    <!-- Pagination -->
+    <div class="pagination-bar" *ngIf="totalPages > 1">
+      <button class="page-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+        <i class="bi bi-chevron-left"></i> Prev
+      </button>
+      <button
+        *ngFor="let p of pages"
+        class="page-btn"
+        [class.active]="p === currentPage"
+        (click)="goToPage(p)">
+        {{ p }}
+      </button>
+      <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next <i class="bi bi-chevron-right"></i>
+      </button>
+      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Detail Modal ─────────────────────────────────────────────── -->
+<div class="modal-overlay" *ngIf="viewingItem" (click)="closeDetails()">
+  <div class="modal-panel modal-lg" (click)="$event.stopPropagation()">
+
+    <div class="modal-header-bar">
+      <div>
+        <h5 class="modal-heading">Works Order #{{ viewingItem.worksOrderNumber }}</h5>
+        <p class="modal-subheading">Maintenance Details / የጥገና ዝርዝር</p>
+      </div>
+      <button class="modal-close-btn" (click)="closeDetails()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body-content">
+
+      <!-- Status Banner -->
+      <div class="status-banner">
+        <span [class]="getStatusClass(viewingItem.status)">{{ viewingItem.status || '—' }}</span>
+      </div>
+
+      <!-- Details Grid -->
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span class="detail-label">Works Order No</span>
+          <span class="detail-value">{{ viewingItem.worksOrderNumber }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Maintenance Type / አይነት</span>
+          <span class="detail-value">{{ viewingItem.maintenanceType || viewingItem.statusStage || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Nomenclature / ስም</span>
+          <span class="detail-value">{{ viewingItem.nomenclature || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Model</span>
+          <span class="detail-value">{{ viewingItem.model || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Serial No / ተከታታይ ቁጥር</span>
+          <span class="detail-value"><code class="serial-code">{{ viewingItem.serialNoOfEquip || '—' }}</code></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Maintained By / የጠገነው</span>
+          <span class="detail-value">{{ viewingItem.maintainedBy || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Requested By / የጠየቀው</span>
+          <span class="detail-value">{{ viewingItem.requestedBy || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Registered By / የመዘገበው</span>
+          <span class="detail-value">{{ viewingItem.registeredBy || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Repair Start Date / ጥገና የጀመረበት</span>
+          <span class="detail-value">{{ viewingItem.repairStartDate ? (viewingItem.repairStartDate | date:'mediumDate') : '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Repair Finish Date / ጥገና የጠናቀቀበት</span>
+          <span class="detail-value">{{ viewingItem.repairFinishDate ? (viewingItem.repairFinishDate | date:'mediumDate') : '—' }}</span>
+        </div>
+        <div class="detail-item full-span">
+          <span class="detail-label">Description of Work / የስራ ዝርዝር</span>
+          <span class="detail-value">{{ viewingItem.briefDescriptionOfWork || '—' }}</span>
+        </div>
+        <div class="detail-item full-span">
+          <span class="detail-label">Remark / አስተያየት</span>
+          <span class="detail-value">{{ viewingItem.remark || '—' }}</span>
+        </div>
+      </div>
+
+      <!-- Cost Breakdown -->
+      <div class="cost-breakdown">
+        <div class="cost-card">
+          <div class="cost-label">Man Hours</div>
+          <div class="cost-value">{{ viewingItem.manHours || 0 }}</div>
+        </div>
+        <div class="cost-card">
+          <div class="cost-label">Labor Cost (ETB)</div>
+          <div class="cost-value">{{ getLaborCost(viewingItem.manHours) | number:'1.2-2' }}</div>
+        </div>
+        <div class="cost-card">
+          <div class="cost-label">Parts Cost (ETB) / የዕቃ ወጪ</div>
+          <div class="cost-value">{{ (viewingItem.partsCost || 0) | number:'1.2-2' }}</div>
+        </div>
+        <div class="cost-card total">
+          <div class="cost-label">Total Cost (ETB) / ጠቅላላ ወጪ</div>
+          <div class="cost-value">{{ getTotalCost(viewingItem) | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer-bar">
+      <button
+        *ngIf="canQualify(viewingItem)"
+        class="action-btn qualify-btn"
+        (click)="qualify(viewingItem)">
+        <i class="bi bi-check-circle"></i> Qualify / አረጋግጥ
+      </button>
+      <button class="action-btn secondary" (click)="closeDetails()">
+        <i class="bi bi-x-circle"></i> Close / ዝጋ
+      </button>
+    </div>
+
+  </div>
+</div>

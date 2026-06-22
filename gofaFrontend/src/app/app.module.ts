@@ -84,6 +84,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AmharicDatePipe } from './pipes/amharic-date.pipe';
+import { FilterPipe } from './pipes/filter.pipe';
 import { InventorySummaryComponent } from './inventory-summary/inventory-summary.component';
 import { TransactionReportComponent } from './Warehose/transaction-report/transaction-report.component';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -94,6 +95,7 @@ import { ReportComponent } from './Mastercard/components/report/report.component
 import { ChartDirective } from './team-leader-dashboard/chart.directive';
 import { AccessoryListComponent } from './Warehose/accessory-list/accessory-list.component';
 import { AccessoryWithdrawalComponent } from './Model22/accessory-withdrawal/accessory-withdrawal.component';
+import { UserPerformanceComponent } from './user-performance/user-performance.component';
 
 @NgModule({
   declarations: [
@@ -144,6 +146,7 @@ import { AccessoryWithdrawalComponent } from './Model22/accessory-withdrawal/acc
     AddItemQuantityComponent,
     ItemTransactionHistoryComponent,
     AmharicDatePipe,
+    FilterPipe,
     InventorySummaryComponent,
     TransactionReportComponent,
     TeamLeaderDashboardComponent,
@@ -151,7 +154,8 @@ import { AccessoryWithdrawalComponent } from './Model22/accessory-withdrawal/acc
     RequestOrdersReportComponent,
     ReportComponent,
     AccessoryListComponent,
-    AccessoryWithdrawalComponent
+    AccessoryWithdrawalComponent,
+    UserPerformanceComponent
   ],
   imports: [
     BrowserModule,

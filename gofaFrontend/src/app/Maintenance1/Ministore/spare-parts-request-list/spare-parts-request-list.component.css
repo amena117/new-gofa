@@ -26,7 +26,7 @@ body {
 h2 {
   text-align: center;
   color: white;
-  background-color: #000000; /* Solid black */
+  background: linear-gradient(90deg, #1e3c72, #2a5298); /* Solid black */
   padding: 1.3rem 1rem;
   border-radius: 12px;
   font-size: 1.8rem;
@@ -37,35 +37,6 @@ h2 {
   position: relative;
   overflow: hidden;
   z-index: 1;
-}
-
-/* Optional: Shine animation on header */
-h2::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -100%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-  transform: rotate(35deg);
-  pointer-events: none;
-  animation: shine 3s infinite;
-  z-index: -1;
-}
-
-@keyframes shine {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
 }
 
 /* Loading & Error */
@@ -112,20 +83,48 @@ h2::before {
   padding: 1rem 1.2rem;
   background-color: #fff;
   border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
   color: #444;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status-pending {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-waiting {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.status-accepted {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.no-action {
+  color: #6c757d;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.85rem;
 }
 
 .request-table tbody tr:hover td {
   background-color: #f1f8ff;
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-/* Alternate Row Background */
-.request-table tbody tr:nth-child(even) td {
-  background-color: #fafbfe;
 }
 
 /* Action Buttons in Table */
@@ -139,30 +138,26 @@ h2::before {
   transition: all 0.3s ease;
   color: white;
   margin: 0 2px;
-  background-color: #000000; /* Black */
+  background-color: #000000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Hover Effect */
 .request-table td button:hover:not(:disabled) {
   background-color: #111;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Role-Based Button Colors (Overrides) */
-.request-table td button:nth-child(1) {
-  /* Reject - Red */
-  background-color: #dc3545;
+.request-table td button:first-child {
+  background-color: #dc3545; /* Reject - Red */
 }
 
-.request-table td button:nth-child(1):hover:not(:disabled) {
+.request-table td button:first-child:hover:not(:disabled) {
   background-color: #c82333;
 }
 
 .request-table td button:nth-child(2) {
-  /* Respond - Yellow */
-  background-color: #ffc107;
+  background-color: #ffc107; /* Respond/Approve - Yellow */
   color: #000;
 }
 
@@ -170,31 +165,11 @@ h2::before {
   background-color: #e0a800;
 }
 
-.request-table td button:nth-child(3) {
-  /* Accept - Green */
-  background-color: #28a745;
-}
-
-.request-table td button:nth-child(3):hover:not(:disabled) {
-  background-color: #218838;
-}
-
 /* Disabled Button */
 .request-table td button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
-}
-
-/* No Data Row */
-.request-table td[colspan="7"] {
-  text-align: center !important;
-  font-style: italic;
-  color: #888;
-  padding: 1.5rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  font-size: 0.95rem;
 }
 
 /* Response Form */
@@ -206,118 +181,4 @@ h2::before {
   border-radius: 14px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
   border: 1px solid #e0e0e0;
-}
-
-.respond-form h3 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  font-size: 1.4rem;
-  color: #222;
-  text-align: left;
-  border-bottom: 2px solid #000;
-  padding-bottom: 0.5rem;
-}
-
-/* Form Fields */
-.respond-form div {
-  margin-bottom: 1.3rem;
-}
-
-.respond-form label {
-  display: block;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-}
-
-.respond-form input,
-.respond-form select,
-.respond-form textarea {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  background-color: #fff;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.respond-form input:focus,
-.respond-form select:focus,
-.respond-form textarea:focus {
-  outline: none;
-  border-color: #000;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
-}
-
-.respond-form select {
-  cursor: pointer;
-}
-
-.respond-form textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-/* Form Buttons */
-.respond-form button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.respond-form button[type="submit"] {
-  background-color: #000000;
-  color: white;
-}
-
-.respond-form button[type="submit"]:hover {
-  background-color: #111;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.respond-form button[type="button"] {
-  background-color: #dc3545;
-  color: white;
-  margin-left: 1rem;
-}
-
-.respond-form button[type="button"]:hover {
-  background-color: #c82333;
-  transform: translateY(-2px);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    padding: 1.5rem;
-    margin: 1rem auto;
-  }
-
-  h2 {
-    font-size: 1.6rem;
-    padding: 1rem;
-  }
-
-  .request-table th,
-  .request-table td {
-    padding: 0.75rem;
-    font-size: 0.85rem;
-  }
-
-  .respond-form {
-    padding: 1.8rem;
-  }
-
-  .respond-form button {
-    width: 100%;
-    margin: 0.5rem 0;
-    max-width: 100%;
-  }
 }

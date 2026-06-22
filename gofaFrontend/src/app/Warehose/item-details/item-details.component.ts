@@ -10,6 +10,7 @@ import { Subscription, forkJoin, of } from 'rxjs';
 import { filter, switchMap, catchError, finalize } from 'rxjs/operators';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-item-details',
@@ -23,6 +24,8 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
   transactionWithdrawals: TransactionEntry[] = [];
   consolidatedAccessories: ConsolidatedAccessory[] = []; // Add consolidated accessories
   showAccessoryModal = false; // Modal visibility
+  showSerialNumbers = false;
+  serialNumberSearch = '';
   selectedAccessory: ConsolidatedAccessory | null = null; // Selected accessory for modal
   model22Withdrawals: Array<{
     withdrawal: Model22Dto;
@@ -296,6 +299,39 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
     return `${(price * quantity).toFixed(2)} ${curr}`;
   }
 
+  // Calculate total accessories value grouped by currency
+  getTotalAccessoriesValue(): string {
+    if (!this.consolidatedAccessories || this.consolidatedAccessories.length === 0) {
+      return '0.00 ETB';
+    }
+
+    const totalsByCurrency = new Map<string, number>();
+
+    this.consolidatedAccessories.forEach(acc => {
+      const quantity = acc.currentQuantity !== undefined ? acc.currentQuantity : acc.totalQuantity;
+      const price = acc.unitPrice || 0;
+      const currency = acc.currency || 'ETB';
+
+      // Skip FOC (Free of Charge)
+      if (currency === 'FOC') return;
+
+      const currentTotal = totalsByCurrency.get(currency) || 0;
+      totalsByCurrency.set(currency, currentTotal + (price * quantity));
+    });
+
+    // Format the output
+    if (totalsByCurrency.size === 0) {
+      return '0.00 ETB';
+    }
+
+    const parts: string[] = [];
+    totalsByCurrency.forEach((total, currency) => {
+      parts.push(`${total.toFixed(2)} ${currency}`);
+    });
+
+    return parts.join(' + ');
+  }
+
   // Consolidate duplicate accessories by name and model
   private consolidateAccessories(accessories: Accessory[]): void {
     const accessoryMap = new Map<string, ConsolidatedAccessory>();
@@ -330,37 +366,33 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
           .filter(t => t.name === accessory.name && t.model === accessory.model)
           .map(t => ({ quantity: t.quantity, date: t.date, registeredBy: t.registeredBy }));
 
-        // Always include the initial registration entry (item receive transaction)
-        // Find the item's initial receive transaction
-        const initialTx = this.transactions?.find(t =>
-          t.history && !t.history.includes('Accessories added:') &&
-          (t.details?.includes('Received From:') || t.details?.includes('Source:'))
-        );
-
         const allEntries: Array<{ quantity: number; date: string; registeredBy: string }> = [];
 
         if (txEntries.length > 0) {
-          // We have parsed transaction entries — use them
-          // The first receive (item registration) may not be in txEntries if it used a different format
-          // Calculate what quantity was in the initial registration
-          const txTotal = txEntries.reduce((s, e) => s + e.quantity, 0);
-          const initialQty = dbQty - txTotal; // remaining = initial batch
+          allEntries.push(...txEntries);
+        } else {
+          // No parsed accessory transactions — build one entry per item receive transaction
+          // Each item receive transaction had accessories with the same ratio
+          const itemReceiveTxs = this.transactions?.filter(t =>
+            t.action?.toLowerCase() === 'receive' &&
+            (t.details?.includes('Received From:') || t.details?.includes('Source:'))
+          ) || [];
 
-          if (initialQty > 0) {
+          if (itemReceiveTxs.length > 0) {
+            // We have item receive transactions but no accessory-specific ones
+            // Show one entry per receive transaction — quantity unknown so show as single combined entry
             allEntries.push({
-              quantity: initialQty,
-              date: initialTx?.date || itemRegistrationDate,
+              quantity: dbQty,
+              date: itemReceiveTxs[0].date || itemRegistrationDate,
+              registeredBy: itemRegisteredBy
+            });
+          } else {
+            allEntries.push({
+              quantity: dbQty,
+              date: itemRegistrationDate,
               registeredBy: itemRegisteredBy
             });
           }
-          allEntries.push(...txEntries);
-        } else {
-          // No parsed transactions — single entry with full DB quantity
-          allEntries.push({
-            quantity: dbQty,
-            date: initialTx?.date || itemRegistrationDate,
-            registeredBy: itemRegisteredBy
-          });
         }
 
         accessoryMap.set(key, {
@@ -534,6 +566,15 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
           this.selectedAccessory.withdrawals = withdrawals;
           this.selectedAccessory.totalWithdrawn = totalWithdrawn;
           this.selectedAccessory.currentQuantity = currentDBQuantity; // Current quantity in DB
+
+          // Fix fallback receive entries — if only one entry exists and it used dbQty,
+          // update it to actualTotalReceived now that we know totalWithdrawn
+          if (this.selectedAccessory.allEntries?.length === 1 &&
+              this.selectedAccessory.allEntries[0].quantity === currentDBQuantity &&
+              totalWithdrawn > 0) {
+            this.selectedAccessory.allEntries[0].quantity = actualTotalReceived;
+          }
+
           this.cdr.detectChanges();
         }
       },
@@ -547,6 +588,18 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
   closeAccessoryModal(): void {
     this.showAccessoryModal = false;
     this.selectedAccessory = null;
+  }
+
+  toggleSerialNumbers(): void {
+    this.showSerialNumbers = !this.showSerialNumbers;
+    if (!this.showSerialNumbers) this.serialNumberSearch = '';
+  }
+
+  filteredSerialNumbers(): any[] {
+    if (!this.item?.serialNumbers) return [];
+    if (!this.serialNumberSearch) return this.item.serialNumbers;
+    const q = this.serialNumberSearch.toLowerCase();
+    return this.item.serialNumbers.filter(s => s.serialNumber.toLowerCase().includes(q));
   }
 
   // Process and sort transactions by date and time (newest first)
@@ -1168,7 +1221,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
 
   // Calculate summary metrics
   calculateSummaryMetrics(): void {
-    this.totalReceived = this.transactions.reduce((sum, t) => sum + (t.quantity || 0), 0);
+    this.totalReceived = this.item?.quantity || 0;
     this.totalWithdrawn = this.transactionWithdrawals.reduce((sum, t) => sum + (t.quantity || 0), 0);
     
     // Calculate total value and quantity received per currency
@@ -1375,74 +1428,104 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
   exportToExcel(): void {
     if (!this.item) return;
 
-    const csvContent: string[] = [];
-    
-    // Add header
-    csvContent.push('Item Details Report');
-    csvContent.push(`Item: ${this.item.description}`);
-    csvContent.push(`Model: ${this.item.model}`);
-    csvContent.push(`Category: ${this.item.category}`);
-    csvContent.push(`Current Quantity: ${this.item.quantity}`);
-    csvContent.push(`Unit Price: ${this.item.unitPrice} ${this.item.currency}`);
-    csvContent.push('');
-    
-    // Add summary
-    csvContent.push('Summary');
-    csvContent.push(`Total Received,${this.totalReceived}`);
-    csvContent.push(`Total Withdrawn,${this.totalWithdrawn}`);
-    csvContent.push(`Current Stock Value,${this.currentStockValue.toFixed(2)} ${this.item.currency}`);
-    csvContent.push(`Total Transactions,${this.totalTransactions}`);
-    csvContent.push('');
-    
-    // Add received transactions
+    const wb = XLSX.utils.book_new();
+
+    // ── Sheet 1: Item Summary ─────────────────────────────────────────
+    const summaryRows = [
+      ['Item Details Report / የእቃ ዝርዝር ሪፖርት'],
+      [],
+      ['Item / እቃ',          this.item.description],
+      ['Model / ሞዴል',        this.item.model],
+      ['Category / ምድብ',     this.item.category],
+      ['Quantity / ብዛት',     this.item.quantity],
+      ['Unit Price / ነጠላ ዋጋ', `${this.item.unitPrice ?? 0} ${this.item.currency}`],
+      [],
+      ['Summary / ማጠቃለያ'],
+      ['Current Stock / የአሁኑ ክምችት',       this.totalReceived],
+      ['Total Withdrawn / ጠቅላላ የወጣ',      this.totalWithdrawn],
+      ['Current Stock Value / የክምችት ዋጋ',  `${this.currentStockValue.toFixed(2)} ${this.item.currency}`],
+      ['Total Transactions / ጠቅላላ ግብይቶች', this.totalTransactions],
+    ];
+    const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+    wsSummary['!cols'] = [{ wch: 36 }, { wch: 40 }];
+    XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+
+    // ── Sheet 2: Received Transactions ───────────────────────────────
     if (this.filteredTransactions.length > 0) {
-      csvContent.push('Received Transactions');
-      csvContent.push('Date,Action,Quantity,Received From,Voucher Number,Unit Price,Total Price,History,Details');
-      
-      this.filteredTransactions.forEach(t => {
-        const row = [
-          this.formatEthiopianDate(t.date),
-          t.action || '',
-          t.quantity || 0,
-          this.extractReceivedFrom(t.details),
-          t.voucherNumber || '',
-          `${t.unitPrice || 0} ${t.currency || 'ETB'}`,
-          this.formatPrice(t.unitPrice || 0, t.currency || 'ETB', t.quantity || 1),
-          (t.history || '').replace(/,/g, ';'),
-          (t.details || '').replace(/,/g, ';')
-        ];
-        csvContent.push(row.join(','));
-      });
-      csvContent.push('');
+      const headers = [
+        'Date / ቀን',
+        'Action / ተግባር',
+        'Quantity / ብዛት',
+        'Received From / ከማን',
+        'Voucher No. / ሰነድ ቁጥር',
+        'Unit Price / ነጠላ ዋጋ',
+        'Total Price / ጠቅላላ ዋጋ',
+        'History / ታሪክ',
+        'Details / ዝርዝሮች',
+      ];
+      const rows = this.filteredTransactions.map(t => [
+        this.formatEthiopianDate(t.date),
+        t.action || '',
+        t.quantity || 0,
+        this.extractReceivedFrom(t.details),
+        t.voucherNumber || '',
+        `${t.unitPrice || 0} ${t.currency || 'ETB'}`,
+        this.formatPrice(t.unitPrice || 0, t.currency || 'ETB', t.quantity || 1),
+        t.history || '',
+        t.details || '',
+      ]);
+      const wsReceived = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      wsReceived['!cols'] = headers.map(() => ({ wch: 24 }));
+      XLSX.utils.book_append_sheet(wb, wsReceived, 'Received');
     }
-    
-    // Add withdrawal transactions
-    if (this.filteredWithdrawals.length > 0) {
-      csvContent.push('Withdrawal Transactions');
-      csvContent.push('Date,Action,Quantity,Voucher Number,Details');
-      
-      this.filteredWithdrawals.forEach(t => {
-        const row = [
-          this.formatEthiopianDate(t.date),
-          t.action || '',
-          t.quantity || 0,
-          t.voucherNumber || '',
-          (t.details || '').replace(/,/g, ';')
-        ];
-        csvContent.push(row.join(','));
-      });
+
+    // ── Sheet 3: Withdrawal Transactions ─────────────────────────────
+    if (this.model22Withdrawals.length > 0) {
+      const headers = [
+        'Date / ቀን',
+        'Quantity / ብዛት',
+        'Voucher No. / ሰነድ ቁጥር',
+        'Recipient / ተቀባይ',
+        'Organization / ድርጅት',
+        'Serial Numbers / ተከታታይ ቁጥሮች',
+      ];
+      const rows = this.model22Withdrawals.map(e => [
+        this.formatEthiopianDate(e.withdrawal.ethiopianDate),
+        e.quantity,
+        e.withdrawal.voucherNumber || '',
+        e.withdrawal.recipientName || '',
+        e.withdrawal.recipientOrganization || '',
+        e.serialNumbers.join(', '),
+      ]);
+      const wsWithdrawals = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      wsWithdrawals['!cols'] = headers.map(() => ({ wch: 24 }));
+      XLSX.utils.book_append_sheet(wb, wsWithdrawals, 'Withdrawals');
     }
-    
-    // Create and download file
-    const blob = new Blob([csvContent.join('\n')], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `item_${this.item.itemId}_report_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+    // ── Sheet 4: Accessories ──────────────────────────────────────────
+    if (this.consolidatedAccessories.length > 0) {
+      const headers = [
+        'Name / ስም',
+        'Model / ሞዴል',
+        'Total Qty / ጠቅላላ ብዛት',
+        'Unit Price / ነጠላ ዋጋ',
+        'Currency / ምንዛሬ',
+        'Total Value / ጠቅላላ ዋጋ',
+      ];
+      const rows = this.consolidatedAccessories.map(a => [
+        a.name,
+        a.model,
+        a.totalQuantity,
+        a.unitPrice ?? 0,
+        a.currency,
+        `${((a.unitPrice ?? 0) * a.totalQuantity).toFixed(2)} ${a.currency}`,
+      ]);
+      const wsAcc = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      wsAcc['!cols'] = headers.map(() => ({ wch: 22 }));
+      XLSX.utils.book_append_sheet(wb, wsAcc, 'Accessories');
+    }
+
+    XLSX.writeFile(wb, `item_${this.item.itemId}_report_${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
   // Get transaction color class
@@ -1462,95 +1545,182 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
   }
 
   downloadAsPDF(): void {
-    this.closeSidebar();
+  this.closeSidebar();
 
-    if (!this.itemDetails || !this.itemDetails.nativeElement) {
-      console.error('Item details element not available for PDF generation');
-      this.errorMessage = 'Failed to generate PDF / PDF መፍጠር አልተሳካም';
-      return;
-    }
-
-    const element = this.itemDetails.nativeElement;
-
-    // Add print-mode class and hide buttons
-    document.body.classList.add('print-mode');
-    const buttonGroup = element.querySelector('.button-group');
-    const editButtons = element.querySelectorAll('.edit-buttons');
-    
-    if (buttonGroup) {
-      buttonGroup.classList.add('hide-for-pdf');
-    }
-    editButtons.forEach((btn: Element) => btn.classList.add('hide-for-pdf'));
-
-    setTimeout(() => {
-      html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        scrollX: 0,
-        scrollY: -window.scrollY,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-        logging: false,
-        imageTimeout: 0,
-        removeContainer: true,
-        onclone: (clonedDoc) => {
-          // Ensure all content is visible in the clone
-          const clonedElement = clonedDoc.querySelector('.item-details');
-          if (clonedElement) {
-            (clonedElement as HTMLElement).style.maxHeight = 'none';
-            (clonedElement as HTMLElement).style.overflow = 'visible';
-          }
-        }
-      }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 10;
-        const contentWidth = pageWidth - 2 * margin;
-        const contentHeight = pageHeight - 2 * margin;
-        
-        // Calculate image dimensions
-        const imgWidth = contentWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        // Calculate number of pages needed
-        const totalPages = Math.ceil(imgHeight / contentHeight);
-        
-        // Add pages with proper content splitting
-        for (let page = 0; page < totalPages; page++) {
-          if (page > 0) {
-            pdf.addPage();
-          }
-          
-          // Calculate position to avoid cutting content
-          const yOffset = -(page * contentHeight);
-          pdf.addImage(imgData, 'PNG', margin, yOffset + margin, imgWidth, imgHeight);
-        }
-
-        pdf.save(`item-details-${this.item?.itemId || 'unknown'}.pdf`);
-
-        // Clean up
-        document.body.classList.remove('print-mode');
-        if (buttonGroup) {
-          buttonGroup.classList.remove('hide-for-pdf');
-        }
-        editButtons.forEach((btn: Element) => btn.classList.remove('hide-for-pdf'));
-      }).catch(error => {
-        console.error('Error generating PDF:', error);
-        this.errorMessage = 'Failed to generate PDF / PDF መፍጠር አልተሳካም';
-
-        // Clean up on error
-        document.body.classList.remove('print-mode');
-        if (buttonGroup) {
-          buttonGroup.classList.remove('hide-for-pdf');
-        }
-        editButtons.forEach((btn: Element) => btn.classList.remove('hide-for-pdf'));
-      });
-    }, 500);
+  if (!this.itemDetails?.nativeElement) {
+    console.error('Item details element not available for PDF generation');
+    this.errorMessage = 'Failed to generate PDF / PDF መፍጠር አልተሳካም';
+    return;
   }
 
+  const element = this.itemDetails.nativeElement as HTMLElement;
+
+  // ── 1. Hide UI chrome ──────────────────────────────────────────────
+  document.body.classList.add('print-mode');
+  const buttonGroup = element.querySelector('.button-group');
+  const editButtons = element.querySelectorAll('.edit-buttons');
+  const paginationControls = element.querySelectorAll('.pagination');
+  const exportSection = element.querySelector('.export-section');
+
+  buttonGroup?.classList.add('hide-for-pdf');
+  editButtons.forEach((el: Element) => el.classList.add('hide-for-pdf'));
+  paginationControls.forEach((el: Element) => el.classList.add('hide-for-pdf'));
+  exportSection?.classList.add('hide-for-pdf');
+
+  const cleanup = () => {
+    document.body.classList.remove('print-mode');
+    buttonGroup?.classList.remove('hide-for-pdf');
+    editButtons.forEach((el: Element) => el.classList.remove('hide-for-pdf'));
+    paginationControls.forEach((el: Element) => el.classList.remove('hide-for-pdf'));
+    exportSection?.classList.remove('hide-for-pdf');
+  };
+
+  // ── 2. Let Angular re-paint after hiding UI chrome ─────────────────
+  setTimeout(() => {
+    html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: -window.scrollY,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight,
+      logging: false,
+      imageTimeout: 0,
+      removeContainer: true,
+      onclone: (clonedDoc: Document) => {
+        const cloned = clonedDoc.querySelector('.item-details') as HTMLElement | null;
+        if (cloned) {
+          cloned.style.maxHeight = 'none';
+          cloned.style.overflow = 'visible';
+        }
+      }
+    }).then((canvas: HTMLCanvasElement) => {
+
+      // ── 3. PDF page geometry ─────────────────────────────────────────
+      const pdf       = new jsPDF('p', 'mm', 'a4');
+      const pageW     = pdf.internal.pageSize.getWidth();    // 210 mm
+      const pageH     = pdf.internal.pageSize.getHeight();   // 297 mm
+      const margin    = 10;                                  // mm
+      const imgW      = pageW - margin * 2;
+      // How many canvas px fit in one content-height page?
+      // canvas.width covers (element.scrollWidth * scale) px → imgW mm
+      const pxPerMm   = canvas.width / imgW;
+      const pageContentPx = (pageH - margin * 2) * pxPerMm; // canvas px per page
+
+      const totalH    = canvas.height;                       // total canvas px
+
+      // ── 4. Collect "safe cut" Y positions from the live DOM ──────────
+      //    Query every element that should NOT be split across pages.
+      //    We record the bottom edge of each such element so we can
+      //    find the nearest safe gap ABOVE a naïve page boundary.
+      const elementRect = element.getBoundingClientRect();
+      const scrollTop   = window.scrollY || document.documentElement.scrollTop;
+      // Absolute top of our container in the document
+      const containerTop = elementRect.top + scrollTop;
+      const scaleRatio   = canvas.width / element.scrollWidth; // = html2canvas scale
+
+      // Selectors for things that must not be bisected
+      const noSplitSelectors = [
+        'tr',                 // every table row
+        '.form-section',      // each info/table card
+        '.summary-card',      // the 4 summary cards
+        '.modal-content',     // modal (unlikely but safe)
+        'h2.section-title',   // section headings
+        'h1.title',
+      ].join(',');
+
+      // Build a sorted list of safe-cut Y values (canvas px).
+      // A "safe cut" is the GAP between two consecutive block elements —
+      // i.e. we cut just BELOW the bottom of an element.
+      const safeYs: number[] = [0]; // page 0 always starts at 0
+
+      element.querySelectorAll(noSplitSelectors).forEach((el: Element) => {
+        const r = (el as HTMLElement).getBoundingClientRect();
+        // Position relative to the container, converted to canvas px
+        const topPx    = (r.top + scrollTop - containerTop) * scaleRatio;
+        const bottomPx = topPx + r.height * scaleRatio;
+        // Record both edges so we can cut either just above or just below
+        safeYs.push(topPx, bottomPx);
+      });
+
+      safeYs.push(totalH); // sentinel: end of document
+      safeYs.sort((a, b) => a - b);
+
+      // ── 5. Determine actual page cut points ───────────────────────────
+      //    Starting from Y=0, advance by pageContentPx, then walk
+      //    backwards through safeYs to find the nearest cut that
+      //    doesn't bisect any element.
+      const cuts: number[] = [0];
+      let cursor = 0;
+
+      while (cursor < totalH) {
+        const naiveCut = cursor + pageContentPx;
+        if (naiveCut >= totalH) break; // last page — no cut needed
+
+        // Find the largest safe Y that is ≤ naiveCut
+        // (walk backward through the sorted array)
+        let bestCut = cursor + 1; // fallback: advance at least 1 px
+        for (let i = safeYs.length - 1; i >= 0; i--) {
+          if (safeYs[i] <= naiveCut && safeYs[i] > cursor) {
+            bestCut = safeYs[i];
+            break;
+          }
+        }
+
+        // Safety valve: if no safe Y was found inside the page window
+        // (e.g. a single element taller than one page), just cut naively
+        if (bestCut <= cursor) {
+          bestCut = naiveCut;
+        }
+
+        cuts.push(bestCut);
+        cursor = bestCut;
+      }
+
+      cuts.push(totalH); // end sentinel
+
+      // ── 6. Render each slice onto its own PDF page ────────────────────
+      const imgW_canvas = canvas.width;
+
+      cuts.forEach((cutStart: number, idx: number) => {
+        if (idx === cuts.length - 1) return; // skip sentinel
+        const cutEnd   = cuts[idx + 1];
+        const sliceH   = cutEnd - cutStart;                // canvas px
+        const sliceMm  = sliceH / pxPerMm;                 // mm on page
+
+        // Create an off-screen canvas for this slice
+        const sliceCanvas  = document.createElement('canvas');
+        sliceCanvas.width  = imgW_canvas;
+        sliceCanvas.height = Math.ceil(sliceH);
+        const ctx = sliceCanvas.getContext('2d')!;
+        ctx.drawImage(
+          canvas,
+          0, cutStart,              // source x, y
+          imgW_canvas, sliceH,      // source w, h
+          0, 0,                     // dest x, y
+          imgW_canvas, sliceH       // dest w, h
+        );
+
+        if (idx > 0) pdf.addPage();
+        pdf.addImage(
+          sliceCanvas.toDataURL('image/png'),
+          'PNG',
+          margin, margin,           // x, y on PDF page
+          imgW,   sliceMm           // w, h in mm
+        );
+      });
+
+      pdf.save(`item-details-${this.item?.itemId || 'unknown'}.pdf`);
+      cleanup();
+
+    }).catch((error: Error) => {
+      console.error('Error generating PDF:', error);
+      this.errorMessage = 'Failed to generate PDF / PDF መፍጠር አልተሳካም';
+      cleanup();
+    });
+  }, 500);
+}
   private closeSidebar(): void {
     document.body.classList.remove('sidebar-open');
   }

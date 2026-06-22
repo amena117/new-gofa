@@ -13,6 +13,11 @@ export class AssignMaintenanceComponent implements OnInit {
   modelNumber: string = '';
   maintenanceType: string = '';
   requestedTo: string = '';
+  isSubmitting = false;
+
+  // Full request data for display
+  requestData: any = null;
+  isLoading = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -23,27 +28,45 @@ export class AssignMaintenanceComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.worksOrderNumber = params['worksOrderNumber'];
-      console.log('Works Order Number:', this.worksOrderNumber);
+      if (this.worksOrderNumber) {
+        this.fetchRequestData();
+      }
     });
   }
 
+  fetchRequestData(): void {
+    this.isLoading = true;
+    this.http.get<any>(`${environment.apiBaseUrl}/api/MaintenanceRequestRegister/by-worksorder/${this.worksOrderNumber}`)
+      .subscribe({
+        next: (data) => {
+          // by-worksorder returns minimal shape — fetch full record by id
+          this.http.get<any>(`${environment.apiBaseUrl}/api/MaintenanceRequestRegister/${data.id}`)
+            .subscribe({
+              next: (full) => {
+                this.requestData = full;
+                // Pre-fill model number if already set
+                if (full.model) this.modelNumber = full.model;
+                this.isLoading = false;
+              },
+              error: () => {
+                this.requestData = data;
+                this.isLoading = false;
+              }
+            });
+        },
+        error: () => { this.isLoading = false; }
+      });
+  }
+
   updateRequestedTo(): void {
-    switch (this.maintenanceType) {
-      case 'Office_machine':
-        this.requestedTo = 'Office_machine Maintenance';
-        break;
-      case 'POWER':
-        this.requestedTo = 'POWER Maintenance';
-        break;
-      case 'Vhf_radio':
-        this.requestedTo = 'Vhf_radio Maintenance';
-        break;
-        case 'HF_RADIO':
-        this.requestedTo = 'HF_RADIO Maintenance';
-        break;
-      default:
-        this.requestedTo = '';
-    }
+    const map: Record<string, string> = {
+      'Office_Machine': 'OFFICE_MACHINE Maintenance',
+      'Power': 'Power Maintenance',
+      'VHF_Radio': 'VHF_Radio Maintenance',
+      'HF_Radio': 'HF_Radio Maintenance',
+      'RADIO_MAINTENANCE': 'RADIO_MAINTENANCE Maintenance',
+    };
+    this.requestedTo = map[this.maintenanceType] || '';
   }
 
   onSubmit(): void {
@@ -51,32 +74,26 @@ export class AssignMaintenanceComponent implements OnInit {
       alert('Please fill in all fields.');
       return;
     }
+    if (this.isSubmitting) return;
+    this.isSubmitting = true;
 
     const updateData = {
       maintenanceType: this.maintenanceType,
       model: this.modelNumber,
       requestedTo: this.requestedTo,
-      status: 'On Maintaining', // Add this field
+      status: 'On Maintaining',
     };
 
-    console.log('Request Payload:', updateData);
-
-    // const apiUrl = `${environment.apiBaseUrl}api/MaintenanceRequestRegister/update/${this.worksOrderNumber}`;
-
-    const apiUrl = `${environment.apiBaseUrl}/api/MaintenanceRequestRegister/update/${this.worksOrderNumber}`;
-
-    console.log('API URL:', apiUrl);
-
-    this.http.put(apiUrl, updateData).subscribe(
-      (response) => {
-        console.log('Maintenance request updated successfully:', response);
-        this.router.navigate(['/maintenance/request-list']);
-      },
-      (error) => {
-        console.error('Error updating maintenance request:', error);
-        const errorMessage = error.error?.message || 'Unknown error';
-        alert(`Failed to update maintenance request: ${errorMessage}`);
-      }
-    );
+    this.http.put(`${environment.apiBaseUrl}/api/MaintenanceRequestRegister/update/${this.worksOrderNumber}`, updateData)
+      .subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.router.navigate(['/maintenance/request-list']);
+        },
+        error: (error) => {
+          this.isSubmitting = false;
+          alert(`Failed to update: ${error.error?.message || 'Unknown error'}`);
+        }
+      });
   }
 }

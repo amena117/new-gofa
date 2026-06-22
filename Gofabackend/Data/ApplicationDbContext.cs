@@ -53,6 +53,7 @@ namespace Gofabackend.Data
         public DbSet<ItemEditHistory> ItemEditHistories { get; set; }
         public DbSet<AccessorySerialNumber> AccessorySerialNumbers { get; set; }
         public DbSet<AccessorySubAccessory> AccessorySubAccessories { get; set; } // ✅ NEW
+        public DbSet<SparePartHandoverLog> SparePartHandoverLogs { get; set; }
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -176,6 +177,21 @@ namespace Gofabackend.Data
     .WithMany(i => i.WithdrawnAccessories)
     .HasForeignKey(a => a.Model22ItemId)
     .OnDelete(DeleteBehavior.Cascade);
+
+            // ✅ Configure Model22ItemSubAccessory primary key as IDENTITY
+            modelBuilder.Entity<Model22ItemSubAccessory>()
+                .HasKey(s => s.Model22ItemSubAccessoryId);
+            
+            modelBuilder.Entity<Model22ItemSubAccessory>()
+                .Property(s => s.Model22ItemSubAccessoryId)
+                .ValueGeneratedOnAdd(); // Ensure IDENTITY is set
+            
+            // Configure relationship: Model22ItemSubAccessory -> Model22ItemAccessory
+            modelBuilder.Entity<Model22ItemSubAccessory>()
+                .HasOne(s => s.Model22ItemAccessory)
+                .WithMany(a => a.WithdrawnSubAccessories)
+                .HasForeignKey(s => s.Model22ItemAccessoryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Model22ItemAccessory>()
                 .Property(e => e.WithdrawnSerialNumbers)
@@ -306,7 +322,11 @@ namespace Gofabackend.Data
             modelBuilder.Entity<IssuedItem>()
                 .Ignore(i => i.TotalPrice);
             modelBuilder.Entity<MaintenanceRequestRegister>()
-                .Ignore(nameof(MaintenanceRequestRegister.LetterRegistration));
+                .HasOne(r => r.LetterRegistration)
+                .WithMany()
+                .HasForeignKey(r => r.LetterId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<LetterRegistration>()
                 .Property(l => l.LetterId)
@@ -419,7 +439,7 @@ namespace Gofabackend.Data
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("Server=Josiah-Alex;Database=GofaDb;Integrated Security=true;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=WIN-HRMPGQA7MMN\\SQLExpress;Database=GofaDb;User ID=sa;Password=signal@2025;TrustServerCertificate=True;");
             return new ApplicationDbContext(optionsBuilder.Options);
         }
     }

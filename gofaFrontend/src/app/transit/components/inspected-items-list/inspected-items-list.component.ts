@@ -14,7 +14,8 @@ export class InspectedItemsListComponent implements OnInit {
 
   ngOnInit() {
     this.transitService.getInspectedItems().subscribe((items) => {
-      this.inspectedItems = items;
+      // Show newest first
+      this.inspectedItems = items.sort((a, b) => (b.model1Id || 0) - (a.model1Id || 0));
     });
   }
   receiveItem(itemId: number) {
