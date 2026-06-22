@@ -1,23 +1,41 @@
 <div class="content-container">
   <!-- Header -->
   <div class="page-header">
-    <h1>New Items From Transit / ከትራንዚት የተላኩ እቃዎች</h1>
+    <div class="header-content">
+      <h1 class="main-title">New Items from Transit / ከትራንዚት የተላኩ እቃዎች</h1>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="printDetails()" [disabled]="isLoading || !filteredItems.length">
+          <span class="icon-download">📥</span> Export PDF Report
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Filters -->
   <div class="filters-section">
-    <div class="filter-group">
-      <label>Search / ፈልግ</label>
-      <input type="text" class="filter-input" [(ngModel)]="searchQuery" (input)="onSearch()"
-        placeholder="Search by supplier, item type..." />
+    <div class="filter-item">
+      <label class="filter-label">Date Range / የቀን ክልል</label>
+      <select class="filter-select" [(ngModel)]="selectedRange" (change)="filterByRange()">
+        <option value="0">All Time / ሁሉም ጊዜ</option>
+        <option value="1week">Last Week / ያለፈው ሳምንት</option>
+        <option value="1month">Last Month / ያለፈው ወር</option>
+        <option value="3months">Last 3 Months / ያለፉት 3 ወሮች</option>
+        <option value="6months">Last 6 Months / ያለፉት 6 ወሮች</option>
+        <option value="9months">Last 9 Months / ያለፉት 9 ወሮች</option>
+        <option value="1year">Last Year / ያለፈው ዓመት</option>
+      </select>
     </div>
 
-    <div class="filter-group">
-      <label>Sort By / አስተካክል</label>
+    <div class="filter-item">
+      <label class="filter-label">Search / ፈልግ</label>
+      <input type="text" class="filter-input" [(ngModel)]="searchQuery" (input)="onSearch()"
+        placeholder="Search by supplier, item type, or serial..." />
+    </div>
+
+    <div class="filter-item">
+      <label class="filter-label">Sort By / አስተካክል</label>
       <select class="filter-select" [(ngModel)]="selectedSort" (change)="onSortChange($event)">
-        <option *ngFor="let option of sortOptions" [value]="option.value">
-          {{ option.viewValue }}
-        </option>
+        <option *ngFor="let option of sortOptions" [value]="option.value">{{option.viewValue}}</option>
       </select>
     </div>
   </div>
@@ -32,8 +50,8 @@
             <th>Received By</th>
             <th>Item Type / የእቃው አይነት</th>
             <th>Model</th>
-            <th>Quantity</th>
-            <th>Received</th>
+            <th>Quantity Ordered</th>
+            <th>Quantity Received</th>
             <th>Date Added</th>
             <th>Store Type</th>
             <th>Accessories</th>
@@ -47,25 +65,23 @@
             <!-- Main Item Row (only if this store has the main item) -->
             <tr *ngIf="item.storeType?.toLowerCase() === itemDetails.role?.toLowerCase()"
                 [class.accessory-only-row]="item.isAccessoryOnly">
-              <td>{{ item.supplier }}</td>
-              <td>{{ item.recivedByName }}</td>
+              <td>{{item.supplier}}</td>
+              <td>{{item.recivedByName}}</td>
               <td>
-                {{ item.itemType }}
+                {{item.itemType}}
                 <span *ngIf="item.isAccessoryOnly" class="accessory-only-badge">📎 Accessory Only</span>
                 <div *ngIf="item.isAccessoryOnly && item.parentItemDescription" class="parent-item-hint">
-                  Parent: {{ item.parentItemDescription }}
+                  Parent: {{item.parentItemDescription}}
                 </div>
               </td>
-              <td>{{ item.serialNumber }}</td>
-              <td>{{ item.ordered }}</td>
-              <td>{{ item.received }}</td>
-              <td>{{ item.date }}</td>
-              <td>{{ item.storeType }}</td>
+              <td>{{item.serialNumber}}</td>
+              <td>{{item.ordered}}</td>
+              <td>{{item.received}}</td>
+              <td>{{item.date}}</td>
+              <td>{{item.storeType}}</td>
               <td>
                 <ul class="item-list" *ngIf="(item.accessories ?? []).length > 0; else noAccessories">
-                  <li *ngFor="let accessory of item.accessories">
-                    {{ accessory.name }} (Qty: {{ accessory.quantity }})
-                  </li>
+                  <li *ngFor="let accessory of item.accessories">{{accessory.name}} (Qty: {{accessory.quantity}})</li>
                 </ul>
                 <ng-template #noAccessories>
                   <span class="no-data">—</span>
@@ -75,13 +91,13 @@
                 <!-- Show extra items for this store -->
                 <div *ngIf="getExtraItemsForCurrentStore(item).length > 0; else noExtras">
                   <div *ngFor="let extra of getExtraItemsForCurrentStore(item)" class="extra-item-inline">
-                    <span class="extra-name">{{ extra.name }}</span>
-                    <span class="extra-qty">(Qty: {{ extra.quantity }})</span>
+                    <span class="extra-name">{{extra.name}}</span>
+                    <span class="extra-qty">(Qty: {{extra.quantity}})</span>
                     <span class="status-badge status-mini" [ngClass]="{
                         'waiting': extra.extraStatus === 'Waiting For Stores',
                         'received': extra.extraStatus === 'Stores Recieved'
                       }">
-                      {{ extra.extraStatus }}
+                      {{extra.extraStatus}}
                     </span>
                     <button *ngIf="extra.extraStatus !== 'Stores Recieved'"
                       class="btn-mini btn-receive-mini" (click)="approveExtraItem(item, extra)">
@@ -98,7 +114,7 @@
                     'waiting': item.status === 'Waiting For Stores',
                     'received': item.status === 'Stores Recieved'
                   }">
-                  {{ item.status || 'Waiting For Stores' }}
+                  {{item.status || 'Waiting For Stores'}}
                 </span>
               </td>
               <td>
@@ -106,6 +122,9 @@
                   <button class="btn btn-view btn-sm" [routerLink]="['/transit/view-details', item.model1Id]"
                     title="View Details">
                     View
+                  </button>
+                  <button class="btn btn-download btn-sm" (click)="printSingleRecord(item)" title="Download PDF">
+                    📄 Download
                   </button>
                   <button *ngIf="item.status !== 'Stores Recieved'"
                     class="btn btn-receive btn-sm" (click)="approveItem(item)">
@@ -117,21 +136,21 @@
 
             <!-- Extra Items Only Row (for stores that DON'T have the main item) -->
             <tr *ngIf="item.storeType?.toLowerCase() !== itemDetails.role?.toLowerCase() && getExtraItemsForCurrentStore(item).length > 0">
-              <td>{{ item.supplier }}</td>
+              <td>{{item.supplier}}</td>
               <td colspan="7">
-                <span class="extra-only-label">Extra Items Only (Main item sent to {{ item.storeType }})</span>
+                <span class="extra-only-label">Extra Items Only (Main item sent to {{item.storeType}})</span>
               </td>
               <td>—</td>
               <td>
                 <!-- Show extra items for this store -->
                 <div *ngFor="let extra of getExtraItemsForCurrentStore(item)" class="extra-item-inline">
-                  <span class="extra-name">{{ extra.name }}</span>
-                  <span class="extra-qty">(Qty: {{ extra.quantity }})</span>
+                  <span class="extra-name">{{extra.name}}</span>
+                  <span class="extra-qty">(Qty: {{extra.quantity}})</span>
                   <span class="status-badge status-mini" [ngClass]="{
                       'waiting': extra.extraStatus === 'Waiting For Stores',
                       'received': extra.extraStatus === 'Stores Recieved'
                     }">
-                    {{ extra.extraStatus }}
+                    {{extra.extraStatus}}
                   </span>
                   <button *ngIf="extra.extraStatus !== 'Stores Recieved'"
                     class="btn-mini btn-receive-mini" (click)="approveExtraItem(item, extra)">
@@ -144,7 +163,7 @@
                     'waiting': getExtraItemsForCurrentStore(item)[0].extraStatus === 'Waiting For Stores',
                     'received': getExtraItemsForCurrentStore(item)[0].extraStatus === 'Stores Recieved'
                   }">
-                  {{ getExtraItemsForCurrentStore(item)[0].extraStatus }}
+                  {{getExtraItemsForCurrentStore(item)[0].extraStatus}}
                 </span>
               </td>
               <td>
@@ -152,6 +171,9 @@
                   <button class="btn btn-view btn-sm" [routerLink]="['/transit/view-details', item.model1Id]"
                     title="View Details">
                     View
+                  </button>
+                  <button class="btn btn-download btn-sm" (click)="printSingleRecord(item)" title="Download PDF">
+                    📄 Download
                   </button>
                 </div>
               </td>
@@ -166,11 +188,10 @@
       <div class="items-per-page">
         <label>Items per page:</label>
         <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+          <option [value]="50">50</option>
+          <option [value]="100" selected>100</option>
         </select>
       </div>
 
@@ -180,7 +201,7 @@
         </button>
         <button *ngFor="let page of getPageNumbers()" class="page-btn" [class.active]="page === currentPage"
           (click)="onPageChange(page)">
-          {{ page }}
+          {{page}}
         </button>
         <button class="page-btn" [disabled]="currentPage === totalPages" (click)="onPageChange(currentPage + 1)">
           Next

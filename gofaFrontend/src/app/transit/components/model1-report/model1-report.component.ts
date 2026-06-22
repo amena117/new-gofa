@@ -593,133 +593,191 @@ export class Model1ReportComponent implements OnInit {
     }
 
     try {
-      // Create PDF with proper table format
-      const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape orientation
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 15;
-      let yPosition = margin;
-
-      // Add title
-      pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
-      const title = 'Model 1 Transit Report';
-      const titleWidth = pdf.getTextWidth(title);
-      pdf.text(title, (pageWidth - titleWidth) / 2, yPosition);
-      yPosition += 10;
-
-      // Add subtitle with date range
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'normal');
-      const subtitle = `Report Period: ${this.selectedRange === '0' ? 'All Time' : this.getDateRangeText()}`;
-      const subtitleWidth = pdf.getTextWidth(subtitle);
-      pdf.text(subtitle, (pageWidth - subtitleWidth) / 2, yPosition);
-      yPosition += 8;
-
-      // Add summary statistics
-      pdf.setFontSize(10);
-      const stats = [
-        `Total Records: ${this.filteredRecords.length}`,
-        `Total Quantity: ${this.getTotalQuantity()}`,
-        `Total Value: ${this.getTotalValueFormatted()}`
-      ];
+      // Create a temporary HTML element to render for html2canvas
+      const tempElement = document.createElement('div');
+      tempElement.style.position = 'fixed';
+      tempElement.style.left = '-9999px';
+      tempElement.style.top = '0';
+      tempElement.style.width = '1400px';
+      tempElement.style.backgroundColor = 'white';
+      tempElement.style.padding = '30px';
+      tempElement.style.fontFamily = 'Arial, sans-serif';
       
-      const statsText = stats.join(' | ');
-      const statsWidth = pdf.getTextWidth(statsText);
-      pdf.text(statsText, (pageWidth - statsWidth) / 2, yPosition);
-      yPosition += 15;
-
-      // Define table columns
-      const columns = [
-        { header: 'Date', dataKey: 'date', width: 25 },
-        { header: 'Description', dataKey: 'description', width: 45 },
-        { header: 'Supplier', dataKey: 'supplier', width: 30 },
-        { header: 'Serial No', dataKey: 'serialNumber', width: 25 },
-        { header: 'Qty', dataKey: 'quantity', width: 15 },
-        { header: 'Value', dataKey: 'value', width: 25 },
-        { header: 'Status', dataKey: 'status', width: 25 },
-        { header: 'Store Type', dataKey: 'storeType', width: 20 }
-      ];
-
-      // Prepare table data
-      const tableData = this.filteredRecords.map(record => ({
-        date: this.displayDate(record.date),
-        description: this.truncateText(record.description || 'N/A', 30),
-        supplier: this.truncateText(record.supplier || 'N/A', 20),
-        serialNumber: record.serialNumber || 'N/A',
-        quantity: (record.received || 0).toString(),
-        value: this.formatPrice(this.getTotalPrice(record), record.currency),
-        status: this.getDisplayStatus(record.status),
-        storeType: record.storeType || 'N/A'
-      }));
-
-      // Try to use autoTable, fallback to manual table if it fails
-      try {
-        autoTable(pdf, {
-          startY: yPosition,
-          head: [columns.map(col => col.header)],
-          body: tableData.map(row => columns.map(col => row[col.dataKey as keyof typeof row])),
-          styles: {
-            fontSize: 8,
-            cellPadding: 2,
-            overflow: 'linebreak',
-            halign: 'left'
-          },
-          headStyles: {
-            fillColor: [3, 32, 60], // Main color #03203c
-            textColor: [255, 255, 255],
-            fontStyle: 'bold',
-            fontSize: 9
-          },
-          alternateRowStyles: {
-            fillColor: [248, 250, 252] // Light gray
-          },
-          columnStyles: {
-            0: { cellWidth: columns[0].width }, // Date
-            1: { cellWidth: columns[1].width }, // Description
-            2: { cellWidth: columns[2].width }, // Supplier
-            3: { cellWidth: columns[3].width }, // Serial
-            4: { cellWidth: columns[4].width, halign: 'center' }, // Quantity
-            5: { cellWidth: columns[5].width, halign: 'right' }, // Value
-            6: { cellWidth: columns[6].width, halign: 'center' }, // Status
-            7: { cellWidth: columns[7].width, halign: 'center' }  // Store Type
-          },
-          margin: { left: margin, right: margin },
-          didDrawPage: (data: any) => {
-            // Add generation date
-            pdf.setFontSize(8);
-            pdf.text(
-              `Generated: ${new Date().toLocaleDateString()}`,
-              margin,
-              pageHeight - 10
-            );
-          }
-        });
-
-        // Add page numbers after table generation
-        const totalPages = pdf.getNumberOfPages();
-        for (let i = 1; i <= totalPages; i++) {
-          pdf.setPage(i);
-          pdf.setFontSize(8);
-          pdf.text(
-            `Page ${i} of ${totalPages}`,
-            pageWidth - margin - 25,
-            pageHeight - 10
-          );
-        }
-      } catch (autoTableError) {
-        console.warn('AutoTable failed, using manual table generation:', autoTableError);
+      // Add header
+      tempElement.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #03203c; margin: 0 0 10px 0;">Model 1 Transit Report</h1>
+          <p style="color: #4a5568; margin: 0 0 15px 0;">Report Period: ${this.selectedRange === '0' ? 'All Time' : this.getDateRangeText()}</p>
+          <p style="color: #4a5568; margin: 0;">
+            Total Records: ${this.filteredRecords.length} | 
+            Total Quantity: ${this.getTotalQuantity()} | 
+            Total Value: ${this.getTotalValueFormatted()}
+          </p>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+          <thead>
+            <tr style="background-color: #03203c; color: white;">
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Date</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Description</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Supplier</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Serial No</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Qty</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Value</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Status</th>
+              <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Store Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${this.filteredRecords.map(record => `
+              <tr style="border-bottom: 1px solid #ddd;">
+                <td style="border: 1px solid #ddd; padding: 8px;">${this.displayDate(record.date)}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">${this.truncateText(record.description || 'N/A', 30)}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">${this.truncateText(record.supplier || 'N/A', 20)}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">${record.serialNumber || 'N/A'}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${record.received || 0}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${this.formatPrice(this.getTotalPrice(record), record.currency)}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${this.getDisplayStatus(record.status)}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${record.storeType || 'N/A'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      document.body.appendChild(tempElement);
+      
+      html2canvas(tempElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false
+      }).then((canvas: HTMLCanvasElement) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        // Fallback: Manual table generation
-        this.generateManualTable(pdf, columns, tableData, yPosition, margin, pageWidth, pageHeight);
-      }
-
-      // Save the PDF
-      const fileName = `Model1_Transit_Report_${this.selectedRange}_${new Date().toISOString().split('T')[0]}.pdf`;
-      pdf.save(fileName);
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        const fileName = `Model1_Transit_Report_${this.selectedRange}_${new Date().toISOString().split('T')[0]}.pdf`;
+        pdf.save(fileName);
+        
+        // Clean up
+        document.body.removeChild(tempElement);
+      }).catch((error: any) => {
+        console.error('html2canvas failed:', error);
+        this.errorMessage = 'Failed to generate PDF';
+        document.body.removeChild(tempElement);
+      });
       
     } catch (error) {
       console.error('PDF generation failed:', error);
+      this.errorMessage = 'Failed to generate PDF: ' + (error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+
+  printSingleRecord(record: Item): void {
+    try {
+      // Create a temporary HTML element to render for html2canvas
+      const tempElement = document.createElement('div');
+      tempElement.style.position = 'fixed';
+      tempElement.style.left = '-9999px';
+      tempElement.style.top = '0';
+      tempElement.style.width = '800px';
+      tempElement.style.backgroundColor = 'white';
+      tempElement.style.padding = '30px';
+      tempElement.style.fontFamily = 'Arial, sans-serif';
+      
+      // Add header and details
+      tempElement.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #03203c; margin: 0 0 10px 0;">Transit Record Details</h1>
+          <p style="color: #4a5568; margin: 0;">Record ID: ${record.model1Id}</p>
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+          <div><strong>Date:</strong> ${this.displayDate(record.date)}</div>
+          <div><strong>Supplier:</strong> ${record.supplier || 'N/A'}</div>
+          <div><strong>Serial Number:</strong> ${record.serialNumber || 'N/A'}</div>
+          <div><strong>Item Type:</strong> ${record.itemType || 'N/A'}</div>
+          <div><strong>Category:</strong> ${record.category || 'N/A'}</div>
+          <div><strong>Quantity Ordered:</strong> ${record.ordered || 0}</div>
+          <div><strong>Quantity Received:</strong> ${record.received || 0}</div>
+          <div><strong>Unit Price:</strong> ${this.formatPrice(this.getUnitPrice(record), record.currency)}</div>
+          <div><strong>Total Value:</strong> ${this.formatPrice(this.getTotalPrice(record), record.currency)}</div>
+          <div><strong>Status:</strong> ${this.getDisplayStatus(record.status)}</div>
+          <div><strong>Store Type:</strong> ${record.storeType || 'N/A'}</div>
+          <div><strong>Store:</strong> ${record.Store || 'N/A'}</div>
+          <div><strong>Location:</strong> ${record.location || 'N/A'}</div>
+          <div><strong>Invoice No:</strong> ${record.invoiceNo || 'N/A'}</div>
+          <div><strong>PR No:</strong> ${record.prno || 'N/A'}</div>
+          <div><strong>Checked By:</strong> ${record.checkedByName || 'N/A'}</div>
+          <div><strong>Received By:</strong> ${record.recivedByName || 'N/A'}</div>
+          <div><strong>Authorized By:</strong> ${record.authorizedByName || 'N/A'}</div>
+          <div><strong>Prepared By:</strong> ${record.preparedBy || 'N/A'}</div>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <strong>Remark:</strong> ${record.remark || 'N/A'}
+        </div>
+      `;
+      
+      // Add accessories
+      if (record.accessories && record.accessories.length > 0) {
+        let accessoriesHtml = `
+        <div style="margin-top: 20px;">
+          <h3 style="color: #03203c;">Accessories:</h3>
+          <ul>
+            ${record.accessories.map(acc => {
+              let accText = `${acc.name} - Qty: ${acc.quantity}`;
+              if (acc.unitPrice) {
+                accText += ` - Price: ${this.formatPrice(acc.unitPrice, acc.currency || record.currency)}`;
+              }
+              return `<li>${accText}</li>`;
+            }).join('')}
+          </ul>
+        </div>
+      `;
+        tempElement.innerHTML += accessoriesHtml;
+      }
+      
+      // Add extra items
+      if (record.extraItems && record.extraItems.length > 0) {
+        let extraItemsHtml = `
+        <div style="margin-top: 20px;">
+          <h3 style="color: #03203c;">Extra Items:</h3>
+          <ul>
+            ${record.extraItems.map(extra => `<li>${extra.name} - Qty: ${extra.quantity} - Store: ${extra.store} - Status: ${this.getDisplayStatus(extra.extraStatus)}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+        tempElement.innerHTML += extraItemsHtml;
+      }
+      
+      document.body.appendChild(tempElement);
+      
+      html2canvas(tempElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false
+      }).then((canvas: HTMLCanvasElement) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        const fileName = `Record_${record.model1Id}_${record.serialNumber || 'NO_SERIAL'}_${new Date().toISOString().split('T')[0]}.pdf`;
+        pdf.save(fileName);
+        
+        // Clean up
+        document.body.removeChild(tempElement);
+      }).catch((error: any) => {
+        console.error('html2canvas failed:', error);
+        document.body.removeChild(tempElement);
+      });
+      
+    } catch (error) {
+      console.error('PDF generation for single record failed:', error);
       this.errorMessage = 'Failed to generate PDF: ' + (error instanceof Error ? error.message : 'Unknown error');
     }
   }

@@ -12,10 +12,10 @@
           <i class="icon-grid"></i>
           {{ currentView === 'grid' ? 'List View' : 'Grid View' }}
         </button>
-        <!-- <button class="btn btn-primary" (click)="printDetails()" [disabled]="isLoading || !filteredRecords.length">
+        <button class="btn btn-primary" (click)="printDetails()" [disabled]="isLoading || !filteredRecords.length">
           <i class="icon-download"></i>
           Export PDF Report
-        </button> -->
+        </button>
       </div>
     </div>
   </div>
@@ -189,6 +189,9 @@
           <div class="card-footer">
             <button class="details-btn" (click)="toggleDetails(record.model1Id)">
               {{ isDetailsOpen(record.model1Id) ? 'Hide Details' : 'View Details' }}
+            </button>
+            <button class="download-btn" (click)="printSingleRecord(record)">
+              📄 Download PDF
             </button>
             <div class="status-indicator" [ngClass]="getStatusClass(record.status || '')">
               {{ getDisplayStatus(record.status) }}

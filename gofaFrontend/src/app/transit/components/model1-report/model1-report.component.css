@@ -516,6 +516,30 @@
   color: white;
 }
 
+.download-btn {
+  background: linear-gradient(135deg, #03203c 0%, #0a4b78 100%);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(3, 32, 60, 0.3);
+}
+
+.download-btn:active {
+  transform: translateY(0);
+}
+
 .status-indicator {
   padding: 6px 12px;
   border-radius: 20px;
