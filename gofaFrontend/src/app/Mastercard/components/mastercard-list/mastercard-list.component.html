@@ -1,159 +1,210 @@
-<div class="content-container">
+<div class="mc-page">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <button class="btn btn-primary btn-sm" [routerLink]="['/MasterCard/mastercard-form']">
-      + Add New Item
-    </button>
+  <!-- ── Top Action Bar ── -->
+  <div class="action-bar">
 
-    <!-- Location Filter Buttons -->
-    <div class="d-flex flex-wrap gap-2" role="group" aria-label="Location filters">
+    <!-- Add New Button -->
+    <a class="btn-add-item" [routerLink]="['/MasterCard/mastercard-form']">
+      <span class="icon">＋</span>
+      Add New Item
+    </a>
+
+    <!-- Location Filter Chips -->
+    <div class="filter-chips">
+      <span class="filter-label">Filter:</span>
+
       <button
         *ngFor="let loc of locationFilterOptions"
         type="button"
-        class="btn btn-sm"
-        [class.btn-outline-secondary]="!selectedLocationFilters.includes(loc)"
-        [class.btn-secondary]="selectedLocationFilters.includes(loc)"
-        [class.text-white]="selectedLocationFilters.includes(loc)"
+        class="chip"
+        [class.active]="selectedLocationFilters.includes(loc)"
         (click)="toggleLocationFilter(loc)"
-        attr.aria-pressed="{{ selectedLocationFilters.includes(loc) }}"
       >
+        <span class="chip-dot" *ngIf="selectedLocationFilters.includes(loc)"></span>
         {{ loc }}
       </button>
 
       <button
         *ngIf="selectedLocationFilters.length > 0"
         type="button"
-        class="btn btn-outline-danger btn-sm"
+        class="chip chip-clear"
         (click)="clearAllFilters()"
-        title="Remove all location filters"
+        title="Clear all filters"
       >
-        Clear Filters
+        ✕ Clear
       </button>
     </div>
   </div>
 
-  <!-- Main Card -->
-  <div class="card shadow-sm">
-    <div class="card-header text-white d-flex justify-content-between align-items-center flex-wrap gap-3"
-         style="background-color: #03203c;">
-      <h5 class="mb-0">Received Items</h5>
+  <!-- ── Main Card ── -->
+  <div class="mc-card">
 
-      <!-- Search Input -->
-      <input
-        type="text"
-        class="form-control form-control-sm"
-        style="width: 250px;"
-        [(ngModel)]="searchQuery"
-        (input)="onSearch()"
-        placeholder="Search by Model, Part Number, Description..."
-      />
+    <!-- Card Header -->
+    <div class="mc-header">
+      <div class="header-left">
+        <div class="header-icon">📋</div>
+        <div>
+          <p class="header-title">Master Card Registry</p>
+          <p class="header-subtitle">{{ filteredCards.length }} items found</p>
+        </div>
+      </div>
 
-      <!-- Sort Dropdown -->
-      <select
-        class="form-select form-select-sm"
-        style="width: auto;"
-        [(ngModel)]="selectedSort"
-        (change)="applyFilters()"
-      >
-        <option *ngFor="let option of sortOptions" [value]="option.value">
-          {{ option.viewValue }}
-        </option>
-      </select>
+      <div class="header-controls">
+        <!-- Search -->
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input
+            id="mc-search-input"
+            type="text"
+            class="search-input"
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()"
+            placeholder="Search model, part number, description…"
+          />
+        </div>
+
+        <!-- Sort -->
+        <select
+          id="mc-sort-select"
+          class="sort-select"
+          [(ngModel)]="selectedSort"
+          (change)="applyFilters()"
+        >
+          <option *ngFor="let option of sortOptions" [value]="option.value">
+            {{ option.viewValue }}
+          </option>
+        </select>
+      </div>
     </div>
 
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Model / የንብረቱ አይነት</th>
-              <th>Part Number / የእቃው መለያ ቁጥር</th>
-              <th>Description / የእቃው ስም</th>
-              <th>Unit of Measure / መለኪያ</th>
-              <th>Locations / ቦታዎች</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of paginatedCards">
-              <td [routerLink]="['/MasterCard/mastercard-details', item.id]" class=" pointer">
-                {{ item.model }}
-              </td>
-              <td [routerLink]="['/MasterCard/mastercard-details', item.id]" class="pointer">
-                {{ item.partNumber }}
-              </td>
-              <td [routerLink]="['/MasterCard/mastercard-details', item.id]" class="pointer">
-                {{ item.description }}
-              </td>
-              <td [routerLink]="['/MasterCard/mastercard-details', item.id]" class="pointer">
-                {{ item.unitOfMeasure }}
-              </td>
+    <!-- Table -->
+    <div class="mc-table-wrapper">
+      <table class="mc-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Model / የንብረቱ አይነት</th>
+            <th>Part Number / መለያ ቁጥር</th>
+            <th>Description / ስም</th>
+            <th>Unit / መለኪያ</th>
+            <th>Locations / ቦታ</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows -->
+          <tr *ngFor="let item of paginatedCards; let i = index">
 
-              <!-- Location Column - Now Fixed! -->
-              <td class="text-nowrap">
-                {{ getDisplayLocations(item) }}
-              </td>
+            <!-- Row Number -->
+            <td class="clickable" [routerLink]="['/MasterCard/mastercard-details', item.id]">
+              <span style="color: rgba(255,255,255,0.25); font-size:0.75rem;">
+                {{ (currentPage - 1) * itemsPerPage + i + 1 }}
+              </span>
+            </td>
 
-              <td class="text-center">
-                <div class="btn-group" role="group">
-                  <button class="btn btn-success btn-sm"
-                          [routerLink]="['/MasterCard/master-card-received', item.id]"
-                          title="Receive Item">
-                    ገቢ
-                  </button>
+            <!-- Model -->
+            <td class="clickable" [routerLink]="['/MasterCard/mastercard-details', item.id]">
+              <span class="model-badge">{{ item.model || '—' }}</span>
+            </td>
 
-                  <button class="btn btn-warning btn-sm text-white"
-                          [routerLink]="['/MasterCard/master-card-issued', item.id]"
-                          title="Issue Item">
-                    ወጪ
-                  </button>
+            <!-- Part Number -->
+            <td class="clickable" [routerLink]="['/MasterCard/mastercard-details', item.id]">
+              <span class="part-number">{{ item.partNumber || '—' }}</span>
+            </td>
 
-                  <button class="btn btn-sm text-white"
-                          style="background-color: #03203c;"
-                          [routerLink]="['/MasterCard/master-card-details', item.id]"
-                          title="View Details">
-                    View Details
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <!-- Description -->
+            <td class="clickable" [routerLink]="['/MasterCard/mastercard-details', item.id]"
+                style="max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
+                [title]="item.description">
+              {{ item.description || '—' }}
+            </td>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-between align-items-center p-3 bg-light">
-          <div></div>
+            <!-- Unit of Measure -->
+            <td class="clickable" [routerLink]="['/MasterCard/mastercard-details', item.id]">
+              {{ item.unitOfMeasure || '—' }}
+            </td>
 
-          <nav aria-label="Page navigation">
-            <ul class="pagination mb-0">
-              <li class="page-item" [class.disabled]="currentPage === 1">
-                <a class="page-link" (click)="onPageChange(currentPage - 1)">«</a>
-              </li>
-              <li *ngFor="let page of getPageNumbers()"
-                  class="page-item"
-                  [class.active]="page === currentPage">
-                <a class="page-link" (click)="onPageChange(page)">{{ page }}</a>
-              </li>
-              <li class="page-item" [class.disabled]="currentPage === totalPages">
-                <a class="page-link" (click)="onPageChange(currentPage + 1)">»</a>
-              </li>
-            </ul>
-          </nav>
+            <!-- Locations -->
+            <td>
+              <ng-container *ngIf="getDisplayLocations(item) !== 'N/A'; else noLoc">
+                <span
+                  *ngFor="let l of getDisplayLocations(item).split(', ')"
+                  class="location-tag"
+                >{{ l }}</span>
+              </ng-container>
+              <ng-template #noLoc>
+                <span class="location-na">N/A</span>
+              </ng-template>
+            </td>
 
-          <div class="d-flex align-items-center gap-2">
-            <label class="mb-0">Items per page:</label>
-            <select class="form-select form-select-sm" style="width: auto;"
-                    [(ngModel)]="itemsPerPage"
-                    (change)="onItemsPerPageChange()">
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </div>
-        </div>
+            <!-- Actions -->
+            <td>
+              <div class="action-btns">
+                <a class="btn-receive"
+                   [routerLink]="['/MasterCard/master-card-received', item.id]"
+                   title="Receive Item">
+                  ↓ ገቢ
+                </a>
+                <a class="btn-issue"
+                   [routerLink]="['/MasterCard/master-card-issued', item.id]"
+                   title="Issue Item">
+                  ↑ ወጪ
+                </a>
+                <a class="btn-view"
+                   [routerLink]="['/MasterCard/master-card-details', item.id]"
+                   title="View Details">
+                  View →
+                </a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="paginatedCards.length === 0">
+        <div class="empty-icon">📭</div>
+        <p class="empty-text">No items found. Try adjusting your search or filters.</p>
+      </div>
+    </div>
+
+    <!-- Footer / Pagination -->
+    <div class="mc-footer">
+      <!-- Results info -->
+      <div class="results-info">
+        Showing <span>{{ (currentPage - 1) * itemsPerPage + 1 }}–{{ Math.min(currentPage * itemsPerPage, filteredCards.length) }}</span>
+        of <span>{{ filteredCards.length }}</span> items
+      </div>
+
+      <!-- Page buttons -->
+      <div class="pagination">
+        <button class="page-btn" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">‹</button>
+        <button
+          *ngFor="let page of getPageNumbers()"
+          class="page-btn"
+          [class.active]="page === currentPage"
+          (click)="onPageChange(page)"
+        >{{ page }}</button>
+        <button class="page-btn" (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages">›</button>
+      </div>
+
+      <!-- Items per page -->
+      <div class="per-page-group">
+        <span class="per-page-label">Rows:</span>
+        <select
+          id="mc-per-page-select"
+          class="per-page-select"
+          [(ngModel)]="itemsPerPage"
+          (change)="onItemsPerPageChange()"
+        >
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
       </div>
     </div>
   </div>
+
 </div>

@@ -10,7 +10,8 @@ namespace Gofabackend.Models
     {
         public int Id { get; set; }
         public int MasterCardItemId { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.UtcNow;
+        public DateTime TransactionDate { get; set; } = DateTime.UtcNow;
         public string VoucherNo { get; set; }
         public int Received { get; set; }
         public string Organization { get; set; }

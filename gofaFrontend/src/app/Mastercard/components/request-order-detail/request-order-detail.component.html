@@ -1,287 +1,295 @@
-<div class="container py-4" #content>
-  <h2 class="mb-4 text-center border-bottom pb-2">በሃገር መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን ዋና መምሪያ 
-    <br /> 
-    የመጠየቂያ፣ ማዘዣና የተመላሽ ሰነድ  
-  </h2>
+<div class="mc-page" #content>
 
-  <div class="d-flex justify-content-between mb-3 export-hideable" [ngClass]="{'export-hidden': isExporting}">
-    <button *ngIf="!isEditing" class="btn btn-primary" (click)="goBack()"> Back / ተመለስ</button>
-    <button 
-      *ngIf="!isEditing && canUserEdit()" 
-      class="btn btn-warning" 
-      (click)="startEdit()">
-       Edit / አርትዕ
-    </button>
+  <!-- Title -->
+  <div style="text-align:center;margin-bottom:20px;">
+    <p style="font-size:0.85rem;color:#64748b;font-weight:600;margin:0;line-height:1.7;">
+      በሃገር መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን ዋና መምሪያ<br/>
+      <span style="font-size:1.05rem;color:#1e293b;font-weight:700;">የመጠየቂያ፣ ማዘዣና የተመላሽ ሰነድ</span>
+    </p>
+  </div>
 
-    <div *ngIf="isEditing">
-      <button class="btn btn-success me-2" (click)="saveChanges()" [disabled]="isSaving">
-        <span *ngIf="isSaving" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        {{ isSaving ? 'Saving...' : ' Save / አስቀምጥ' }}
+  <!-- Controls -->
+  <div class="top-controls export-hideable" [ngClass]="{'export-hidden': isExporting}">
+    <button *ngIf="!isEditing" class="btn-back" (click)="goBack()">← Back / ተመለስ</button>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button *ngIf="!isEditing && canUserEdit()" class="btn-hdr-edit"
+              style="background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;border-radius:10px;padding:9px 20px;font-size:0.92rem;font-weight:600;cursor:pointer;"
+              (click)="startEdit()">✎ Edit / አርትዕ</button>
+      <div *ngIf="isEditing" style="display:flex;gap:8px;">
+        <button class="btn-submit" style="min-width:auto;padding:9px 20px;" (click)="saveChanges()" [disabled]="isSaving">
+          {{ isSaving ? '⏳ Saving…' : '✓ Save / አስቀምጥ' }}
+        </button>
+        <button class="btn-cancel" style="min-width:auto;padding:9px 18px;" (click)="cancelEdit()" [disabled]="isSaving">
+          Cancel / ሰርዝ
+        </button>
+      </div>
+      <button class="btn-pdf" (click)="exportToPDF()" [disabled]="isExporting || isEditing">
+        {{ isExporting ? '⏳ Exporting…' : '📄 Export PDF' }}
       </button>
-      <button class="btn btn-secondary" (click)="cancelEdit()" [disabled]="isSaving"> Cancel / ሰርዝ</button>
-    </div>
-
-    <button class="btn btn-success" (click)="exportToPDF()" [disabled]="isExporting || isEditing">
-      {{ isExporting ? 'Exporting...' : 'Export to PDF' }}
-    </button>
-  </div>
-
-  <div *ngIf="!requestOrder && !isEditing" class="text-center my-5">
-    <div class="spinner-border" style="background-color: #03203c;" role="status">
-      <span class="visually-hidden">Loading... / በመጫን ላይ...</span>
     </div>
   </div>
 
-  <div *ngIf="requestOrder" class="card shadow-lg border-0">
-    <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #03203c;">
-      <h4 class="mb-0">Order ID / የትዕዛዝ መለያ: {{ requestOrder.id }}</h4>
-      <span *ngIf="isEditing" class="badge bg-warning text-dark">Editing</span>
+  <!-- Loading -->
+  <div *ngIf="!requestOrder && !isEditing" style="text-align:center;padding:60px;">
+    <div style="font-size:2rem;margin-bottom:12px;">⏳</div>
+    <p style="color:#64748b;">Loading… / በመጫን ላይ...</p>
+  </div>
+
+  <div *ngIf="requestOrder">
+
+    <!-- ── Order Details Card ── -->
+    <div class="prem-card">
+      <div class="prem-card-header navy">
+        <div class="header-left">
+          <div class="header-icon">📋</div>
+          <div>
+            <p class="header-title">Order ID: {{ requestOrder.id }}</p>
+            <p class="header-subtitle">Order Details / የትዕዛዝ ዝርዝሮች</p>
+          </div>
+        </div>
+        <span *ngIf="isEditing"
+              style="background:#fde68a;color:#92400e;font-size:0.8rem;font-weight:700;padding:4px 12px;border-radius:6px;">
+          ✎ Editing
+        </span>
+      </div>
+
+      <div class="prem-card-body">
+        <div class="info-grid">
+
+          <div class="info-item">
+            <span class="info-label">Date / ቀን</span>
+            <span class="info-value" *ngIf="!isEditing" [innerHTML]="formatDate(requestOrder.date) || 'N/A'"></span>
+            <input *ngIf="isEditing" type="date" [(ngModel)]="editableRequestOrder!.date" readonly class="form-control" />
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Issue Voucher No / የወጪ ቫውቸር</span>
+            <span class="info-value" *ngIf="!isEditing" style="font-family:monospace;color:#0077b6;">{{ requestOrder.issueVoucherNo || 'N/A' }}</span>
+            <input *ngIf="isEditing" type="text" [(ngModel)]="editableRequestOrder!.issueVoucherNo" class="form-control" />
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Voucher No / ቫውቸር ቁጥር</span>
+            <span class="info-value" *ngIf="!isEditing" style="font-family:monospace;color:#0077b6;">{{ requestOrder.voucherNo || 'N/A' }}</span>
+            <input *ngIf="isEditing" type="text" [(ngModel)]="editableRequestOrder!.voucherNo" class="form-control" />
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Requesting Unit / የጠየቀው ክፍል</span>
+            <span class="info-value" *ngIf="!isEditing">{{ requestOrder.requestingUnit || 'N/A' }}</span>
+            <input *ngIf="isEditing" type="text" [(ngModel)]="editableRequestOrder!.requestingUnit" class="form-control" />
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Issuing Store / የሰጠው መጋዘን</span>
+            <span class="info-value" *ngIf="!isEditing">
+              <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:3px 10px;border-radius:5px;font-size:0.88rem;">
+                {{ requestOrder.issuingStore || 'N/A' }}
+              </span>
+            </span>
+            <select *ngIf="isEditing" [(ngModel)]="editableRequestOrder!.issuingStore" class="form-control">
+              <option value="">-- Select Store --</option>
+              <option *ngFor="let store of issuingStores" [value]="store">{{ store }}</option>
+            </select>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Make and Model / አይነት እና ሞዴል</span>
+            <span class="info-value" *ngIf="!isEditing">{{ requestOrder.makeAndModel || 'N/A' }}</span>
+            <input *ngIf="isEditing" type="text" [(ngModel)]="editableRequestOrder!.makeAndModel" class="form-control" />
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Category / መደብ</span>
+            <span class="info-value" *ngIf="!isEditing">{{ requestOrder.category || 'N/A' }}</span>
+            <input *ngIf="isEditing" type="text" [(ngModel)]="editableRequestOrder!.category" class="form-control" />
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Currency / ምንዛሪ</span>
+            <span class="info-value" *ngIf="!isEditing">{{ requestOrder.currency ?? 'N/A' }}</span>
+            <select *ngIf="isEditing" [(ngModel)]="editableRequestOrder!.currency" class="form-control">
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="ETB">ETB</option>
+              <option value="GBP">GBP</option>
+            </select>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Transaction Type</span>
+            <span class="info-value">{{ requestOrder.isIssue ? 'Issue / ወጪ' : 'Other / ሌላ' }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Serviceability / ሁኔታ</span>
+            <span class="info-value">
+              {{ requestOrder.isServiceable ? 'Serviceable / አገልግሎት የሚሰጥ' : 'Unserviceable / አገልግሎት የማይሰጥ' }}
+            </span>
+          </div>
+
+        </div>
+      </div>
     </div>
 
-    <div class="card-body">
-      <h5 class="border-bottom pb-2 mb-3">Order Details / የትዕዛዝ ዝርዝሮች</h5>
-      <dl class="row">
-        <dt class="col-sm-4 fw-bold">Date / ቀን</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">
-          <span class="date-display" [innerHTML]="formatDate(requestOrder.date) || 'N/A / የለም'" ></span>
-        </dd>
-        <dd class="col-sm-8" *ngIf="isEditing">
-          <input type="date" class="form-control" [(ngModel)]="editableRequestOrder!.date" readonly>
-        </dd>
+    <!-- ── Issued Items Card ── -->
+    <div class="prem-card">
+      <div class="prem-card-header orange">
+        <div class="header-left">
+          <div class="header-icon">↑</div>
+          <div>
+            <p class="header-title">Issued Items / የተሰጡ እቃዎች</p>
+            <p class="header-subtitle">{{ requestOrder.issuedItems?.length || 0 }} item(s)</p>
+          </div>
+        </div>
+      </div>
 
-        <dt class="col-sm-4 fw-bold">Issue Voucher No / የወጪ ቫውቸር ቁጥር</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.issueVoucherNo || 'N/A / የለም' }}</dd>
-        <dd class="col-sm-8" *ngIf="isEditing">
-          <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.issueVoucherNo">
-        </dd>
-
-        <dt class="col-sm-4 fw-bold">Voucher No / ቫውቸር ቁጥር</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.voucherNo || 'N/A / የለም' }}</dd>
-        <dd class="col-sm-8" *ngIf="isEditing">
-          <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.voucherNo">
-        </dd>
-
-        <dt class="col-sm-4 fw-bold">Requesting Unit / የጠየቀው ክፍል</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.requestingUnit || 'N/A / የለም' }}</dd>
-        <dd class="col-sm-8" *ngIf="isEditing">
-          <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.requestingUnit">
-        </dd>
-
-        <dt class="col-sm-4 fw-bold">Issuing Store / የሰጠው መጋዘን</dt>
-<dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.issuingStore || 'N/A / የለም' }}</dd>
-<dd class="col-sm-8" *ngIf="isEditing">
-  <select class="form-control" [(ngModel)]="editableRequestOrder!.issuingStore" required>
-    <option value="">-- Select Store --</option>
-    <option *ngFor="let store of issuingStores" [value]="store">
-      {{ store }}
-    </option>
-  </select>
-</dd>
-
-        <dt class="col-sm-4 fw-bold">Make and Model / የእቃው አይነት እና ሞዴል</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.makeAndModel || 'N/A / የለም' }}</dd>
-        <dd class="col-sm-8" *ngIf="isEditing">
-          <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.makeAndModel">
-        </dd>
-
-        <dt class="col-sm-4 fw-bold">Category / መደብ</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.category || 'N/A / የለም' }}</dd>
-        <dd class="col-sm-8" *ngIf="isEditing">
-          <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.category">
-        </dd>
-
-        <dt class="col-sm-4 fw-bold">Currency / ምንዛሪ</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.currency ?? 'N/A / የለም' }}</dd>
-        <dd class="col-sm-8" *ngIf="isEditing">
-          <select class="form-control" [(ngModel)]="editableRequestOrder!.currency">
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="ETB">ETB</option>
-            <option value="GBP">GBP</option>
-            
-          </select>
-        </dd>
-
-        <dt class="col-sm-4 fw-bold">Transaction Type / የግብይት አይነት</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">{{ requestOrder.isIssue ? 'Issue / ወጪ' : 'Other / ሌላ' }}</dd>
-        <!-- <dd class="col-sm-8" *ngIf="isEditing">
-          <select class="form-control" [(ngModel)]="editableRequestOrder!.isIssue">
-            <option [value]="true">Issue / ወጪ</option>
-            <option [value]="false">Other / ሌላ</option>
-          </select>
-        </dd> -->
-
-        <dt class="col-sm-4 fw-bold">Status / ሁኔታ</dt>
-        <dd class="col-sm-8" *ngIf="!isEditing">
-          {{ requestOrder.isServiceable ?  'Serviceable / አገልግሎት የሚሰጥ' : 'Unserviceable / አገልግሎት የማይሰጥ' }}
-        </dd>
-        <!-- <dd class="col-sm-8" *ngIf="isEditing">
-          <select class="form-control" [(ngModel)]="editableRequestOrder!.isServiceable">
-            <option [value]="true">Serviceable / አገልግሎት የሚሰጥ</option>
-            <option [value]="false">Unserviceable / አገልግሎት የማይሰጥ</option>
-          </select>
-        </dd> -->
-      </dl>
-
-      <h5 class="mt-4 mb-3 border-bottom pb-2">Issued Items / የተሰጡ እቃዎች</h5>
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle text-center"
-               *ngIf="requestOrder.issuedItems && requestOrder.issuedItems.length > 0">
-          <thead class="table-primary">
-            <tr>
-              <th>Item No / የእቃ ቁጥር</th>
-              <th>Stock Number / የገበያ ቁጥር</th>
-              <th>Description / መግለጫ</th>
-              <th>Issued / ወጪ</th>
-              <th>Unit Price / ያንዱ ዋጋ</th>
-              <th>Total Price / ጠቅላላ ዋጋ</th>
-              <!-- <th *ngIf="isEditing">Actions / ተግባራት</th> -->
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of (isEditing ? editableRequestOrder!.issuedItems : requestOrder.issuedItems); let i = index">
-              <td>
-                <span *ngIf="!isEditing">{{ item.itemNo }}</span>
-                <input *ngIf="isEditing" type="text" class="form-control" [(ngModel)]="editableRequestOrder!.issuedItems[i].itemNo" placeholder="Enter Item No" required>
-              </td>
-              <td>
-                <span *ngIf="!isEditing">{{ item.stockNumber }}</span>
-                <input *ngIf="isEditing" type="text" class="form-control" [(ngModel)]="editableRequestOrder!.issuedItems[i].stockNumber" placeholder="Enter Stock Number" required>
-              </td>
-              <td>
-                <span *ngIf="!isEditing">{{ item.description }}</span>
-                <input *ngIf="isEditing" type="text" class="form-control" [(ngModel)]="editableRequestOrder!.issuedItems[i].description" placeholder="Enter Description" required>
-              </td>
-              <td>
-                <span *ngIf="!isEditing">{{ item.issued }}</span>
-                <input *ngIf="isEditing" type="number" min="0" class="form-control" [(ngModel)]="editableRequestOrder!.issuedItems[i].issued" placeholder="Enter Quantity" required>
-              </td>
-              <td>
-                <span *ngIf="!isEditing">{{ getCurrencySymbol() }}{{ item.unitPrice.toFixed(2) }}</span>
-                <input *ngIf="isEditing" type="number" min="0" step="0.01" class="form-control" [(ngModel)]="editableRequestOrder!.issuedItems[i].unitPrice" placeholder="Enter Unit Price" required>
-              </td>
-              <td>
-                <span>{{ getCurrencySymbol() }}{{ (isEditing ? calculateTotalPriceInEditMode(i) : item.totalPrice).toFixed(2) }}</span>
-              </td>
-              <!-- <td *ngIf="isEditing">
-                <button class="btn btn-danger btn-sm" (click)="removeIssuedItem(i)" title="Remove Item">
-                  <i class="bi bi-trash"></i> Delete
-                </button>
-              </td> -->
-            </tr>
-          </tbody>
-        </table>
-        <p class="text-muted" *ngIf="requestOrder.issuedItems.length === 0 && !isEditing">
-          No issued items found. / የተሰጡ እቃዎች አልተገኙም።
+      <div class="prem-card-body">
+        <div class="data-table-wrapper"
+             *ngIf="requestOrder.issuedItems && requestOrder.issuedItems.length > 0">
+          <table class="data-table" style="text-align:center;">
+            <thead>
+              <tr>
+                <th>Item No / የእቃ ቁጥር</th>
+                <th>Stock No / የገበያ ቁጥር</th>
+                <th>Description / መግለጫ</th>
+                <th>Issued / ወጪ</th>
+                <th>Unit Price / ያንዱ ዋጋ</th>
+                <th>Total Price / ጠቅላላ ዋጋ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of (isEditing ? editableRequestOrder!.issuedItems : requestOrder.issuedItems); let i = index">
+                <td>
+                  <span *ngIf="!isEditing">{{ item.itemNo }}</span>
+                  <input *ngIf="isEditing" type="text" [(ngModel)]="editableRequestOrder!.issuedItems[i].itemNo" required />
+                </td>
+                <td>
+                  <span *ngIf="!isEditing">{{ item.stockNumber }}</span>
+                  <input *ngIf="isEditing" type="text" [(ngModel)]="editableRequestOrder!.issuedItems[i].stockNumber" required />
+                </td>
+                <td>
+                  <span *ngIf="!isEditing">{{ item.description }}</span>
+                  <input *ngIf="isEditing" type="text" [(ngModel)]="editableRequestOrder!.issuedItems[i].description" required />
+                </td>
+                <td>
+                  <span *ngIf="!isEditing"><strong>{{ item.issued }}</strong></span>
+                  <input *ngIf="isEditing" type="number" min="0" [(ngModel)]="editableRequestOrder!.issuedItems[i].issued" required />
+                </td>
+                <td>
+                  <span *ngIf="!isEditing">{{ getCurrencySymbol() }}{{ item.unitPrice.toFixed(2) }}</span>
+                  <input *ngIf="isEditing" type="number" min="0" step="0.01" [(ngModel)]="editableRequestOrder!.issuedItems[i].unitPrice" required />
+                </td>
+                <td>
+                  <strong>{{ getCurrencySymbol() }}{{ (isEditing ? calculateTotalPriceInEditMode(i) : item.totalPrice).toFixed(2) }}</strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="empty-row" *ngIf="!requestOrder.issuedItems || requestOrder.issuedItems.length === 0">
+          📭 No issued items found. / የተሰጡ እቃዎች አልተገኙም።
         </p>
-        <div *ngIf="isEditing" class="mt-3">
-          <button class="btn btn-outline-primary" (click)="addNewIssuedItem()">
-            <i class="bi bi-plus-circle"></i> Add New Item / አዲስ እቃ ጨምር
-          </button>
-        </div>
-      </div>
-
-      <h5 class="mt-5 mb-3 border-bottom pb-2">Persons Involved / ተሳታፊ ሰዎች</h5>
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="border rounded p-3 h-100">
-            <h6 class="text-primary">Prepared By / ያዘጋጀው</h6>
-            <div *ngIf="!isEditing">
-              <p><strong>ስም / Name:</strong> {{ requestOrder.preparedBy?.name ?? 'N/A / የለም' }}</p>
-              <p><strong>ማእረግ / Title:</strong> {{ requestOrder.preparedBy?.title ?? 'N/A / የለም' }}</p>
-              <p><strong>ስራ ሃላፊነት / Job Responsibility:</strong> {{ requestOrder.preparedBy?.jobResponsibility ?? 'N/A / የለም' }}</p>
-              <p><strong> ቀን / Date:</strong> <span class="date-display" [innerHTML]="formatDate(requestOrder.preparedBy?.date)"></span></p>
-            </div>
-            <div *ngIf="isEditing">
-              <div class="mb-2">
-                <label class="form-label"><strong>ስም / Name:</strong></label>
-                <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.preparedBy!.name"  readonly>
-              </div>
-              <div class="mb-2">
-                <label class="form-label"><strong>ማእረግ / Title:</strong></label>
-                <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.preparedBy!.title">
-              </div>
-              <div class="mb-2">
-                <label class="form-label"><strong>ስራ ሃላፊነት / Job Responsibility:</strong></label>
-                <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.preparedBy!.jobResponsibility">
-              </div>
-              <div class="mb-2">
-                <label class="form-label"><strong>ቀን / Date:</strong></label>
-                <input type="date" class="form-control" [(ngModel)]="editableRequestOrder!.preparedBy!.date" readonly>
-              </div>
-            </div>
-            <p class="mt-4"><strong>ፊርማ / Signature:</strong> _________________________</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="border rounded p-3 h-100">
-            <h6 class="text-success">Verified By / ያረጋገጠው</h6>
-            <div *ngIf="!isEditing">
-              <p><strong>ስም / Name:</strong> {{ requestOrder.verifiedBy?.name ?? 'N/A / የለም' }}</p>
-              <p><strong>ማእረግ / Title:</strong> {{ requestOrder.verifiedBy?.title ?? 'N/A / የለም' }}</p>
-              <p><strong>ስራ ሃላፊነት / Job Responsibility:</strong> {{ requestOrder.verifiedBy?.jobResponsibility ?? 'N/A / የለም' }}</p>
-              <p><strong>ቀን / Date:</strong> <span class="date-display" [innerHTML]="formatDate(requestOrder.verifiedBy?.date)"></span></p>
-            </div>
-            <div *ngIf="isEditing">
-              <div class="mb-2">
-                <label class="form-label"><strong>ስም / Name:</strong></label>
-                <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.verifiedBy!.name">
-              </div>
-              <div class="mb-2">
-                <label class="form-label"><strong>ማእረግ / Title:</strong></label>
-                <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.verifiedBy!.title">
-              </div>
-              <div class="mb-2">
-                <label class="form-label"><strong>ስራ ሃላፊነት / Job Responsibility:</strong></label>
-                <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.verifiedBy!.jobResponsibility">
-              </div>
-              <div class="mb-2">
-                <label class="form-label"><strong>ቀን / Date:</strong></label>
-                <input type="date" class="form-control" [(ngModel)]="editableRequestOrder!.verifiedBy!.date">
-              </div>
-            </div>
-            <p class="mt-4"><strong>ፊርማ / Signature:</strong> _________________________</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="border rounded p-3 h-100">
-            <h6 class="text-danger">Approved By / ያፀደቀው</h6>
-            <div *ngIf="!isEditing">
-              <p><strong> ስም / Name:</strong> {{ requestOrder.approvedBy?.name ?? 'N/A / የለም' }}</p>
-              <p><strong>ማእረግ / Title:</strong> {{ requestOrder.approvedBy?.title ?? 'N/A / የለም' }}</p>
-              <p><strong>ስራ ሃላፊነት / Job Responsibility:</strong> {{ requestOrder.approvedBy?.jobResponsibility ?? 'N/A / የለም' }}</p>
-              <p><strong>ቀን / Date:</strong> <span class="date-display" [innerHTML]="formatDate(requestOrder.approvedBy?.date)"></span></p>
-            </div>
-            <div *ngIf="isEditing">
-              <div class="mb-2">
-                <label class="form-label"><strong>ስም / Name:</strong></label>
-                <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.approvedBy!.name">
-              </div>
-              <div class="mb-2">
-                <label class="form-label"><strong>ማእረግ / Title:</strong></label>
-                <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.approvedBy!.title">
-              </div>
-              <div class="mb-2">
-                <label class="form-label"><strong>ስራ ሃላፊነት / Job Responsibility:</strong></label>
-                <input type="text" class="form-control" [(ngModel)]="editableRequestOrder!.approvedBy!.jobResponsibility">
-              </div>
-              <div class="mb-2">
-                <label class="form-label"><strong>ቀን / Date:</strong></label>
-                <input type="date" class="form-control" [(ngModel)]="editableRequestOrder!.approvedBy!.date">
-              </div>
-            </div>
-            <p class="mt-4"><strong>ፊርማ / Signature:</strong> _________________________</p>
-          </div>
+        <div *ngIf="isEditing" style="margin-top:14px;">
+          <button class="btn-add-acc" (click)="addNewIssuedItem()">+ Add New Item / አዲስ እቃ ጨምር</button>
         </div>
       </div>
     </div>
 
-    <div class="card-footer text-end export-hideable" [ngClass]="{'export-hidden': isExporting}">
-      <button *ngIf="!isEditing" class="btn btn-outline-primary" [routerLink]="['/MasterCard/request-order-list']">
-         Back to List / ወደ ዝርዝር ተመለስ
-      </button>
+    <!-- ── Persons Involved Card ── -->
+    <div class="prem-card">
+      <div class="prem-card-header" style="background:linear-gradient(135deg,#1e3a5f,#2d5987);display:flex;align-items:center;gap:12px;padding:18px 24px;border-bottom:1px solid #e2e8f0;">
+        <div class="header-icon">👤</div>
+        <p class="header-title">Persons Involved / ተሳታፊ ሰዎች</p>
+      </div>
+      <div class="prem-card-body">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+
+          <!-- Prepared By -->
+          <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:14px;padding:18px;">
+            <p style="font-size:0.82rem;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 14px;">✍ Prepared By / ያዘጋጀው</p>
+            <div *ngIf="!isEditing">
+              <div class="info-item" style="margin-bottom:10px;">
+                <span class="info-label">Name / ስም</span>
+                <span class="info-value">{{ requestOrder.preparedBy?.name ?? 'N/A' }}</span>
+              </div>
+              <div class="info-item" style="margin-bottom:10px;">
+                <span class="info-label">Title / ማእረግ</span>
+                <span class="info-value">{{ requestOrder.preparedBy?.title ?? 'N/A' }}</span>
+              </div>
+              <div class="info-item" style="margin-bottom:10px;">
+                <span class="info-label">Job Responsibility / ሃላፊነት</span>
+                <span class="info-value">{{ requestOrder.preparedBy?.jobResponsibility ?? 'N/A' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Date / ቀን</span>
+                <span class="info-value" [innerHTML]="formatDate(requestOrder.preparedBy?.date)"></span>
+              </div>
+            </div>
+            <div *ngIf="isEditing" style="display:flex;flex-direction:column;gap:10px;">
+              <div class="field-group"><label>Name</label><input [(ngModel)]="editableRequestOrder!.preparedBy!.name" readonly /></div>
+              <div class="field-group"><label>Title</label><input [(ngModel)]="editableRequestOrder!.preparedBy!.title" /></div>
+              <div class="field-group"><label>Job Responsibility</label><input [(ngModel)]="editableRequestOrder!.preparedBy!.jobResponsibility" /></div>
+              <div class="field-group"><label>Date</label><input type="date" [(ngModel)]="editableRequestOrder!.preparedBy!.date" readonly /></div>
+            </div>
+            <p style="margin-top:16px;font-size:0.88rem;color:#475569;border-top:1px dashed #bbf7d0;padding-top:12px;">
+              <strong>ፊርማ / Signature:</strong> _________________________
+            </p>
+          </div>
+
+          <!-- Verified By -->
+          <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:14px;padding:18px;">
+            <p style="font-size:0.82rem;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 14px;">✓ Verified By / ያረጋገጠው</p>
+            <div *ngIf="!isEditing">
+              <div class="info-item" style="margin-bottom:10px;"><span class="info-label">Name</span><span class="info-value">{{ requestOrder.verifiedBy?.name ?? 'N/A' }}</span></div>
+              <div class="info-item" style="margin-bottom:10px;"><span class="info-label">Title</span><span class="info-value">{{ requestOrder.verifiedBy?.title ?? 'N/A' }}</span></div>
+              <div class="info-item" style="margin-bottom:10px;"><span class="info-label">Job Responsibility</span><span class="info-value">{{ requestOrder.verifiedBy?.jobResponsibility ?? 'N/A' }}</span></div>
+              <div class="info-item"><span class="info-label">Date</span><span class="info-value" [innerHTML]="formatDate(requestOrder.verifiedBy?.date)"></span></div>
+            </div>
+            <div *ngIf="isEditing" style="display:flex;flex-direction:column;gap:10px;">
+              <div class="field-group"><label>Name</label><input [(ngModel)]="editableRequestOrder!.verifiedBy!.name" /></div>
+              <div class="field-group"><label>Title</label><input [(ngModel)]="editableRequestOrder!.verifiedBy!.title" /></div>
+              <div class="field-group"><label>Job Responsibility</label><input [(ngModel)]="editableRequestOrder!.verifiedBy!.jobResponsibility" /></div>
+              <div class="field-group"><label>Date</label><input type="date" [(ngModel)]="editableRequestOrder!.verifiedBy!.date" /></div>
+            </div>
+            <p style="margin-top:16px;font-size:0.88rem;color:#475569;border-top:1px dashed #bfdbfe;padding-top:12px;">
+              <strong>ፊርማ / Signature:</strong> _________________________
+            </p>
+          </div>
+
+          <!-- Approved By -->
+          <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:14px;padding:18px;">
+            <p style="font-size:0.82rem;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 14px;">✅ Approved By / ያፀደቀው</p>
+            <div *ngIf="!isEditing">
+              <div class="info-item" style="margin-bottom:10px;"><span class="info-label">Name</span><span class="info-value">{{ requestOrder.approvedBy?.name ?? 'N/A' }}</span></div>
+              <div class="info-item" style="margin-bottom:10px;"><span class="info-label">Title</span><span class="info-value">{{ requestOrder.approvedBy?.title ?? 'N/A' }}</span></div>
+              <div class="info-item" style="margin-bottom:10px;"><span class="info-label">Job Responsibility</span><span class="info-value">{{ requestOrder.approvedBy?.jobResponsibility ?? 'N/A' }}</span></div>
+              <div class="info-item"><span class="info-label">Date</span><span class="info-value" [innerHTML]="formatDate(requestOrder.approvedBy?.date)"></span></div>
+            </div>
+            <div *ngIf="isEditing" style="display:flex;flex-direction:column;gap:10px;">
+              <div class="field-group"><label>Name</label><input [(ngModel)]="editableRequestOrder!.approvedBy!.name" /></div>
+              <div class="field-group"><label>Title</label><input [(ngModel)]="editableRequestOrder!.approvedBy!.title" /></div>
+              <div class="field-group"><label>Job Responsibility</label><input [(ngModel)]="editableRequestOrder!.approvedBy!.jobResponsibility" /></div>
+              <div class="field-group"><label>Date</label><input type="date" [(ngModel)]="editableRequestOrder!.approvedBy!.date" /></div>
+            </div>
+            <p style="margin-top:16px;font-size:0.88rem;color:#475569;border-top:1px dashed #fed7aa;padding-top:12px;">
+              <strong>ፊርማ / Signature:</strong> _________________________
+            </p>
+          </div>
+
+        </div>
+      </div>
     </div>
-  </div>
+
+    <!-- Footer Back Button -->
+    <div class="export-hideable" [ngClass]="{'export-hidden': isExporting}"
+         style="text-align:right;margin-top:4px;">
+      <a *ngIf="!isEditing" class="btn-cancel"
+         style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;"
+         [routerLink]="['/MasterCard/request-order-list']">
+        ← Back to List / ወደ ዝርዝር ተመለስ
+      </a>
+    </div>
+
+  </div><!-- end *ngIf="requestOrder" -->
 </div>

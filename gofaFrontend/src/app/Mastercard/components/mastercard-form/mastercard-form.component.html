@@ -1,88 +1,130 @@
-<div class="content-container">
-  <button class="btn btn-secondary" routerLink="/MasterCard/mastercard-list">
-    Back to List
-  </button>
-  <form [formGroup]="masterCardForm" (ngSubmit)="onSubmit()" class="container mt-4">
-    <div class="card shadow-sm">
-      <div class="card-header  text-white" style="background-color: #03203c;">
-        <h4 class="card-title text-center mb-3">Master Card Form</h4>
+<div class="mc-page">
+
+  <!-- Back -->
+  <a class="btn-back" routerLink="/MasterCard/mastercard-list">← Back to List / ወደ ዝርዝር ተመለስ</a>
+
+  <form [formGroup]="masterCardForm" (ngSubmit)="onSubmit()">
+    <div class="prem-card">
+
+      <!-- Header -->
+      <div class="prem-card-header navy">
+        <div class="header-left">
+          <div class="header-icon">📝</div>
+          <div>
+            <p class="header-title">New Master Card / አዲስ ማስተር ካርድ</p>
+            <p class="header-subtitle">Register a new item in the master card registry</p>
+          </div>
+        </div>
       </div>
 
-      <div class="card-body p-4">
-        <div class="row g-3">
-          <div class="col-md-6">
+      <div class="prem-card-body">
 
-            <div class="form-group">
-              <label>Card No/ካርድ ቁጥር</label>
-              <input formControlName="cardNo" class="form-control" />
-              <div *ngIf="masterCardForm.get('cardNo')?.invalid && masterCardForm.get('cardNo')?.touched" class="text-danger">
-                Card No is required.
-              </div>
+        <!-- Fields grid -->
+        <div class="form-grid">
+
+          <!-- Left Column -->
+          <div style="display:flex; flex-direction:column; gap:18px;">
+
+            <!-- Card No -->
+            <div class="field-group">
+              <label for="cardNo">Card No / ካርድ ቁጥር</label>
+              <input id="cardNo" formControlName="cardNo" placeholder="e.g. MC-001" />
+              <span class="field-error"
+                    *ngIf="masterCardForm.get('cardNo')?.invalid && masterCardForm.get('cardNo')?.touched">
+                ⚠ Card No is required.
+              </span>
             </div>
-            <div class="form-group">
-              <label>Model/ የንብረቱ አይነት</label>
-              <input formControlName="model" class="form-control" />
-              <div *ngIf="masterCardForm.get('model')?.invalid && masterCardForm.get('model')?.touched" class="text-danger">
-                Model is required.
-              </div>
+
+            <!-- Model -->
+            <div class="field-group">
+              <label for="model">Model / የንብረቱ አይነት</label>
+              <input id="model" formControlName="model" placeholder="e.g. VHF Radio" />
+              <span class="field-error"
+                    *ngIf="masterCardForm.get('model')?.invalid && masterCardForm.get('model')?.touched">
+                ⚠ Model is required.
+              </span>
             </div>
-            <div class="form-group">
-              <label>Part Number/የእቃው መለያ ቁጥር</label>
-              <input formControlName="partNumber" class="form-control" />
-              <div *ngIf="masterCardForm.get('partNumber')?.invalid && masterCardForm.get('partNumber')?.touched" class="text-danger">
-                Part Number is required.
-              </div>
+
+            <!-- Part Number -->
+            <div class="field-group">
+              <label for="partNumber">Part Number / የእቃው መለያ ቁጥር</label>
+              <input id="partNumber" formControlName="partNumber" placeholder="e.g. SP-1001" />
+              <span class="field-error"
+                    *ngIf="masterCardForm.get('partNumber')?.invalid && masterCardForm.get('partNumber')?.touched">
+                ⚠ Part Number is required.
+              </span>
             </div>
-            <div class="form-group">
-              <label>Description/የእቃው ስም</label>
-              <input formControlName="description" class="form-control" />
-              <div *ngIf="masterCardForm.get('description')?.invalid && masterCardForm.get('description')?.touched" class="text-danger">
-                Description is required.
-              </div>
+
+            <!-- Description -->
+            <div class="field-group">
+              <label for="description">Description / የእቃው ስም</label>
+              <input id="description" formControlName="description" placeholder="Item description…" />
+              <span class="field-error"
+                    *ngIf="masterCardForm.get('description')?.invalid && masterCardForm.get('description')?.touched">
+                ⚠ Description is required.
+              </span>
             </div>
+
           </div>
 
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Unit of Measurement (U/M) / መለኪያ</label>
-              <input formControlName="unitOfMeasure" class="form-control" />
-              <div *ngIf="masterCardForm.get('unitOfMeasure')?.invalid && masterCardForm.get('unitOfMeasure')?.touched" class="text-danger">
-                Unit of Measurement is required.
-              </div>
+          <!-- Right Column -->
+          <div style="display:flex; flex-direction:column; gap:18px;">
+
+            <!-- Unit of Measure -->
+            <div class="field-group">
+              <label for="unitOfMeasure">Unit of Measure (U/M) / መለኪያ</label>
+              <input id="unitOfMeasure" formControlName="unitOfMeasure" placeholder="e.g. Pcs, Box, Set" />
+              <span class="field-error"
+                    *ngIf="masterCardForm.get('unitOfMeasure')?.invalid && masterCardForm.get('unitOfMeasure')?.touched">
+                ⚠ Unit of Measurement is required.
+              </span>
             </div>
-            <div class="form-group">
-              <label>In.CH.Ab/ ተለዋዋጭ መ/ቁጥር</label>
-              <input formControlName="inCHAb" class="form-control" />
-              <div *ngIf="masterCardForm.get('inCHAb')?.invalid && masterCardForm.get('inCHAb')?.touched" class="text-danger">
-                In.CH.Ab is required.
-              </div>
+
+            <!-- In.CH.Ab -->
+            <div class="field-group">
+              <label for="inCHAb">In.CH.Ab / ተለዋዋጭ መ/ቁጥር</label>
+              <input id="inCHAb" formControlName="inCHAb" placeholder="e.g. 001" />
+              <span class="field-error"
+                    *ngIf="masterCardForm.get('inCHAb')?.invalid && masterCardForm.get('inCHAb')?.touched">
+                ⚠ In.CH.Ab is required.
+              </span>
             </div>
-            <div class="form-group">
-              <label>Unit Pack/ የዞታ</label>
-              <input formControlName="unitPack" class="form-control" />
-              <div *ngIf="masterCardForm.get('unitPack')?.invalid && masterCardForm.get('unitPack')?.touched" class="text-danger">
-                Unit Pack is required.
-              </div>
+
+            <!-- Unit Pack -->
+            <div class="field-group">
+              <label for="unitPack">Unit Pack / የዞታ</label>
+              <input id="unitPack" formControlName="unitPack" placeholder="e.g. 1, 12, 24" />
+              <span class="field-error"
+                    *ngIf="masterCardForm.get('unitPack')?.invalid && masterCardForm.get('unitPack')?.touched">
+                ⚠ Unit Pack is required.
+              </span>
             </div>
-            <div class="form-group">
-              <label>Status/ የንብረቱ ሁኔታ</label>
-              <input formControlName="status" class="form-control" />
-              <div *ngIf="masterCardForm.get('status')?.invalid && masterCardForm.get('status')?.touched" class="text-danger">
-                Status is required.
-              </div>
+
+            <!-- Status -->
+            <div class="field-group">
+              <label for="status">Status / የንብረቱ ሁኔታ</label>
+              <input id="status" formControlName="status" placeholder="e.g. Active, Inactive" />
+              <span class="field-error"
+                    *ngIf="masterCardForm.get('status')?.invalid && masterCardForm.get('status')?.touched">
+                ⚠ Status is required.
+              </span>
             </div>
+
           </div>
         </div>
 
-        <div class="text-center mt-3">
-          <button type="submit" class="btn btn-success px-4 me-2" [disabled]="masterCardForm.invalid">
-            Submit / አስገባ
+        <!-- Form actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn-submit" [disabled]="masterCardForm.invalid">
+            ✓ Submit / አስገባ
           </button>
-          <button class="btn btn-secondary" routerLink="/MasterCard/mastercard-list">
-            Back to List / ወደ ዝርዝር ተመለስ
-          </button>
+          <a class="btn-cancel" routerLink="/MasterCard/mastercard-list">
+            Cancel / ተመለስ
+          </a>
         </div>
+
       </div>
     </div>
   </form>
+
 </div>

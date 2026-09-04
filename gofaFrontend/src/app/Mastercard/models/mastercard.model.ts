@@ -52,6 +52,7 @@ export interface MasterCardItemReceived {
   id: number;
   masterCardItemId: number;
   date: Date;           // Maps to DateTime in C#
+  transactionDate?: Date | string; // User-selectable transaction date
   voucherNo: string;
   received: number;     // Maps to int in C#
   organization: string;
@@ -72,6 +73,7 @@ export interface MasterCardItemIssued {
   id: number;
   masterCardItemId: number;
   date: Date;           // Maps to DateTime in C#
+  transactionDate?: Date | string; // User-selectable transaction date
   voucherNo: string;
   issued: number;       // Maps to int Issued in C#
   organization: string;
@@ -166,6 +168,7 @@ export interface MasterCardItemReport {
         id: number;
         masterCardItemId: number;
         date: string;
+        transactionDate?: string;
         voucherNo: string;
         received: number;
         organization: string;
@@ -182,6 +185,7 @@ export interface MasterCardItemReport {
         id: number;
         masterCardItemId: number;
         date: string;
+        transactionDate?: string;
         voucherNo: string;
         issued: number;
         organization: string;

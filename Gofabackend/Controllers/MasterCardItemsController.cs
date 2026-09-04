@@ -212,6 +212,11 @@ namespace Gofabackend.Controllers
                     }
 
                     received.MasterCardItemId = itemId;
+                    received.Date = DateTime.UtcNow;
+                    if (received.TransactionDate == default)
+                    {
+                        received.TransactionDate = DateTime.UtcNow;
+                    }
 
                     if (received.HasAccessories && received.ReceivedAccessories == null)
                     {
@@ -278,6 +283,7 @@ namespace Gofabackend.Controllers
                         received.Id,
                         received.MasterCardItemId,
                         received.Date,
+                        received.TransactionDate,
                         received.VoucherNo,
                         received.Received,
                         received.Organization,
@@ -332,6 +338,11 @@ namespace Gofabackend.Controllers
             }
 
             issued.MasterCardItemId = itemId;
+            issued.Date = DateTime.UtcNow;
+            if (issued.TransactionDate == default)
+            {
+                issued.TransactionDate = DateTime.UtcNow;
+            }
 
             if (issued.HasAccessories && issued.IssuedAccessories == null) // Fixed: Changed Accessories to IssuedAccessories
             {
@@ -393,6 +404,7 @@ namespace Gofabackend.Controllers
                     issued.Id,
                     issued.MasterCardItemId,
                     issued.Date,
+                    issued.TransactionDate,
                     issued.VoucherNo,
                     issued.Issued,
                     issued.Organization,
@@ -491,7 +503,10 @@ namespace Gofabackend.Controllers
 
             Console.WriteLine($"Received record: {JsonSerializer.Serialize(receivedRecord)}");
 
-            existingRecord.Date = receivedRecord.Date;
+            if (receivedRecord.TransactionDate != default)
+            {
+                existingRecord.TransactionDate = receivedRecord.TransactionDate;
+            }
             existingRecord.VoucherNo = receivedRecord.VoucherNo;
             existingRecord.Received = receivedRecord.Received;
             existingRecord.Organization = receivedRecord.Organization;
@@ -610,7 +625,10 @@ namespace Gofabackend.Controllers
 
             Console.WriteLine($"Issued record: {JsonSerializer.Serialize(issuedRecord)}");
 
-            existingRecord.Date = issuedRecord.Date;
+            if (issuedRecord.TransactionDate != default)
+            {
+                existingRecord.TransactionDate = issuedRecord.TransactionDate;
+            }
             existingRecord.VoucherNo = issuedRecord.VoucherNo;
             existingRecord.Issued = issuedRecord.Issued;
             existingRecord.Organization = issuedRecord.Organization;
@@ -859,17 +877,17 @@ public async Task<IActionResult> GetMasterCardItemsReport([FromQuery] MasterCard
         // Process each item and filter child records
         var filteredItems = items.Select(item =>
         {
-            // Filter ReceivedRecords
+            // Filter ReceivedRecords by TransactionDate (or Date)
             IQueryable<MasterCardItemReceived> filteredReceived = item.ReceivedRecords.AsQueryable();
 
             if (startDate.HasValue)
             {
-                filteredReceived = filteredReceived.Where(r => r.Date.Date >= startDate.Value.Date);
+                filteredReceived = filteredReceived.Where(r => (r.TransactionDate != default ? r.TransactionDate.Date : r.Date.Date) >= startDate.Value.Date);
             }
 
             if (endDate.HasValue)
             {
-                filteredReceived = filteredReceived.Where(r => r.Date.Date <= endDate.Value.Date);
+                filteredReceived = filteredReceived.Where(r => (r.TransactionDate != default ? r.TransactionDate.Date : r.Date.Date) <= endDate.Value.Date);
             }
 
             if (!string.IsNullOrWhiteSpace(filter.Organization))
@@ -884,17 +902,17 @@ public async Task<IActionResult> GetMasterCardItemsReport([FromQuery] MasterCard
                     r.Location != null && r.Location.Contains(filter.Location, StringComparison.OrdinalIgnoreCase));
             }
 
-            // Filter IssuedRecords
+            // Filter IssuedRecords by TransactionDate (or Date)
             IQueryable<MasterCardItemIssued> filteredIssued = item.IssuedRecords.AsQueryable();
 
             if (startDate.HasValue)
             {
-                filteredIssued = filteredIssued.Where(ir => ir.Date.Date >= startDate.Value.Date);
+                filteredIssued = filteredIssued.Where(ir => (ir.TransactionDate != default ? ir.TransactionDate.Date : ir.Date.Date) >= startDate.Value.Date);
             }
 
             if (endDate.HasValue)
             {
-                filteredIssued = filteredIssued.Where(ir => ir.Date.Date <= endDate.Value.Date);
+                filteredIssued = filteredIssued.Where(ir => (ir.TransactionDate != default ? ir.TransactionDate.Date : ir.Date.Date) <= endDate.Value.Date);
             }
 
             if (!string.IsNullOrWhiteSpace(filter.Organization))
@@ -932,6 +950,7 @@ public async Task<IActionResult> GetMasterCardItemsReport([FromQuery] MasterCard
                     r.Id,
                     r.MasterCardItemId,
                     r.Date,
+                    r.TransactionDate,
                     r.VoucherNo,
                     r.Received,
                     r.Organization,
@@ -957,6 +976,7 @@ public async Task<IActionResult> GetMasterCardItemsReport([FromQuery] MasterCard
                     ir.Id,
                     ir.MasterCardItemId,
                     ir.Date,
+                    ir.TransactionDate,
                     ir.VoucherNo,
                     ir.Issued,
                     ir.Organization,

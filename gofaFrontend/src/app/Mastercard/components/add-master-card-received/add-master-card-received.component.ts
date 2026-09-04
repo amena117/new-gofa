@@ -28,6 +28,7 @@ export class AddMasterCardReceivedComponent implements OnInit {
   newLocationName = '';
   organizationModalError: string | null = null;
   locationModalError: string | null = null;
+  transactionDateInput: string = new Date().toISOString().substring(0, 10);
 
   currencyOptions = [
     { code: 'USD', label: 'US Dollar ($)' },
@@ -154,6 +155,7 @@ export class AddMasterCardReceivedComponent implements OnInit {
       id: 0,
       masterCardItemId: this.itemId || 0,
       date: new Date(),  // Still uses Gregorian Date for form/backend
+      transactionDate: this.transactionDateInput ? new Date(this.transactionDateInput) : new Date(),
       voucherNo: '',
       received: 0,
       organization: '',
@@ -378,6 +380,7 @@ availableStores = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
       id: this.receivedItem.id,
       masterCardItemId: this.itemId || 0,
       date: this.receivedItem.date,
+      transactionDate: this.transactionDateInput ? new Date(this.transactionDateInput) : new Date(),
       voucherNo: this.receivedItem.voucherNo,
       received: this.receivedItem.received,
       organization: this.receivedItem.organization,

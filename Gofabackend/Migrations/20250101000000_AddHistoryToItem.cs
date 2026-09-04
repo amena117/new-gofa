@@ -10,12 +10,14 @@ namespace Gofabackend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "History",
-                table: "Items",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.Sql(@"
+                IF NOT EXISTS (
+                    SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_NAME = 'Items' AND COLUMN_NAME = 'History'
+                )
+                BEGIN
+                    ALTER TABLE [Items] ADD [History] nvarchar(max) NOT NULL DEFAULT '';
+                END");
         }
 
         /// <inheritdoc />

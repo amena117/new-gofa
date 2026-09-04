@@ -10,6 +10,9 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class MastercardListComponent implements OnInit {
 
+  // Expose Math for template usage
+  Math = Math;
+
   masterCards: MasterCardItem[] = [];
   filteredCards: MasterCardItem[] = [];
   paginatedCards: MasterCardItem[] = [];

@@ -1,156 +1,243 @@
+<div class="mc-page">
 
-<div class="container mt-4">
-  <h2>Request Orders Report / የጥያቄ ትዕዛዝ ሪፖርት</h2>
+  <!-- Page Header -->
+  <div style="margin-bottom:24px;">
+    <h1 style="font-size:1.5rem;font-weight:700;color:#1e293b;margin:0;">
+      📊 Request Orders Report / የጥያቄ ትዕዛዝ ሪፖርት
+    </h1>
+    <p style="color:#64748b;font-size:0.9rem;margin:4px 0 0;">
+      Filtered details for all request orders
+    </p>
+  </div>
 
-  <!-- Filter Form -->
-  <div class="card filter-card">
-    <div class="card-header">
-      <h4><span class="icon-placeholder">≡</span> Report Filters / ሪፖርት ማጣሪያ</h4>
-    </div>
-    <div class="card-body">
-      <form [formGroup]="formGroup" (ngSubmit)="loadReport()">
-        <div class="row">
-          <div class="col-md-3 mb-3">
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start;">
+
+    <!-- ── Filters Sidebar ── -->
+    <div class="prem-card" style="position:sticky;top:20px;">
+      <div class="prem-card-header navy" style="padding:14px 18px;">
+        <div class="header-left">
+          <div class="header-icon" style="width:30px;height:30px;font-size:0.9rem;">≡</div>
+          <p class="header-title" style="font-size:0.9rem;">Filters / ማጣሪያዎች</p>
+        </div>
+      </div>
+      <div class="prem-card-body" style="padding:16px;">
+        <form [formGroup]="formGroup" (ngSubmit)="loadReport()"
+              style="display:flex;flex-direction:column;gap:14px;">
+
+          <div class="field-group">
+            <label for="period">Time Period / የጊዜ ገደብ</label>
+            <select id="period" formControlName="period" (change)="onPeriodChange()">
+              <option value="">All Time / የጊዜ ገደብ ይምረጡ</option>
+              <option value="1">1 Month / 1 ወር</option>
+              <option value="3">3 Months / 3 ወር</option>
+              <option value="6">6 Months / 6 ወር</option>
+              <option value="9">9 Months / 9 ወር</option>
+              <option value="12">12 Months / 12 ወር</option>
+            </select>
+          </div>
+
+          <div class="field-group">
             <label for="startDate">Start Date / መነሻ ቀን</label>
-            <input type="date" id="startDate" formControlName="startDate" class="form-control">
+            <input type="date" id="startDate" formControlName="startDate" />
           </div>
-          <div class="col-md-3 mb-3">
+
+          <div class="field-group">
             <label for="endDate">End Date / መጨረሻ ቀን</label>
-            <input type="date" id="endDate" formControlName="endDate" class="form-control">
+            <input type="date" id="endDate" formControlName="endDate" />
           </div>
-          <div class="col-md-3 mb-3">
+
+          <div class="field-group">
             <label for="requestingUnit">Requesting Unit / የጠየቀ ክፍል</label>
-            <input type="text" id="requestingUnit" formControlName="requestingUnit" class="form-control">
+            <input type="text" id="requestingUnit" formControlName="requestingUnit" placeholder="Filter by unit…" />
           </div>
-          <div class="col-md-3 mb-3">
+
+          <div class="field-group">
             <label for="issuingStore">Issuing Store / የሚያወጣ መደብር</label>
-            <input type="text" id="issuingStore" formControlName="issuingStore" class="form-control">
+            <input type="text" id="issuingStore" formControlName="issuingStore" placeholder="Filter by store…" />
           </div>
-          <div class="col-md-3 mb-3">
+
+          <div class="field-group">
             <label for="category">Category / ምድብ</label>
-            <select id="category" formControlName="category" class="form-control">
-              <option value="">Select Category...</option>
+            <select id="category" formControlName="category">
+              <option value="">All Categories</option>
               <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
             </select>
           </div>
-          <div class="col-md-3 mb-3">
-            <label for="makeAndModel">Make and Model / ሰሪ እና ሞዴል</label>
-            <select id="makeAndModel" formControlName="makeAndModel" class="form-control">
-              <option value="">Select Make and Model...</option>
+
+          <div class="field-group">
+            <label for="makeAndModel">Make & Model / ሰሪ እና ሞዴል</label>
+            <select id="makeAndModel" formControlName="makeAndModel">
+              <option value="">All Models</option>
               <option *ngFor="let mm of makeAndModels" [value]="mm">{{ mm }}</option>
             </select>
           </div>
-          <div class="col-md-3 mb-3">
+
+          <div class="field-group">
             <label for="stockNumber">Stock Number / የክምችት ቁጥር</label>
-            <input type="text" id="stockNumber" formControlName="stockNumber" class="form-control">
+            <input type="text" id="stockNumber" formControlName="stockNumber" placeholder="Stock #…" />
           </div>
-          <div class="col-md-3 mb-3">
+
+          <div class="field-group">
             <label for="description">Description / መግለጫ</label>
-            <input type="text" id="description" formControlName="description" class="form-control">
+            <input type="text" id="description" formControlName="description" placeholder="Search…" />
+          </div>
+
+          <div style="display:flex;gap:8px;padding-top:4px;">
+            <button type="submit" class="btn-submit"
+                    style="flex:1;min-width:auto;padding:10px 12px;font-size:0.9rem;">
+              🔍 Apply
+            </button>
+            <button type="button" class="btn-cancel"
+                    style="flex:1;min-width:auto;padding:10px 12px;font-size:0.9rem;"
+                    (click)="resetFilter()">
+              ↺ Reset
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ── Results Panel ── -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- Summary Cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div class="prem-card" style="padding:16px;text-align:center;margin-bottom:0;">
+          <div style="font-size:1.6rem;font-weight:700;color:#0077b6;">{{ reportData?.summary?.totalOrders || 0 }}</div>
+          <div style="font-size:0.78rem;color:#64748b;font-weight:600;text-transform:uppercase;margin-top:4px;">Total Orders</div>
+        </div>
+        <div class="prem-card" style="padding:16px;text-align:center;margin-bottom:0;">
+          <div style="font-size:1.6rem;font-weight:700;color:#059669;">{{ reportData?.summary?.totalItems || 0 }}</div>
+          <div style="font-size:0.78rem;color:#64748b;font-weight:600;text-transform:uppercase;margin-top:4px;">Total Items</div>
+        </div>
+        <div class="prem-card" style="padding:16px;text-align:center;margin-bottom:0;">
+          <div style="font-size:1.6rem;font-weight:700;color:#b45309;">{{ reportData?.summary?.totalQuantityIssued || 0 }}</div>
+          <div style="font-size:0.78rem;color:#64748b;font-weight:600;text-transform:uppercase;margin-top:4px;">Qty Issued</div>
+        </div>
+        <div class="prem-card" style="padding:16px;text-align:center;margin-bottom:0;">
+          <div style="font-size:1.4rem;font-weight:700;color:#7c3aed;">
+            <span *ngIf="reportData?.summary?.totalPrice">{{ reportData?.summary?.totalPrice | currency:'USD' }}</span>
+            <span *ngIf="!reportData?.summary?.totalPrice">—</span>
+          </div>
+          <div style="font-size:0.78rem;color:#64748b;font-weight:600;text-transform:uppercase;margin-top:4px;">Total Price</div>
+        </div>
+      </div>
+
+      <!-- Results Table -->
+      <div class="prem-card">
+        <div class="prem-card-header navy">
+          <div class="header-left">
+            <div class="header-icon">📋</div>
+            <div>
+              <p class="header-title">Report Results / የሪፖርት ውጤቶች</p>
+              <p class="header-subtitle">{{ reportData?.orders?.length || 0 }} order(s) found</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="btn-submit"
+                    style="min-width:auto;padding:8px 16px;font-size:0.85rem;background:linear-gradient(135deg,#059669,#047857);"
+                    (click)="exportToExcel()" [disabled]="!(reportData?.orders?.length)">
+              📥 Excel
+            </button>
+            <button type="button" class="btn-cancel"
+                    style="min-width:auto;padding:8px 16px;font-size:0.85rem;"
+                    (click)="exportToCSV()" [disabled]="!(reportData?.orders?.length)">
+              📄 CSV
+            </button>
           </div>
         </div>
-        <div class="filter-actions">
-          <button type="submit" class="btn btn-primary">Apply Filters / ማጣሪያ ተግብር</button>
-          <button type="button" class="btn btn-danger" (click)="resetFilter()">Reset / አጥፋ</button>
+
+        <div class="prem-card-body" style="padding:0;">
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Date / ቀን</th>
+                  <th>Issue Voucher / የወጪ ቫውቸር</th>
+                  <th>Voucher No</th>
+                  <th>Requesting Unit / ጠያቂ ክፍል</th>
+                  <th>Issuing Store / መጋዘን</th>
+                  <th>Category / ምድብ</th>
+                  <th>Make & Model</th>
+                  <th>Items</th>
+                  <th>Qty</th>
+                  <th>Total Price</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="!reportData?.orders?.length">
+                  <td colspan="12" class="empty-row">📭 No data available / ምንም ውሂብ የለም</td>
+                </tr>
+                <ng-container *ngFor="let order of reportData?.orders">
+                  <!-- Summary row -->
+                  <tr>
+                    <td style="font-family:monospace;color:#0077b6;">{{ order.order.id }}</td>
+                    <td>{{ order.order.date | date:'yyyy-MM-dd' }}</td>
+                    <td><span style="font-family:monospace;color:#0077b6;">{{ order.order.issueVoucherNo }}</span></td>
+                    <td><span style="font-family:monospace;color:#0077b6;">{{ order.order.voucherNo }}</span></td>
+                    <td>{{ order.order.requestingUnit }}</td>
+                    <td>
+                      <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:2px 8px;border-radius:5px;font-size:0.82rem;">
+                        {{ order.order.issuingStore }}
+                      </span>
+                    </td>
+                    <td>{{ order.order.category }}</td>
+                    <td>{{ order.order.makeAndModel }}</td>
+                    <td><strong>{{ order.totals.totalItems }}</strong></td>
+                    <td>
+                      <span style="background:#fff7ed;border:1px solid #fed7aa;color:#92400e;padding:2px 8px;border-radius:5px;font-size:0.82rem;font-weight:600;">
+                        {{ order.totals.totalQuantityIssued }}
+                      </span>
+                    </td>
+                    <td><strong>{{ order.totals.totalPrice | currency:order.order.currency }}</strong></td>
+                    <td>
+                      <button class="btn-edit-row" (click)="toggleDetails(order)"
+                              [attr.aria-label]="'Toggle details for order ' + order.order.id">
+                        {{ order.showDetails ? '▲ Hide' : '▼ Show' }}
+                      </button>
+                    </td>
+                  </tr>
+                  <!-- Detail row -->
+                  <tr *ngIf="order.showDetails">
+                    <td colspan="12" style="padding:0;background:#f8fafc;">
+                      <div style="padding:16px 20px;">
+                        <p style="font-size:0.82rem;font-weight:700;color:#92400e;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;">↑ Issued Items / የተሰጡ እቃዎች</p>
+                        <table class="data-table" style="font-size:0.87rem;">
+                          <thead>
+                            <tr>
+                              <th>Item No</th>
+                              <th>Stock Number</th>
+                              <th>Description</th>
+                              <th>Issued</th>
+                              <th>Unit Price</th>
+                              <th>Total Price</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of order.issuedItems">
+                              <td>{{ item.itemNo }}</td>
+                              <td style="font-family:monospace;">{{ item.stockNumber }}</td>
+                              <td>{{ item.description }}</td>
+                              <td><strong>{{ item.issued }}</strong></td>
+                              <td>{{ item.unitPrice | currency:order.order.currency }}</td>
+                              <td><strong>{{ item.totalPrice | currency:order.order.currency }}</strong></td>
+                            </tr>
+                            <tr *ngIf="order.issuedItems.length === 0">
+                              <td colspan="6" class="empty-row">No issued items</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Report Results -->
-  <div class="card results-card mt-4">
-    <div class="card-header">
-      <h4><span class="icon-placeholder">📊</span> Report Results / የሪፖርት ውጤቶች</h4>
-      <p class="card-subtitle">Filtered request order details / የተጣራ የጥያቄ ትዕዛዝ ዝርዝሮች</p>
-    </div>
-    <!-- Inside .results-card .card-header or .card-body -->
-
-    <div class="card-body">
-      <button 
-  type="button" 
-  class="btn btn-success mb-3" 
-  (click)="exportToCSV()" 
-  [disabled]="!(reportData?.orders?.length)">
-  Export to CSV / ወደ CSV ደረጃ
-</button>
-      <table class="table table-bordered table-striped">
-        
-        <thead>
-          <tr>
-            <th>ID / መለያ</th>
-            <th>Date / ቀን</th>
-            <th>Issue Voucher No / የወጪ ቫውቸር ቁጥር</th>
-            <th>Voucher No / የቫውቸር ቁጥር</th>
-            <th>Requesting Unit / የጠየቀ ክፍል</th>
-            <th>Issuing Store / የሚያወጣ መደብር</th>
-            <th>Category / ምድብ</th>
-            <th>Make and Model / ሰሪ እና ሞዴል</th>
-            <th>Total Items / ጠቅላላ እቃዎች</th>
-            <th>Total Quantity / ጠቅላላ ብዛት</th>
-            <th>Total Price / ጠቅላላ ዋጋ</th>
-            <th>Details / ዝርዝሮች</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="!reportData?.orders?.length">
-            <td colspan="12" class="text-center">No data available / ምንም ውሂብ የለም</td>
-          </tr>
-          <tr *ngFor="let order of reportData?.orders">
-            <td>{{ order.order.id }}</td>
-            <td>{{ order.order.date | date:'yyyy-MM-dd' }}</td>
-            <td>{{ order.order.issueVoucherNo }}</td>
-            <td>{{ order.order.voucherNo }}</td>
-            <td>{{ order.order.requestingUnit }}</td>
-            <td>{{ order.order.issuingStore }}</td>
-            <td>{{ order.order.category }}</td>
-            <td>{{ order.order.makeAndModel }}</td>
-            <td>{{ order.totals.totalItems }}</td>
-            <td>{{ order.totals.totalQuantityIssued }}</td>
-            <td>{{ order.totals.totalPrice | currency:order.order.currency }}</td>
-            <td>
-              <button class="btn btn-link" (click)="toggleDetails(order)" [attr.aria-label]="'Toggle details for order ' + order.order.id">                {{ order.showDetails ? '−' : '+' }}
-              </button>
-            </td>
-          </tr>
-          <tr *ngFor="let order of reportData?.orders" [ngClass]="{'d-none': !order.showDetails}">
-            <td colspan="12">
-              <div class="detail-content">
-                <h4>Issued Items / የተሰጡ እቃዎች</h4>
-                <table class="table table-sm inner-table">
-                  <thead>
-                    <tr>
-                      <th>Item No / የእቃ ቁጥር</th>
-                      <th>Stock Number / የክምችት ቁጥር</th>
-                      <th>Description / መግለጫ</th>
-                      <th>Issued / የተሰጠ</th>
-                      <th>Unit Price / የአንድ እቃ ዋጋ</th>
-                      <th>Total Price / ጠቅላላ ዋጋ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let item of order.issuedItems">
-                      <td>{{ item.itemNo }}</td>
-                      <td>{{ item.stockNumber }}</td>
-                      <td>{{ item.description }}</td>
-                      <td>{{ item.issued }}</td>
-                      <td>{{ item.unitPrice | currency:order.order.currency }}</td>
-                      <td>{{ item.totalPrice | currency:order.order.currency }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div *ngIf="order.issuedItems.length === 0">No issued items / ምንም የተሰጡ እቃዎች የሉም</div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="report-summary">
-        <h3>Summary / ማጠቃለያ</h3>
-        <p>Total Orders / ጠቅላላ ትዕዛዞች: {{ reportData?.summary?.totalOrders || 'N/A' }}</p>
-        <p>Total Items / ጠቅላላ እቃዎች: {{ reportData?.summary?.totalItems || 'N/A' }}</p>
-        <p>Total Quantity Issued / ጠቅላላ የተሰጠ ብዛት: {{ reportData?.summary?.totalQuantityIssued || 'N/A' }}</p>
-<p>Total Price / ጠቅላላ ዋጋ: <span *ngIf="reportData?.summary?.totalPrice; else noPrice">{{ reportData?.summary?.totalPrice | currency:'USD' }}</span></p>
-<ng-template #noPrice>N/A</ng-template>      </div>
+      </div>
     </div>
   </div>
 </div>

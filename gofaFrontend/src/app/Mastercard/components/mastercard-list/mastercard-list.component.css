@@ -1,0 +1,509 @@
+/* =========================================================
+   MASTERCARD LIST — PREMIUM UI
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:host {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Page Wrapper ─────────────────────────────────────── */
+.mc-page {
+  min-height: 100vh;
+  background: #f0f4f8;
+  padding: 28px 24px;
+  position: relative;
+}
+
+/* ── Top Action Bar ───────────────────────────────────── */
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.btn-add-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 18px rgba(0, 180, 216, 0.35);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+}
+
+.btn-add-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 180, 216, 0.55);
+  color: #fff;
+}
+
+.btn-add-item .icon {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* ── Location Filter Chips ────────────────────────────── */
+.filter-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-label {
+  color: #64748b;
+  font-size: 0.87rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-right: 4px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  border-color: #0077b6;
+  color: #0077b6;
+  background: #e0f4fb;
+}
+
+.chip.active {
+  background: linear-gradient(135deg, #0096c7, #0077b6);
+  border-color: #0077b6;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,119,182,0.3);
+}
+
+.chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.chip-clear {
+  background: #fff0f0;
+  border-color: #fca5a5;
+  color: #dc2626;
+  font-size: 0.87rem;
+}
+
+.chip-clear:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #b91c1c;
+}
+
+/* ── Main Card ────────────────────────────────────────── */
+.mc-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+/* ── Card Header ──────────────────────────────────────── */
+.mc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #03203c 0%, #0a3d62 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 14px rgba(0,180,216,0.35);
+}
+
+.header-title {
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.header-subtitle {
+  color: rgba(255,255,255,0.45);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ── Search Box ───────────────────────────────────────── */
+.search-wrapper {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.35);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.search-input {
+  background: rgba(255,255,255,0.10);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.95rem;
+  padding: 8px 14px 8px 34px;
+  width: 240px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+.search-input:focus {
+  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+}
+
+/* ── Sort Select ──────────────────────────────────────── */
+.sort-select {
+  background: rgba(255,255,255,0.10);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.sort-select option {
+  background: #03203c;
+  color: #fff;
+}
+
+.sort-select:focus {
+  border-color: rgba(255,255,255,0.5);
+}
+
+/* ── Table ────────────────────────────────────────────── */
+.mc-table-wrapper {
+  overflow-x: auto;
+}
+
+.mc-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mc-table thead tr {
+  background: #f8fafc;
+}
+
+.mc-table th {
+  padding: 13px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #94a3b8;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.mc-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.18s ease;
+  cursor: pointer;
+  animation: fadeRowIn 0.3s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeRowIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* stagger animation for first 15 rows */
+.mc-table tbody tr:nth-child(1)  { animation-delay: 0.02s; }
+.mc-table tbody tr:nth-child(2)  { animation-delay: 0.04s; }
+.mc-table tbody tr:nth-child(3)  { animation-delay: 0.06s; }
+.mc-table tbody tr:nth-child(4)  { animation-delay: 0.08s; }
+.mc-table tbody tr:nth-child(5)  { animation-delay: 0.10s; }
+.mc-table tbody tr:nth-child(6)  { animation-delay: 0.12s; }
+.mc-table tbody tr:nth-child(7)  { animation-delay: 0.14s; }
+.mc-table tbody tr:nth-child(8)  { animation-delay: 0.16s; }
+.mc-table tbody tr:nth-child(9)  { animation-delay: 0.18s; }
+.mc-table tbody tr:nth-child(10) { animation-delay: 0.20s; }
+
+.mc-table tbody tr:hover {
+  background: #f0f9ff;
+}
+
+.mc-table td {
+  padding: 14px 16px;
+  font-size: 0.97rem;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.mc-table td.clickable:hover {
+  color: #0077b6;
+}
+
+/* ── Cell Badges ──────────────────────────────────────── */
+.model-badge {
+  display: inline-block;
+  background: rgba(0,180,216,0.12);
+  border: 1px solid rgba(0,180,216,0.25);
+  color: #00d4ff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.part-number {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: rgba(255,220,100,0.85);
+  background: rgba(255,220,100,0.08);
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.location-tag {
+  display: inline-block;
+  background: rgba(80,200,120,0.1);
+  border: 1px solid rgba(80,200,120,0.25);
+  color: #5ec87a;
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-size: 0.87rem;
+  font-weight: 500;
+  margin: 2px;
+}
+
+.location-na {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* ── Action Buttons ───────────────────────────────────── */
+.action-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-receive,
+.btn-issue,
+.btn-view {
+  padding: 7px 15px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-receive {
+  background: linear-gradient(135deg, #00b894, #00796b);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(0,184,148,0.3);
+}
+
+.btn-receive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(0,184,148,0.5);
+  color: #fff;
+}
+
+.btn-issue {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(243,156,18,0.3);
+}
+
+.btn-issue:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(243,156,18,0.5);
+  color: #fff;
+}
+
+.btn-view {
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  color: #475569;
+}
+
+.btn-view:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+  border-color: #94a3b8;
+}
+
+/* ── Empty State ──────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  gap: 10px;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.4;
+}
+
+.empty-text {
+  font-size: 1rem;
+}
+
+/* ── Footer / Pagination ──────────────────────────────── */
+.mc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 20px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.results-info {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.results-info span {
+  color: #334155;
+  font-weight: 600;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.page-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+}
+
+.page-btn:hover:not(:disabled):not(.active) {
+  border-color: #0077b6;
+  color: #0077b6;
+  background: #e0f4fb;
+}
+
+.page-btn.active {
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+  border-color: #00b4d8;
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(0,180,216,0.35);
+}
+
+.page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Items per page */
+.per-page-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.per-page-label {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.per-page-select {
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  color: #334155;
+  font-size: 0.92rem;
+  padding: 5px 8px;
+  outline: none;
+  cursor: pointer;
+}

@@ -348,8 +348,15 @@ export class MasterCardDetailsComponent implements OnInit {
   openEditReceivedModal(record: MasterCardItemReceived): void {
     if (this.isSavingEdit) return;
     this.editingReceivedRecord = JSON.parse(JSON.stringify(record));
-    if (this.editingReceivedRecord && !this.editingReceivedRecord.receivedAccessories) {
-      this.editingReceivedRecord.receivedAccessories = [];
+    if (this.editingReceivedRecord) {
+      if (!this.editingReceivedRecord.receivedAccessories) {
+        this.editingReceivedRecord.receivedAccessories = [];
+      }
+      if (this.editingReceivedRecord.transactionDate) {
+        this.editingReceivedRecord.transactionDate = new Date(this.editingReceivedRecord.transactionDate).toISOString().substring(0, 10);
+      } else if (this.editingReceivedRecord.date) {
+        this.editingReceivedRecord.transactionDate = new Date(this.editingReceivedRecord.date).toISOString().substring(0, 10);
+      }
     }
     this.showEditReceivedModal = true;
     this.editReceivedError = null;
@@ -477,8 +484,15 @@ export class MasterCardDetailsComponent implements OnInit {
   openEditIssuedModal(record: MasterCardItemIssued): void {
     if (this.isSavingEdit) return;
     this.editingIssuedRecord = JSON.parse(JSON.stringify(record));
-    if (this.editingIssuedRecord && !this.editingIssuedRecord.issuedAccessories) {
-      this.editingIssuedRecord.issuedAccessories = [];
+    if (this.editingIssuedRecord) {
+      if (!this.editingIssuedRecord.issuedAccessories) {
+        this.editingIssuedRecord.issuedAccessories = [];
+      }
+      if (this.editingIssuedRecord.transactionDate) {
+        this.editingIssuedRecord.transactionDate = new Date(this.editingIssuedRecord.transactionDate).toISOString().substring(0, 10);
+      } else if (this.editingIssuedRecord.date) {
+        this.editingIssuedRecord.transactionDate = new Date(this.editingIssuedRecord.date).toISOString().substring(0, 10);
+      }
     }
     this.showEditIssuedModal = true;
     this.editIssuedError = null;

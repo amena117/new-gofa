@@ -1,515 +1,451 @@
-<div class="container mt-4" #content>
+<div class="mc-page" #content>
+
+  <!-- Top controls -->
+  <div class="top-controls export-hideable" [ngClass]="{'export-hidden': isExporting}">
+    <button class="btn-back" (click)="goBack()">← Back to List / ወደ ዝርዝር ተመለስ</button>
+    <button class="btn-pdf" (click)="exportToPDF()" [disabled]="isExporting">
+      {{ isExporting ? '⏳ Exporting…' : '📄 Export to PDF' }}
+    </button>
+  </div>
+
   <!-- Page Title -->
-  <h4 class="mb-2 text-center border-bottom pb-2" style="font-size: 1.1rem;">
-    የኢ.ፌ.ዲ.ሪ መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን መምሪያ አቅርቦት እና ስርጭት የገቢ ወጪ
-    <br />
-    መመዝገቢያ ካርድ
-  </h4>
-
-  <!-- Export & Navigation Controls -->
-  <div class="d-flex justify-content-between mb-3 export-hideable" [ngClass]="{ 'export-hidden': isExporting }">
-    <button class="btn btn-primary" (click)="goBack()">
-      Back to List / ወደ ዝርዝር ተመለስ
-    </button>
-    <button class="btn btn-success" (click)="exportToPDF()" [disabled]="isExporting">
-      {{ isExporting ? 'Exporting... / በመላክ ላይ...' : 'Export to PDF / ወደ PDF ላክ' }}
-    </button>
+  <div style="text-align:center; margin-bottom:20px;">
+    <p style="font-size:0.85rem; color:#64748b; font-weight:600; margin:0; line-height:1.6;">
+      የኢ.ፌ.ዲ.ሪ መከላከያ ሚኒስቴር የመገናኛ ኢንፎርሜሽን መምሪያ አቅርቦት እና ስርጭት<br/>
+      <span style="font-size:1rem; color:#1e293b; font-weight:700;">የገቢ ወጪ መመዝገቢያ ካርድ</span>
+    </p>
   </div>
 
-  <!-- Master Card Item Details -->
-  <div class="card mb-4">
-    <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #03203c;">
-      <span>Master Card Item Details (ID: {{ masterCardItem?.id }})</span>
-      <div *ngIf="!isExporting">
-        <button
-          *ngIf="!isEditingMainDetails"
-          class="btn btn-sm btn-warning"
-          (click)="editMainDetails()"
-        >
-          Edit / አርትዕ
+  <!-- ── Item Details Card ── -->
+  <div class="prem-card">
+    <div class="prem-card-header navy">
+      <div class="header-left">
+        <div class="header-icon">📋</div>
+        <div>
+          <p class="header-title">Master Card Item Details (ID: {{ masterCardItem?.id }})</p>
+          <p class="header-subtitle">Item information and metadata</p>
+        </div>
+      </div>
+      <div *ngIf="!isExporting" style="display:flex; gap:8px; align-items:center;">
+        <button *ngIf="!isEditingMainDetails" class="btn-hdr-edit" (click)="editMainDetails()">
+          ✎ Edit / አርትዕ
         </button>
-        <button
-          *ngIf="isEditingMainDetails"
-          class="btn btn-sm btn-success me-1"
-          (click)="saveMainDetails()"
-        >
-          Save / አስቀምጥ
+        <button *ngIf="isEditingMainDetails" class="btn-hdr-save" (click)="saveMainDetails()">
+          ✓ Save
         </button>
-        <button
-          *ngIf="isEditingMainDetails"
-          class="btn btn-sm btn-secondary"
-          (click)="cancelEditMainDetails()"
-        >
-          Cancel / ሰርዝ
+        <button *ngIf="isEditingMainDetails" class="btn-hdr-cancel" (click)="cancelEditMainDetails()">
+          ✕ Cancel
         </button>
       </div>
     </div>
-    <div class="card-body">
-      <div class="row">
-        <!-- Left Column -->
-        <div class="col-md-6">
-          <p>
-            <strong>Card No/የንጥል አይነት:</strong>
-            <span *ngIf="!isEditingMainDetails">{{ masterCardItem?.cardNo }}</span>
-            <input
-              *ngIf="isEditingMainDetails"
-              [(ngModel)]="masterCardItem!.cardNo"
-              class="form-control"
-            />
-          </p>
-          <p>
-            <strong>Model/የንጥል አይነት:</strong>
-            <span *ngIf="!isEditingMainDetails">{{ masterCardItem?.model }}</span>
-            <input
-              *ngIf="isEditingMainDetails"
-              [(ngModel)]="masterCardItem!.model"
-              class="form-control"
-            />
-          </p>
-          <p>
-            <strong>Part Number/የእቃው መለያ ቁጥር:</strong>
-            <span *ngIf="!isEditingMainDetails">{{ masterCardItem?.partNumber }}</span>
-            <input
-              *ngIf="isEditingMainDetails"
-              [(ngModel)]="masterCardItem!.partNumber"
-              class="form-control"
-            />
-          </p>
-          <p>
-            <strong>Description/መግለጫ:</strong>
-            <span *ngIf="!isEditingMainDetails">{{ masterCardItem?.description }}</span>
-            <input
-              *ngIf="isEditingMainDetails"
-              [(ngModel)]="masterCardItem!.description"
-              class="form-control"
-            />
-          </p>
+
+    <div class="prem-card-body">
+      <div class="info-grid">
+
+        <!-- Card No -->
+        <div class="info-item">
+          <span class="info-label">Card No / የንጥል አይነት</span>
+          <span class="info-value" *ngIf="!isEditingMainDetails">{{ masterCardItem?.cardNo }}</span>
+          <input *ngIf="isEditingMainDetails" [(ngModel)]="masterCardItem!.cardNo" class="form-control" />
         </div>
-        <!-- Right Column -->
-        <div class="col-md-6">
-          <p>
-            <strong>Unit of Measure/የመለኪያ አሃድ:</strong>
-            <span *ngIf="!isEditingMainDetails">{{ masterCardItem?.unitOfMeasure }}</span>
-            <input
-              *ngIf="isEditingMainDetails"
-              [(ngModel)]="masterCardItem!.unitOfMeasure"
-              class="form-control"
-            />
-          </p>
-          <p>
-            <strong>Status/የንጥል ሁኔታ:</strong>
-            <span *ngIf="!isEditingMainDetails">{{ masterCardItem?.status }}</span>
-            <input
-              *ngIf="isEditingMainDetails"
-              [(ngModel)]="masterCardItem!.status"
-              class="form-control"
-            />
-          </p>
-          <p>
-            <strong>Unit Pack/የንጥል ጥቅል:</strong>
-            <span *ngIf="!isEditingMainDetails">{{ masterCardItem?.unitPack }}</span>
-            <input
-              *ngIf="isEditingMainDetails"
-              [(ngModel)]="masterCardItem!.unitPack"
-              class="form-control"
-            />
-          </p>
-          <p>
-            <strong>Current Quantity/የአሁኑ ብዛት:</strong>
-            {{ masterCardItem?.quantity }}
-          </p>
+
+        <!-- Model -->
+        <div class="info-item">
+          <span class="info-label">Model / የንጥሉ ሞዴል</span>
+          <span class="info-value" *ngIf="!isEditingMainDetails">{{ masterCardItem?.model }}</span>
+          <input *ngIf="isEditingMainDetails" [(ngModel)]="masterCardItem!.model" class="form-control" />
         </div>
+
+        <!-- Part Number -->
+        <div class="info-item">
+          <span class="info-label">Part Number / የእቃው መለያ ቁጥር</span>
+          <span class="info-value" *ngIf="!isEditingMainDetails"
+                style="font-family: monospace; color:#0077b6;">{{ masterCardItem?.partNumber }}</span>
+          <input *ngIf="isEditingMainDetails" [(ngModel)]="masterCardItem!.partNumber" class="form-control" />
+        </div>
+
+        <!-- Description -->
+        <div class="info-item">
+          <span class="info-label">Description / መግለጫ</span>
+          <span class="info-value" *ngIf="!isEditingMainDetails">{{ masterCardItem?.description }}</span>
+          <input *ngIf="isEditingMainDetails" [(ngModel)]="masterCardItem!.description" class="form-control" />
+        </div>
+
+        <!-- Unit of Measure -->
+        <div class="info-item">
+          <span class="info-label">Unit of Measure / የመለኪያ አሃድ</span>
+          <span class="info-value" *ngIf="!isEditingMainDetails">{{ masterCardItem?.unitOfMeasure }}</span>
+          <input *ngIf="isEditingMainDetails" [(ngModel)]="masterCardItem!.unitOfMeasure" class="form-control" />
+        </div>
+
+        <!-- Status -->
+        <div class="info-item">
+          <span class="info-label">Status / ሁኔታ</span>
+          <span class="info-value" *ngIf="!isEditingMainDetails">{{ masterCardItem?.status }}</span>
+          <input *ngIf="isEditingMainDetails" [(ngModel)]="masterCardItem!.status" class="form-control" />
+        </div>
+
+        <!-- Unit Pack -->
+        <div class="info-item">
+          <span class="info-label">Unit Pack / ጥቅል</span>
+          <span class="info-value" *ngIf="!isEditingMainDetails">{{ masterCardItem?.unitPack }}</span>
+          <input *ngIf="isEditingMainDetails" [(ngModel)]="masterCardItem!.unitPack" class="form-control" />
+        </div>
+
+        <!-- Quantity -->
+        <div class="info-item">
+          <span class="info-label">Current Quantity / አሁኑ ብዛት</span>
+          <span class="info-value large">{{ masterCardItem?.quantity }}</span>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <!-- Received Records Section -->
-  <div class="card mb-4">
-    <div class="card-header bg-success text-white">
-      ገቢ መዝገቦች (Received Records)
+  <!-- ── Received Records Card ── -->
+  <div class="prem-card">
+    <div class="prem-card-header green">
+      <div class="header-left">
+        <div class="header-icon">↓</div>
+        <div>
+          <p class="header-title">ገቢ መዝገቦች — Received Records</p>
+          <p class="header-subtitle">{{ filteredReceivedRecords.length }} record(s)</p>
+        </div>
+      </div>
     </div>
-    <div class="card-body">
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <div class="input-group export-hideable" [ngClass]="{ 'export-hidden': isExporting }">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search by Voucher Number/በቫውቸር ቁጥር ፈልግ"
-              [(ngModel)]="searchVoucherNoReceived"
-              (input)="searchReceivedRecords()"
-            />
-            <button class="btn btn-outline-secondary" (click)="clearSearchReceived()">
-              Clear / ሰርዝ
-            </button>
+    <div class="prem-card-body">
+      <div class="table-search export-hideable" [ngClass]="{'export-hidden': isExporting}">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search by Voucher No…"
+               [(ngModel)]="searchVoucherNoReceived" (input)="searchReceivedRecords()" />
+        <button class="btn-clear-search" (click)="clearSearchReceived()" title="Clear">✕</button>
+      </div>
+
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Transaction Date / የግብይት ቀን</th>
+              <th>Reg Date / የምዝገባ ቀን</th>
+              <th>Voucher No</th>
+              <th>Received / ተቀብሏል</th>
+              <th>Accessories</th>
+              <th>Organization / ድርጅት</th>
+              <th>Posted By</th>
+              <th>Location / ቦታ</th>
+              <th>Unit Price</th>
+              <th>Currency</th>
+              <th>Total Price</th>
+              <th *ngIf="!isExporting">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let record of filteredReceivedRecords">
+              <td>{{ formatDate(record.transactionDate || record.date) }}</td>
+              <td>{{ formatDate(record.date) }}</td>
+              <td><span style="font-family:monospace; color:#0077b6;">{{ record.voucherNo }}</span></td>
+              <td><strong>{{ record.received }}</strong></td>
+              <td [innerHTML]="displayAccessories(record.receivedAccessories)"></td>
+              <td>{{ record.organization }}</td>
+              <td>{{ record.postedBy }}</td>
+              <td><span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#065f46;padding:2px 8px;border-radius:5px;font-size:0.82rem;">{{ record.location }}</span></td>
+              <td>{{ record.unitPrice | currency:record.currencyCode:'symbol':'1.2-2' }}</td>
+              <td>{{ record.currencyCode }}</td>
+              <td><strong>{{ record.totalPrice | currency:record.currencyCode:'symbol':'1.2-2' }}</strong></td>
+              <td *ngIf="!isExporting">
+                <button *ngIf="currentUserFullName === record.postedBy"
+                        class="btn-edit-row" (click)="openEditReceivedModal(record)">
+                  ✎ Edit
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredReceivedRecords.length === 0">
+              <td colspan="12" class="empty-row">📭 No received records / ምንም ገቢ መዝገቦች አልተገኙም</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Issued Records Card ── -->
+  <div class="prem-card">
+    <div class="prem-card-header orange">
+      <div class="header-left">
+        <div class="header-icon">↑</div>
+        <div>
+          <p class="header-title">ወጪ መዝገቦች — Issued Records</p>
+          <p class="header-subtitle">{{ filteredIssuedRecords.length }} record(s)</p>
+        </div>
+      </div>
+    </div>
+    <div class="prem-card-body">
+      <div class="table-search export-hideable" [ngClass]="{'export-hidden': isExporting}">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search by Voucher No…"
+               [(ngModel)]="searchVoucherNoIssued" (input)="searchIssuedRecords()" />
+        <button class="btn-clear-search" (click)="clearSearchIssued()" title="Clear">✕</button>
+      </div>
+
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Transaction Date / የግብይት ቀን</th>
+              <th>Reg Date / የምዝገባ ቀን</th>
+              <th>Voucher No</th>
+              <th>Issued / ወጥቷል</th>
+              <th>Accessories</th>
+              <th>Organization / ድርጅት</th>
+              <th>Posted By</th>
+              <th>Location / ቦታ</th>
+              <th>Unit Price</th>
+              <th>Currency</th>
+              <th>Total Price</th>
+              <th *ngIf="!isExporting">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let record of filteredIssuedRecords">
+              <td>{{ formatDate(record.transactionDate || record.date) }}</td>
+              <td>{{ formatDate(record.date) }}</td>
+              <td><span style="font-family:monospace; color:#0077b6;">{{ record.voucherNo }}</span></td>
+              <td><strong>{{ record.issued }}</strong></td>
+              <td [innerHTML]="displayAccessories(record.issuedAccessories)"></td>
+              <td>{{ record.organization }}</td>
+              <td>{{ record.postedBy }}</td>
+              <td><span style="background:#fff7ed;border:1px solid #fed7aa;color:#92400e;padding:2px 8px;border-radius:5px;font-size:0.82rem;">{{ record.location }}</span></td>
+              <td>{{ record.unitPrice | currency:record.currencyCode:'symbol':'1.2-2' }}</td>
+              <td>{{ record.currencyCode }}</td>
+              <td><strong>{{ record.totalPrice | currency:record.currencyCode:'symbol':'1.2-2' }}</strong></td>
+              <td *ngIf="!isExporting">
+                <button *ngIf="currentUserFullName === record.postedBy"
+                        class="btn-edit-row" (click)="openEditIssuedModal(record)">
+                  ✎ Edit
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredIssuedRecords.length === 0">
+              <td colspan="12" class="empty-row">📭 No issued records / ምንም ወጪ መዝገቦች አልተገኙም</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ Edit Received Record Modal ════ -->
+  <div class="prem-modal-backdrop" *ngIf="showEditReceivedModal"></div>
+  <div class="prem-modal-wrapper" *ngIf="showEditReceivedModal && editingReceivedRecord">
+    <div class="prem-modal">
+      <div class="prem-modal-header">
+        <h5 class="prem-modal-title">✎ Edit Received Record / የተቀበለ መዝገብ አርትዕ</h5>
+        <button class="prem-modal-close" type="button"
+                (click)="closeEditReceivedModal()" [disabled]="isSavingEdit">✕</button>
+      </div>
+      <div class="prem-modal-body">
+        <div class="alert-danger-prem" *ngIf="editReceivedError">{{ editReceivedError }}</div>
+        <form (ngSubmit)="saveEditedReceivedRecord()" #editReceivedForm="ngForm">
+          <div class="form-grid">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div class="field-group">
+                <label>Transaction Date / የግብይት ቀን</label>
+                <input [(ngModel)]="editingReceivedRecord.transactionDate" name="transactionDate" type="date" />
+              </div>
+              <div class="field-group">
+                <label>Registration Date / የምዝገባ ቀን</label>
+                <input [value]="formatDate(editingReceivedRecord.date)" readonly />
+              </div>
+              <div class="field-group">
+                <label>Voucher No / ቫውቸር ቁጥር</label>
+                <input [(ngModel)]="editingReceivedRecord.voucherNo" name="voucherNo" required />
+              </div>
+              <div class="field-group">
+                <label>Received Quantity / የተቀበለ ብዛት</label>
+                <input [(ngModel)]="editingReceivedRecord.received" name="received" type="number" required min="1"
+                       (input)="updateEditedReceivedTotalPrice()" />
+              </div>
+              <div class="field-group">
+                <label>Unit Price / የአንዱ ዋጋ</label>
+                <input [(ngModel)]="editingReceivedRecord.unitPrice" name="unitPrice" type="number" required min="0" step="0.01"
+                       (input)="updateEditedReceivedTotalPrice()" />
+              </div>
+              <div class="field-group">
+                <label>Currency / መገንዘቢያ</label>
+                <select [(ngModel)]="editingReceivedRecord.currencyCode" name="currencyCode">
+                  <option *ngFor="let option of currencyOptions" [value]="option.code">{{ option.label }}</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div class="field-group">
+                <label>Organization / ድርጅት</label>
+                <div class="input-with-btn">
+                  <select [(ngModel)]="editingReceivedRecord.organization" name="organization" required>
+                    <option value="">Select Organization</option>
+                    <option *ngFor="let org of organizations" [value]="org.name">{{ org.name }}</option>
+                  </select>
+                  <button type="button" class="btn-create-org" (click)="openOrganizationModal()">+</button>
+                </div>
+              </div>
+              <div class="field-group">
+                <label>Posted By / ያስፈጸመው</label>
+                <input [(ngModel)]="editingReceivedRecord.postedBy" name="postedBy" readonly />
+              </div>
+              <div class="field-group">
+                <label>Location / ቦታ</label>
+                <select [(ngModel)]="editingReceivedRecord.location" name="location" required>
+                  <option value="">Select Location</option>
+                  <option value="HF">HF</option>
+                  <option value="VHF">VHF</option>
+                  <option value="SPAREPART">SPAREPART</option>
+                  <option value="Electronics">Electronics</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Total Price / ጠቅላላ ዋጋ</label>
+                <input [value]="editingReceivedRecord.totalPrice | currency:editingReceivedRecord.currencyCode:'symbol':'1.2-2'" disabled />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <table class="table table-striped table-hover">
-        <thead class="table-dark">
-          <tr>
-            <th>ቀን (Date)</th>
-            <th>ቫውቸር ቁጥር (Voucher No)</th>
-            <th>ተቀብሏል (Received)</th>
-            <th>ተጨማሪ እቃዎች (Accessories)</th>
-            <th>ድርጅት (Org)</th>
-            <th>የተለጠፈ በ (Posted By)</th>
-            <th>ቦታ (Location)</th>
-            <th>የአንዱ ዋጋ (Unit Price)</th>
-            <th>መገበያያ መጠን (Currency)</th>
-            <th>ጠቅላላ ዋጋ (Total Price)</th>
-            <th *ngIf="!isExporting">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let record of filteredReceivedRecords">
-            <td>{{ formatDate(record.date) }}</td>
-            <td>{{ record.voucherNo }}</td>
-            <td>{{ record.received }}</td>
-            <td [innerHTML]="displayAccessories(record.receivedAccessories)"></td>
-            <td>{{ record.organization }}</td>
-            <td>{{ record.postedBy }}</td>
-            <td>{{ record.location }}</td>
-            <td>{{ record.unitPrice | currency:record.currencyCode:'symbol':'1.2-2' }}</td>
-            <td>{{ record.currencyCode }}</td>
-            <td>{{ record.totalPrice | currency:record.currencyCode:'symbol':'1.2-2' }}</td>
-            <td *ngIf="!isExporting">
-              <button
-                *ngIf="currentUserFullName === record.postedBy"
-                class="btn btn-sm btn-warning"
-                (click)="openEditReceivedModal(record)"
-              >
-                Edit
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="filteredReceivedRecords.length === 0">
-            <td colspan="11" class="text-center text-muted">
-              No received records found / ምንም ገቢ መዝገቦች አልተገኙም
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Issued Records Section -->
-  <div class="card mb-4">
-    <div class="card-header bg-danger text-white">
-      ወጪ መዝገቦች (Issued Records)
-    </div>
-    <div class="card-body">
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <div class="input-group export-hideable" [ngClass]="{ 'export-hidden': isExporting }">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search by Voucher Number/በቫውቸር ቁጥር ፈልግ"
-              [(ngModel)]="searchVoucherNoIssued"
-              (input)="searchIssuedRecords()"
-            />
-            <button class="btn btn-outline-secondary" (click)="clearSearchIssued()">
-              Clear / ሰርዝ
-            </button>
+          <!-- Accessories toggle -->
+          <div class="accessories-section" style="margin-top:18px;">
+            <div class="toggle-row">
+              <input id="editHasAccessories" [(ngModel)]="editingReceivedRecord.hasAccessories"
+                     name="hasAccessories" type="checkbox" (change)="toggleEditReceivedAccessories()" />
+              <label for="editHasAccessories">Has accessories</label>
+            </div>
+            <div *ngIf="editingReceivedRecord.hasAccessories">
+              <div *ngFor="let accessory of editingReceivedRecord.receivedAccessories; let j = index"
+                   class="accessory-row">
+                <div class="field-group">
+                  <input [(ngModel)]="accessory.name" [name]="'accName'+j" placeholder="Name" required />
+                </div>
+                <div class="field-group">
+                  <input [(ngModel)]="accessory.quantity" [name]="'accQty'+j" type="number" min="1" placeholder="Qty" required />
+                </div>
+                <button type="button" class="btn-remove-acc" (click)="removeEditReceivedAccessory(j)">✕</button>
+              </div>
+              <button type="button" class="btn-add-acc" (click)="addEditReceivedAccessory()">+ Add</button>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
-
-      <table class="table table-striped table-hover">
-        <thead class="table-dark">
-          <tr>
-            <th>ቀን (Date)</th>
-            <th>ቫውቸር ቁጥር (Voucher No)</th>
-            <th>የተሰጠ (Issued)</th>
-            <th>ተጨማሪ እቃዎች (Accessories)</th>
-            <th>ድርጅት (Org)</th>
-            <th>የተለጠፈ በ (Posted By)</th>
-            <th>ቦታ (Location)</th>
-            <th>የአንዱ ዋጋ (Unit Price)</th>
-            <th>መገበያያ መጠን (Currency)</th>
-            <th>ጠቅላላ ዋጋ (Total Price)</th>
-            <th *ngIf="!isExporting">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let record of filteredIssuedRecords">
-            <td>{{ formatDate(record.date) }}</td>
-            <td>{{ record.voucherNo }}</td>
-            <td>{{ record.issued }}</td>
-            <td [innerHTML]="displayAccessories(record.issuedAccessories)"></td>
-            <td>{{ record.organization }}</td>
-            <td>{{ record.postedBy }}</td>
-            <td>{{ record.location }}</td>
-            <td>{{ record.unitPrice | currency:record.currencyCode:'symbol':'1.2-2' }}</td>
-            <td>{{ record.currencyCode }}</td>
-            <td>{{ record.totalPrice | currency:record.currencyCode:'symbol':'1.2-2' }}</td>
-            <td *ngIf="!isExporting">
-              <button
-                *ngIf="currentUserFullName === record.postedBy"
-                class="btn btn-sm btn-warning"
-                (click)="openEditIssuedModal(record)"
-              >
-                Edit
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="filteredIssuedRecords.length === 0">
-            <td colspan="11" class="text-center text-muted">
-              No issued records found / ምንም ወጪ መዝገቦች አልተገኙም
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Edit Received Record Modal -->
-  <div class="modal fade" [ngClass]="{ 'show d-block': showEditReceivedModal }" tabindex="-1" *ngIf="editingReceivedRecord">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Received Record (የተቀበለ መዝገብ አርትዕ)</h5>
-          <button type="button" class="btn-close" (click)="closeEditReceivedModal()" [disabled]="isSavingEdit"></button>
-        </div>
-        <div class="modal-body">
-          <div *ngIf="editReceivedError" class="alert alert-danger">{{ editReceivedError }}</div>
-
-          <form (ngSubmit)="saveEditedReceivedRecord()" #editReceivedForm="ngForm">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Date (ቀን)</label>
-                  <input [(ngModel)]="editingReceivedRecord.date" name="date" type="date" class="form-control" readonly />
-                </div>
-                <div class="form-group">
-                  <label>Voucher No (ቫውቸር ቁጥር)</label>
-                  <input [(ngModel)]="editingReceivedRecord.voucherNo" name="voucherNo" class="form-control" required />
-                </div>
-                <div class="form-group">
-                  <label>Received Quantity (የተቀበለ ብዛት)</label>
-                  <input [(ngModel)]="editingReceivedRecord.received" name="received" type="number" class="form-control" required min="1"
-                         (input)="updateEditedReceivedTotalPrice()" />
-                </div>
-                <div class="form-group">
-                  <label>Unit Price (የአንዱ ዋጋ)</label>
-                  <input [(ngModel)]="editingReceivedRecord.unitPrice" name="unitPrice" type="number" class="form-control" required min="0" step="0.01"
-                         (input)="updateEditedReceivedTotalPrice()" />
-                </div>
-                <div class="form-group">
-                  <label>Currency (መገንዘብ)</label>
-                  <select [(ngModel)]="editingReceivedRecord.currencyCode" name="currencyCode" class="form-select">
-                    <option *ngFor="let option of currencyOptions" [value]="option.code">{{ option.label }}</option>
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Organization (ድርጅት)</label>
-                  <div class="input-group">
-                    <select [(ngModel)]="editingReceivedRecord.organization" name="organization" class="form-select" required>
-                      <option value="">Select Organization / ድርጅት ይምረጡ</option>
-                      <option *ngFor="let org of organizations" [value]="org.name">{{ org.name }}</option>
-                    </select>
-                    <button type="button" class="btn btn-primary btn-sm" (click)="openOrganizationModal()">+</button>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>Posted By (ያስፈጸመው)</label>
-                  <input [(ngModel)]="editingReceivedRecord.postedBy" name="postedBy" class="form-control" readonly />
-                </div>
-
-                <!-- OFFICIAL LOCATIONS ONLY — NO CUSTOM -->
-                <div class="form-group">
-                  <label>Location (ቦታ) <small class="text-muted">(Official only)</small></label>
-                  <select [(ngModel)]="editingReceivedRecord.location" name="location" class="form-select" required>
-                    <option value="">Select Location / ቦታ ይምረጡ</option>
-                    <option value="HF">HF</option>
-                    <option value="VHF">VHF</option>
-                    <option value="SPAREPART">SPAREPART</option>
-                    <option value="Electronics">Electronics</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>Total Price (ጠቅላላ ዋጋ)</label>
-                  <input [value]="editingReceivedRecord.totalPrice | currency:editingReceivedRecord.currencyCode:'symbol':'1.2-2'"
-                         class="form-control" disabled />
-                </div>
-              </div>
-            </div>
-
-            <!-- Accessories -->
-            <div class="form-group mt-4">
-              <div class="form-check">
-                <input id="editHasAccessories" [(ngModel)]="editingReceivedRecord.hasAccessories" name="hasAccessories"
-                       type="checkbox" class="form-check-input" (change)="toggleEditReceivedAccessories()" />
-                <label for="editHasAccessories" class="form-check-label">Item has accessories</label>
-              </div>
-            </div>
-
-            <div *ngIf="editingReceivedRecord.hasAccessories" class="mt-3">
-              <h6>Accessories</h6>
-              <div *ngFor="let accessory of editingReceivedRecord.receivedAccessories; let j = index" class="card mb-2">
-                <div class="card-body pb-2">
-                  <div class="row g-2">
-                    <div class="col-md-5">
-                      <input [(ngModel)]="accessory.name" [name]="'accName'+j" class="form-control" placeholder="Name" required />
-                    </div>
-                    <div class="col-md-5">
-                      <input [(ngModel)]="accessory.quantity" [name]="'accQty'+j" type="number" min="1"
-                             class="form-control" placeholder="Qty" required />
-                    </div>
-                    <div class="col-md-2">
-                      <button type="button" class="btn btn-danger btn-sm w-100" (click)="removeEditReceivedAccessory(j)">
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <button type="button" class="btn btn-primary btn-sm" (click)="addEditReceivedAccessory()">
-                Add Accessory
-              </button>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeEditReceivedModal()" [disabled]="isSavingEdit">
-            Cancel
-          </button>
-          <button type="button" class="btn btn-success" (click)="saveEditedReceivedRecord()"
-                  [disabled]="isSavingEdit || !editReceivedForm.form.valid">
-            {{ isSavingEdit ? 'Saving...' : 'Save Changes' }}
-          </button>
-        </div>
+      <div class="prem-modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeEditReceivedModal()" [disabled]="isSavingEdit">Cancel</button>
+        <button type="button" class="btn-submit" style="min-width:auto;padding:10px 24px;"
+                (click)="saveEditedReceivedRecord()"
+                [disabled]="isSavingEdit || !editReceivedForm.form.valid">
+          {{ isSavingEdit ? 'Saving…' : 'Save Changes' }}
+        </button>
       </div>
     </div>
   </div>
-  <div class="modal-backdrop fade show" *ngIf="showEditReceivedModal"></div>
 
-  <!-- Edit Issued Record Modal (Same location restriction) -->
-  <div class="modal fade" [ngClass]="{ 'show d-block': showEditIssuedModal }" tabindex="-1" *ngIf="editingIssuedRecord">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Issued Record (የተሰጠ መዝገብ አርትዕ)</h5>
-          <button type="button" class="btn-close" (click)="closeEditIssuedModal()" [disabled]="isSavingEdit"></button>
-        </div>
-        <div class="modal-body">
-          <div *ngIf="editIssuedError" class="alert alert-danger">{{ editIssuedError }}</div>
-
-          <form (ngSubmit)="saveEditedIssuedRecord()" #editIssuedForm="ngForm">
-            <!-- Same structure as Received, only Location changed -->
-            <div class="row g-3">
-              <div class="col-md-6">
-                <!-- Same fields as above -->
-                <div class="form-group">
-                  <label>Date</label>
-                  <input [(ngModel)]="editingIssuedRecord.date" name="date" type="date" class="form-control" readonly />
-                </div>
-                <div class="form-group">
-                  <label>Voucher No</label>
-                  <input [(ngModel)]="editingIssuedRecord.voucherNo" name="voucherNo" class="form-control" required />
-                </div>
-                <div class="form-group">
-                  <label>Issued Quantity</label>
-                  <input [(ngModel)]="editingIssuedRecord.issued" name="issued" type="number" class="form-control" required min="1"
-                         (input)="updateEditedIssuedTotalPrice()" />
-                </div>
-                <div class="form-group">
-                  <label>Unit Price</label>
-                  <input [(ngModel)]="editingIssuedRecord.unitPrice" name="unitPrice" type="number" class="form-control" required min="0" step="0.01"
-                         (input)="updateEditedIssuedTotalPrice()" />
-                </div>
-                <div class="form-group">
-                  <label>Currency</label>
-                  <select [(ngModel)]="editingIssuedRecord.currencyCode" name="currencyCode" class="form-select">
-                    <option *ngFor="let option of currencyOptions" [value]="option.code">{{ option.label }}</option>
+  <!-- ════ Edit Issued Record Modal ════ -->
+  <div class="prem-modal-backdrop" *ngIf="showEditIssuedModal"></div>
+  <div class="prem-modal-wrapper" *ngIf="showEditIssuedModal && editingIssuedRecord">
+    <div class="prem-modal">
+      <div class="prem-modal-header" style="background:linear-gradient(135deg,#92400e,#b45309);">
+        <h5 class="prem-modal-title">✎ Edit Issued Record / የተሰጠ መዝገብ አርትዕ</h5>
+        <button class="prem-modal-close" (click)="closeEditIssuedModal()" [disabled]="isSavingEdit">✕</button>
+      </div>
+      <div class="prem-modal-body">
+        <div class="alert-danger-prem" *ngIf="editIssuedError">{{ editIssuedError }}</div>
+        <form (ngSubmit)="saveEditedIssuedRecord()" #editIssuedForm="ngForm">
+          <div class="form-grid">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div class="field-group">
+                <label>Transaction Date / የግብይት ቀን</label>
+                <input [(ngModel)]="editingIssuedRecord.transactionDate" name="transactionDate" type="date" />
+              </div>
+              <div class="field-group">
+                <label>Registration Date / የምዝገባ ቀን</label>
+                <input [value]="formatDate(editingIssuedRecord.date)" readonly />
+              </div>
+              <div class="field-group">
+                <label>Voucher No</label>
+                <input [(ngModel)]="editingIssuedRecord.voucherNo" name="voucherNo" required />
+              </div>
+              <div class="field-group">
+                <label>Issued Quantity / የወጣ ብዛት</label>
+                <input [(ngModel)]="editingIssuedRecord.issued" name="issued" type="number" required min="1"
+                       (input)="updateEditedIssuedTotalPrice()" />
+              </div>
+              <div class="field-group">
+                <label>Unit Price / የአንዱ ዋጋ</label>
+                <input [(ngModel)]="editingIssuedRecord.unitPrice" name="unitPrice" type="number" required min="0" step="0.01"
+                       (input)="updateEditedIssuedTotalPrice()" />
+              </div>
+              <div class="field-group">
+                <label>Currency</label>
+                <select [(ngModel)]="editingIssuedRecord.currencyCode" name="currencyCode">
+                  <option *ngFor="let option of currencyOptions" [value]="option.code">{{ option.label }}</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div class="field-group">
+                <label>Organization / ድርጅት</label>
+                <div class="input-with-btn">
+                  <select [(ngModel)]="editingIssuedRecord.organization" name="organization" required>
+                    <option value="">Select</option>
+                    <option *ngFor="let org of organizations" [value]="org.name">{{ org.name }}</option>
                   </select>
+                  <button type="button" class="btn-create-org" (click)="openOrganizationModal()">+</button>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Organization</label>
-                  <div class="input-group">
-                    <select [(ngModel)]="editingIssuedRecord.organization" name="organization" class="form-select" required>
-                      <option value="">Select</option>
-                      <option *ngFor="let org of organizations" [value]="org.name">{{ org.name }}</option>
-                    </select>
-                    <button type="button" class="btn btn-primary btn-sm" (click)="openOrganizationModal()">+</button>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>Posted By</label>
-                  <input [(ngModel)]="editingIssuedRecord.postedBy" name="postedBy" class="form-control" readonly />
-                </div>
-
-                <!-- ONLY OFFICIAL LOCATIONS -->
-                <div class="form-group">
-                  <label>Location <small class="text-muted">(Official only)</small></label>
-                  <select [(ngModel)]="editingIssuedRecord.location" name="location" class="form-select" required>
-                    <option value="">Select Location</option>
-                    <option value="HF">HF</option>
-                    <option value="VHF">VHF</option>
-                    <option value="SPAREPART">SPAREPART</option>
-                    <option value="Electronics">Electronics</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>Total Price</label>
-                  <input [value]="editingIssuedRecord.totalPrice | currency:editingIssuedRecord.currencyCode:'symbol':'1.2-2'"
-                         class="form-control" disabled />
-                </div>
+              <div class="field-group">
+                <label>Posted By</label>
+                <input [(ngModel)]="editingIssuedRecord.postedBy" name="postedBy" readonly />
+              </div>
+              <div class="field-group">
+                <label>Location / ቦታ</label>
+                <select [(ngModel)]="editingIssuedRecord.location" name="location" required>
+                  <option value="">Select Location</option>
+                  <option value="HF">HF</option>
+                  <option value="VHF">VHF</option>
+                  <option value="SPAREPART">SPAREPART</option>
+                  <option value="Electronics">Electronics</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Total Price</label>
+                <input [value]="editingIssuedRecord.totalPrice | currency:editingIssuedRecord.currencyCode:'symbol':'1.2-2'" disabled />
               </div>
             </div>
-
-            <!-- Accessories section same as above -->
-            <div class="form-group mt-4">
-              <div class="form-check">
-                <input id="editIssuedHasAcc" [(ngModel)]="editingIssuedRecord.hasAccessories" name="hasAccessories"
-                       type="checkbox" class="form-check-input" (change)="toggleEditIssuedAccessories()" />
-                <label for="editIssuedHasAcc" class="form-check-label">Has accessories</label>
-              </div>
+          </div>
+          <div class="accessories-section" style="margin-top:18px;">
+            <div class="toggle-row">
+              <input id="editIssuedHasAcc" [(ngModel)]="editingIssuedRecord.hasAccessories"
+                     name="hasAccessories" type="checkbox" (change)="toggleEditIssuedAccessories()" />
+              <label for="editIssuedHasAcc">Has accessories</label>
             </div>
-
-            <div *ngIf="editingIssuedRecord.hasAccessories" class="mt-3">
-              <h6>Accessories</h6>
-              <div *ngFor="let acc of editingIssuedRecord.issuedAccessories; let j = index" class="card mb-2">
-                <div class="card-body pb-2">
-                  <div class="row g-2">
-                    <div class="col-md-5">
-                      <input [(ngModel)]="acc.name" [name]="'iAccName'+j" class="form-control" placeholder="Name" required />
-                    </div>
-                    <div class="col-md-5">
-                      <input [(ngModel)]="acc.quantity" [name]="'iAccQty'+j" type="number" min="1" class="form-control" required />
-                    </div>
-                    <div class="col-md-2">
-                      <button type="button" class="btn btn-danger btn-sm w-100" (click)="removeEditIssuedAccessory(j)">Remove</button>
-                    </div>
-                  </div>
+            <div *ngIf="editingIssuedRecord.hasAccessories">
+              <div *ngFor="let acc of editingIssuedRecord.issuedAccessories; let j = index"
+                   class="accessory-row">
+                <div class="field-group">
+                  <input [(ngModel)]="acc.name" [name]="'iAccName'+j" placeholder="Name" required />
                 </div>
+                <div class="field-group">
+                  <input [(ngModel)]="acc.quantity" [name]="'iAccQty'+j" type="number" min="1" required />
+                </div>
+                <button type="button" class="btn-remove-acc" (click)="removeEditIssuedAccessory(j)">✕</button>
               </div>
-              <button type="button" class="btn btn-primary btn-sm" (click)="addEditIssuedAccessory()">Add Accessory</button>
+              <button type="button" class="btn-add-acc" (click)="addEditIssuedAccessory()">+ Add</button>
             </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeEditIssuedModal()" [disabled]="isSavingEdit">Cancel</button>
-          <button type="button" class="btn btn-success" (click)="saveEditedIssuedRecord()"
-                  [disabled]="isSavingEdit || !editIssuedForm.form.valid">
-            {{ isSavingEdit ? 'Saving...' : 'Save Changes' }}
-          </button>
-        </div>
+          </div>
+        </form>
+      </div>
+      <div class="prem-modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeEditIssuedModal()" [disabled]="isSavingEdit">Cancel</button>
+        <button type="button" class="btn-submit" style="min-width:auto;padding:10px 24px;"
+                (click)="saveEditedIssuedRecord()"
+                [disabled]="isSavingEdit || !editIssuedForm.form.valid">
+          {{ isSavingEdit ? 'Saving…' : 'Save Changes' }}
+        </button>
       </div>
     </div>
   </div>
-  <div class="modal-backdrop fade show" *ngIf="showEditIssuedModal"></div>
-
-  <!-- Organization & Location Modals (kept but not used for Location anymore) -->
-  <!-- You can keep them if you still want to add new Organizations -->
-  <!-- Location modal is no longer needed but left for completeness -->
 
 </div>

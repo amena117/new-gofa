@@ -1,0 +1,12 @@
+# .NET build output
+**/bin/
+**/obj/
+**/logs/*.txt
+**/.vs/
+**/*.user
+
+# Node / Angular
+**/node_modules/
+**/.angular/
+**/dist/
+**/tmp/

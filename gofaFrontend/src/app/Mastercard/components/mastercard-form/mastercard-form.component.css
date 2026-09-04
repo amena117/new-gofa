@@ -1,153 +1,17 @@
-/* mastercard-form.component.css */
+@import '../mastercard-shared.css';
 
-/* Overall container styling */
-.content-container {
-    padding: 20px; /* Add some padding around the whole content */
+/* Validation error hint */
+.field-error {
+  font-size: 0.8rem;
+  color: #dc2626;
+  margin-top: 3px;
+  display: block;
 }
 
-/* Back to List button at the top */
-.content-container > .btn.btn-secondary {
-    margin-bottom: 20px; /* Space between this button and the form */
-    border-radius: 8px; /* Consistent rounded corners */
-    padding: 0.6rem 1.2rem; /* Slightly adjust padding */
-    font-weight: 500;
-}
-
-/* Form container adjustments */
-.container.mt-4 {
-    max-width: 900px; /* Limit width for better readability on large screens */
-    margin-left: auto;
-    margin-right: auto;
-    padding-bottom: 30px; /* Space at the bottom of the page */
-}
-
-/* Card styling */
-.card.shadow-sm {
-    border-radius: 12px; /* Softer rounded corners for the card */
-    overflow: hidden; /* Ensures header background respects border-radius */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* More prominent, refined shadow */
-    border: none; /* Remove default card border */
-}
-
-/* Card header styling */
-.card-header {
-    background-color: #03203c !important; /* Specific dark blue from template */
-    color: white; /* Ensure text is white */
-    padding: 1.5rem 1rem; /* More vertical padding */
-    border-bottom: none; /* Remove default border */
-}
-
-.card-title {
-    font-size: 1.8rem; /* Slightly larger title */
-    font-weight: 700; /* Bolder title for impact */
-    letter-spacing: 0.5px;
-    margin-bottom: 0; /* Remove default margin */
-}
-
-/* Card body padding */
-.card-body.p-4 {
-    padding: 2.2rem !important; /* Generous padding inside the card */
-}
-
-/* Form group styling */
-.form-group {
-    margin-bottom: 1.6rem; /* Consistent spacing between form fields */
-}
-
-.form-group label {
-    font-weight: 600; /* Bolder labels */
-    color: #343a40; /* Darker text for labels */
-    margin-bottom: 0.6rem; /* Space between label and input */
-    display: block; /* Ensures label takes its own line */
-    font-size: 0.95rem; /* Slightly larger label font */
-}
-
-/* Input field styling */
-.form-control {
-    border-radius: 8px; /* Consistent rounded corners for inputs */
-    padding: 0.8rem 1rem; /* More padding inside inputs */
-    border: 1px solid #ced4da; /* Default border color */
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04); /* Subtle inner shadow */
-    transition: all 0.2s ease-in-out; /* Smooth transition for focus */
-}
-
-.form-control:focus {
-    border-color: #03203c; /* Use the header color for focus border */
-    box-shadow: 0 0 0 0.25rem rgba(3, 32, 60, 0.25); /* Custom focus shadow with header color opacity */
-    outline: none; /* Remove default outline */
-}
-
-/* Validation error messages */
-.text-danger {
-    font-size: 0.875rem; /* Standard smaller font for errors */
-    margin-top: 0.4rem; /* Space above the error message */
-    color: #dc3545; /* Bootstrap danger red */
-}
-
-/* Button container styling */
-.text-center.mt-3 {
-    margin-top: 2.5rem !important; /* More space above the buttons */
-    padding-top: 1.5rem; /* Padding inside the button container */
-    border-top: 1px solid #e9ecef; /* Subtle line above buttons */
-}
-
-/* Button styling */
-.btn {
-    border-radius: 8px; /* Rounded buttons */
-    padding: 0.8rem 1.8rem; /* Generous padding for buttons */
-    font-weight: 600; /* Bolder button text */
-    font-size: 1.05rem; /* Slightly larger button font */
-    transition: all 0.2s ease-in-out; /* Smooth transitions */
-}
-
-.btn-success {
-    background-color: #28a745; /* Bootstrap success color */
-    border-color: #28a745;
-}
-
-.btn-success:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
-    transform: translateY(-1px); /* Slight lift effect on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.btn-secondary {
-    background-color: #6c757d; /* Bootstrap secondary color */
-    border-color: #6c757d;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
-    transform: translateY(-1px); /* Slight lift effect on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Disabled button styling */
-.btn:disabled {
-    opacity: 0.6; /* More visible disabled state */
-    cursor: not-allowed;
-    box-shadow: none; /* No shadow when disabled */
-    transform: none; /* No transform when disabled */
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .card-body.p-4 {
-        padding: 1.8rem !important; /* Reduce padding on smaller screens */
-    }
-    .card-title {
-        font-size: 1.6rem; /* Adjust title size */
-    }
-    .form-group {
-        margin-bottom: 1.2rem; /* Reduce space between form groups */
-    }
-    .btn {
-        padding: 0.7rem 1.4rem; /* Adjust button padding */
-        font-size: 0.95rem; /* Adjust button font size */
-    }
-    .text-center.mt-3 {
-        margin-top: 2rem !important; /* Adjust button section margin */
-    }
+/* Make btn-cancel work as a link */
+a.btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,12 +10,10 @@ namespace Gofabackend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "History",
-                table: "TransactionEntries",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.Sql(@"
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[TransactionEntries]') AND name = 'History')
+                    ALTER TABLE [TransactionEntries] ADD [History] nvarchar(max) NOT NULL DEFAULT N'';
+            ");
 
             migrationBuilder.AlterColumn<double>(
                 name: "Vat",
@@ -33,19 +31,25 @@ namespace Gofabackend.Migrations
                 oldClrType: typeof(float),
                 oldType: "real");
 
-            // Copy Item.History to the first transaction for each item
+            // Copy Item.History to the first transaction for each item safely using EXEC
             migrationBuilder.Sql(@"
-                UPDATE t
-                SET t.History = i.History
-                FROM TransactionEntries t
-                INNER JOIN Items i ON t.ItemId = i.ItemId
-                INNER JOIN (
-                    SELECT ItemId, MIN(Id) as FirstTransactionId
-                    FROM TransactionEntries
-                    WHERE Action = 'receive'
-                    GROUP BY ItemId
-                ) first ON t.Id = first.FirstTransactionId
-                WHERE i.History IS NOT NULL AND i.History != '';
+                IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Items]') AND name = 'History')
+                   AND EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[TransactionEntries]') AND name = 'History')
+                BEGIN
+                    EXEC(N'
+                        UPDATE t
+                        SET t.History = i.History
+                        FROM TransactionEntries t
+                        INNER JOIN Items i ON t.ItemId = i.ItemId
+                        INNER JOIN (
+                            SELECT ItemId, MIN(Id) as FirstTransactionId
+                            FROM TransactionEntries
+                            WHERE Action = ''receive''
+                            GROUP BY ItemId
+                        ) first ON t.Id = first.FirstTransactionId
+                        WHERE i.History IS NOT NULL AND i.History != '''';
+                    ');
+                END
             ");
         }
 

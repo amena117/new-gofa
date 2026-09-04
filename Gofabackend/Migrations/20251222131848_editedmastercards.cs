@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,36 +11,18 @@ namespace Gofabackend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<DateTime>(
-                name: "AcceptedAt",
-                table: "RequestOrdersForIssue",
-                type: "datetime2",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "AcceptedBy",
-                table: "RequestOrdersForIssue",
-                type: "nvarchar(max)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "RejectedAt",
-                table: "RequestOrdersForIssue",
-                type: "datetime2",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "RejectedBy",
-                table: "RequestOrdersForIssue",
-                type: "nvarchar(max)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Status",
-                table: "RequestOrdersForIssue",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "Pending");
+            migrationBuilder.Sql(@"
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[RequestOrdersForIssue]') AND name = 'AcceptedAt')
+                    ALTER TABLE [RequestOrdersForIssue] ADD [AcceptedAt] datetime2 NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[RequestOrdersForIssue]') AND name = 'AcceptedBy')
+                    ALTER TABLE [RequestOrdersForIssue] ADD [AcceptedBy] nvarchar(max) NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[RequestOrdersForIssue]') AND name = 'RejectedAt')
+                    ALTER TABLE [RequestOrdersForIssue] ADD [RejectedAt] datetime2 NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[RequestOrdersForIssue]') AND name = 'RejectedBy')
+                    ALTER TABLE [RequestOrdersForIssue] ADD [RejectedBy] nvarchar(max) NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[RequestOrdersForIssue]') AND name = 'Status')
+                    ALTER TABLE [RequestOrdersForIssue] ADD [Status] nvarchar(max) NOT NULL DEFAULT 'Pending';
+            ");
         }
 
         /// <inheritdoc />

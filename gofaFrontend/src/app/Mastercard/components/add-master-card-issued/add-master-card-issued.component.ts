@@ -30,6 +30,7 @@ export class AddMasterCardIssuedComponent implements OnInit {
   newLocationName = '';
   organizationModalError: string | null = null;
   locationModalError: string | null = null;
+  transactionDateInput: string = new Date().toISOString().substring(0, 10);
   currencyOptions = [
     { code: 'USD', label: 'US Dollar ($)' },
     { code: 'ETB', label: 'Ethiopian Birr (ETB)' },
@@ -155,6 +156,7 @@ availableStores = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
       id: 0,
       masterCardItemId: this.itemId || 0,
       date: new Date(),  // Still uses Gregorian Date for form/backend
+      transactionDate: this.transactionDateInput ? new Date(this.transactionDateInput) : new Date(),
       voucherNo: '',
       issued: 0,
       organization: '',
@@ -418,6 +420,7 @@ availableStores = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
       id: this.issuedItem.id,
       masterCardItemId: this.itemId || 0,
       date: this.issuedItem.date,
+      transactionDate: this.transactionDateInput ? new Date(this.transactionDateInput) : new Date(),
       voucherNo: this.issuedItem.voucherNo,
       issued: this.issuedItem.issued,
       organization: this.issuedItem.organization,
