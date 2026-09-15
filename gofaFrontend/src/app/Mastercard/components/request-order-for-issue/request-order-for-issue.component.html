@@ -20,8 +20,15 @@
       <div class="prem-card-body">
         <div class="form-grid">
           <div class="field-group">
-            <label>Date / ቀን</label>
+            <label>Reg Date / የምዝገባ ቀን</label>
             <div class="reg-date-display">📅 {{ ethiopianDateString }}</div>
+          </div>
+          <div class="field-group">
+            <label for="transactionDate">Transaction Date / የግብይት ቀን</label>
+            <input id="transactionDate" type="date" formControlName="transactionDate" required />
+            <span class="field-error" *ngIf="requestOrderForm.get('transactionDate')?.touched && requestOrderForm.get('transactionDate')?.invalid">
+              ⚠ Transaction Date is required.
+            </span>
           </div>
           <div class="field-group">
             <label for="issueVoucherNo">Issue Voucher No / የወጪ ቫውቸር ቁጥር</label>

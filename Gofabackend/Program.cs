@@ -33,7 +33,16 @@ try
         throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(connectionString));
+    {
+        if (connectionString.Contains(".db", StringComparison.OrdinalIgnoreCase) || connectionString.Contains("Data Source", StringComparison.OrdinalIgnoreCase))
+        {
+            options.UseSqlite(connectionString);
+        }
+        else
+        {
+            options.UseSqlServer(connectionString);
+        }
+    });
 
     builder.Services.AddScoped<StockService>();
 
@@ -174,7 +183,17 @@ try
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         try
         {
-            dbContext.Database.Migrate();
+            if (dbContext.Database.IsSqlite())
+            {
+                dbContext.Database.EnsureCreated();
+                try {
+                    dbContext.Database.ExecuteSqlRaw("ALTER TABLE RequestOrdersForIssue ADD COLUMN TransactionDate TEXT NOT NULL DEFAULT '0001-01-01 00:00:00';");
+                } catch { /* Column might already exist */ }
+            }
+            else
+            {
+                dbContext.Database.Migrate();
+            }
             DataSeeder.Seed(dbContext);
             Log.Information("Database migrated and seeded successfully.");
         }

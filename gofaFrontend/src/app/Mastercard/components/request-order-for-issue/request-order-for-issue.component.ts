@@ -47,6 +47,7 @@ export class RequestOrderForIssueComponent implements OnInit {
   ) {
     this.requestOrderForm = this.fb.group({
       date: [new Date(), Validators.required], // Will be overridden by backend date
+      transactionDate: ['', Validators.required], // Added Transaction Date
       issueVoucherNo: ['', [Validators.required, Validators.maxLength(50)]],
       voucherNo: ['', [Validators.required, Validators.maxLength(50)]],
       isIssue: [true],
@@ -269,6 +270,7 @@ issuingStores: string[] = ['VHF', 'HF', 'SPAREPART', 'ELECTRONICS'];
     const formValue = this.requestOrderForm.getRawValue();
     const requestOrder: RequestOrderForIssue = {
       date: formValue.date,
+      transactionDate: formValue.transactionDate,
       issueVoucherNo: formValue.issueVoucherNo,
       voucherNo: formValue.voucherNo,
       isIssue: formValue.isIssue,

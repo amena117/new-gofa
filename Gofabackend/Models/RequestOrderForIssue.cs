@@ -6,6 +6,7 @@ namespace Gofabackend.Models
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
+        public DateTime TransactionDate { get; set; }
         public string IssueVoucherNo { get; set; }
         public string VoucherNo { get; set; }  
         public bool IsIssue { get; set; }      

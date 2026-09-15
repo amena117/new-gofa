@@ -57,9 +57,15 @@
         <div class="info-grid">
 
           <div class="info-item">
-            <span class="info-label">Date / ቀን</span>
+            <span class="info-label">Reg Date / የምዝገባ ቀን</span>
             <span class="info-value" *ngIf="!isEditing" [innerHTML]="formatDate(requestOrder.date) || 'N/A'"></span>
             <input *ngIf="isEditing" type="date" [(ngModel)]="editableRequestOrder!.date" readonly class="form-control" />
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Transaction Date / የግብይት ቀን</span>
+            <span class="info-value" *ngIf="!isEditing" [innerHTML]="formatDate(requestOrder.transactionDate) || 'N/A'"></span>
+            <input *ngIf="isEditing" type="date" [(ngModel)]="editableRequestOrder!.transactionDate" class="form-control" />
           </div>
 
           <div class="info-item">

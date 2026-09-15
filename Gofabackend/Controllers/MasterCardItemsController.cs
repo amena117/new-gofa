@@ -761,7 +761,7 @@ namespace Gofabackend.Controllers
                 .Select(item => new
                 {
                     Item = item,
-                    TotalIssued = item.IssuedRecords.Sum(ir => ir.Issued)
+                    TotalIssued = item.IssuedRecords.Sum(ir => (int?)ir.Issued) ?? 0
                 })
                 .OrderByDescending(x => x.TotalIssued)
                 .Take(limit)
@@ -858,12 +858,14 @@ public async Task<IActionResult> GetMasterCardItemsReport([FromQuery] MasterCard
         // Apply top-level filters
         if (!string.IsNullOrWhiteSpace(filter.Model))
         {
-            query = query.Where(i => i.Model != null && i.Model.Contains(filter.Model, StringComparison.OrdinalIgnoreCase));
+            var modelLower = filter.Model.ToLower();
+            query = query.Where(i => i.Model != null && i.Model.ToLower().Contains(modelLower));
         }
 
         if (!string.IsNullOrWhiteSpace(filter.PartNumber))
         {
-            query = query.Where(i => i.PartNumber != null && i.PartNumber.Contains(filter.PartNumber, StringComparison.OrdinalIgnoreCase));
+            var partNumLower = filter.PartNumber.ToLower();
+            query = query.Where(i => i.PartNumber != null && i.PartNumber.ToLower().Contains(partNumLower));
         }
 
         if (!string.IsNullOrWhiteSpace(filter.Status))

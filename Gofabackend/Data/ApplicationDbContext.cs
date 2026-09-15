@@ -351,8 +351,7 @@ namespace Gofabackend.Data
                       .HasColumnType("nvarchar(50)")
                       .IsRequired();
 
-                entity.Property(e => e.Description)
-                      .HasColumnType("nvarchar(max)");
+                entity.Property(e => e.Description);
 
                 entity.Property(e => e.Location)
                       .HasColumnType("nvarchar(100)");

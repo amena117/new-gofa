@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\a\\Desktop\\GOFA_S_M\\Gofabackend\\Gofabackend.csproj": {}
+    "C:\\Users\\HP\\Desktop\\web\\new-gofa\\Gofabackend\\Gofabackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\a\\Desktop\\GOFA_S_M\\Gofabackend\\Gofabackend.csproj": {
+    "C:\\Users\\HP\\Desktop\\web\\new-gofa\\Gofabackend\\Gofabackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\a\\Desktop\\GOFA_S_M\\Gofabackend\\Gofabackend.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\Desktop\\web\\new-gofa\\Gofabackend\\Gofabackend.csproj",
         "projectName": "Gofabackend",
-        "projectPath": "C:\\Users\\a\\Desktop\\GOFA_S_M\\Gofabackend\\Gofabackend.csproj",
-        "packagesPath": "C:\\Users\\a\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\a\\Desktop\\GOFA_S_M\\Gofabackend\\obj\\",
+        "projectPath": "C:\\Users\\HP\\Desktop\\web\\new-gofa\\Gofabackend\\Gofabackend.csproj",
+        "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\HP\\Desktop\\web\\new-gofa\\Gofabackend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\a\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -85,6 +85,10 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -147,7 +151,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.416/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.424/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

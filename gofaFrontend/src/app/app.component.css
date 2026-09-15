@@ -1,9 +1,9 @@
-/* Default main content with sidebar offset */
 .main-content {
   margin-left: 280px;
-  padding: 2rem;
   min-height: 100vh;
   transition: margin-left 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Full width mode - removes sidebar space and centers content */

@@ -96,6 +96,7 @@ import { ChartDirective } from './team-leader-dashboard/chart.directive';
 import { AccessoryListComponent } from './Warehose/accessory-list/accessory-list.component';
 import { AccessoryWithdrawalComponent } from './Model22/accessory-withdrawal/accessory-withdrawal.component';
 import { UserPerformanceComponent } from './user-performance/user-performance.component';
+import { PageHistoryTabsComponent } from './Shared/page-history-tabs/page-history-tabs.component';
 
 @NgModule({
   declarations: [
@@ -155,7 +156,8 @@ import { UserPerformanceComponent } from './user-performance/user-performance.co
     ReportComponent,
     AccessoryListComponent,
     AccessoryWithdrawalComponent,
-    UserPerformanceComponent
+    UserPerformanceComponent,
+    PageHistoryTabsComponent
   ],
   imports: [
     BrowserModule,

@@ -3,6 +3,7 @@
 
 <!-- Main Content Wrapper -->
 <div class="main-content" [class.full-width]="isLoginPage">
+  <app-page-history-tabs *ngIf="!isLoginPage"></app-page-history-tabs>
   <div class="content-container">
     <!-- Router outlet for all pages -->
     <router-outlet></router-outlet>

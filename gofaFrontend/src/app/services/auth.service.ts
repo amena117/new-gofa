@@ -188,6 +188,7 @@ isAnyAdmin(): boolean {
   public clearUserInfo(): void {
     this.userInfoSubject.next(null);
     sessionStorage.removeItem('userInfo');
+    localStorage.removeItem('gofa_open_tabs');
   }
 
   private setUserInfo(userInfo: UserInfo): void {

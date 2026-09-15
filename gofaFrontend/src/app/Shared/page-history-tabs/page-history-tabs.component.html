@@ -1,0 +1,18 @@
+<div class="tabs-container" style="border: 2px solid red;">
+  <div *ngIf="tabs.length === 0" style="padding: 10px; color: red; font-weight: bold;">
+    DEBUG: Tab Component Loaded but tabs.length is 0!
+  </div>
+  <div class="tabs-scroll-wrapper" *ngIf="tabs.length > 0">
+    <div 
+      *ngFor="let tab of tabs; let i = index" 
+      class="tab-item" 
+      [class.active]="tab.route === activeRoute"
+      (click)="navigateToTab(tab.route)"
+    >
+      <span class="tab-title">{{ tab.title }}</span>
+      <button class="tab-close-btn" (click)="closeTab($event, i)" aria-label="Close tab">
+        &times;
+      </button>
+    </div>
+  </div>
+</div>

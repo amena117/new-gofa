@@ -277,19 +277,23 @@ public async Task<IActionResult> GetRequestOrdersReport([FromQuery] RequestOrder
         }
         if (!string.IsNullOrWhiteSpace(filter.RequestingUnit))
         {
-            query = query.Where(r => r.RequestingUnit != null && r.RequestingUnit.Contains(filter.RequestingUnit, StringComparison.OrdinalIgnoreCase));
+            var reqUnitLower = filter.RequestingUnit.ToLower();
+            query = query.Where(r => r.RequestingUnit != null && r.RequestingUnit.ToLower().Contains(reqUnitLower));
         }
         if (!string.IsNullOrWhiteSpace(filter.IssuingStore))
         {
-            query = query.Where(r => r.IssuingStore != null && r.IssuingStore.Contains(filter.IssuingStore, StringComparison.OrdinalIgnoreCase));
+            var issuingStoreLower = filter.IssuingStore.ToLower();
+            query = query.Where(r => r.IssuingStore != null && r.IssuingStore.ToLower().Contains(issuingStoreLower));
         }
         if (!string.IsNullOrWhiteSpace(filter.Category))
         {
-            query = query.Where(r => r.Category != null && r.Category.Contains(filter.Category, StringComparison.OrdinalIgnoreCase));
+            var categoryLower = filter.Category.ToLower();
+            query = query.Where(r => r.Category != null && r.Category.ToLower().Contains(categoryLower));
         }
         if (!string.IsNullOrWhiteSpace(filter.MakeAndModel))
         {
-            query = query.Where(r => r.MakeAndModel != null && r.MakeAndModel.Contains(filter.MakeAndModel, StringComparison.OrdinalIgnoreCase));
+            var makeModelLower = filter.MakeAndModel.ToLower();
+            query = query.Where(r => r.MakeAndModel != null && r.MakeAndModel.ToLower().Contains(makeModelLower));
         }
 
         var orders = await query.ToListAsync();

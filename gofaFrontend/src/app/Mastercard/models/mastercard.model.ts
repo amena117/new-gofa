@@ -92,6 +92,7 @@ export interface MasterCardItemIssued {
 export interface RequestOrderForIssue {
   id?: number;
   date: Date;
+  transactionDate?: Date;
   issueVoucherNo: string;
   voucherNo: string;
   isIssue: boolean;
